@@ -470,7 +470,34 @@
   html[data-style="blok"] .rd header h2 { font-family: "Archivo Black", Impact, sans-serif; font-weight: 400; }
   html[data-style="zacht"] .rd .ing, html[data-style="zacht"] .rd ol button { box-shadow: 0 6px 24px rgba(40, 40, 60, .07); border-radius: 20px; }
   html[data-style="zacht"] .rd header h2 { font-family: Fraunces, Georgia, serif; font-weight: 600; }
+  /* ════════════════════════════════════════════════════════════════════
+     KRAFT FAMILY — close variations on the original, same type and shapes.
+     Tokens first; only components with hard-coded colours are touched.
+     ════════════════════════════════════════════════════════════════════ */
+  html[data-style="licht"] { --paper: #fbf6ee; --paper-2: #f1e6d6; --card: #ffffff; --ink: #2b2118; --ink-2: #6e5f4f; --ink-3: #a19180; --line: #e8dac6; }
+  html[data-style="haver"] { --paper: #f1eee4; --paper-2: #e4dfcf; --card: #fdfcf7; --ink: #24261f; --ink-2: #5d6055; --ink-3: #94968a; --line: #d8d3c2; --good: #3b7a4e; }
+  html[data-style="fris"] { --paper: #f3e7d6; --paper-2: #e9d8bf; --card: #ffffff; --ink: #1f1710; --ink-2: #5f4e3c; --ink-3: #93806a; --line: #d4bc99; }
+  html[data-style="fris"] :is(.add, .it, .df-row, .ci, .rc, .deal, .rc-banner, .progress) { box-shadow: 0 0 0 1.5px var(--line), 0 3px 0 var(--line); }
+  html[data-style="fris"] :is(.bagc, .shop) { box-shadow: inset 0 -8px 0 rgba(0,0,0,.16), 0 0 0 2px rgba(31, 23, 16, .85), 0 14px 24px -16px rgba(60,30,0,.6); }
+  html[data-style="fris"] .rd :is(.ing, ol button) { box-shadow: 0 0 0 1.5px var(--line), 0 3px 0 var(--line); }
+
+  html[data-style="donker"] {
+    color-scheme: dark;
+    --paper: #1c1611; --paper-2: #2b2219; --card: #29211a; --ink: #f3e7d6; --ink-2: #cdbba4; --ink-3: #917f6b; --line: #3e3328;
+    --good: #72c28e; --bad: #f08c75;
+  }
+  html[data-style="donker"] .delta { background: rgba(240, 140, 117, .16); }
+  html[data-style="donker"] .delta.zero { background: rgba(114, 194, 142, .16); }
+  html[data-style="donker"] :is(.ci .g .o, .rc li .d .o, .rd .ing li .d .o) { background: rgba(255, 214, 102, .18); color: #ffd666; }
+  html[data-style="donker"] :is(.list-foot, .plan) { background: var(--paper-2); color: var(--ink); box-shadow: inset 0 0 0 1px var(--line); }
+  html[data-style="donker"] .list-foot .ghost, html[data-style="donker"] .plan button { color: var(--ink); }
+  html[data-style="donker"] :is(.bagc, .shop) { box-shadow: inset 0 -8px 0 rgba(0,0,0,.22), 0 14px 26px -14px rgba(0,0,0,.7); }
+  html[data-style="donker"] :is(.rc .save b, .rc-banner button) { color: #1c1611; }
+  html[data-style="donker"] .scrim { background: rgba(0, 0, 0, .6); }
+  html[data-style="donker"] .tabs.bottom { box-shadow: 0 -1px 0 var(--line); }
+  .proto select optgroup { font-weight: 700; }
 </style>
+
 
 
 
@@ -481,8 +508,9 @@
   <button data-chains="6">6 met voorbeelden</button>
   <span>Stijl</span>
   <select id="style" aria-label="Stijl">
-    <option value="kraft">Kraft</option><option value="riso">Riso</option><option value="nacht">Nacht</option>
-    <option value="blok">Blok</option><option value="zacht">Zacht</option>
+    <optgroup label="Licht · Kraft-familie"><option value="kraft">Kraft (origineel)</option><option value="licht">Licht</option><option value="haver">Haver</option><option value="fris">Fris</option></optgroup>
+    <optgroup label="Donker"><option value="donker">Donker (Kraft)</option><option value="nacht">Nacht</option></optgroup>
+    <optgroup label="Eerdere stijlen"><option value="riso">Riso</option><option value="blok">Blok</option><option value="zacht">Zacht</option></optgroup>
   </select>
 </div>
 
@@ -566,8 +594,13 @@
     nacht: ["#4fd1a5", "#ff6b9a", "#6aa8ff", "#ffb84d", "#b48cff", "#4dd9e8"],
     blok:  ["#7ee08a", "#ff8fb1", "#8ab6ff", "#ffd23f", "#c9a7ff", "#5fe0d4"],
     zacht: ["#3f8f6b", "#b24a72", "#4a72b2", "#c98a2e", "#7a5bb0", "#2a8f8f"],
+    licht: ["#2f7a62", "#9a4468", "#3d72ad", "#c47d2c", "#6754a8", "#2b8f8f"],
+    haver: ["#3b7a4e", "#a2475e", "#3f6f9e", "#bd812d", "#6a5aa6", "#2e8a86"],
+    fris:  ["#1f6e55", "#8f2f58", "#2c5f9e", "#bb6512", "#55409a", "#167f86"],
+    donker:["#3f8f71", "#b4557c", "#4f80bd", "#c4853a", "#7b68bd", "#3a9a99"],
   };
-  const STYLES = Object.keys(PALETTES);
+  // The S key cycles the Kraft family first, the darks next, then the earlier styles.
+  const STYLES = ["kraft", "licht", "haver", "fris", "donker", "nacht", "riso", "blok", "zacht"];
   let style = STYLES.includes(new URLSearchParams(location.search).get("style")) ? new URLSearchParams(location.search).get("style") : "kraft";
   const withColour = (c, slot) => Object.defineProperty(c, "color", { get: () => PALETTES[style][slot], enumerable: true });
   const REAL = data.chains.map((c, i) => withColour({ ...c, sim: false }, i));
