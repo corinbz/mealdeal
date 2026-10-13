@@ -6,8 +6,9 @@ Grocery price aggregation and comparison across Dutch supermarket chains.
 
 A daily Sweep of each Chain records exactly what its public endpoint said,
 parsing nothing. It exists ahead of the ingest pipeline because price history
-cannot be backfilled. `npm run archive -- --chain dirk`. Dirk works; Jumbo is blocked
-on a user-agent decision. See `docs/archive.md`.
+cannot be backfilled. `npm run archive -- --chain dirk`. Both Chains work; Jumbo
+only answers a browser user agent, which the owner chose to send, and which a
+local run must pass explicitly. See `docs/archive.md`.
 
 ## Ingest
 
@@ -15,8 +16,7 @@ Reads a day out of the archive into Postgres as Products, price observations
 and Offers. Never contacts a Chain: the archiver owns that path, so a parser
 improved later can be re-run over every day already captured.
 `npm run db:up && npm run db:migrate && npm run ingest -- --chain dirk`.
-Dirk is verified on real data; Jumbo's reader is unproven for want of a real
-response. See `docs/ingest.md`.
+Both Chains are verified on real data, swept 2026-10-13. See `docs/ingest.md`.
 
 ## Agent skills
 

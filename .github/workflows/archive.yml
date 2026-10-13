@@ -30,11 +30,25 @@ concurrency:
 
 jobs:
   archive:
+    # One job per Chain, in parallel. A full Sweep of either takes most of an
+    # hour, so back to back they would overrun the timeout, and a Chain whose
+    # edge refuses us must not cost the other its day. A scheduled run has no
+    # inputs and archives every Chain.
+    strategy:
+      fail-fast: false
+      matrix:
+        chain: ${{ fromJSON((!inputs.chain || inputs.chain == 'all') && '["dirk","jumbo"]' || format('["{0}"]', inputs.chain)) }}
+
     runs-on: ubuntu-latest
     timeout-minutes: 90
 
     env:
-      CHAIN: ${{ inputs.chain || 'dirk' }}
+      CHAIN: ${{ matrix.chain }}
+      # Jumbo tarpits our honest agent string. On 2026-10-13 the project owner
+      # chose to send a browser one for Jumbo, then to do so on the daily
+      # schedule too. See "Jumbo" in docs/archive.md. Dirk accepts the honest
+      # default and is never sent this.
+      JUMBO_USER_AGENT: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
       # R2 is S3-compatible, so the AWS CLI already on the runner can talk to
       # it. These two settings are not optional: recent AWS CLI versions send
       # integrity checksum headers that R2 rejects outright.
@@ -81,8 +95,8 @@ jobs:
         continue-on-error: true
         run: |
           aws s3 sync \
-            "s3://${{ secrets.R2_BUCKET }}/${{ steps.today.outputs.date }}/" \
-            "archive/${{ steps.today.outputs.date }}/" \
+            "s3://${{ secrets.R2_BUCKET }}/${{ steps.today.outputs.date }}/$CHAIN/" \
+            "archive/${{ steps.today.outputs.date }}/$CHAIN/" \
             --endpoint-url "https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com" \
             --only-show-errors
 
@@ -92,23 +106,27 @@ jobs:
           if [ -n "${{ inputs.max_product_steps }}" ]; then
             args="$args --max-product-steps ${{ inputs.max_product_steps }}"
           fi
-          npm run archive -- $args
+          if [ "$CHAIN" = jumbo ]; then
+            npm run archive -- $args --user-agent "$JUMBO_USER_AGENT"
+          else
+            npm run archive -- $args
+          fi
 
       # Upload even if the archive run failed part-way: a partial day is worth
       # keeping, both for the data and so the next attempt can resume from it.
       - name: Upload to R2
         if: always()
         run: |
-          if [ ! -d "archive/${{ steps.today.outputs.date }}" ]; then
+          if [ ! -d "archive/${{ steps.today.outputs.date }}/$CHAIN" ]; then
             echo "::warning::Nothing was archived, so there is nothing to upload"
             exit 0
           fi
           aws s3 sync \
-            "archive/${{ steps.today.outputs.date }}/" \
-            "s3://${{ secrets.R2_BUCKET }}/${{ steps.today.outputs.date }}/" \
+            "archive/${{ steps.today.outputs.date }}/$CHAIN/" \
+            "s3://${{ secrets.R2_BUCKET }}/${{ steps.today.outputs.date }}/$CHAIN/" \
             --endpoint-url "https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com" \
             --only-show-errors
-          echo "Uploaded $(find "archive/${{ steps.today.outputs.date }}" -type f | wc -l) files"
+          echo "Uploaded $(find "archive/${{ steps.today.outputs.date }}/$CHAIN" -type f | wc -l) files"
 
       # The manifests are tiny and are the only thing worth reading when a run
       # looks wrong, so keep them attached to the run itself.
@@ -116,8 +134,8 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: manifests-${{ steps.today.outputs.date }}
-          path: archive/*/*/manifest.json
+          name: manifests-${{ steps.today.outputs.date }}-${{ matrix.chain }}
+          path: archive/*/${{ matrix.chain }}/manifest.json
           if-no-files-found: warn
           retention-days: 30
 
@@ -127,7 +145,7 @@ jobs:
         if: always()
         run: |
           status=0
-          for manifest in archive/${{ steps.today.outputs.date }}/*/manifest.json; do
+          for manifest in archive/${{ steps.today.outputs.date }}/$CHAIN/manifest.json; do
             [ -e "$manifest" ] || continue
             npm run --silent archive:check -- --manifest "$manifest" || status=1
           done

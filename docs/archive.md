@@ -132,6 +132,12 @@ runs this next:
 npm run archive -- --chain jumbo --user-agent "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
 ```
 
+**Decision, later on 2026-10-13:** the project owner chose to archive Jumbo on
+the daily schedule as well. The browser string is therefore written into
+`.github/workflows/archive.yml`, as `JUMBO_USER_AGENT`, and passed to the
+Jumbo job only. The CLI default is unchanged: a local run still sends the
+honest string unless told otherwise, and Dirk is never sent the browser one.
+
 Three further Jumbo findings that contradict the research:
 
 1. **HTTP/2 is refused** — every h2 request died with a stream
@@ -184,7 +190,8 @@ durable one.
 
 ## Where it runs
 
-`.github/workflows/archive.yml` runs it daily at 04:30 UTC — 06:30 in
+`.github/workflows/archive.yml` runs it daily at 04:30 UTC, as one job per
+Chain in parallel — 06:30 in
 Amsterdam in summer, 05:30 in winter, both after Dirk's own ~04:01 local
 refresh. GitHub Actions cron is UTC only, so that drifts with the seasons by
 design. The archive is uploaded to a private Cloudflare R2 bucket; R2 is
@@ -225,6 +232,11 @@ objects, and never needs to create or delete a bucket.
   without a `department` it returns empty offer lists and HTTP 200, so without
   this check the job would have reported success every morning while recording
   nothing. A green tick is not evidence.
+- **Each Chain is its own job.** A full Sweep of either takes most of an
+  hour, so back to back they would overrun the 90-minute timeout, and Jumbo's
+  edge refusing the runner must not cost Dirk its day. Each job restores,
+  uploads and checks only its own Chain's directory. A manual run picks one
+  Chain, or `all`.
 - **Manifests are attached to each run** for 30 days. They are small and are
   the only thing worth reading when a run looks wrong.
 
