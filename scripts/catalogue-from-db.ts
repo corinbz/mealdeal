@@ -73,12 +73,15 @@ for (const chain of chains) {
     unit_price_cents: number; wording: string | null; is_upcoming: boolean | null;
   }>(
     // The latest Observation per Product, joined to any Offer naming it, a
-    // running one before an upcoming one.
+    // running one before an upcoming one. Both from the same run: a day can be
+    // re-ingested after a parser fix, its runs share an observed_at, and
+    // Observations and Offers are never revised, so without the run as
+    // tie-break an earlier run's figures and wording would leak through.
     `WITH latest AS (
        SELECT DISTINCT ON (o.chain_product_ref) o.*
          FROM price_observation o
         WHERE o.chain_id = $1
-        ORDER BY o.chain_product_ref, o.observed_at DESC
+        ORDER BY o.chain_product_ref, o.observed_at DESC, o.run_id DESC
      )
      SELECT p.chain_product_ref, p.name, p.pack_text, p.pack_quantity,
             p.pack_unit, l.comparison_unit, l.shelf_price_cents, l.offer_price_cents,
@@ -89,7 +92,7 @@ for (const chain of chains) {
          SELECT oo.wording, oo.is_upcoming
            FROM offer_product op
            JOIN offer_observation oo ON oo.id = op.offer_observation_id
-          WHERE oo.chain_id = $1 AND op.chain_product_ref = p.chain_product_ref
+          WHERE oo.chain_id = $1 AND oo.run_id = l.run_id AND op.chain_product_ref = p.chain_product_ref
           ORDER BY oo.is_upcoming, oo.id DESC
           LIMIT 1
        ) off ON true
