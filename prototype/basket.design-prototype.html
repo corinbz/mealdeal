@@ -1,0 +1,603 @@
+<!--
+  PROTOTYPE, throwaway. Four design directions for the basket page, switchable
+  with ?variant=A..D or the bar at the bottom (← → keys work too).
+
+    A  Kassabon   — the list as a till receipt, both chains in two columns
+    B  Schap      — every item a shelf with the two chains' price labels on it
+    C  Weegschaal — a head-to-head: where the savings actually come from
+    D  Briefje    — in-store mode: pick a chain, tick things off a note
+
+  Same real catalogue and resolution as basket.html; state is in memory only.
+  Open from disk after `node scripts/catalogue-from-db.ts`.
+-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>mealdeal · design prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@500;600;700&family=Caveat:wght@500;700&family=Courier+Prime:wght@400;700&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=Inter:wght@400;500;600&display=swap">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; }
+  button, input { font: inherit; color: inherit; }
+  [hidden] { display: none !important; }
+
+  /* ── Switcher: deliberately not part of any design ─────────────────── */
+  .proto-bar {
+    position: fixed; left: 50%; bottom: max(14px, env(safe-area-inset-bottom)); transform: translateX(-50%);
+    z-index: 50; display: flex; align-items: center; gap: 4px;
+    background: #111; color: #fff; border-radius: 999px; padding: 5px;
+    font: 500 13px/1 ui-sans-serif, system-ui, sans-serif; box-shadow: 0 6px 24px rgba(0,0,0,.35);
+  }
+  .proto-bar button { background: #2a2a2a; color: #fff; border: 0; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 15px; }
+  .proto-bar button:hover { background: #444; }
+  .proto-bar span { padding: 0 12px; white-space: nowrap; }
+
+  /* ════════════════════════════════════════════════════════════════════
+     A · KASSABON
+     ════════════════════════════════════════════════════════════════════ */
+  body[data-v="A"] {
+    background:
+      radial-gradient(circle at 20% 10%, rgba(255,255,255,.35), transparent 40%),
+      repeating-linear-gradient(90deg, #cfc6b4 0 2px, #d4cbb9 2px 5px);
+    font-family: "Courier Prime", "Courier New", monospace; color: #23201b;
+    padding: 40px 16px 110px;
+  }
+  .rcpt {
+    width: min(460px, 100%); margin: 0 auto; background: #fffdf6;
+    padding: 34px 26px 30px; position: relative;
+    box-shadow: 0 1px 0 rgba(0,0,0,.04), 0 18px 40px -18px rgba(60,40,10,.45);
+    --tooth: 9px;
+    -webkit-mask:
+      conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom/calc(var(--tooth)*2) var(--tooth) repeat-x,
+      conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg) top/calc(var(--tooth)*2) var(--tooth) repeat-x,
+      linear-gradient(#000 0 0) center/100% calc(100% - 2*var(--tooth)) no-repeat;
+            mask:
+      conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom/calc(var(--tooth)*2) var(--tooth) repeat-x,
+      conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg) top/calc(var(--tooth)*2) var(--tooth) repeat-x,
+      linear-gradient(#000 0 0) center/100% calc(100% - 2*var(--tooth)) no-repeat;
+  }
+  .rcpt .c { text-align: center; }
+  .rcpt .logo { font-weight: 700; font-size: 26px; letter-spacing: .32em; margin: 0; }
+  .rcpt .sub { font-size: 12px; letter-spacing: .14em; margin: 4px 0 0; }
+  .rcpt .meta { font-size: 12px; line-height: 1.5; margin: 14px 0 0; color: #5d564b; }
+  .rcpt hr { border: 0; border-top: 1px dashed #8d8577; margin: 14px 0; }
+  .rcpt hr.dbl { border-top: 3px double #23201b; }
+  .rcpt .cols, .rcpt .it .row1 { display: grid; grid-template-columns: 1fr 64px 64px; gap: 6px; align-items: baseline; }
+  .rcpt .cols { font-size: 12px; font-weight: 700; letter-spacing: .1em; }
+  .rcpt .cols span:not(:first-child), .rcpt .p { text-align: right; }
+  .rcpt .it { padding: 6px 0; position: relative; }
+  .rcpt .it .name { text-transform: uppercase; font-weight: 700; font-size: 14px; }
+  .rcpt .it .qty { font-weight: 400; color: #5d564b; }
+  .rcpt .p { font-size: 14px; font-variant-numeric: tabular-nums; }
+  .rcpt .p.win { font-weight: 700; }
+  .rcpt .p.win::after { content: "*"; position: absolute; margin-left: 1px; }
+  .rcpt .p.none { color: #a33; }
+  .rcpt .sku { font-size: 11.5px; color: #6b6458; line-height: 1.35; margin-top: 2px; padding-left: 12px; }
+  .rcpt .sku b { font-weight: 400; color: #23201b; }
+  .rcpt .tag { display: inline-block; border: 1px solid #23201b; padding: 0 4px; font-size: 10.5px; margin-left: 4px; }
+  .rcpt .x {
+    position: absolute; left: -22px; top: 7px; width: 18px; height: 18px; border: 0; background: none;
+    color: #b0a898; cursor: pointer; font-size: 14px; line-height: 1; padding: 0;
+  }
+  .rcpt .x:hover { color: #a33; }
+  .rcpt .staple { background: none; border: 0; padding: 0; cursor: pointer; font-size: 11px; color: #8d8577; letter-spacing: .08em; }
+  .rcpt .staple[aria-pressed="true"] { color: #23201b; font-weight: 700; }
+  .rcpt .tot { display: grid; grid-template-columns: 1fr auto; font-size: 15px; gap: 2px 10px; }
+  .rcpt .tot .lead { font-weight: 700; }
+  .rcpt .save { margin: 14px 0 0; font-size: 21px; font-weight: 700; text-align: center; letter-spacing: .02em; }
+  .rcpt .save small { display: block; font-size: 12px; font-weight: 400; letter-spacing: .1em; color: #5d564b; }
+  .rcpt .warn { color: #a33; font-size: 12.5px; text-align: center; margin: 10px 0 0; }
+  .rcpt form { display: flex; gap: 8px; align-items: center; margin: 4px 0 0; }
+  .rcpt form label { font-weight: 700; }
+  .rcpt form input {
+    flex: 1; min-width: 0; border: 0; border-bottom: 1px dashed #8d8577; background: transparent;
+    padding: 6px 2px; outline: none; font-size: 14px; caret-color: #a33;
+  }
+  .rcpt form input:focus { border-bottom-style: solid; border-bottom-color: #23201b; }
+  .rcpt form button { border: 1.5px solid #23201b; background: #23201b; color: #fffdf6; padding: 5px 12px; cursor: pointer; font-weight: 700; letter-spacing: .1em; }
+  .rcpt .barcode {
+    height: 46px; margin: 18px auto 6px; width: 78%;
+    background: repeating-linear-gradient(90deg, #23201b 0 2px, transparent 2px 4px, #23201b 4px 5px, transparent 5px 8px, #23201b 8px 11px, transparent 11px 12px);
+  }
+  .rcpt .thanks { font-size: 12px; letter-spacing: .2em; }
+  @media (max-width: 520px) { .rcpt { padding-inline: 18px; } .rcpt .x { left: auto; right: -4px; top: -2px; } }
+
+  /* ════════════════════════════════════════════════════════════════════
+     B · SCHAP
+     ════════════════════════════════════════════════════════════════════ */
+  body[data-v="B"] {
+    background: #1d2321; color: #f2efe6; font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
+    padding: 0 0 110px;
+  }
+  .aisle-head { padding: 28px clamp(16px, 4vw, 48px) 8px; display: flex; flex-wrap: wrap; gap: 18px 40px; align-items: end; }
+  .aisle-head h1 { font-family: Anton, Impact, sans-serif; font-weight: 400; font-size: clamp(40px, 7vw, 76px); line-height: .9; margin: 0; letter-spacing: .01em; text-transform: uppercase; }
+  .aisle-head h1 em { font-style: normal; color: #ffcf3a; }
+  .signs { display: flex; gap: 12px; flex-wrap: wrap; }
+  .sign {
+    background: #f2efe6; color: #1d2321; padding: 10px 16px 12px; min-width: 170px; position: relative;
+    border-top: 8px solid #6c7a74; box-shadow: 0 10px 0 -4px rgba(0,0,0,.35);
+  }
+  .sign.best { border-top-color: #ffcf3a; }
+  .sign .k { font-weight: 700; text-transform: uppercase; letter-spacing: .12em; font-size: 14px; }
+  .sign .v { font-family: Anton, Impact, sans-serif; font-size: 44px; line-height: 1; }
+  .sign .s { font-size: 15px; font-weight: 600; color: #4a5551; }
+  .sign .s.bad { color: #b4321e; }
+  .aisle-add { padding: 14px clamp(16px, 4vw, 48px) 26px; }
+  .aisle-add form { display: flex; max-width: 640px; }
+  .aisle-add input {
+    flex: 1; min-width: 0; background: #2b3330; border: 2px solid #3c4743; border-right: 0; color: #f2efe6;
+    padding: 12px 14px; font-size: 20px; font-weight: 600; outline: none;
+  }
+  .aisle-add input::placeholder { color: #8b9792; }
+  .aisle-add input:focus { border-color: #ffcf3a; }
+  .aisle-add button { background: #ffcf3a; color: #1d2321; border: 0; padding: 0 22px; font-family: Anton, Impact, sans-serif; font-size: 20px; letter-spacing: .06em; cursor: pointer; }
+  .shelf {
+    display: grid; grid-template-columns: 220px 1fr; gap: 0 22px; align-items: end;
+    padding: 18px clamp(16px, 4vw, 48px) 0; position: relative;
+  }
+  .shelf::after { /* the rail the labels clip onto */
+    content: ""; grid-column: 1 / -1; height: 16px; margin-top: 0;
+    background: linear-gradient(#9aa7a1, #6c7a74 45%, #4a5551); box-shadow: 0 8px 14px -6px rgba(0,0,0,.6);
+  }
+  .shelf .what { padding-bottom: 10px; }
+  .shelf .what .q { font-size: 15px; font-weight: 700; letter-spacing: .14em; color: #ffcf3a; }
+  .shelf .what .n { font-size: 30px; font-weight: 700; line-height: 1; text-transform: uppercase; }
+  .shelf .what .acts { margin-top: 8px; display: flex; gap: 6px; }
+  .shelf .what .acts button { background: none; border: 1.5px solid #4a5551; color: #c9d0cc; padding: 2px 9px; cursor: pointer; font-size: 14px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+  .shelf .what .acts button:hover { border-color: #f2efe6; color: #f2efe6; }
+  .shelf .what .acts button[aria-pressed="true"] { background: #f2efe6; color: #1d2321; border-color: #f2efe6; }
+  .labels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .lbl {
+    background: #fff; color: #111; position: relative; padding: 10px 12px 9px; min-height: 128px;
+    display: grid; grid-template-columns: 1fr auto; grid-template-rows: auto 1fr auto; gap: 2px 10px;
+    border-bottom: 5px solid #ccd3cf;
+  }
+  .lbl .ch { font-weight: 700; font-size: 13px; letter-spacing: .16em; text-transform: uppercase; color: #6c7a74; }
+  .lbl .pr { grid-row: 1 / 3; grid-column: 2; text-align: right; font-family: Anton, Impact, sans-serif; font-size: 46px; line-height: .95; }
+  .lbl .pr small { display: block; font-family: "Barlow Condensed", sans-serif; font-size: 15px; font-weight: 700; color: #6c7a74; }
+  .lbl .pn { font-size: 17px; font-weight: 600; line-height: 1.1; align-self: start; }
+  .lbl .pk { grid-column: 1 / -1; font-size: 15px; font-weight: 500; color: #4a5551; display: flex; justify-content: space-between; gap: 8px; border-top: 1px solid #e3e7e4; padding-top: 4px; }
+  .lbl.win { border-bottom-color: #ffcf3a; }
+  .lbl .sticker {
+    position: absolute; top: -12px; right: -8px; transform: rotate(6deg);
+    background: #ffcf3a; color: #1d2321; font-weight: 700; font-size: 14px; padding: 3px 9px; letter-spacing: .04em;
+    box-shadow: 0 2px 0 rgba(0,0,0,.25);
+  }
+  .lbl .offer { position: absolute; top: -12px; left: 10px; transform: rotate(-3deg); background: #e8452c; color: #fff; font-weight: 700; font-size: 14px; padding: 3px 9px; }
+  .lbl.empty { background: repeating-linear-gradient(-45deg, #2b3330 0 10px, #252c29 10px 20px); color: #8b9792; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; border-bottom-color: #3c4743; }
+  @media (max-width: 760px) {
+    .shelf { grid-template-columns: 1fr; }
+    .labels { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .lbl .pr { font-size: 34px; }
+    .lbl .pn { font-size: 15px; }
+  }
+
+  /* ════════════════════════════════════════════════════════════════════
+     C · WEEGSCHAAL
+     ════════════════════════════════════════════════════════════════════ */
+  body[data-v="C"] {
+    --paper: #f6f1e7; --ink: #1a1a1a; --left: #1f4fb8; --right: #d2462a; --mute: #6f6a60; --rule: #d9d1c0;
+    background: var(--paper); color: var(--ink); font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+    padding: 0 16px 120px;
+  }
+  .duel { max-width: 980px; margin: 0 auto; }
+  .duel .mast { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 3px solid var(--ink); padding: 22px 0 8px; gap: 12px; flex-wrap: wrap; }
+  .duel .mast b { font-family: Fraunces, Georgia, serif; font-weight: 800; font-size: 22px; letter-spacing: -.01em; }
+  .duel .mast span { font-size: 12px; color: var(--mute); letter-spacing: .08em; text-transform: uppercase; }
+  .duel h1 { font-family: Fraunces, Georgia, serif; font-weight: 600; font-size: clamp(34px, 6vw, 64px); line-height: 1.02; letter-spacing: -.025em; margin: 26px 0 8px; max-width: 16ch; }
+  .duel h1 .l { color: var(--left); } .duel h1 .r { color: var(--right); }
+  .duel .dek { color: var(--mute); max-width: 60ch; margin: 0 0 22px; font-size: 15px; }
+  .scale { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); }
+  .scale > div { padding: 14px 0; }
+  .scale > div + div { border-left: 1px solid var(--ink); padding-left: 18px; text-align: right; padding-right: 0; }
+  .scale .who { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; font-weight: 600; }
+  .scale .amt { font-family: Fraunces, Georgia, serif; font-size: clamp(30px, 5vw, 46px); font-weight: 600; letter-spacing: -.02em; }
+  .scale .l .amt { color: var(--left); } .scale .r .amt { color: var(--right); }
+  .scale .cov { font-size: 13px; color: var(--mute); }
+  .scale .cov.bad { color: var(--right); font-weight: 600; }
+  .duel form { display: flex; gap: 0; margin: 22px 0 6px; border: 1.5px solid var(--ink); background: #fffdf8; }
+  .duel form input { flex: 1; min-width: 0; border: 0; background: transparent; padding: 13px 14px; font-size: 16px; outline: none; }
+  .duel form button { border: 0; background: var(--ink); color: var(--paper); padding: 0 18px; cursor: pointer; font-weight: 600; }
+  .duel .sortbar { display: flex; justify-content: space-between; align-items: center; margin: 18px 0 4px; font-size: 12px; color: var(--mute); text-transform: uppercase; letter-spacing: .1em; gap: 10px; flex-wrap: wrap; }
+  .duel .sortbar button { background: none; border: 0; border-bottom: 1px solid currentColor; padding: 0; cursor: pointer; text-transform: uppercase; letter-spacing: .1em; font-size: 12px; color: var(--ink); }
+  .bout { display: grid; grid-template-columns: 1fr minmax(150px, 210px) 1fr; align-items: center; border-bottom: 1px solid var(--rule); padding: 10px 0; gap: 12px; }
+  .bout .side { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .bout .side.l { justify-content: flex-end; text-align: right; }
+  .bout .side .txt { min-width: 0; flex: 0 1 auto; }
+  .bout .side .p { font-family: Fraunces, Georgia, serif; font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .bout .side .pn { font-size: 12px; color: var(--mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 26ch; }
+  .bout .side.l .p { color: var(--left); } .bout .side.r .p { color: var(--right); }
+  .bout .side.lose .p { color: var(--mute); font-weight: 400; }
+  .bout .bar { height: 10px; flex: 0 0 auto; border-radius: 1px; }
+  .bout .side.l .bar { background: var(--left); } .bout .side.r .bar { background: var(--right); }
+  .bout .mid { text-align: center; }
+  .bout .mid .n { font-weight: 600; font-size: 15px; line-height: 1.2; }
+  .bout .mid .q { font-size: 12px; color: var(--mute); }
+  .bout .mid .d { font-size: 12px; font-weight: 600; margin-top: 2px; }
+  .bout .mid .x { background: none; border: 0; color: var(--mute); cursor: pointer; font-size: 12px; padding: 2px 4px; text-decoration: underline; }
+  .bout .none { font-size: 13px; color: var(--right); font-style: italic; }
+  @media (max-width: 640px) {
+    .bout { grid-template-columns: 1fr 1fr; grid-template-areas: "mid mid" "l r"; row-gap: 6px; }
+    .bout .mid { grid-area: mid; }
+    .bout .side.l { grid-area: l; } .bout .side.r { grid-area: r; }
+    .bout .side .pn { max-width: 18ch; }
+  }
+
+  /* ════════════════════════════════════════════════════════════════════
+     D · BRIEFJE
+     ════════════════════════════════════════════════════════════════════ */
+  body[data-v="D"] {
+    background: #3b5249; font-family: Inter, ui-sans-serif, system-ui, sans-serif; color: #26302c;
+    padding: 28px 14px 130px;
+  }
+  .note {
+    width: min(480px, 100%); margin: 0 auto; background: #fbf8ef; position: relative;
+    box-shadow: 0 30px 50px -30px rgba(0,0,0,.6), 0 2px 0 rgba(0,0,0,.08);
+    transform: rotate(-.6deg);
+  }
+  .note::before { /* tape */
+    content: ""; position: absolute; top: -14px; left: 50%; width: 110px; height: 28px; transform: translateX(-50%) rotate(2deg);
+    background: rgba(255, 244, 196, .75); box-shadow: 0 1px 2px rgba(0,0,0,.15);
+  }
+  .note .pick { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-bottom: 2px solid #26302c; }
+  .note .pick button {
+    border: 0; background: transparent; padding: 16px 14px 12px; text-align: left; cursor: pointer; position: relative;
+  }
+  .note .pick button + button { border-left: 2px solid #26302c; }
+  .note .pick button[aria-pressed="true"] { background: #26302c; color: #fbf8ef; }
+  .note .pick .ch { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; font-weight: 600; }
+  .note .pick .t { font-size: 28px; font-weight: 600; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+  .note .pick .s { font-size: 12.5px; opacity: .8; }
+  .note .pick .badge { position: absolute; top: 10px; right: 10px; font-family: Caveat, cursive; font-size: 20px; font-weight: 700; color: #c2412b; transform: rotate(-6deg); }
+  .note .pick button[aria-pressed="true"] .badge { color: #ffd36b; }
+  .note .paper {
+    --line: 44px;
+    background:
+      linear-gradient(90deg, transparent 52px, rgba(194, 65, 43, .55) 52px 54px, transparent 54px),
+      repeating-linear-gradient(#fbf8ef 0 calc(var(--line) - 1px), #c9d6dd calc(var(--line) - 1px) var(--line));
+    padding: 6px 0 var(--line);
+  }
+  .note form { display: flex; align-items: center; height: var(--line); padding-left: 66px; padding-right: 12px; }
+  .note form input { flex: 1; min-width: 0; border: 0; background: transparent; font-family: Caveat, cursive; font-size: 27px; outline: none; color: #1f3e8a; }
+  .note form input::placeholder { color: #9aa6ad; }
+  .note form button { border: 0; background: none; font-family: Caveat, cursive; font-size: 24px; color: #1f3e8a; cursor: pointer; font-weight: 700; }
+  .ln { display: grid; grid-template-columns: 52px 1fr auto; align-items: start; min-height: calc(var(--line) * 2); }
+  .ln .tick {
+    margin: 10px 0 0 14px; width: 26px; height: 26px; border: 2px solid #26302c; border-radius: 48% 52% 45% 55%;
+    background: transparent; cursor: pointer; position: relative; padding: 0;
+  }
+  .ln.done .tick::after { content: "✓"; position: absolute; inset: -9px 0 0 3px; font-family: Caveat, cursive; font-size: 34px; color: #1f3e8a; font-weight: 700; }
+  .ln .body { padding: 2px 0 0 14px; min-width: 0; }
+  .ln .hand { font-family: Caveat, cursive; font-size: 29px; line-height: var(--line); height: var(--line); color: #1f3e8a; display: flex; gap: 8px; align-items: baseline; white-space: nowrap; overflow: hidden; }
+  .ln .hand .q { font-size: 22px; color: #5b6f95; }
+  .ln .grab { font-size: 12.5px; line-height: var(--line); height: var(--line); color: #4f5c57; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ln .grab .o { background: #ffd36b; padding: 0 5px; font-weight: 600; color: #26302c; }
+  .ln .grab .w { color: #a35a12; font-weight: 600; }
+  .ln .grab .miss { color: #c2412b; font-weight: 600; }
+  .ln .side { padding: 0 14px 0 6px; text-align: right; }
+  .ln .side .pr { font-family: Caveat, cursive; font-size: 27px; line-height: var(--line); color: #26302c; font-weight: 700; }
+  .ln .side .ops { height: var(--line); display: flex; gap: 2px; align-items: center; justify-content: flex-end; }
+  .ln .side .ops button { border: 0; background: none; cursor: pointer; font-size: 16px; color: #8b9792; padding: 2px 4px; }
+  .ln .side .ops button[aria-pressed="true"] { color: #c2412b; }
+  .ln.done .hand { text-decoration: line-through 2px #1f3e8a; opacity: .45; }
+  .ln.done .grab, .ln.done .side .pr { opacity: .4; }
+  .ln.away .hand { color: #8b9792; }
+  .trolley {
+    position: fixed; left: 50%; bottom: calc(max(14px, env(safe-area-inset-bottom)) + 52px); transform: translateX(-50%);
+    width: min(480px, calc(100% - 28px)); background: #26302c; color: #fbf8ef; padding: 12px 16px;
+    display: flex; justify-content: space-between; align-items: center; gap: 12px; z-index: 10;
+    box-shadow: 0 10px 30px rgba(0,0,0,.35);
+  }
+  .trolley .big { font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .trolley .small { font-size: 12.5px; opacity: .75; }
+  .trolley .meter { flex: 1; height: 6px; background: rgba(255,255,255,.15); max-width: 140px; }
+  .trolley .meter i { display: block; height: 100%; background: #ffd36b; }
+  .trolley button { background: #ffd36b; color: #26302c; border: 0; padding: 8px 12px; font-weight: 600; cursor: pointer; }
+</style>
+
+<div id="root"></div>
+<div class="proto-bar" role="toolbar" aria-label="Prototype variant">
+  <button id="prev" aria-label="Previous variant">←</button>
+  <span id="vlabel"></span>
+  <button id="next" aria-label="Next variant">→</button>
+</div>
+
+<script src="catalogue.js"></script>
+<script>
+  if (!window.CATALOGUE) {
+    document.getElementById("root").textContent = "Run node scripts/catalogue-from-db.ts first: catalogue.js is missing.";
+    throw new Error("no catalogue");
+  }
+  const data = window.CATALOGUE;
+  const chains = data.chains;
+
+  // ── Shared core: copied from basket.html, so every variant prices the same ──
+  const euro = (c) => "€" + (c / 100).toFixed(2).replace(".", ",");
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+  const per = { kg: "/kg", l: "/l", piece: "/st" };
+
+  function stem(w) {
+    let b; do { b = w; if (w.length > 4) w = w.replace(/(jes|je|en|e|s)$/, ""); } while (w !== b); return w;
+  }
+  const wordsOf = (noun) => noun.toLowerCase().split(/[^\p{L}]+/u).filter((w) => w.length > 1).map(stem);
+  const products = {}, searchable = {};
+  for (const c of chains) {
+    products[c.id] = {};
+    searchable[c.id] = data.catalogue[c.id].map((r) => {
+      const id = c.id + "-" + r[0];
+      products[c.id][id] = { id, name: r[1], packaging: r[2], packQuantity: r[3], packUnit: r[4], comparisonUnit: r[5],
+        shelfPriceCents: r[6], offerPriceCents: r[7], unitPriceCents: r[8], offerWording: r[9], offerUpcoming: r[10] === 1 };
+      return { id, unit: r[5], words: r[1].toLowerCase().split(/[^\p{L}]+/u).filter(Boolean).map(stem) };
+    });
+  }
+  const matching = (cid, unit, words) => searchable[cid].filter((p) =>
+    (unit === null || p.unit === unit) && words.every((w) => p.words.some((n) => n.endsWith(w))));
+
+  const UNITS = { g: ["kg", .001], gr: ["kg", .001], gram: ["kg", .001], kg: ["kg", 1], kilo: ["kg", 1], ml: ["l", .001], cl: ["l", .01],
+    l: ["l", 1], liter: ["l", 1], x: ["piece", 1], "×": ["piece", 1], st: ["piece", 1], stuk: ["piece", 1], stuks: ["piece", 1] };
+  function parse(text) {
+    const t = text.trim().replace(/\s+/g, " "); if (!t) return null;
+    let quantity = null, unit = null, noun = t;
+    const m = t.match(/^(\d+(?:[.,]\d+)?)\s*(.*)$/);
+    if (m) {
+      quantity = Number(m[1].replace(",", ".")); noun = m[2];
+      const [first, ...rest] = noun.split(" "); const u = UNITS[first.toLowerCase().replace(/\.$/, "")];
+      if (u && rest.length) { unit = u[0]; quantity *= u[1]; noun = rest.join(" "); }
+    }
+    if (!noun || UNITS[noun.toLowerCase()] || !(quantity === null || quantity > 0)) return null;
+    let guessed = false;
+    if (unit === null) {
+      const tally = { kg: 0, l: 0, piece: 0 };
+      for (const c of chains) for (const p of matching(c.id, null, wordsOf(noun))) tally[p.unit]++;
+      if (quantity !== null && tally.piece > 0) unit = "piece";
+      else { unit = Object.keys(tally).sort((a, b) => tally[b] - tally[a])[0]; if (!tally[unit]) unit = "piece"; guessed = true; }
+      if (quantity === null) { quantity = 1; guessed = true; }
+    }
+    return { text: t, noun, quantity: Math.round(quantity * 1000) / 1000, unit, guessed };
+  }
+  const resolved = {};
+  function line(cid, item) {
+    const key = cid + "|" + item.unit + "|" + item.noun;
+    resolved[key] ??= matching(cid, item.unit, wordsOf(item.noun)).map((s) => products[cid][s.id])
+      .sort((a, b) => a.unitPriceCents - b.unitPriceCents || a.shelfPriceCents - b.shelfPriceCents)[0] || null;
+    const p = resolved[key]; if (!p) return null;
+    const offer = (p.offerPriceCents !== null || p.offerWording) && !p.offerUpcoming ? (p.offerWording || "actie") : null;
+    const price = offer && p.offerPriceCents ? p.offerPriceCents : p.shelfPriceCents;
+    const known = p.packQuantity > 0 && p.packUnit === item.unit;
+    const packs = known ? Math.max(1, Math.ceil(item.quantity / p.packQuantity)) : 1;
+    return { p, offer, packs, cost: packs * price, over: known ? p.packQuantity / item.quantity : 1 };
+  }
+  const qtyText = (i) => i.unit === "piece" ? i.quantity + "×" : (i.unit === "kg" && i.quantity < 1 ? i.quantity * 1000 + " g"
+    : i.unit === "l" && i.quantity < 1 ? i.quantity * 1000 + " ml" : i.quantity + " " + i.unit);
+
+  // ── In-memory state (prototype: no persistence) ──
+  let nid = 0;
+  let list = ["1 kg kruimige aardappelen", "250 g champignons", "2 courgettes", "500 g rundergehakt", "400 g broccoli",
+    "1 komkommer", "1 l halfvolle melk", "1 kg uien", "350 g pindakaas", "400 g spinazie", "6 eieren", "500 g wortelen"]
+    .map((t) => ({ id: "i" + nid++, staple: false, ...parse(t) }));
+  list[6].staple = list[10].staple = true;
+  const done = new Set();
+  let shopAt = null; // D: chosen chain
+  let sortBySaving = true; // C
+
+  function snapshot() {
+    const rows = list.map((item) => {
+      const by = Object.fromEntries(chains.map((c) => [c.id, line(c.id, item)]));
+      return { item, by };
+    });
+    const totals = chains.map((c) => {
+      let cost = 0, filled = 0;
+      for (const r of rows) if (r.by[c.id]) { filled++; cost += r.by[c.id].cost; }
+      return { chain: c, cost, filled, total: rows.length };
+    });
+    const full = totals.filter((t) => t.filled === t.total).sort((a, b) => a.cost - b.cost);
+    const allFull = full.length === totals.length && rows.length > 0;
+    return { rows, totals, best: allFull ? full[0] : null, worst: allFull ? full[full.length - 1] : null };
+  }
+  const cheapestFor = (r) => {
+    const ls = chains.map((c) => [c.id, r.by[c.id]]).filter(([, l]) => l).sort((a, b) => a[1].cost - b[1].cost);
+    return ls.length === chains.length && ls[0][1].cost < ls[1][1].cost ? ls[0][0] : null;
+  };
+
+  // ════════════════════════════════════════════════════════════════════
+  const V = {};
+
+  V.A = { name: "Kassabon", render(s) {
+    const d = new Date(chains[0].observedAt + "T12:00:00");
+    const items = s.rows.map((r) => {
+      const win = cheapestFor(r);
+      const cols = chains.map((c) => {
+        const l = r.by[c.id];
+        return l ? '<span class="p' + (win === c.id ? " win" : "") + '">' + euro(l.cost).slice(1) + "</span>"
+          : '<span class="p none">--</span>';
+      }).join("");
+      const skus = chains.map((c) => {
+        const l = r.by[c.id]; if (!l) return "";
+        return '<div class="sku">' + c.name.slice(0, 1) + ": <b>" + esc(l.p.name) + "</b>" + (l.packs > 1 ? " ×" + l.packs : "") +
+          (l.offer ? '<span class="tag">' + esc(l.offer) + "</span>" : "") + (l.over >= 2 ? '<span class="tag">' + Math.round(l.over * 10) / 10 + "× NODIG</span>" : "") + "</div>";
+      }).join("");
+      return '<div class="it">' +
+        '<div class="row1"><span class="name">' + esc(r.item.noun) + ' <span class="qty">' + qtyText(r.item) + "</span></span>" + cols + "</div>" +
+        skus + '<div class="sku"><button class="staple" data-act="staple" data-id="' + r.item.id + '" aria-pressed="' + r.item.staple + '">' +
+        (r.item.staple ? "■ VASTE BOODSCHAP" : "□ vaste boodschap") + '</button> · <button class="staple" data-act="remove" data-id="' + r.item.id + '">✕ schrappen</button></div></div>';
+    }).join("");
+    const tots = s.totals.map((t) => '<span class="' + (s.best && s.best.chain.id === t.chain.id ? "lead" : "") + '">TOTAAL ' +
+      t.chain.name.toUpperCase() + "</span><span>" + (t.filled < t.total ? "≥ " : "") + euro(t.cost) + "</span>").join("");
+    const saving = s.best ? '<p class="save"><small>U BESPAART BIJ ' + s.best.chain.name.toUpperCase() + "</small>" + euro(s.worst.cost - s.best.cost) + "</p>"
+      : s.rows.length ? '<p class="warn">Niet alles te koop bij elke keten — totalen zijn een ondergrens, geen prijs.</p>' : "";
+    return '<div class="rcpt">' +
+      '<div class="c"><p class="logo">MEALDEAL</p><p class="sub">BOODSCHAPPENLIJST</p>' +
+      '<p class="meta">' + chains.map((c) => c.name.toUpperCase() + " · " + (c.store || "LANDELIJK").toUpperCase()).join("<br>") +
+      "<br>PRIJZEN VAN " + d.toLocaleDateString("nl-NL", { day: "2-digit", month: "2-digit", year: "numeric" }) + "</p></div>" +
+      "<hr>" + '<div class="cols"><span>ARTIKEL</span>' + chains.map((c) => "<span>" + c.name.toUpperCase() + "</span>").join("") + "</div><hr>" +
+      items +
+      '<hr><form class="add"><label for="q">+</label><input id="q" name="q" placeholder="500 g rundergehakt" autocomplete="off"><button>OK</button></form>' +
+      '<hr class="dbl"><div class="tot">' + tots + "<span>ARTIKELEN</span><span>" + s.rows.length + "</span></div>" + saving +
+      '<p class="c" style="font-size:11px;color:#6b6458;margin-top:12px">* = goedkoopst voor dit artikel</p>' +
+      '<div class="barcode"></div><p class="c thanks">BEDANKT EN TOT ZIENS</p></div>';
+  } };
+
+  V.B = { name: "Schap", render(s) {
+    const winner = s.best;
+    const signs = s.totals.map((t) => {
+      const best = winner && winner.chain.id === t.chain.id;
+      const miss = t.total - t.filled;
+      return '<div class="sign' + (best ? " best" : "") + '"><div class="k">' + esc(t.chain.name) + (best ? " · goedkoopst" : "") + "</div>" +
+        '<div class="v">' + (miss ? "≥" : "") + euro(t.cost) + "</div>" +
+        '<div class="s' + (miss ? " bad" : "") + '">' + (miss ? miss + " van " + t.total + " niet te koop" : "alle " + t.total + " te koop") + "</div></div>";
+    }).join("");
+    const shelves = s.rows.map((r) => {
+      const win = cheapestFor(r);
+      const labels = chains.map((c) => {
+        const l = r.by[c.id];
+        if (!l) return '<div class="lbl empty">' + esc(c.name) + " · niet op voorraad</div>";
+        return '<div class="lbl' + (win === c.id ? " win" : "") + '">' +
+          (win === c.id ? '<span class="sticker">' + (win && r.by[chains.find((x) => x.id !== c.id).id] ?
+            "−" + euro(r.by[chains.find((x) => x.id !== c.id).id].cost - l.cost) : "goedkoopst") + "</span>" : "") +
+          (l.offer ? '<span class="offer">' + esc(l.offer) + "</span>" : "") +
+          '<span class="ch">' + esc(c.name) + "</span>" +
+          '<span class="pr">' + euro(l.p.unitPriceCents) + "<small>" + per[l.p.comparisonUnit] + "</small></span>" +
+          '<span class="pn">' + esc(l.p.name) + "</span>" +
+          '<span class="pk"><span>' + (l.packs > 1 ? l.packs + " × " : "") + [l.p.packaging ? esc(l.p.packaging) : "", l.over >= 2 ? Math.round(l.over * 10) / 10 + "× nodig" : ""].filter(Boolean).join(" · ") +
+          "</span><b>" + euro(l.cost) + "</b></span></div>";
+      }).join("");
+      return '<section class="shelf"><div class="what"><div class="q">' + qtyText(r.item) + '</div><div class="n">' + esc(r.item.noun) + "</div>" +
+        '<div class="acts"><button data-act="staple" data-id="' + r.item.id + '" aria-pressed="' + r.item.staple + '">vast</button>' +
+        '<button data-act="remove" data-id="' + r.item.id + '">weg</button></div></div><div class="labels">' + labels + "</div></section>";
+    }).join("");
+    return '<header class="aisle-head"><h1>Gang <em>1</em><br>jouw lijst</h1><div class="signs">' + signs + "</div></header>" +
+      '<div class="aisle-add"><form class="add"><input name="q" placeholder="Zet iets op de lijst — 500 g rundergehakt" autocomplete="off"><button>+ ERBIJ</button></form></div>' +
+      shelves;
+  } };
+
+  V.C = { name: "Weegschaal", render(s) {
+    const [L, R] = chains;
+    const tl = s.totals[0], tr = s.totals[1];
+    let headline;
+    if (s.best) {
+      const diff = s.worst.cost - s.best.cost;
+      const cls = s.best.chain.id === L.id ? "l" : "r";
+      headline = '<span class="' + cls + '">' + esc(s.best.chain.name) + "</span> is " + euro(diff) + " cheaper for this list.";
+    } else headline = "Neither chain can fill this whole list yet.";
+    const rows = s.rows.map((r) => {
+      const a = r.by[L.id], b = r.by[R.id];
+      const diff = a && b ? b.cost - a.cost : 0; // >0: left cheaper
+      return { r, a, b, diff };
+    });
+    if (sortBySaving) rows.sort((x, y) => Math.abs(y.diff) - Math.abs(x.diff));
+    const maxD = Math.max(1, ...rows.map((x) => Math.abs(x.diff)));
+    const side = (cls, l, wins, d) => {
+      if (!l) return '<div class="side ' + cls + '"><span class="none">not stocked</span></div>';
+      const w = wins ? Math.max(2, Math.round(Math.abs(d) / maxD * 42)) : 0;
+      const txt = '<div class="txt"><div class="p">' + euro(l.cost) + '</div><div class="pn" title="' + esc(l.p.name) + '">' +
+        (l.offer ? "▲ " + esc(l.offer) + " · " : "") + esc(l.p.name) + "</div></div>";
+      const bar = '<span class="bar" style="width:' + w + '%"></span>';
+      return '<div class="side ' + cls + (wins ? "" : " lose") + '">' + (cls === "l" ? txt + bar : bar + txt) + "</div>";
+    };
+    const bouts = rows.map(({ r, a, b, diff }) => '<div class="bout">' +
+      side("l", a, diff > 0, diff) +
+      '<div class="mid"><div class="n">' + esc(r.item.noun) + '</div><div class="q">' + qtyText(r.item) + "</div>" +
+      (a && b && diff ? '<div class="d" style="color:var(--' + (diff > 0 ? "left" : "right") + ')">' + (diff > 0 ? "← " : "") + euro(Math.abs(diff)) + (diff < 0 ? " →" : "") + "</div>"
+        : a && b ? '<div class="d" style="color:var(--mute)">even</div>' : "") +
+      '<button class="x" data-act="remove" data-id="' + r.item.id + '">remove</button></div>' +
+      side("r", b, diff < 0, diff) + "</div>").join("");
+    const cov = (t) => '<div class="cov' + (t.filled < t.total ? " bad" : "") + '">' + t.filled + " of " + t.total + " items" + (t.filled < t.total ? " — total is a floor" : "") + "</div>";
+    return '<div class="duel"><div class="mast"><b>mealdeal</b><span>Prices of ' + esc(L.observedAt) + " · " + esc(L.name) + " " + esc(L.store || "national") + " vs " + esc(R.name) + " " + esc(R.store || "national") + "</span></div>" +
+      "<h1>" + headline + "</h1>" +
+      '<p class="dek">Each bar points at the chain that is cheaper for that item, and its length is how much cheaper. The long bars are where the choice of shop actually matters.</p>' +
+      '<div class="scale"><div class="l"><div class="who" style="color:var(--left)">' + esc(L.name) + '</div><div class="amt">' + (tl.filled < tl.total ? "≥ " : "") + euro(tl.cost) + "</div>" + cov(tl) + "</div>" +
+      '<div class="r"><div class="who" style="color:var(--right)">' + esc(R.name) + '</div><div class="amt">' + (tr.filled < tr.total ? "≥ " : "") + euro(tr.cost) + "</div>" + cov(tr) + "</div></div>" +
+      '<form class="add"><input name="q" placeholder="Add to this week’s list: 500 g rundergehakt" autocomplete="off"><button>Add</button></form>' +
+      '<div class="sortbar"><span>' + s.rows.length + " items</span><button data-act=\"sort\">" + (sortBySaving ? "Sorted by difference · show list order" : "List order · sort by difference") + "</button></div>" +
+      bouts + "</div>";
+  } };
+
+  V.D = { name: "Briefje", render(s) {
+    if (!shopAt || !chains.some((c) => c.id === shopAt)) shopAt = (s.best || s.totals.slice().sort((a, b) => b.filled - a.filled || a.cost - b.cost)[0]).chain.id;
+    const here = s.totals.find((t) => t.chain.id === shopAt);
+    const pick = s.totals.map((t) => {
+      const best = s.best && s.best.chain.id === t.chain.id;
+      const save = best ? "bespaar " + euro(s.worst.cost - s.best.cost) : "";
+      return '<button data-act="shop" data-id="' + t.chain.id + '" aria-pressed="' + (t.chain.id === shopAt) + '">' +
+        (best ? '<span class="badge">' + save + "</span>" : "") +
+        '<div class="ch">' + esc(t.chain.name) + '</div><div class="t">' + (t.filled < t.total ? "≥" : "") + euro(t.cost) + "</div>" +
+        '<div class="s">' + (t.filled < t.total ? t.total - t.filled + " niet te koop" : "alles te koop") + "</div></button>";
+    }).join("");
+    let leftCost = 0, inCart = 0;
+    const lines = s.rows.map((r) => {
+      const l = r.by[shopAt]; const isDone = done.has(r.item.id);
+      if (l && !isDone) leftCost += l.cost; if (isDone) inCart++;
+      const grab = l
+        ? (l.offer ? '<span class="o">' + esc(l.offer) + "</span> " : "") + (l.over >= 2 ? '<span class="w">' + Math.round(l.over * 10) / 10 + "× te veel</span> " : "") +
+          (l.packs > 1 ? l.packs + "× " : "") + esc(l.p.name) + (l.p.packaging ? " · " + esc(l.p.packaging) : "")
+        : '<span class="miss">niet bij ' + esc(chains.find((c) => c.id === shopAt).name) + "</span>";
+      return '<div class="ln' + (isDone ? " done" : "") + (l ? "" : " away") + '">' +
+        '<button class="tick" data-act="tick" data-id="' + r.item.id + '" aria-label="In de kar" aria-pressed="' + isDone + '"></button>' +
+        '<div class="body"><div class="hand">' + esc(r.item.noun) + ' <span class="q">' + qtyText(r.item) + "</span></div>" +
+        '<div class="grab">' + grab + "</div></div>" +
+        '<div class="side"><div class="pr">' + (l ? euro(l.cost) : "—") + "</div>" +
+        '<div class="ops"><button data-act="staple" data-id="' + r.item.id + '" aria-pressed="' + r.item.staple + '" title="Vaste boodschap">📌</button>' +
+        '<button data-act="remove" data-id="' + r.item.id + '" title="Weg">✕</button></div></div></div>';
+    }).join("");
+    const pct = s.rows.length ? Math.round(inCart / s.rows.length * 100) : 0;
+    return '<div class="note"><div class="pick">' + pick + '</div><div class="paper">' +
+      '<form class="add"><input name="q" placeholder="schrijf erbij…" autocomplete="off"><button>+</button></form>' + lines + "</div></div>" +
+      '<div class="trolley"><div><div class="big">' + euro(leftCost) + ' <span class="small">nog te pakken</span></div>' +
+      '<div class="small">' + inCart + " van " + s.rows.length + " in de kar · " + esc(here.chain.name) + "</div></div>" +
+      '<div class="meter"><i style="width:' + pct + '%"></i></div>' +
+      (inCart ? '<button data-act="finish">Klaar</button>' : "") + "</div>";
+  } };
+
+  // ── Wiring ──
+  const keys = Object.keys(V);
+  const root = document.getElementById("root");
+  let current = new URLSearchParams(location.search).get("variant");
+  if (!V[current]) current = "A";
+
+  function render() {
+    document.body.dataset.v = current;
+    document.getElementById("vlabel").textContent = current + " · " + V[current].name;
+    const focused = document.activeElement && document.activeElement.name === "q";
+    root.innerHTML = V[current].render(snapshot());
+    if (focused) root.querySelector("input[name=q]")?.focus();
+  }
+  function go(step) {
+    current = keys[(keys.indexOf(current) + step + keys.length) % keys.length];
+    const u = new URL(location.href); u.searchParams.set("variant", current);
+    try { history.replaceState(null, "", u); } catch { /* file:// in some browsers */ }
+    render();
+  }
+  document.getElementById("prev").onclick = () => go(-1);
+  document.getElementById("next").onclick = () => go(1);
+  document.addEventListener("keydown", (e) => {
+    if (e.target.closest("input, textarea, [contenteditable]")) return;
+    if (e.key === "ArrowLeft") go(-1);
+    if (e.key === "ArrowRight") go(1);
+  });
+
+  root.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const input = e.target.querySelector("input[name=q]");
+    const parsed = parse(input.value);
+    if (!parsed) { input.value = ""; input.placeholder = "Niet gelezen — probeer “500 g rundergehakt”"; return; }
+    list.push({ id: "i" + nid++, staple: false, ...parsed });
+    input.value = "";
+    render();
+  });
+  root.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-act]"); if (!b) return;
+    const id = b.dataset.id, item = list.find((i) => i.id === id);
+    switch (b.dataset.act) {
+      case "remove": list = list.filter((i) => i.id !== id); done.delete(id); break;
+      case "staple": if (item) item.staple = !item.staple; break;
+      case "tick": done.has(id) ? done.delete(id) : done.add(id); break;
+      case "shop": shopAt = id; break;
+      case "sort": sortBySaving = !sortBySaving; break;
+      case "finish": list = list.filter((i) => i.staple || !done.has(i.id)); done.clear(); break;
+    }
+    render();
+  });
+
+  render();
+</script>
