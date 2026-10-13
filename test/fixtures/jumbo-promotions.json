@@ -1,27 +1,85 @@
 [
   {
-    "_why": "Shape and values from the source research, which verified this query live. The bracketed timezone is a java.time format that Date rejects outright.",
+    "_why": "RECORDED LIVE on 2026-10-13: three of the 359 promotions Jumbo returned, chosen for small product lists. The bracketed timezone is a java.time format that Date rejects outright.",
     "data": {
       "promotions": [
         {
-          "_case": "Running now. Mechanics arrive as human-readable tag text and are stored as written.",
-          "id": "3021014",
-          "title": "Redefine Meat, Oma's of Impossible Meat vleesvervangers",
-          "subtitle": "alle varianten",
+          "_case": "Running now. Mechanics arrive as human-readable tag text and are stored as written -- nothing converts them to a percentage, because a Dutch Offer's effective unit price depends on how many you buy (ADR-0002).",
+          "id": "3021005",
+          "title": "Page vochtig toiletpapier",
+          "subtitle": "Alle verpakkingen \u00e0 38 stuks",
           "startDate": "2026-10-07T00:01:00+02:00[Europe/Amsterdam]",
           "endDate": "2026-10-13T23:59:59+02:00[Europe/Amsterdam]",
-          "tags": [{ "text": "1+1 gratis" }, { "text": "Alleen online" }],
-          "products": [{ "sku": "620416TRA" }, { "sku": "710779STK" }]
+          "tags": [
+            {
+              "text": "1+1 gratis"
+            }
+          ],
+          "products": [
+            {
+              "sku": "507418ZK"
+            },
+            {
+              "sku": "450371ZK"
+            },
+            {
+              "sku": "619653ZK"
+            },
+            {
+              "sku": "450373ZK"
+            },
+            {
+              "sku": "450375ZK"
+            }
+          ]
         },
         {
-          "_case": "Starts next week. Jumbo publishes Offers before they begin, which is what offer-driven meal planning needs.",
-          "id": "3021099",
-          "title": "Heineken pilsener",
+          "_case": "Starts next week and was already visible on the 13th. Jumbo publishing Offers before they begin is the single most useful thing in its feed.",
+          "id": "3021228",
+          "title": "Alle Nalys",
           "subtitle": null,
           "startDate": "2026-10-14T00:01:00+02:00[Europe/Amsterdam]",
           "endDate": "2026-10-20T23:59:59+02:00[Europe/Amsterdam]",
-          "tags": [{ "text": "25% korting" }],
-          "products": [{ "sku": "59938PAK" }]
+          "tags": [
+            {
+              "text": "1+1 gratis"
+            }
+          ],
+          "products": [
+            {
+              "sku": "178467STK"
+            },
+            {
+              "sku": "703858ZK"
+            },
+            {
+              "sku": "772816ZK"
+            },
+            {
+              "sku": "703857ZK"
+            }
+          ]
+        },
+        {
+          "_case": "Several tags on one Offer. They are joined for storage and otherwise untouched.",
+          "id": "3022751",
+          "title": "Broccoli",
+          "subtitle": "Per stuk",
+          "startDate": "2026-10-14T00:01:00+02:00[Europe/Amsterdam]",
+          "endDate": "2026-10-20T23:59:00+02:00[Europe/Amsterdam]",
+          "tags": [
+            {
+              "text": "voor 1,09"
+            },
+            {
+              "text": "Alleen online"
+            }
+          ],
+          "products": [
+            {
+              "sku": "479521STK"
+            }
+          ]
         }
       ]
     }

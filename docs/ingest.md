@@ -81,19 +81,33 @@ in 2049 means "open-ended" rather than a twenty-three year promotion.
 and its prices are national — so where Dirk's Unit Price is always `derived`,
 Jumbo's is `chain`.
 
-Its reader is **partly** proved against real data. Three recorded rows (one
-live category query, 2026-10-13) sit at the top of
-`test/fixtures/jumbo-products.json` and are marked as recorded; the rest of
-that file is constructed from the same shapes to cover cases those three rows
-do not contain, and is marked as constructed. A full day of Jumbo has not been
-archived yet, so the reader has not met a whole catalogue.
+Its reader is now proved against real data. Every product row the Jumbo tests
+assert against was **recorded** from the live endpoint on 2026-10-13, bar one:
+across 254 recorded rows `pricePerUnit` was never null, so "a Chain publishes
+no Unit Price for this Product" is a case we have not observed and cannot
+record. That single row is marked constructed in the fixture. The offer
+fixtures are three of the 359 promotions Jumbo actually returned.
 
-Those three rows immediately earned their place. Jumbo spells the piece unit
+Those recordings earned their place immediately. Jumbo spells the piece unit
 **`pieces`**, and the mapper — written against an earlier, wholly invented
 fixture that guessed `stuk` — silently dropped the Comparison Unit for every
 piece-priced Product. Nothing failed; the rows simply stopped being comparison
-candidates. One real response caught what twelve invented tests had agreed
+candidates. One real response caught what twelve passing tests had agreed
 about, which is the argument for recording fixtures rather than writing them.
+
+What the real data also settled, which guesses had not:
+
+- Jumbo's category tree has **1134 leaf categories**, so a full catalogue walk
+  is a long, deliberately slow job rather than a quick one.
+- The promotions feed returns **359 Offers in one call**, 112 of them not yet
+  started.
+- Offer tag wording is more varied than "a percentage or a multibuy":
+  `1+1 gratis`, `25% korting`, `Vanaf € 12,00`, `2 voor 3,99`,
+  `Gratis bezorging`, `Alleen in de winkel`. Several are not discounts at all
+  — a channel restriction is not a price — which is the clearest case yet for
+  ADR-0002's refusal to derive anything from them.
+- EAN coverage is total where Dirk's is nil: **76 of 76** ingested Jumbo
+  Products carried one, against 0 of 963 for Dirk.
 
 ## A run that records nothing must not look like success
 

@@ -1,93 +1,127 @@
 [
   {
-    "_why": "RECORDED LIVE from www.jumbo.com/api/graphql on 2026-10-13, category 005733, limit 3. These three rows are exactly as Jumbo sent them -- the envelope, the unit spellings and the null eans are the Chain's, not ours.",
+    "_why": "RECORDED LIVE from www.jumbo.com/api/graphql on 2026-10-13 via category search. Every row below is exactly as Jumbo sent it -- envelope, unit spellings, null eans and the duplicate sku are the Chain's, not ours.",
     "data": {
       "searchProducts": {
         "__typename": "ProductSearchResult",
         "products": [
           {
-            "_case": "Piece-priced, and the unit spelling is 'pieces'. The first version of this fixture was invented and guessed 'stuk', which silently dropped the Comparison Unit for every piece-priced Jumbo Product.",
-            "sku": "532148ZK",
-            "title": "Jumbo Dole Bananen 5 Stuks",
-            "ean": null,
+            "_case": "Piece-priced, and the unit spelling is 'pieces'. An earlier wholly-invented fixture guessed 'stuk', which silently dropped the Comparison Unit for every piece-priced Product -- nothing failed, those rows just stopped being comparison candidates.",
+            "sku": "302241PAK",
+            "title": "Jumbo Paprika Mix 3 Stuks",
+            "ean": "8711715882431",
             "price": {
-              "price": 169,
+              "price": 159,
               "promoPrice": null,
-              "pricePerUnit": { "price": 34, "unit": "pieces" }
-            }
+              "pricePerUnit": {
+                "price": 53,
+                "unit": "pieces"
+              }
+            },
+            "promotions": []
           },
           {
-            "_case": "Loose produce: no ean, and the title carries no pack size either.",
+            "_case": "A promo price alongside the Shelf Price, with a kg Unit Price the Chain computed itself. We keep the Chain's figure: it is what they represent to the shopper at the shelf.",
+            "sku": "767568ZK",
+            "title": "Jumbo Opbakaardappelen Spek en Ui 425 g",
+            "ean": "8726900020116",
+            "price": {
+              "price": 259,
+              "promoPrice": 194,
+              "pricePerUnit": {
+                "price": 456,
+                "unit": "kg"
+              }
+            },
+            "promotions": [
+              {
+                "id": "3020881",
+                "tags": [
+                  {
+                    "text": "25% korting"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "_case": "Loose produce: no ean, and no pack size in the title either. The Chain's own Unit Price still makes it comparable.",
             "sku": "526991STK",
             "title": "Jumbo Komkommer",
             "ean": null,
             "price": {
               "price": 75,
               "promoPrice": null,
-              "pricePerUnit": { "price": 75, "unit": "pieces" }
-            }
+              "pricePerUnit": {
+                "price": 75,
+                "unit": "pieces"
+              }
+            },
+            "promotions": []
           },
           {
-            "_case": "Has an ean, and a kg unit price the Chain computed itself.",
-            "sku": "752487NET",
-            "title": "Jumbo Mandarijnen 1 kg",
-            "ean": "8711715881847",
+            "_case": "pricePerUnit.unit is null. Left unmapped rather than guessed, so a per-something price can never be compared against a per-piece one.",
+            "sku": "375023STK",
+            "title": "Jumbo Komkommer en Snacktomaatjes",
+            "ean": "20215279",
             "price": {
-              "price": 219,
+              "price": 404,
               "promoPrice": null,
-              "pricePerUnit": { "price": 219, "unit": "kg" }
-            }
+              "pricePerUnit": {
+                "price": null,
+                "unit": null
+              }
+            },
+            "promotions": []
+          },
+          {
+            "_case": "This sku arrives twice across overlapping categories -- real duplication, not contrived. One observation per Product per run must result, not one per category it sits in.",
+            "sku": "392550ZK",
+            "title": "Jumbo Biologisch Zoete Aardappel 750 g",
+            "ean": "8718452520244",
+            "price": {
+              "price": 289,
+              "promoPrice": null,
+              "pricePerUnit": {
+                "price": 385,
+                "unit": "kg"
+              }
+            },
+            "promotions": []
+          },
+          {
+            "_case": "The second real appearance of the sku above.",
+            "sku": "392550ZK",
+            "title": "Jumbo Biologisch Zoete Aardappel 750 g",
+            "ean": "8718452520244",
+            "price": {
+              "price": 289,
+              "promoPrice": null,
+              "pricePerUnit": {
+                "price": 385,
+                "unit": "kg"
+              }
+            },
+            "promotions": []
           }
         ]
       }
     }
   },
   {
-    "_why": "CONSTRUCTED, not recorded. These exercise cases the three real rows above do not contain. Shapes copied from the real response; only the values are ours.",
+    "_why": "CONSTRUCTED, and the only constructed product row left. In 254 recorded rows, pricePerUnit was never null -- so a Chain that publishes no Unit Price for a Product is a case we have not observed and cannot record. Shape copied from the real rows; values ours.",
     "data": {
       "searchProducts": {
         "products": [
-          {
-            "_case": "A promo price alongside the shelf price, and a chain-computed litre unit price. Values from the source research's live sample.",
-            "sku": "59938PAK",
-            "title": "Heineken Premium Pilsener Bier Draaidop Fles 12 x 250ml",
-            "ean": "8712000030957",
-            "price": {
-              "price": 1399,
-              "promoPrice": 1049,
-              "pricePerUnit": { "price": 350, "unit": "l" }
-            },
-            "promotions": [{ "id": "3020974", "tags": [{ "text": "25% korting" }] }]
-          },
-          {
-            "_case": "Same sku as the row above: Jumbo's categories overlap, so one Product arrives several times per run and must yield one observation, not one per category it sits in.",
-            "sku": "59938PAK",
-            "title": "Heineken Premium Pilsener Bier Draaidop Fles 12 x 250ml",
-            "ean": "8712000030957",
-            "price": {
-              "price": 1399,
-              "promoPrice": 1049,
-              "pricePerUnit": { "price": 350, "unit": "l" }
-            },
-            "promotions": []
-          },
           {
             "_case": "No pricePerUnit at all: no Unit Price is taken from the Chain, and the pack size parsed out of the title is still recorded.",
             "sku": "620416TRA",
             "title": "Jumbo Pindakaas 350 g",
             "ean": "8718265032415",
-            "price": { "price": 189, "promoPrice": null, "pricePerUnit": null },
-            "promotions": []
-          },
-          {
-            "_case": "A unit the mapper does not know: left unmapped rather than guessed, so a per-bundle price can never be compared against a per-piece one.",
-            "sku": "710779STK",
-            "title": "Jumbo Bospeen Bundel",
-            "ean": null,
             "price": {
-              "price": 149,
+              "price": 189,
               "promoPrice": null,
-              "pricePerUnit": { "price": 149, "unit": "bundel" }
+              "pricePerUnit": null
             },
             "promotions": []
           }

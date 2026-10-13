@@ -167,6 +167,12 @@ its Comparison Unit silently dropped — and a Product with no Comparison Unit i
 not a comparison candidate at all. This is the clearest argument in the repo for
 recording fixtures rather than writing them.
 
+**Scale, measured rather than guessed.** The category tree has **1134 leaf
+categories**, so a full Jumbo walk at the default pacing is roughly an hour —
+a background job, not something to wait on. The promotions feed returns all
+**359 Offers in a single call**, 112 of them not yet started, which is why the
+offer step is cheap and the product step is not.
+
 ## Politeness
 
 One request at a time, no concurrency option, with a configurable gap

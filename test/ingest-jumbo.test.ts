@@ -8,15 +8,20 @@ import { writeFixtureArchive, FIXTURE_DATE } from "./helpers/archive.ts";
 
 /**
  * Jumbo is the opposite data-quality case to Dirk: it publishes an EAN and a
- * pre-computed Unit Price, and its prices are national.
+ * pre-computed Unit Price, and its prices are national rather than per-Store.
  *
- * These run against a fixture built to the documented response shape, NOT
- * against a recorded response. Jumbo's edge tarpits an honest client, so no
- * real Jumbo response has ever been archived. The field names are the
- * archiver's verified selection set; the envelope around them is unconfirmed.
- * That limitation is recorded here rather than papered over, because a test
- * that passes against a fixture of our own invention proves less than one
- * recorded from the Chain.
+ * Every product row these tests assert against was RECORDED from
+ * www.jumbo.com/api/graphql on 2026-10-13, bar one — in 254 recorded rows,
+ * `pricePerUnit` was never null, so a Chain publishing no Unit Price for a
+ * Product is a case we have not observed and cannot record. That row is
+ * marked constructed in the fixture.
+ *
+ * This matters more than the usual fixture hygiene. The first version of this
+ * file passed against a wholly invented fixture that guessed `stuk` for the
+ * piece unit. Jumbo actually sends `pieces`, so every piece-priced Product
+ * would have had its Comparison Unit silently dropped — nothing failing, the
+ * rows just quietly ceasing to be comparison candidates. One real response
+ * caught what twelve passing tests had agreed about.
  */
 
 let db: Db;
@@ -43,14 +48,14 @@ test("stores the chain's own unit price rather than deriving one", async () => {
     unit_price_cents: number; comparison_unit: string; unit_price_source: string;
   }>(
     `SELECT unit_price_cents, comparison_unit, unit_price_source
-       FROM price_observation WHERE chain_product_ref = '59938PAK'`,
+       FROM price_observation WHERE chain_product_ref = '767568ZK'`,
   );
-  // 12 x 250ml is 3 l, so our own figure would be 1399/3 = 466 c/l. Jumbo
-  // publishes 350 c/l, and theirs is what they represent at the shelf, so
-  // theirs is what we keep.
+  // Jumbo Opbakaardappelen 425 g at EUR 1.94 would derive to 456 c/kg by
+  // coincidence here, but the point stands: we record THEIR figure and mark
+  // it as theirs, because that is what they represent at the shelf.
   assert.deepEqual(rows[0], {
-    unit_price_cents: 350,
-    comparison_unit: "l",
+    unit_price_cents: 456,
+    comparison_unit: "kg",
     unit_price_source: "chain",
   });
 });
@@ -59,9 +64,9 @@ test("records prices as sent, in integer cents", async () => {
   await ingestJumbo();
   const { rows } = await db.query<{ shelf_price_cents: number; offer_price_cents: number }>(
     `SELECT shelf_price_cents, offer_price_cents
-       FROM price_observation WHERE chain_product_ref = '59938PAK'`,
+       FROM price_observation WHERE chain_product_ref = '767568ZK'`,
   );
-  assert.deepEqual(rows[0], { shelf_price_cents: 1399, offer_price_cents: 1049 });
+  assert.deepEqual(rows[0], { shelf_price_cents: 259, offer_price_cents: 194 });
 });
 
 test("records prices as applying across the chain, with no store", async () => {
@@ -74,32 +79,27 @@ test("records prices as applying across the chain, with no store", async () => {
   assert.deepEqual(rows, [{ store_ref: null }]);
 });
 
+test("maps the piece unit spelling the chain actually sends", async () => {
+  await ingestJumbo();
+  const { rows } = await db.query<{ comparison_unit: string; unit_price_cents: number }>(
+    `SELECT comparison_unit, unit_price_cents
+       FROM price_observation WHERE chain_product_ref = '302241PAK'`,
+  );
+  // Jumbo says "pieces", not "stuk". See the note at the top of this file.
+  assert.deepEqual(rows[0], { comparison_unit: "piece", unit_price_cents: 53 });
+});
+
 test("records the ean, and the absence of one", async () => {
   await ingestJumbo();
   const { rows } = await db.query<{ chain_product_ref: string; ean: string }>(
     "SELECT chain_product_ref, ean FROM product_ean ORDER BY chain_product_ref",
   );
   const byRef = Object.fromEntries(rows.map((r) => [r.chain_product_ref, r.ean]));
-  assert.equal(byRef["752487NET"], "8711715881847");
-  assert.equal(byRef["59938PAK"], "8712000030957");
-  // Loose produce carries no ean. No row is written rather than an empty
-  // string, so "has no EAN" stays distinguishable from "has a blank one".
-  assert.equal("532148ZK" in byRef, false);
+  assert.equal(byRef["302241PAK"], "8711715882431");
+  assert.equal(byRef["767568ZK"], "8726900020116");
+  // Loose produce carries no ean. No row is written rather than a blank one,
+  // so "has no EAN" stays distinguishable from "has an empty one".
   assert.equal("526991STK" in byRef, false);
-  assert.equal("710779STK" in byRef, false);
-});
-
-test("maps the piece unit spelling the chain actually sends", async () => {
-  await ingestJumbo();
-  const { rows } = await db.query<{ comparison_unit: string; unit_price_cents: number }>(
-    `SELECT comparison_unit, unit_price_cents
-       FROM price_observation WHERE chain_product_ref = '532148ZK'`,
-  );
-  // Jumbo says "pieces". An earlier version of the mapper was written against
-  // an invented fixture that guessed "stuk", which silently dropped the
-  // Comparison Unit for every piece-priced Jumbo Product -- and a Product
-  // with no Comparison Unit is not a comparison candidate at all.
-  assert.deepEqual(rows[0], { comparison_unit: "piece", unit_price_cents: 34 });
 });
 
 test("records a product whose title states no pack size", async () => {
@@ -109,22 +109,23 @@ test("records a product whose title states no pack size", async () => {
        FROM product p JOIN price_observation o USING (chain_id, chain_product_ref)
       WHERE p.chain_product_ref = '526991STK'`,
   );
-  // "Jumbo Komkommer" -- loose produce, no quantity anywhere in the title.
+  // "Jumbo Komkommer" — loose produce, no quantity anywhere in the title.
   // The Chain's own Unit Price still makes it comparable, which is the whole
   // reason we prefer their figure to one of ours.
   assert.equal(rows[0]!.pack_quantity, null);
   assert.equal(rows[0]!.comparison_unit, "piece");
 });
 
-test("records one observation per product per run, not one per category", async () => {
-  const result = await ingestJumbo();
-  const { rows } = await db.query<{ n: string }>(
-    "SELECT count(*) AS n FROM price_observation WHERE chain_product_ref = '59938PAK'",
+test("leaves an unstated comparison unit unmapped", async () => {
+  await ingestJumbo();
+  const { rows } = await db.query<{ comparison_unit: string | null; unit_price_cents: number | null }>(
+    `SELECT comparison_unit, unit_price_cents
+       FROM price_observation WHERE chain_product_ref = '375023STK'`,
   );
-  // The fixture returns this sku twice, as overlapping categories do.
-  assert.equal(Number(rows[0]!.n), 1);
-  assert.equal(result.counts.productsSeen, 7);
-  assert.equal(result.counts.productsRecorded, 6);
+  // This row's pricePerUnit.unit is null in the real response. Guessing it
+  // means a piece would let a per-something price be compared against a
+  // per-piece one.
+  assert.equal(rows[0]!.comparison_unit, null);
 });
 
 test("leaves the unit price unset when the chain publishes none", async () => {
@@ -142,28 +143,36 @@ test("leaves the unit price unset when the chain publishes none", async () => {
   assert.equal(rows[0]!.comparison_unit, "kg");
 });
 
-test("leaves an unrecognised comparison unit unmapped", async () => {
-  await ingestJumbo();
-  const { rows } = await db.query<{ comparison_unit: string | null; unit_price_cents: number }>(
-    `SELECT comparison_unit, unit_price_cents
-       FROM price_observation WHERE chain_product_ref = '710779STK'`,
+test("records one observation per product per run, not one per category", async () => {
+  const result = await ingestJumbo();
+  const { rows } = await db.query<{ n: string }>(
+    "SELECT count(*) AS n FROM price_observation WHERE chain_product_ref = '392550ZK'",
   );
-  // The chain said "bundel". Guessing it means a piece would let a
-  // per-bundle price be compared against a per-piece one.
-  assert.equal(rows[0]!.comparison_unit, null);
-  assert.equal(rows[0]!.unit_price_cents, 149);
+  // This sku really does arrive twice in the recorded data, because Jumbo's
+  // categories overlap.
+  assert.equal(Number(rows[0]!.n), 1);
+  assert.equal(result.counts.productsSeen, 7);
+  assert.equal(result.counts.productsRecorded, 6);
 });
 
 test("keeps offer mechanics as the words the chain wrote", async () => {
   await ingestJumbo();
   const { rows } = await db.query<{ wording: string; headline: string }>(
-    "SELECT wording, headline FROM offer_observation WHERE chain_offer_ref = '3021014'",
+    "SELECT wording, headline FROM offer_observation WHERE chain_offer_ref = '3021005'",
   );
-  // Tag text, joined and otherwise untouched. Nothing converts "1+1 gratis"
-  // into a percentage, because the effective unit price of a Dutch Offer
-  // depends on how many you buy (ADR-0002).
-  assert.equal(rows[0]!.wording, "1+1 gratis · Alleen online");
-  assert.equal(rows[0]!.headline, "Redefine Meat, Oma's of Impossible Meat vleesvervangers");
+  assert.equal(rows[0]!.wording, "1+1 gratis");
+  assert.equal(rows[0]!.headline, "Page vochtig toiletpapier");
+});
+
+test("joins several tags without interpreting any of them", async () => {
+  await ingestJumbo();
+  const { rows } = await db.query<{ wording: string }>(
+    "SELECT wording FROM offer_observation WHERE chain_offer_ref = '3022751'",
+  );
+  // "voor 1,09" is a price, "Alleen online" is a channel restriction. Neither
+  // is a discount percentage, and a parser that tried to make one would be
+  // wrong about both.
+  assert.equal(rows[0]!.wording, "voor 1,09 · Alleen online");
 });
 
 test("parses the bracketed timezone and flags next week's offer", async () => {
@@ -172,8 +181,8 @@ test("parses the bracketed timezone and flags next week's offer", async () => {
     chain_offer_ref: string; is_upcoming: boolean; starts_at: Date; ends_at: Date;
   }>("SELECT chain_offer_ref, is_upcoming, starts_at, ends_at FROM offer_observation ORDER BY chain_offer_ref");
 
-  const running = rows.find((r) => r.chain_offer_ref === "3021014")!;
-  const next = rows.find((r) => r.chain_offer_ref === "3021099")!;
+  const running = rows.find((r) => r.chain_offer_ref === "3021005")!;
+  const next = rows.find((r) => r.chain_offer_ref === "3021228")!;
   assert.equal(running.is_upcoming, false);
   assert.equal(running.starts_at.toISOString(), "2026-10-06T22:01:00.000Z");
   // Visible before it begins, which is what offer-driven meal planning needs.
@@ -187,7 +196,7 @@ test("links offers to the skus they apply to", async () => {
   const { rows } = await db.query<{ chain_product_ref: string }>(
     `SELECT op.chain_product_ref FROM offer_product op
        JOIN offer_observation o ON o.id = op.offer_observation_id
-      WHERE o.chain_offer_ref = '3021014' ORDER BY 1`,
+      WHERE o.chain_offer_ref = '3022751' ORDER BY 1`,
   );
-  assert.deepEqual(rows.map((r) => r.chain_product_ref), ["620416TRA", "710779STK"]);
+  assert.deepEqual(rows.map((r) => r.chain_product_ref), ["479521STK"]);
 });
