@@ -80,10 +80,40 @@ test("records the ean, and the absence of one", async () => {
     "SELECT chain_product_ref, ean FROM product_ean ORDER BY chain_product_ref",
   );
   const byRef = Object.fromEntries(rows.map((r) => [r.chain_product_ref, r.ean]));
+  assert.equal(byRef["752487NET"], "8711715881847");
   assert.equal(byRef["59938PAK"], "8712000030957");
-  assert.equal(byRef["498518PAK"], "8717228611711");
-  // This one's ean was null; no row is written rather than an empty string.
+  // Loose produce carries no ean. No row is written rather than an empty
+  // string, so "has no EAN" stays distinguishable from "has a blank one".
+  assert.equal("532148ZK" in byRef, false);
+  assert.equal("526991STK" in byRef, false);
   assert.equal("710779STK" in byRef, false);
+});
+
+test("maps the piece unit spelling the chain actually sends", async () => {
+  await ingestJumbo();
+  const { rows } = await db.query<{ comparison_unit: string; unit_price_cents: number }>(
+    `SELECT comparison_unit, unit_price_cents
+       FROM price_observation WHERE chain_product_ref = '532148ZK'`,
+  );
+  // Jumbo says "pieces". An earlier version of the mapper was written against
+  // an invented fixture that guessed "stuk", which silently dropped the
+  // Comparison Unit for every piece-priced Jumbo Product -- and a Product
+  // with no Comparison Unit is not a comparison candidate at all.
+  assert.deepEqual(rows[0], { comparison_unit: "piece", unit_price_cents: 34 });
+});
+
+test("records a product whose title states no pack size", async () => {
+  await ingestJumbo();
+  const { rows } = await db.query<{ pack_quantity: string | null; comparison_unit: string }>(
+    `SELECT p.pack_quantity, o.comparison_unit
+       FROM product p JOIN price_observation o USING (chain_id, chain_product_ref)
+      WHERE p.chain_product_ref = '526991STK'`,
+  );
+  // "Jumbo Komkommer" -- loose produce, no quantity anywhere in the title.
+  // The Chain's own Unit Price still makes it comparable, which is the whole
+  // reason we prefer their figure to one of ours.
+  assert.equal(rows[0]!.pack_quantity, null);
+  assert.equal(rows[0]!.comparison_unit, "piece");
 });
 
 test("records one observation per product per run, not one per category", async () => {
@@ -93,8 +123,8 @@ test("records one observation per product per run, not one per category", async 
   );
   // The fixture returns this sku twice, as overlapping categories do.
   assert.equal(Number(rows[0]!.n), 1);
-  assert.equal(result.counts.productsSeen, 5);
-  assert.equal(result.counts.productsRecorded, 4);
+  assert.equal(result.counts.productsSeen, 7);
+  assert.equal(result.counts.productsRecorded, 6);
 });
 
 test("leaves the unit price unset when the chain publishes none", async () => {

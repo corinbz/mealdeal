@@ -48,13 +48,22 @@ interface JumboPromotion {
 const text = (value: unknown): string | null =>
   typeof value === "string" && value.trim() ? value.trim() : null;
 
-/** Jumbo states the unit as a bare word. Anything else is left unmapped. */
+/**
+ * Jumbo states the unit as a bare word. Anything else is left unmapped.
+ *
+ * `pieces` and `kg` are the spellings observed in live responses. `pieces` in
+ * particular was missing from the first version of this list, which was
+ * written against a fixture of our own invention that guessed `stuk` -- so
+ * every piece-priced Jumbo Product would have had its Comparison Unit
+ * silently dropped. The other spellings here are still guesses and will stay
+ * guesses until a real response uses one.
+ */
 function comparisonUnit(unit: unknown): ComparisonUnit | null {
   const key = text(unit)?.toLowerCase();
   if (!key) return null;
   if (["kg", "kilo", "kilogram"].includes(key)) return "kg";
   if (["l", "liter", "litre", "ltr"].includes(key)) return "l";
-  if (["stuk", "stuks", "piece", "st"].includes(key)) return "piece";
+  if (["pieces", "piece", "stuk", "stuks", "st"].includes(key)) return "piece";
   return null;
 }
 

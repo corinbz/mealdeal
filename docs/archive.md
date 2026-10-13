@@ -107,10 +107,7 @@ Two characteristics of Dirk's data worth knowing before writing a parser:
   30 carried 16 and store 1 carried only 4. Store 66 is the default because it
   had the best hit rate of those sampled.
 
-### Jumbo — blocked on a decision only you can make
-
-The archiver supports Jumbo, but **it will not work as shipped**, and the
-reason is deliberate.
+### Jumbo — queries verified, and it needs an explicit agent string
 
 Verified on 2026-10-13, from one machine, same IP, same other headers, same
 minute: a **browser** user agent was answered HTTP 200; our **honest** one was
@@ -122,11 +119,16 @@ So archiving Jumbo means choosing to send a user agent that misrepresents what
 we are. That carries weight beyond the technical: Jumbo's terms (Article 9(3))
 prohibit automated collection in Database Directive language, and presenting
 as a browser *after* being refused as a robot is a fact that reads badly if
-this is ever argued. It is therefore not the default, and not hidden inside a
-header constant. To make that choice, type it out:
+this is ever argued.
+
+**Decision, 2026-10-13:** the project owner, having been shown the above, chose
+to send a browser agent so real Jumbo data can be collected. The honest string
+stays the **default**, and the browser one is passed per invocation — so the
+choice is made explicitly each time rather than silently inherited by whoever
+runs this next:
 
 ```sh
-npm run archive -- --chain jumbo --user-agent "Mozilla/5.0 (...)"
+npm run archive -- --chain jumbo --user-agent "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
 ```
 
 Three further Jumbo findings that contradict the research:
@@ -144,14 +146,26 @@ Three further Jumbo findings that contradict the research:
    "unauthenticated, unthrottled" surface the research described, so the
    pacing below is not optional politeness.
 
-Consequence: **Jumbo's product-listing query is unverified.** The edge cut
-probing short before it could be confirmed. `searchProducts` exists and
-`searchType` is a required enum field, but the enum's legal values and the
-field wrapping the product list are unknown. The query is marked UNVERIFIED in
-`src/archive/chains/jumbo.ts`, and a failing step archives the GraphQL
-validation error rather than discarding it — so the first successful run names
-the exact problem in its manifest. Jumbo's `categories` and `promotions` steps
-are fine.
+**All three Jumbo steps are now verified live.** The product query was pinned
+once an edge-accepted agent string was in use:
+
+- `searchProducts(input: ProductSearchInput!)` returns
+  `ProductSearchResult { products { … } }`.
+- `searchType` is enum `SearchTypeInput`; `category`, `CATEGORY`, `keyword` and
+  `KEYWORD` are all valid. `total` is **not** a field of `ProductSearchResult`.
+- `searchTerms` is read whatever the search type is — absent it, the service
+  throws on `getSearchTerms()` — so for a category search it carries the
+  **category id**, not a phrase.
+- We traverse by category, because `searchType: "keyword"` forwards the phrase
+  to Jumbo's Bloomreach search backend, which is exactly what their
+  `robots.txt` internal-search directives ask us not to drive.
+
+One thing the live data corrected that a fixture could not: Jumbo spells the
+piece unit **`pieces`**. The ingest reader had been written against an invented
+fixture that guessed `stuk`, so every piece-priced Jumbo Product would have had
+its Comparison Unit silently dropped — and a Product with no Comparison Unit is
+not a comparison candidate at all. This is the clearest argument in the repo for
+recording fixtures rather than writing them.
 
 ## Politeness
 

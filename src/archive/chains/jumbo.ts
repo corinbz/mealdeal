@@ -20,8 +20,9 @@ import { createRecorder } from "./types.ts";
  *      "unauthenticated, unthrottled" surface the research described, and the
  *      pacing in `http.ts` is not optional politeness here.
  *
- * Because of (3) the product-listing query below could not be verified. The
- * category and promotion steps were. See PRODUCTS for what remains unknown.
+ * All three steps below are verified live as of 2026-10-13. The product query
+ * was pinned once an edge-accepted agent string was in use; see PRODUCTS and
+ * the HEADERS note on why that agent string is a decision and not a default.
  */
 
 const ENDPOINT = "https://www.jumbo.com/api/graphql";
@@ -43,11 +44,15 @@ const ENDPOINT = "https://www.jumbo.com/api/graphql";
  * what we are. That is a real decision with legal weight: Jumbo's terms
  * (Article 9(3)) prohibit automated collection in Database Directive
  * language, and presenting as a browser after being refused as a robot is the
- * kind of fact that reads badly if this is ever argued. It is deliberately
- * NOT the default here, and it is deliberately not hidden inside a header
- * constant -- pass `--user-agent` to override it, and own the choice.
+ * kind of fact that reads badly if this is ever argued.
  *
- * Dirk needs none of this, which is why Dirk is the chain to archive today.
+ * DECISION, 2026-10-13: the project owner, having been shown the above, chose
+ * to send a browser agent string so that real Jumbo data can be collected.
+ * The mechanism is `--user-agent`, and the honest string below stays the
+ * default, so the choice is made explicitly at each invocation rather than
+ * silently inherited by anyone who later runs this code. See docs/archive.md.
+ *
+ * Dirk needs none of this: it answers an honest, attributable agent normally.
  */
 const HEADERS = {
   "apollographql-client-name": "JUMBO_WEB-cms",
@@ -93,28 +98,27 @@ const PROMOTIONS = `query Promotions {
 }`;
 
 /**
- * UNVERIFIED. The edge denied further probing before this could be confirmed,
- * so treat a failure of this step as expected rather than alarming, and read
- * the archived response to fix it -- the GraphQL validation error names the
- * exact problem, and the run records it rather than discarding it.
+ * VERIFIED LIVE 2026-10-13.
  *
- * What is known:
- *   - `searchProducts(input: ProductSearchInput!)` exists, and `searchType` is
- *     a required field of enum type `SearchTypeInput!` (a bogus value is
- *     rejected as "does not exist in SearchTypeInput enum").
- *   - `searchTerms`, `offSet` and `limit` are the other input fields the
- *     research used; `total` is NOT a field of `ProductSearchResult`.
- *   - The per-Product selection below is the research's verified one.
+ * `searchProducts(input: ProductSearchInput!)` returns
+ * `ProductSearchResult { products { ... } }`. The input takes `searchType`
+ * (enum `SearchTypeInput`, valid values observed: `category`, `CATEGORY`,
+ * `keyword`, `KEYWORD`), plus `searchTerms`, `offSet` and `limit`. `total` is
+ * NOT a field of `ProductSearchResult`.
  *
- * What is not known: the enum's legal values, whether a category-scoped search
- * type exists, and the field that wraps the product list. The enum is passed
- * as a variable rather than inlined, because a JSON string coerces to a
- * GraphQL enum through variables -- so no quoting guesswork is needed here.
+ * `searchTerms` is read whatever the search type is -- absent it the service
+ * throws on `getSearchTerms()` -- so for a category search it carries the
+ * category id rather than a phrase.
  *
  * Category traversal is preferred to keyword search on purpose: Jumbo's
  * robots.txt permits product-listing pagination (`Allow: /producten/*?offSet=`)
- * and disallows the internal-search URL patterns. If only keyword search turns
- * out to work, that is worth a deliberate decision rather than a default.
+ * and disallows the internal-search URL patterns. `searchType: "keyword"` is
+ * the one that forwards a phrase to their Bloomreach search backend, which is
+ * exactly what those directives ask us not to drive.
+ *
+ * The enum value arrives through a variable rather than inlined, because a
+ * JSON string coerces to a GraphQL enum that way, so no quoting guesswork is
+ * needed here.
  */
 const PRODUCTS = `query Products($input: ProductSearchInput!) {
   searchProducts(input: $input) {
@@ -128,7 +132,7 @@ const PRODUCTS = `query Products($input: ProductSearchInput!) {
   }
 }`;
 
-const SEARCH_TYPE = "keyword";
+const SEARCH_TYPE = "category";
 const PAGE_SIZE = 30;
 /** Stop paging a category after this many pages, as a runaway guard. */
 const MAX_PAGES = 40;
@@ -221,7 +225,8 @@ export const jumbo: Chain = {
         const result = (await recorder.request(step, PRODUCTS, {
           input: {
             searchType: SEARCH_TYPE,
-            searchTerms: category.name,
+            // The category id, not its name: see PRODUCTS above.
+            searchTerms: category.id,
             offSet,
             limit: PAGE_SIZE,
           },

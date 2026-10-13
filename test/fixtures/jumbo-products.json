@@ -1,11 +1,54 @@
 [
   {
-    "_why": "Jumbo's edge tarpits an honest client, so no real Jumbo response was ever archived. Field names are the archiver's verified selection set; the envelope around them is the part the edge refused to confirm. Marked UNVERIFIED in src/archive/chains/jumbo.ts.",
+    "_why": "RECORDED LIVE from www.jumbo.com/api/graphql on 2026-10-13, category 005733, limit 3. These three rows are exactly as Jumbo sent them -- the envelope, the unit spellings and the null eans are the Chain's, not ours.",
+    "data": {
+      "searchProducts": {
+        "__typename": "ProductSearchResult",
+        "products": [
+          {
+            "_case": "Piece-priced, and the unit spelling is 'pieces'. The first version of this fixture was invented and guessed 'stuk', which silently dropped the Comparison Unit for every piece-priced Jumbo Product.",
+            "sku": "532148ZK",
+            "title": "Jumbo Dole Bananen 5 Stuks",
+            "ean": null,
+            "price": {
+              "price": 169,
+              "promoPrice": null,
+              "pricePerUnit": { "price": 34, "unit": "pieces" }
+            }
+          },
+          {
+            "_case": "Loose produce: no ean, and the title carries no pack size either.",
+            "sku": "526991STK",
+            "title": "Jumbo Komkommer",
+            "ean": null,
+            "price": {
+              "price": 75,
+              "promoPrice": null,
+              "pricePerUnit": { "price": 75, "unit": "pieces" }
+            }
+          },
+          {
+            "_case": "Has an ean, and a kg unit price the Chain computed itself.",
+            "sku": "752487NET",
+            "title": "Jumbo Mandarijnen 1 kg",
+            "ean": "8711715881847",
+            "price": {
+              "price": 219,
+              "promoPrice": null,
+              "pricePerUnit": { "price": 219, "unit": "kg" }
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "_why": "CONSTRUCTED, not recorded. These exercise cases the three real rows above do not contain. Shapes copied from the real response; only the values are ours.",
     "data": {
       "searchProducts": {
         "products": [
           {
-            "_case": "Pre-computed Unit Price: the Chain's own figure is stored rather than ours, because that is what it represents to the shopper at the shelf. Prices are integer cents.",
+            "_case": "A promo price alongside the shelf price, and a chain-computed litre unit price. Values from the source research's live sample.",
             "sku": "59938PAK",
             "title": "Heineken Premium Pilsener Bier Draaidop Fles 12 x 250ml",
             "ean": "8712000030957",
@@ -17,19 +60,7 @@
             "promotions": [{ "id": "3020974", "tags": [{ "text": "25% korting" }] }]
           },
           {
-            "_case": "No promo price, unit in kg.",
-            "sku": "498518PAK",
-            "title": "Jumbo Verse Halfvolle Melk 1 L",
-            "ean": "8717228611711",
-            "price": {
-              "price": 129,
-              "promoPrice": null,
-              "pricePerUnit": { "price": 129, "unit": "l" }
-            },
-            "promotions": []
-          },
-          {
-            "_case": "Same sku as the first row: Jumbo's categories overlap, so one Product arrives several times per run and must yield one observation, not one per category.",
+            "_case": "Same sku as the row above: Jumbo's categories overlap, so one Product arrives several times per run and must yield one observation, not one per category it sits in.",
             "sku": "59938PAK",
             "title": "Heineken Premium Pilsener Bier Draaidop Fles 12 x 250ml",
             "ean": "8712000030957",
@@ -41,7 +72,7 @@
             "promotions": []
           },
           {
-            "_case": "No pricePerUnit at all: no Unit Price is recorded from the Chain, and the title still yields a pack size.",
+            "_case": "No pricePerUnit at all: no Unit Price is taken from the Chain, and the pack size parsed out of the title is still recorded.",
             "sku": "620416TRA",
             "title": "Jumbo Pindakaas 350 g",
             "ean": "8718265032415",
@@ -49,7 +80,7 @@
             "promotions": []
           },
           {
-            "_case": "Unit the mapper does not know: left unmapped rather than guessed.",
+            "_case": "A unit the mapper does not know: left unmapped rather than guessed, so a per-bundle price can never be compared against a per-piece one.",
             "sku": "710779STK",
             "title": "Jumbo Bospeen Bundel",
             "ean": null,

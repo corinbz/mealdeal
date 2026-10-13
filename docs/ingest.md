@@ -78,14 +78,22 @@ store: an offer price of `0` means "no Offer" rather than free, and an end date
 in 2049 means "open-ended" rather than a twenty-three year promotion.
 
 **Jumbo** is the opposite: it publishes an EAN and a pre-computed Unit Price,
-and its prices are national. **Its reader is NOT proved against real data.**
-Jumbo's edge tarpits an honest client (see `docs/archive.md`), so no Jumbo
-response has ever been archived. The field names are the archiver's verified
-selection set; the response envelope around them is the part the edge refused
-to confirm, and the fixture is built to the documented shape rather than
-recorded from the Chain. A test passing against a fixture of our own invention
-proves less than one recorded live, and that limit is stated in the test file
-rather than papered over.
+and its prices are national — so where Dirk's Unit Price is always `derived`,
+Jumbo's is `chain`.
+
+Its reader is **partly** proved against real data. Three recorded rows (one
+live category query, 2026-10-13) sit at the top of
+`test/fixtures/jumbo-products.json` and are marked as recorded; the rest of
+that file is constructed from the same shapes to cover cases those three rows
+do not contain, and is marked as constructed. A full day of Jumbo has not been
+archived yet, so the reader has not met a whole catalogue.
+
+Those three rows immediately earned their place. Jumbo spells the piece unit
+**`pieces`**, and the mapper — written against an earlier, wholly invented
+fixture that guessed `stuk` — silently dropped the Comparison Unit for every
+piece-priced Product. Nothing failed; the rows simply stopped being comparison
+candidates. One real response caught what twelve invented tests had agreed
+about, which is the argument for recording fixtures rather than writing them.
 
 ## A run that records nothing must not look like success
 
