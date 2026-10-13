@@ -8,7 +8,7 @@ the reason it reads the archive rather than the Chains is ADR-0005.
 npm run db:up          # local Postgres in Docker, on :5433
 npm run db:migrate
 npm run ingest -- --chain dirk --date 2026-10-13
-npm test
+npm test               # runs against mealdeal_test, never the working data
 ```
 
 ## It reads the archive, not the Chains
@@ -157,8 +157,16 @@ to testing at the top seam, because it is a pure function over a large awkward
 input space and enumerating that through full runs would be clumsy for no
 benefit. The end-to-end tests still cover it in context.
 
-Test files share one database and each truncates, so they must not interleave:
-the suite runs with `--test-concurrency=1`.
+Tests run in a database of their own — `mealdeal_test`, created on demand,
+derived from the working connection string or set explicitly with
+`TEST_DATABASE_URL`. This is not tidiness: every test file truncates in
+`beforeEach`, and while the two shared one database, running `npm test`
+silently destroyed 18,067 ingested Products. A guard refuses to start if the
+two ever resolve to the same database, because that failure is invisible
+otherwise.
+
+Test files still share that one test database and each truncates it, so they
+must not interleave: the suite runs with `--test-concurrency=1`.
 
 ## Not built here
 
