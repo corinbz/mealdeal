@@ -1,0 +1,7 @@
+node_modules/
+
+# Archived chain responses: large, growing daily, and belonging in object
+# storage rather than git -- see docs/archive.md.
+# Anchored to the repo root on purpose: an unanchored `archive/` would also
+# match `src/archive/`, which is the archiver's source code.
+/archive/

@@ -1,0 +1,18 @@
+{
+  "name": "mealdeal",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Grocery price aggregation and comparison across Dutch supermarket chains",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "archive": "node src/archive/cli.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.9.0"
+  }
+}

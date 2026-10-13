@@ -2,6 +2,13 @@
 
 Grocery price aggregation and comparison across Dutch supermarket chains.
 
+## Raw response archive
+
+A daily job records exactly what each Chain's public endpoint said, parsing
+nothing. It exists ahead of the ingest pipeline because price history cannot
+be backfilled. `npm run archive -- --chain dirk`. Dirk works; Jumbo is blocked
+on a user-agent decision. See `docs/archive.md`.
+
 ## Agent skills
 
 ### Issue tracker
