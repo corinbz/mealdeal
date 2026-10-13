@@ -16,12 +16,14 @@ import type { ChainReader, ChainReading, OfferReading, PriceReading } from "./ty
  * what the Chain legally represents to the consumer at the shelf -- ours would
  * be a second opinion on a number they already published.
  *
- * NOT YET EXERCISED ON REAL DATA. Jumbo's edge tarpits an honest client, so
- * the archive holds no Jumbo product responses and this reader is proved only
- * against a fixture built to the documented response shape. The field names
- * come from the archiver's verified selection set; the response envelope
- * around them (`searchProducts { products { ... } }`) is the part the edge
- * refused to confirm. See docs/archive.md.
+ * Exercised on the real catalogue: 17,104 Products from a full 1134-category
+ * walk on 2026-10-13, of which 17,072 carried an EAN and 16,938 a Unit Price
+ * Jumbo computed itself. Dirk, by contrast, published neither for any of its
+ * 963 — which is why the two were built together.
+ *
+ * Reaching the endpoint at all requires an agent string Jumbo accepts; the
+ * honest one is tarpitted. That is a decision recorded in
+ * `src/archive/chains/jumbo.ts` and `docs/archive.md`, not a default.
  */
 
 interface JumboProduct {
@@ -76,7 +78,7 @@ export const jumboReader: ChainReader = {
     const parseFailures: string[] = [];
     const seenRefs = new Set<string>();
     let productsSeen = 0;
-    let unparsedPackSizes = 0;
+    let withoutUnitPrice = 0;
 
     for await (const record of readStep(archiveRoot, date, "jumbo", "products")) {
       const data = payloadOf(record);
@@ -93,8 +95,17 @@ export const jumboReader: ChainReader = {
         const ref = text(row.sku);
         const name = text(row.title);
         const shelf = centsFrom(row.price?.price);
-        if (!ref || !name || shelf === null || shelf <= 0) {
-          parseFailures.push(`jumbo product ${ref ?? "?"}: missing title or price`);
+        if (!ref || !name) {
+          parseFailures.push(`jumbo product ${ref ?? "?"}: no sku or title`);
+          continue;
+        }
+        // Jumbo lists some Products at a price of 0 with a null pricePerUnit
+        // -- pet food and cosmetics, in the observed data. Zero is not a
+        // price, so there is nothing to record, but this is the Chain's own
+        // catalogue state rather than a parsing problem, and saying so keeps
+        // the count meaningful.
+        if (shelf === null || shelf <= 0) {
+          parseFailures.push(`jumbo product ${ref}: listed with no price (${shelf ?? "null"})`);
           continue;
         }
         // Categories overlap, so the same sku arrives more than once per run.
@@ -108,7 +119,10 @@ export const jumboReader: ChainReader = {
         // archive, so the pack wording available to us is the title itself.
         // Kept verbatim rather than re-written into a tidier form.
         const pack = parsePackSize(name);
-        if (!pack && !chainUnit) unparsedPackSizes++;
+        // Jumbo's own figure or nothing: we do not derive a second opinion on
+        // a number the Chain already publishes, so a null pricePerUnit means
+        // this Product has no Unit Price however readable its pack size is.
+        if (chainUnitCents === null) withoutUnitPrice++;
 
         const ean = text(row.ean);
         prices.push({
@@ -175,6 +189,6 @@ export const jumboReader: ChainReader = {
       }
     }
 
-    return { prices, offers, productsSeen, unparsedPackSizes, parseFailures };
+    return { prices, offers, productsSeen, withoutUnitPrice, parseFailures };
   },
 };

@@ -6,7 +6,7 @@ export interface RunCounts {
   productsRecorded: number;
   pricesRecorded: number;
   offersRecorded: number;
-  unparsedPackSizes: number;
+  withoutUnitPrice: number;
   parseFailures: number;
 }
 
@@ -63,7 +63,7 @@ export async function record(
     productsRecorded: distinctProducts.size,
     pricesRecorded: reading.prices.length,
     offersRecorded: reading.offers.length,
-    unparsedPackSizes: reading.unparsedPackSizes,
+    withoutUnitPrice: reading.withoutUnitPrice,
     parseFailures: reading.parseFailures.length,
   };
 
@@ -81,12 +81,12 @@ export async function record(
       `INSERT INTO ingest_run
          (chain_id, archive_date, finished_at, outcome, products_seen,
           products_recorded, prices_recorded, offers_recorded,
-          unparsed_pack_size, parse_failures, notes)
+          without_unit_price, parse_failures, notes)
        VALUES ($1, $2, now(), 'rejected', $3, $4, $5, $6, $7, $8, $9)
        RETURNING id`,
       [
         chainId, archiveDate, counts.productsSeen, counts.productsRecorded,
-        counts.pricesRecorded, counts.offersRecorded, counts.unparsedPackSizes,
+        counts.pricesRecorded, counts.offersRecorded, counts.withoutUnitPrice,
         counts.parseFailures, notes,
       ],
     );
@@ -180,11 +180,11 @@ export async function record(
       `UPDATE ingest_run SET
          finished_at = now(), outcome = 'complete', products_seen = $2,
          products_recorded = $3, prices_recorded = $4, offers_recorded = $5,
-         unparsed_pack_size = $6, parse_failures = $7, notes = $8
+         without_unit_price = $6, parse_failures = $7, notes = $8
        WHERE id = $1`,
       [
         runId, counts.productsSeen, counts.productsRecorded, counts.pricesRecorded,
-        counts.offersRecorded, counts.unparsedPackSizes, counts.parseFailures, notes,
+        counts.offersRecorded, counts.withoutUnitPrice, counts.parseFailures, notes,
       ],
     );
 

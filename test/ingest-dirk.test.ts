@@ -124,7 +124,7 @@ test("keeps a product whose pack size cannot be parsed, and counts it", async ()
   assert.equal(rows[0]!.pack_quantity, null);
   assert.equal(rows[0]!.unit_price_cents, null);
   assert.equal(rows[0]!.shelf_price_cents, 349);
-  assert.ok(result.counts.unparsedPackSizes >= 1, "the gap is measured, not hidden");
+  assert.ok(result.counts.withoutUnitPrice >= 1, "the gap is measured, not hidden");
 });
 
 test("records weight-priced products as such", async () => {

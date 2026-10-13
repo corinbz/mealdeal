@@ -66,7 +66,7 @@ export const dirkReader: ChainReader = {
     // structure, not two observations.
     const seen = new Set<string>();
     let productsSeen = 0;
-    let unparsedPackSizes = 0;
+    let withoutUnitPrice = 0;
 
     for await (const record of readStep(archiveRoot, date, "dirk", "products")) {
       const data = payloadOf(record);
@@ -104,7 +104,7 @@ export const dirkReader: ChainReader = {
         // "Snoeptomaatjes 500 gram" packaged as "Per schaal" -- and ignoring
         // that discards a comparable Product for no reason.
         const pack = parsePackSize(packText) ?? parsePackSize(name);
-        if (!pack) unparsedPackSizes++;
+        if (!pack) withoutUnitPrice++;
 
         const offerCents = rawOffer !== null && rawOffer > 0 ? rawOffer : null;
         const effective = offerCents ?? shelf;
@@ -169,6 +169,6 @@ export const dirkReader: ChainReader = {
       }
     }
 
-    return { prices, offers, productsSeen, unparsedPackSizes, parseFailures };
+    return { prices, offers, productsSeen, withoutUnitPrice, parseFailures };
   },
 };

@@ -87,7 +87,7 @@ try {
     // A Product with no derivable Unit Price is not a comparison candidate.
     // It is kept, and counted, so the gap is a known number.
     console.log(
-      `  ${c.unparsedPackSizes} without a derivable unit price · ` +
+      `  ${c.withoutUnitPrice} without a unit price · ` +
         `${c.parseFailures} parse failures`,
     );
     if (result.notes) console.log(`  ${result.notes}`);

@@ -39,8 +39,16 @@ export interface ChainReading {
   readonly offers: OfferReading[];
   /** Products the Chain mentioned, including those we could not record. */
   readonly productsSeen: number;
-  /** Products whose pack wording yielded no Unit Price. Measured, not hidden. */
-  readonly unparsedPackSizes: number;
+  /**
+    * Observations recorded with no Unit Price, and therefore not comparison
+    * candidates. Measured, not hidden.
+    *
+    * Deliberately counts the outcome rather than one cause of it. Dirk reaches
+    * it by unparseable pack wording; Jumbo reaches it by publishing no Unit
+    * Price for a Product, since we never derive one for a Chain that computes
+    * its own. Counting only pack-parsing failures undercounted Jumbo by 39.
+    */
+  readonly withoutUnitPrice: number;
   readonly parseFailures: string[];
 }
 

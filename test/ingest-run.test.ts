@@ -174,7 +174,7 @@ test("stores several eans for one product", async () => {
     ],
     offers: [],
     productsSeen: 1,
-    unparsedPackSizes: 0,
+    withoutUnitPrice: 0,
     parseFailures: [],
   };
   await record(db, "dirk", FIXTURE_DATE, reading);
@@ -189,7 +189,7 @@ test("reports the counts a run needs to be trusted", async () => {
   const result = await ingest(FULL);
   const { rows } = await db.query<{
     products_seen: number; products_recorded: number; prices_recorded: number;
-    offers_recorded: number; unparsed_pack_size: number; outcome: string;
+    offers_recorded: number; without_unit_price: number; outcome: string;
   }>("SELECT * FROM ingest_run WHERE id = $1", [result.runId]);
 
   const run = rows[0]!;
@@ -198,6 +198,6 @@ test("reports the counts a run needs to be trusted", async () => {
   assert.equal(Number(run.prices_recorded), result.counts.pricesRecorded);
   assert.equal(Number(run.offers_recorded), 2);
   // One fixture product states no quantity anywhere.
-  assert.equal(Number(run.unparsed_pack_size), 1);
+  assert.equal(Number(run.without_unit_price), 1);
   assert.ok(Number(run.products_seen) > Number(run.products_recorded));
 });

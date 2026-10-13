@@ -60,9 +60,10 @@ CREATE TABLE IF NOT EXISTS ingest_run (
   products_recorded  integer NOT NULL DEFAULT 0,
   prices_recorded    integer NOT NULL DEFAULT 0,
   offers_recorded    integer NOT NULL DEFAULT 0,
-  -- Counted, not just logged: a Product whose pack size we could not parse is
-  -- a known, measurable gap rather than an unknown one.
-  unparsed_pack_size integer NOT NULL DEFAULT 0,
+  -- Observations with no Unit Price, and so not comparison candidates.
+  -- Counts the outcome rather than one cause: Dirk gets here through
+  -- unparseable pack wording, Jumbo through publishing no Unit Price itself.
+  without_unit_price integer NOT NULL DEFAULT 0,
   parse_failures     integer NOT NULL DEFAULT 0,
   notes              text
 );
