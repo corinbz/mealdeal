@@ -9,7 +9,8 @@
   },
   "scripts": {
     "archive": "node src/archive/cli.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "archive:check": "node src/archive/check.ts"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

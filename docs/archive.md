@@ -161,16 +161,51 @@ is never retried** — the run aborts and keeps what it already wrote, because
 repeating a request that was just refused is how a transient block becomes a
 durable one.
 
-## Where this should run
+## Where it runs
 
-Right now it runs wherever you run it, writing to a local directory. That is
-fine for today and not fine as a daily job, because a laptop that is closed
-does not archive anything, and the whole point is not missing days.
+`.github/workflows/archive.yml` runs it daily at 04:30 UTC — 06:30 in
+Amsterdam in summer, 05:30 in winter, both after Dirk's own ~04:01 local
+refresh. GitHub Actions cron is UTC only, so that drifts with the seasons by
+design. The archive is uploaded to a private Cloudflare R2 bucket; R2 is
+S3-compatible, so the AWS CLI already on the runner can talk to it.
 
-The next decision is hosting. The managed option, in keeping with the rest of
-the project: a **GitHub Actions scheduled workflow** (cron, no servers to
-operate) writing to **Cloudflare R2 or Backblaze B2** (S3-compatible object
-storage, both cheap at this volume). Do **not** commit the archive to git —
-`.gitignore` excludes `archive/` for that reason. At ~40 KB/day per Chain
-compressed, a year of both Chains is on the order of tens of megabytes, so
-cost is not a constraint; durability and running unattended are.
+Nothing about the schedule needs a server to operate, which is the point. At
+~40 KB/day per Chain compressed, a year of both Chains is tens of megabytes —
+cost is not the constraint, running unattended is.
+
+### One-time setup
+
+```sh
+./scripts/setup-r2-archive.sh
+```
+
+A seven-stage wizard that opens each Cloudflare page, says what to click,
+captures the four values, writes them to `.env` **and** to the repository
+secrets, verifies each one landed, and offers to trigger a small test run. It
+is re-runnable: on a second pass, Enter keeps the value already saved.
+
+The secrets it sets, all four read by the workflow: `R2_ACCOUNT_ID`,
+`R2_BUCKET`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`. The API token wants
+**Object Read & Write**, not Admin — the workflow only reads and writes
+objects, and never needs to create or delete a bucket.
+
+### How the scheduled run behaves
+
+- **It will not start if the credentials are absent.** Archiving a day and
+  then failing to upload it is worse than not running: it looks like success,
+  and that day cannot be re-recorded.
+- **It restores any partial archive for today before running**, so a retry
+  resumes rather than re-requesting everything a failed attempt already got.
+- **It uploads even when the run failed part-way.** A partial day is worth
+  keeping, both as data and so the next attempt can resume from it.
+- **It goes red when the archive is suspiciously small.** `npm run
+  archive:check` enforces a floor on bytes written and fails on any step that
+  reported GraphQL errors. This exists because of Dirk's `listOffers`: called
+  without a `department` it returns empty offer lists and HTTP 200, so without
+  this check the job would have reported success every morning while recording
+  nothing. A green tick is not evidence.
+- **Manifests are attached to each run** for 30 days. They are small and are
+  the only thing worth reading when a run looks wrong.
+
+Do **not** commit the archive to git — `.gitignore` excludes `/archive/`
+(root-anchored, so it does not also swallow `src/archive/`), and `.env`.

@@ -1,0 +1,134 @@
+# Records what each Chain's public endpoint said today, and uploads it to
+# object storage. See docs/archive.md for why this runs daily and why it must
+# not be allowed to silently archive nothing.
+name: Archive chain prices
+
+on:
+  schedule:
+    # 04:30 UTC daily — 06:30 in Amsterdam in summer, 05:30 in winter. Both
+    # are after Dirk's own ~04:01 local refresh, and well before anyone would
+    # be shopping. GitHub cron is UTC only, so this drifts with the seasons by
+    # design rather than by accident.
+    - cron: "30 4 * * *"
+  workflow_dispatch:
+    inputs:
+      chain:
+        description: Chain to archive
+        type: choice
+        options: [dirk, jumbo, all]
+        default: dirk
+      max_product_steps:
+        description: Limit product steps (leave empty for a full run)
+        type: string
+        default: ""
+
+# A scheduled run and a manual one must never interleave: they would write to
+# the same date directory and race on the manifest. Later runs wait.
+concurrency:
+  group: archive-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    env:
+      CHAIN: ${{ inputs.chain || 'dirk' }}
+      # R2 is S3-compatible, so the AWS CLI already on the runner can talk to
+      # it. These two settings are not optional: recent AWS CLI versions send
+      # integrity checksum headers that R2 rejects outright.
+      AWS_REQUEST_CHECKSUM_CALCULATION: when_required
+      AWS_RESPONSE_CHECKSUM_VALIDATION: when_required
+      AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: auto
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      # Fail before touching a Chain if the upload could not possibly work.
+      # Archiving a day and then dropping it on the floor is worse than not
+      # running: it looks like success and the day cannot be re-recorded.
+      - name: Check storage credentials are present
+        run: |
+          missing=""
+          for name in R2_ACCOUNT_ID R2_BUCKET R2_ACCESS_KEY_ID R2_SECRET_ACCESS_KEY; do
+            if [ -z "${!name}" ]; then missing="$missing $name"; fi
+          done
+          if [ -n "$missing" ]; then
+            echo "::error::Missing repository secrets:$missing — see docs/archive.md"
+            exit 1
+          fi
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+
+      - name: Record today's date
+        id: today
+        run: echo "date=$(date -u +%F)" >> "$GITHUB_OUTPUT"
+
+      # Pull back any partial archive for today before running. The archiver
+      # skips steps whose file already exists, so a retried run resumes
+      # instead of re-requesting everything a failed attempt already got.
+      - name: Restore any partial archive for today
+        continue-on-error: true
+        run: |
+          aws s3 sync \
+            "s3://${{ secrets.R2_BUCKET }}/${{ steps.today.outputs.date }}/" \
+            "archive/${{ steps.today.outputs.date }}/" \
+            --endpoint-url "https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com" \
+            --only-show-errors
+
+      - name: Archive
+        run: |
+          args="--chain $CHAIN --date ${{ steps.today.outputs.date }}"
+          if [ -n "${{ inputs.max_product_steps }}" ]; then
+            args="$args --max-product-steps ${{ inputs.max_product_steps }}"
+          fi
+          npm run archive -- $args
+
+      # Upload even if the archive run failed part-way: a partial day is worth
+      # keeping, both for the data and so the next attempt can resume from it.
+      - name: Upload to R2
+        if: always()
+        run: |
+          if [ ! -d "archive/${{ steps.today.outputs.date }}" ]; then
+            echo "::warning::Nothing was archived, so there is nothing to upload"
+            exit 0
+          fi
+          aws s3 sync \
+            "archive/${{ steps.today.outputs.date }}/" \
+            "s3://${{ secrets.R2_BUCKET }}/${{ steps.today.outputs.date }}/" \
+            --endpoint-url "https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com" \
+            --only-show-errors
+          echo "Uploaded $(find "archive/${{ steps.today.outputs.date }}" -type f | wc -l) files"
+
+      # The manifests are tiny and are the only thing worth reading when a run
+      # looks wrong, so keep them attached to the run itself.
+      - name: Keep manifests on the run
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: manifests-${{ steps.today.outputs.date }}
+          path: archive/*/*/manifest.json
+          if-no-files-found: warn
+          retention-days: 30
+
+      # Last, and deliberately after the upload: a run that recorded almost
+      # nothing must go red even though every step above succeeded.
+      - name: Check the archive is not empty
+        if: always()
+        run: |
+          status=0
+          for manifest in archive/${{ steps.today.outputs.date }}/*/manifest.json; do
+            [ -e "$manifest" ] || continue
+            npm run --silent archive:check -- --manifest "$manifest" || status=1
+          done
+          exit $status

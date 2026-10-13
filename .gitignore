@@ -5,3 +5,7 @@ node_modules/
 # Anchored to the repo root on purpose: an unanchored `archive/` would also
 # match `src/archive/`, which is the archiver's source code.
 /archive/
+
+# Written by scripts/setup-r2-archive.sh: R2 credentials for syncing the
+# archive by hand. Never commit these.
+.env
