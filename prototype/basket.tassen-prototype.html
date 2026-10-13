@@ -377,7 +377,7 @@
     border: 7px solid var(--line); border-bottom: 0; border-radius: 40px 40px 0 0;
   }
   .rc .hd { padding: 16px 16px 10px; border-bottom: 1px dashed var(--line); }
-  .rc .ex { font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); border: 1.5px dashed var(--ink-3); border-radius: 6px; padding: 0 6px; }
+  .rc .ex, .rd .ex { font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); border: 1.5px dashed var(--ink-3); border-radius: 6px; padding: 0 6px; }
   .rc h3 { margin: 8px 0 2px; font-size: 21px; font-weight: 900; line-height: 1.15; letter-spacing: -.01em; }
   .rc .meta { color: var(--ink-2); font-size: 14px; font-weight: 600; }
   .rc .save { margin: 10px 0 0; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
@@ -416,7 +416,62 @@
   html[data-style="zacht"] .rc h3 { font-family: Fraunces, Georgia, serif; font-weight: 600; }
   html[data-style="zacht"] .rc::before { border-color: #ddd3ee; border-width: 4px; }
   @media (max-width: 720px) { .recipes { grid-template-columns: 1fr; } .tabs.bottom button { font-size: 12px; } }
+  /* ── Recipe detail: opens on click, a panel on desktop, full screen on a phone ── */
+  .rc .hd { cursor: pointer; }
+  .rc .hd:hover h3 { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+  .rc .open { display: inline-flex; margin-top: 8px; font-size: 14px; font-weight: 800; color: var(--ink-2); }
+  .scrim { position: fixed; inset: 0; z-index: 70; background: rgba(30, 20, 10, .45); }
+  .rd {
+    position: fixed; z-index: 71; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(920px, calc(100% - 32px)); max-height: calc(100% - 48px);
+    overflow-y: auto; background: var(--paper); color: var(--ink); border-radius: 22px; box-shadow: 0 30px 80px rgba(0,0,0,.35);
+  }
+  .rd header { position: sticky; top: 0; z-index: 1; background: var(--paper); padding: 16px 20px 12px; border-bottom: 1px dashed var(--line); display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; align-items: start; }
+  .rd header h2 { margin: 6px 0 2px; font-size: clamp(24px, 4vw, 34px); font-weight: 900; letter-spacing: -.02em; line-height: 1.1; }
+  .rd header .meta { color: var(--ink-2); font-weight: 600; font-size: 15px; }
+  .rd .x { border: 0; background: var(--card); color: var(--ink); border-radius: 999px; width: 42px; height: 42px; font-size: 20px; cursor: pointer; box-shadow: 0 2px 0 var(--line); }
+  .rd .body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr); gap: 22px; padding: 18px 20px 20px; }
+  .rd h3 { margin: 0 0 10px; font-size: 17px; font-weight: 900; }
+  .rd .ing { background: var(--card); border-radius: 16px; padding: 14px 16px; box-shadow: 0 2px 0 var(--line); align-self: start; }
+  .rd .ing ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .rd .ing li { display: grid; grid-template-columns: 1fr auto; gap: 0 10px; }
+  .rd .ing li .l { font-weight: 800; }
+  .rd .ing li .p { font-weight: 800; font-variant-numeric: tabular-nums; }
+  .rd .ing li .d { grid-column: 1 / -1; font-size: 13px; color: var(--ink-2); }
+  .rd .ing li .d .o { background: #ffe9a3; color: #2b2118; border-radius: 6px; padding: 0 6px; font-weight: 800; margin-right: 4px; }
+  .rd .ing .kast { margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--line); font-size: 14px; color: var(--ink-2); }
+  .rd .ing .kast b { color: var(--ink); }
+  .rd .ing .tot { margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--line); display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 14px; }
+  .rd .ing .tot b { font-weight: 900; }
+  .rd .ing button { margin-top: 12px; width: 100%; border: 0; background: var(--ink); color: var(--paper); border-radius: 999px; padding: 11px 16px; font-weight: 900; cursor: pointer; }
+  .rd .ing button.on { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 2px var(--ink); }
+  .rd ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; counter-reset: step; }
+  .rd ol button {
+    width: 100%; border: 0; text-align: left; cursor: pointer; background: var(--card); border-radius: 16px; padding: 12px 14px; box-shadow: 0 2px 0 var(--line);
+    display: grid; grid-template-columns: 40px 1fr; gap: 12px; align-items: start; font-size: 16px; line-height: 1.45;
+  }
+  .rd ol button .n { width: 36px; height: 36px; border-radius: 50%; background: var(--ink); color: var(--paper); display: grid; place-items: center; font-weight: 900; font-size: 17px; }
+  .rd ol button.done { opacity: .5; } .rd ol button.done .t { text-decoration: line-through; }
+  .rd ol button.done .n { background: var(--good); }
+  .rd .tip { color: var(--ink-3); font-size: 13px; margin: 10px 2px 0; }
+  body.locked { overflow: hidden; }
+  @media (max-width: 720px) {
+    .rd { left: 0; top: 0; transform: none; width: 100%; height: 100%; max-height: none; border-radius: 0; }
+    .rd header { padding-top: calc(14px + env(safe-area-inset-top)); }
+    .rd .body { grid-template-columns: 1fr; padding-bottom: calc(24px + env(safe-area-inset-bottom)); }
+  }
+  html[data-style="riso"] .rd, html[data-style="blok"] .rd { border-radius: 6px; }
+  html[data-style="riso"] .rd .ing, html[data-style="riso"] .rd ol button { border: 2px solid var(--ink); border-radius: 4px; box-shadow: 4px 4px 0 rgba(232, 51, 111, .6); }
+  html[data-style="riso"] .rd header h2 { font-family: "Archivo Black", Impact, sans-serif; font-weight: 400; text-transform: uppercase; }
+  html[data-style="nacht"] .rd .ing, html[data-style="nacht"] .rd ol button, html[data-style="nacht"] .rd .x { box-shadow: inset 0 0 0 1px var(--line); }
+  html[data-style="nacht"] .rd .ing li .d .o { background: rgba(255, 210, 90, .2); color: #ffd25a; }
+  html[data-style="nacht"] .scrim { background: rgba(0, 0, 0, .6); }
+  html[data-style="blok"] .rd .ing, html[data-style="blok"] .rd ol button, html[data-style="blok"] .rd .x { border: 3px solid var(--ink); box-shadow: 4px 4px 0 var(--ink); border-radius: 8px; }
+  html[data-style="blok"] .rd { border: 3px solid var(--ink); }
+  html[data-style="blok"] .rd header h2 { font-family: "Archivo Black", Impact, sans-serif; font-weight: 400; }
+  html[data-style="zacht"] .rd .ing, html[data-style="zacht"] .rd ol button { box-shadow: 0 6px 24px rgba(40, 40, 60, .07); border-radius: 20px; }
+  html[data-style="zacht"] .rd header h2 { font-family: Fraunces, Georgia, serif; font-weight: 600; }
 </style>
+
 
 
 
@@ -436,6 +491,7 @@
   <nav class="tabs" id="tabs-top"></nav>
 </header>
 <main id="main"></main>
+<div id="sheet"></div>
 <nav class="tabs bottom" id="tabs-bottom"></nav>
 
 <script src="catalogue.js"></script>
@@ -688,6 +744,126 @@
     }).sort((a, b) => a.missing - b.missing || a.cost - b.cost);
     return { rc, at, best: at[0] };
   }
+  // How to cook each recipe, shown only once a recipe is opened. Example text, like the recipes.
+  const METHOD = {
+    "andijvie": {
+      "pantry": [
+        "boter",
+        "zout",
+        "peper"
+      ],
+      "steps": [
+        "Schil de aardappelen, snijd ze in gelijke stukken en kook ze in ongeveer 20 minuten gaar in water met een snuf zout.",
+        "Leg intussen de rookworst 20 minuten in heet water dat net niet meer kookt.",
+        "Snipper de ui en bak hem in een klontje boter in 5 minuten zacht en goudgeel.",
+        "Was de andijvie, laat hem goed uitlekken en snijd hem fijn.",
+        "Giet de aardappelen af en stamp ze fijn met de warme melk en een klontje boter.",
+        "Schep de rauwe andijvie en de gebakken ui erdoor en breng op smaak met zout en peper. Serveer met de rookworst in plakken."
+      ]
+    },
+    "wraps": {
+      "pantry": [
+        "olie",
+        "zout",
+        "peper",
+        "paprikapoeder"
+      ],
+      "steps": [
+        "Snipper de ui en snijd de puntpaprika in reepjes.",
+        "Verhit een scheutje olie in een koekenpan en bak het gehakt rul. Breng op smaak met zout, peper en een theelepel paprikapoeder.",
+        "Bak de ui en de paprika 5 minuten mee tot ze zacht zijn.",
+        "Halveer de avocado's, haal de pit eruit en snijd het vruchtvlees in plakjes.",
+        "Verwarm de tortilla's een halve minuut per stuk in een droge koekenpan.",
+        "Vul de wraps met het gehaktmengsel en de avocado, vouw de onderkant om en rol ze op."
+      ]
+    },
+    "pompoen": {
+      "pantry": [
+        "olie",
+        "2 bouillonblokjes",
+        "zout",
+        "peper"
+      ],
+      "steps": [
+        "Halveer de pompoen, schep de pitten eruit en snijd hem in blokjes. Een oranje pompoen hoef je niet te schillen.",
+        "Snipper de ui en snijd de wortelen in plakjes.",
+        "Fruit de ui 3 minuten in een soeppan met een scheutje olie. Voeg pompoen en wortel toe en bak 5 minuten mee.",
+        "Voeg 1 liter water en de bouillonblokjes toe en laat 25 minuten zachtjes koken.",
+        "Pureer de soep glad met een staafmixer en roer de kookroom erdoor.",
+        "Breng op smaak met zout en peper en warm nog even door."
+      ]
+    },
+    "spruitjes": {
+      "pantry": [
+        "boter",
+        "zout",
+        "peper",
+        "1 ei",
+        "paneermeel"
+      ],
+      "steps": [
+        "Meng het gehakt met het ei, 2 eetlepels paneermeel, zout en peper en draai er 4 ballen van.",
+        "Bak de gehaktballen rondom bruin in een flinke klont boter. Zet het vuur laag en laat ze met de deksel op de pan 20 minuten garen.",
+        "Schil de aardappelen en kook ze in ongeveer 20 minuten gaar.",
+        "Maak de spruiten schoon, snijd een kruisje in de steel en kook ze 8 tot 10 minuten.",
+        "Giet de aardappelen af en stamp ze met de warme melk en een klontje boter tot een gladde puree.",
+        "Serveer de puree met de spruiten, de gehaktballen en de jus uit de pan."
+      ]
+    },
+    "pesto": {
+      "pantry": [
+        "zout"
+      ],
+      "steps": [
+        "Breng een grote pan water met een flinke snuf zout aan de kook en kook de spaghetti volgens de verpakking.",
+        "Snijd de broccoli in kleine roosjes en kook ze de laatste 4 minuten mee met de pasta.",
+        "Schep een kopje kookwater apart en giet de pasta en broccoli af.",
+        "Meng de pesto erdoor, met een scheutje kookwater voor een smeuïge saus.",
+        "Snijd de kaas in reepjes en strooi die over de pasta."
+      ]
+    },
+    "bloemkool": {
+      "pantry": [
+        "30 g boter",
+        "3 el bloem",
+        "zout",
+        "peper",
+        "nootmuskaat"
+      ],
+      "steps": [
+        "Schil de aardappelen en kook ze in ongeveer 20 minuten gaar.",
+        "Snijd de bloemkool in roosjes en kook ze in 8 minuten beetgaar.",
+        "Smelt de boter in een steelpan, roer de bloem erdoor en laat dit 1 minuut zachtjes garen.",
+        "Voeg al roerend scheutje voor scheutje de melk toe tot je een gladde saus hebt.",
+        "Scheur de kaas erin en laat smelten. Breng op smaak met zout, peper en een snufje nootmuskaat.",
+        "Giet de kaassaus over de bloemkool en serveer met de aardappelen."
+      ]
+    }
+  };
+
+  let openRecipe = null;          // recipe id shown in the detail panel
+  const stepsDone = {};           // recipe id -> Set of step indexes ticked while cooking
+  function recipeDetail() {
+    const rc = RECIPES.find((r) => r.id === openRecipe); if (!rc) return "";
+    const { at, best } = priceRecipe(rc), m = METHOD[rc.id], ticked = stepsDone[rc.id] || new Set();
+    const ings = rc.ingredients.map((g, i) => {
+      const l = best.lines[i];
+      return '<li><span class="l">' + esc(ingText(g)) + '</span><span class="p">' + (l ? euro(l.cost) : "—") + "</span>" +
+        '<span class="d">' + (l ? (l.onOffer ? '<span class="o">' + esc(l.offer || "aanbieding") + "</span>" : "") + esc(l.p.name) + " · " + esc(best.chain.name) : "niet bij " + esc(best.chain.name)) + "</span></li>";
+    }).join("");
+    const steps = m.steps.map((t, i) => '<li><button data-act="step" data-id="' + i + '" class="' + (ticked.has(i) ? "done" : "") + '" aria-pressed="' + ticked.has(i) + '">' +
+      '<span class="n">' + (ticked.has(i) ? "✓" : i + 1) + '</span><span class="t">' + esc(t) + "</span></button></li>").join("");
+    const on = added.has(rc.id);
+    return '<div class="scrim" data-act="close-recipe"></div><section class="rd" role="dialog" aria-modal="true" aria-labelledby="rd-title">' +
+      '<header><div><span class="ex">voorbeeldrecept</span><h2 id="rd-title">' + esc(rc.name) + "</h2>" +
+      '<div class="meta">' + rc.persons + " personen · " + rc.minutes + " min · " + euro(Math.round(best.cost / rc.persons)) + " p.p." + (best.saving ? " · " + euro(best.saving) + " korting bij " + esc(best.chain.name) : "") + "</div></div>" +
+      '<button class="x" data-act="close-recipe" aria-label="Sluiten">✕</button></header>' +
+      '<div class="body"><div class="ing"><h3>Ingrediënten</h3><ul>' + ings + "</ul>" +
+      '<div class="kast"><b>Uit de kast:</b> ' + m.pantry.map(esc).join(", ") + "</div>" +
+      '<div class="tot">' + at.map((x) => tag(x.chain) + " <b>" + euro(x.cost) + "</b>").join(" ") + "</div>" +
+      '<button data-act="recipe" data-id="' + rc.id + '" class="' + (on ? "on" : "") + '">' + (on ? "✓ Op je lijst" : "Zet op mijn lijst") + "</button></div>" +
+      "<div><h3>Bereiding</h3><ol>" + steps + '</ol><p class="tip">Tik een stap aan als hij klaar is.</p></div></div></section>';
+  }
   const added = new Set(); // recipe ids put on the list this session
   function addRecipe(id) {
     const rc = RECIPES.find((r) => r.id === id); if (!rc) return;
@@ -725,9 +901,10 @@
         }).join("");
         const shops = at.map((x, i) => '<span class="' + (i ? "" : "best") + '">' + tag(x.chain) + " <b>" + euro(x.cost) + "</b>" + (x.missing ? " · " + x.missing + " mist" : "") + "</span>").join("");
         const on = added.has(rc.id);
-        return '<article class="rc"><div class="hd"><span class="ex">voorbeeldrecept</span><h3>' + esc(rc.name) + "</h3>" +
+        return '<article class="rc"><div class="hd" data-act="open-recipe" data-id="' + rc.id + '" role="button" tabindex="0" aria-label="Bereiding van ' + esc(rc.name) + '"><span class="ex">voorbeeldrecept</span><h3>' + esc(rc.name) + "</h3>" +
           '<div class="meta">' + rc.persons + " personen · " + rc.minutes + " min · " + euro(Math.round(best.cost / rc.persons)) + " p.p.</div>" +
-          '<div class="save">' + (best.saving ? "<b>" + euro(best.saving) + " korting</b>" : "") + "<span>" + best.deals + " van " + rc.ingredients.length + " in de aanbieding bij " + esc(best.chain.name) + "</span></div></div>" +
+          '<div class="save">' + (best.saving ? "<b>" + euro(best.saving) + " korting</b>" : "") + "<span>" + best.deals + " van " + rc.ingredients.length + " in de aanbieding bij " + esc(best.chain.name) + "</span></div>" +
+          '<span class="open">Bekijk bereiding →</span></div>' +
           "<ul>" + items + "</ul>" +
           '<div class="ft"><div class="shops">' + shops + "</div>" +
           '<button data-act="recipe" data-id="' + rc.id + '" class="' + (on ? "on" : "") + '">' + (on ? "✓ Op je lijst" : "Zet op mijn lijst") + "</button></div></article>";
@@ -856,6 +1033,8 @@
     document.getElementById("style").value = style;
     const focused = document.activeElement && document.activeElement.name === "q";
     main.innerHTML = PAGES[page].render(s);
+    document.getElementById("sheet").innerHTML = openRecipe ? recipeDetail() : "";
+    document.body.classList.toggle("locked", !!openRecipe);
     if (focused) main.querySelector("input[name=q]")?.focus();
     const u = new URL(location.href); u.searchParams.set("page", page); u.searchParams.set("chains", chainCount); u.searchParams.set("style", style);
     try { history.replaceState(null, "", u); } catch { /* file:// */ }
@@ -863,6 +1042,9 @@
   document.getElementById("style").addEventListener("change", (e) => { style = e.target.value; render(); });
   // S cycles styles, for flipping through quickly.
   document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && openRecipe) { openRecipe = null; render(); return; }
+    const card = e.target.closest?.('[data-act="open-recipe"][role="button"]');
+    if (card && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); openRecipe = card.dataset.id; render(); return; }
     if (e.key.toLowerCase() !== "s" || e.target.closest("input, select, textarea")) return;
     style = STYLES[(STYLES.indexOf(style) + 1) % STYLES.length]; render();
   });
@@ -884,6 +1066,9 @@
     switch (b.dataset.act) {
       case "go": page = id; window.scrollTo(0, 0); break;
       case "recipe": addRecipe(id); break;
+      case "open-recipe": openRecipe = id; break;
+      case "close-recipe": openRecipe = null; break;
+      case "step": { const set = (stepsDone[openRecipe] ||= new Set()); const n = Number(id); set.has(n) ? set.delete(n) : set.add(n); break; }
       case "staple": { const it = list.find((i) => i.id === id); if (it) it.staple = !it.staple; break; }
       case "remove": list = list.filter((i) => i.id !== id); done.delete(id); break;
       case "plan": plan = { kind: "single", ids: [id] }; break;
