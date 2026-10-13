@@ -3,6 +3,13 @@
   ?variant= or the bar at the bottom (← → keys work too). The bar cycles round
   2; round 1's A, C and D stay reachable by URL.
 
+  Round 3 (what the bar cycles): different metaphors, not different layouts.
+    B  Schap        — the reference the user liked for readability
+    I  Tassen       — two shopping bags; tap an item to move it to the other
+    J  Vertrekbord  — split-flap departures board; prices flip into place
+    K  Eén voor één — one item at a time, the two shops split the screen
+    L  Plattegrond  — a store floor plan; items are pins along a walking route
+
   Round 2, all in B's readable idiom, each testing one question:
     B  Schap        — the baseline the user leaned towards
     E  Licht schap  — light palette; winner in full, the other chain a strip
@@ -25,7 +32,7 @@
 <title>mealdeal · design prototype</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@500;600;700&family=Caveat:wght@500;700&family=Courier+Prime:wght@400;700&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@500;600;700&family=Caveat:wght@500;700&family=Courier+Prime:wght@400;700&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=Inter:wght@400;500;600&family=Nunito:wght@600;700;800;900&family=Roboto+Mono:wght@700&family=DM+Sans:wght@400;500;700&family=DM+Serif+Display&family=Space+Grotesk:wght@400;700&display=swap">
 <style>
   * { box-sizing: border-box; }
   body { margin: 0; min-height: 100vh; }
@@ -498,7 +505,183 @@
   @media (max-width: 520px) { .h-sec h2 { font-size: 24px; } .h-rest { grid-template-columns: 1fr; } }
   .h-toggle { margin-left: auto; border: 2px solid #111; background: #fff; font-weight: 700; font-size: 14px; text-transform: uppercase; padding: 2px 8px; cursor: pointer; }
   .h-toggle[aria-pressed="true"] { background: #111; color: #fff; }
+  /* ════════════════════════════════════════════════════════════════════
+     ROUND 3 — different metaphors, not different layouts
+     ════════════════════════════════════════════════════════════════════ */
+
+  /* ── I · TASSEN ────────────────────────────────────────────────────── */
+  body[data-v="I"] { background: #f3e7d6; color: #2b2118; font-family: Nunito, ui-rounded, system-ui, sans-serif; padding: 0 16px 110px; }
+  .i-wrap { max-width: 1060px; margin: 0 auto; }
+  .i-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 14px; padding: 26px 0 0; }
+  .i-head h1 { margin: 0; font-size: clamp(30px, 5vw, 46px); font-weight: 900; letter-spacing: -.02em; line-height: 1; }
+  .i-head p { margin: 6px 0 0; font-size: 16px; color: #6b5a48; }
+  .i-add { display: flex; flex: 1 1 320px; max-width: 460px; background: #fff; border-radius: 999px; padding: 5px; box-shadow: 0 2px 0 #d9c6ab; }
+  .i-add input { flex: 1; min-width: 0; border: 0; background: transparent; padding: 8px 14px; font-size: 17px; outline: none; font-weight: 600; }
+  .i-add button { border: 0; background: #2b2118; color: #fff; border-radius: 999px; padding: 0 18px; font-weight: 800; cursor: pointer; }
+  .i-modes { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 0; }
+  .i-modes button { border: 2px solid #2b2118; background: transparent; border-radius: 999px; padding: 5px 14px; font-weight: 800; cursor: pointer; font-size: 14px; }
+  .i-modes button[aria-pressed="true"] { background: #2b2118; color: #f3e7d6; }
+  .i-bags { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(16px, 4vw, 48px); margin-top: 44px; align-items: start; }
+  .bag { position: relative; border-radius: 10px 10px 26px 26px; padding: 20px 18px 22px; min-height: 280px; color: #fff; }
+  .bag::before { /* handles */
+    content: ""; position: absolute; left: 50%; top: -34px; width: 42%; height: 46px; transform: translateX(-50%);
+    border: 9px solid var(--bag); border-bottom: 0; border-radius: 60px 60px 0 0;
+  }
+  .bag::after { /* top fold */
+    content: ""; position: absolute; left: 0; right: 0; top: 0; height: 12px; background: rgba(0,0,0,.14); border-radius: 10px 10px 0 0;
+  }
+  .bag { background: var(--bag); box-shadow: inset 0 -10px 0 rgba(0,0,0,.12), 0 18px 30px -18px rgba(60,30,0,.55); }
+  .bag.b0 { --bag: #2f6b57; } .bag.b1 { --bag: #8a3b5c; }
+  .bag .bh { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-top: 6px; }
+  .bag .bh .nm { font-size: 22px; font-weight: 900; }
+  .bag .bh .tt { font-size: clamp(30px, 4.5vw, 44px); font-weight: 900; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+  .bag .bs { font-size: 14px; opacity: .85; margin-bottom: 14px; }
+  .bag .toks { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end; }
+  .tok {
+    background: #fffaf2; color: #2b2118; border: 0; border-radius: 14px; padding: 8px 12px 9px; cursor: pointer; text-align: left;
+    box-shadow: 0 3px 0 rgba(0,0,0,.18); transition: transform .12s; display: grid; gap: 1px; max-width: 100%;
+  }
+  .tok:hover { transform: translateY(-2px) rotate(-1deg); }
+  .tok .n { font-weight: 800; line-height: 1.1; }
+  .tok .p { font-weight: 900; font-variant-numeric: tabular-nums; }
+  .tok .m { font-size: 12px; color: #7a6a58; font-weight: 600; }
+  .tok .m.move { color: #8a3b5c; }
+  .tok.forced { outline: 2px dashed #fffaf2; outline-offset: 2px; }
+  .bag .empty { opacity: .8; font-weight: 700; padding: 30px 0; text-align: center; }
+  .i-tray { margin-top: 26px; border: 2px dashed #b9a183; border-radius: 16px; padding: 12px 14px; color: #6b5a48; font-weight: 700; }
+  .i-sum { margin: 22px 0 0; text-align: center; font-size: 18px; font-weight: 700; }
+  .i-sum b { font-weight: 900; }
+  .i-hint { text-align: center; color: #8a7760; font-size: 14px; margin: 6px 0 0; }
+  @media (max-width: 640px) { .i-bags { grid-template-columns: 1fr; gap: 54px; } }
+
+  /* ── J · VERTREKBORD ───────────────────────────────────────────────── */
+  body[data-v="J"] { background: #0c0d10; color: #f3efe2; font-family: "Roboto Mono", ui-monospace, monospace; padding: 0 12px 110px; }
+  .j-board {
+    --f: clamp(10.5px, 2.35vw, 21px);
+    max-width: 1040px; margin: 24px auto 0; background: #16181d; border-radius: 10px; padding: clamp(12px, 2.4vw, 26px);
+    box-shadow: inset 0 0 0 2px #24272e, 0 30px 60px -30px #000;
+  }
+  .j-top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+  .j-top h1 { margin: 0; font-size: calc(var(--f) * 1.15); letter-spacing: .3em; font-weight: 700; color: #ffc53d; }
+  .j-top span { font-size: calc(var(--f) * .7); color: #8a8f99; letter-spacing: .14em; }
+  .j-row { display: flex; gap: calc(var(--f) * .9); align-items: center; padding: calc(var(--f) * .28) 0; }
+  .j-row + .j-row { border-top: 1px solid #22252c; }
+  .j-hd { font-size: calc(var(--f) * .62); letter-spacing: .2em; color: #8a8f99; padding-bottom: 6px; }
+  .j-hd span { display: inline-block; }
+  .j-cell { display: inline-flex; gap: 2px; }
+  .fl {
+    display: inline-block; width: calc(var(--f) * .82); text-align: center; font-size: var(--f); line-height: 1.5; font-weight: 700;
+    background: linear-gradient(#262a32 0 49%, #0c0d10 49% 51%, #22252c 51%); border-radius: 2px; color: #f3efe2;
+  }
+  .j-cell .fl.sp { color: transparent !important; }
+  @media (max-width: 560px) { .j-board { --f: clamp(8px, 2.5vw, 21px); } .j-q { display: none !important; } }
+  .j-row.flip .fl { animation: flap .38s cubic-bezier(.3,.7,.3,1.2) both; animation-delay: calc(var(--i) * 18ms); }
+  @keyframes flap { 0% { transform: perspective(200px) rotateX(-92deg); filter: brightness(.6); } 100% { transform: none; } }
+  .j-cell.win .fl { color: #ffc53d; }
+  .j-cell.adv .fl { background: linear-gradient(#ffc53d 0 49%, #0c0d10 49% 51%, #f5b820 51%); color: #16181d; }
+  .j-cell.adv.none .fl { background: linear-gradient(#5b2a2a 0 49%, #0c0d10 49% 51%, #4c2323 51%); color: #ffb3a8; }
+  .j-cell.dim .fl { color: #7b808a; }
+  .j-x { border: 0; background: none; color: #555b66; cursor: pointer; font: inherit; font-size: calc(var(--f) * .8); padding: 0 4px; margin-left: auto; }
+  .j-x:hover { color: #ff7a66; }
+  .j-tot { margin-top: 12px; border-top: 2px solid #2c3038; padding-top: 10px; }
+  .j-add { display: flex; gap: 8px; margin-top: 16px; }
+  .j-add input {
+    flex: 1; min-width: 0; background: #0c0d10; border: 2px solid #2c3038; border-radius: 4px; color: #ffc53d; padding: 10px 12px;
+    font: 700 calc(var(--f) * .8) "Roboto Mono", monospace; letter-spacing: .08em; text-transform: uppercase; outline: none;
+  }
+  .j-add input:focus { border-color: #ffc53d; }
+  .j-add input::placeholder { color: #4b505a; }
+  .j-add button { background: #ffc53d; border: 0; border-radius: 4px; color: #16181d; font: 700 calc(var(--f) * .8) "Roboto Mono", monospace; padding: 0 16px; letter-spacing: .1em; cursor: pointer; }
+  .j-note { color: #8a8f99; font-size: 12px; margin: 12px auto 0; max-width: 1040px; text-align: center; letter-spacing: .04em; }
+
+  /* ── K · EÉN VOOR ÉÉN ──────────────────────────────────────────────── */
+  body[data-v="K"] { background: #fbf6ec; color: #1d1b18; font-family: "DM Sans", system-ui, sans-serif; padding: 0 0 110px; }
+  .k-top { max-width: 1100px; margin: 0 auto; padding: 22px 18px 0; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .k-top .count { font-weight: 700; font-size: 15px; letter-spacing: .08em; text-transform: uppercase; color: #8b8274; }
+  .k-top .nav { margin-left: auto; display: flex; gap: 8px; }
+  .k-top .nav button { border: 2px solid #1d1b18; background: transparent; border-radius: 999px; width: 44px; height: 44px; font-size: 20px; cursor: pointer; }
+  .k-top .nav button:disabled { opacity: .25; cursor: default; }
+  .k-item { max-width: 1100px; margin: 0 auto; padding: 8px 18px 18px; }
+  .k-item h1 { margin: 0; font-family: "DM Serif Display", Georgia, serif; font-weight: 400; font-size: clamp(46px, 9vw, 104px); line-height: .95; letter-spacing: -.02em; }
+  .k-item .q { font-size: clamp(18px, 2.4vw, 24px); color: #6d655a; margin-top: 6px; }
+  .k-item .acts { display: inline-flex; gap: 8px; margin-left: 10px; vertical-align: middle; }
+  .k-item .acts button { border: 1.5px solid #c9bfae; background: transparent; border-radius: 999px; padding: 2px 10px; font-size: 13px; cursor: pointer; }
+  .k-item .acts button[aria-pressed="true"] { background: #1d1b18; color: #fff; border-color: #1d1b18; }
+  .k-split { display: grid; grid-template-columns: 1fr 1fr; min-height: 340px; }
+  .k-side {
+    border: 0; text-align: left; cursor: pointer; padding: clamp(18px, 3vw, 36px); display: flex; flex-direction: column; gap: 8px;
+    position: relative; color: #fff; transition: filter .15s, opacity .15s;
+  }
+  .k-side.s0 { background: #22404f; } .k-side.s1 { background: #b2532f; }
+  .k-side:not(.on) { filter: saturate(.25) brightness(.92); opacity: .62; }
+  .k-side:hover { filter: none; opacity: 1; }
+  .k-side .ch { font-size: 15px; letter-spacing: .16em; text-transform: uppercase; font-weight: 700; }
+  .k-side .pay { font-family: "DM Serif Display", Georgia, serif; font-size: clamp(54px, 10vw, 120px); line-height: .9; letter-spacing: -.02em; }
+  .k-side .pn { font-size: clamp(16px, 2vw, 21px); font-weight: 500; max-width: 26ch; }
+  .k-side .meta { font-size: 15px; opacity: .85; }
+  .k-side .flags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .k-side .flags span { background: rgba(255,255,255,.18); padding: 2px 9px; border-radius: 999px; font-size: 13px; font-weight: 700; }
+  .k-side .flags .o { background: #ffe066; color: #1d1b18; }
+  .k-side .pick { margin-top: auto; font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+  .k-side .pick i { width: 26px; height: 26px; border-radius: 50%; border: 2.5px solid #fff; display: inline-grid; place-items: center; font-style: normal; }
+  .k-side.on .pick i { background: #fff; color: #1d1b18; }
+  .k-side .cheaper { position: absolute; top: 18px; right: 18px; background: #fff; color: #1d1b18; border-radius: 999px; padding: 4px 12px; font-weight: 700; font-size: 14px; }
+  .k-side.none { cursor: default; background: repeating-linear-gradient(-45deg, #ddd5c6 0 12px, #e6dfd2 12px 24px) !important; color: #6d655a; filter: none; opacity: 1; justify-content: center; }
+  .k-strip { max-width: 1100px; margin: 18px auto 0; padding: 0 18px; }
+  .k-strip .sum { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; font-size: 16px; }
+  .k-strip .sum b { font-family: "DM Serif Display", Georgia, serif; font-weight: 400; font-size: 32px; }
+  .k-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .k-chips button { border: 0; border-radius: 999px; padding: 5px 11px; font-size: 13.5px; cursor: pointer; color: #fff; font-weight: 600; }
+  .k-chips button.c0 { background: #22404f; } .k-chips button.c1 { background: #b2532f; } .k-chips button.cn { background: #d8cfbf; color: #6d655a; }
+  .k-chips button.cur { outline: 3px solid #1d1b18; outline-offset: 2px; }
+  .k-add { display: flex; margin-top: 16px; max-width: 520px; border-bottom: 2px solid #1d1b18; }
+  .k-add input { flex: 1; min-width: 0; border: 0; background: transparent; padding: 10px 2px; font-size: 18px; outline: none; }
+  .k-add button { border: 0; background: none; font-weight: 700; font-size: 16px; cursor: pointer; }
+  @media (max-width: 640px) { .k-split { grid-template-columns: 1fr; min-height: 0; } .k-side { min-height: 200px; } }
+
+  /* ── L · PLATTEGROND ───────────────────────────────────────────────── */
+  body[data-v="L"] { background: #e8ecef; color: #182026; font-family: "Space Grotesk", system-ui, sans-serif; padding: 0 16px 110px; }
+  .l-wrap { max-width: 1160px; margin: 0 auto; }
+  .l-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 12px 20px; padding: 24px 0 14px; }
+  .l-head h1 { margin: 0; font-size: clamp(28px, 4.4vw, 44px); letter-spacing: -.03em; line-height: 1; }
+  .l-head h1 small { display: block; font-size: 15px; letter-spacing: 0; color: #5d6a73; font-weight: 400; margin-top: 6px; }
+  .l-seg { display: inline-flex; background: #fff; border-radius: 12px; padding: 4px; box-shadow: 0 1px 0 #cdd5db; }
+  .l-seg button { border: 0; background: transparent; border-radius: 9px; padding: 8px 14px; cursor: pointer; text-align: left; }
+  .l-seg button[aria-pressed="true"] { background: #182026; color: #fff; }
+  .l-seg .k { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; opacity: .75; display: block; }
+  .l-seg .v { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .l-body { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+  .l-plan { position: relative; background: #f7f9fa; border-radius: 18px; padding: 16px; box-shadow: inset 0 0 0 2px #cdd5db; }
+  .l-plan svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  .l-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: minmax(118px, auto); gap: 26px; position: relative; }
+  .dept { border-radius: 12px; padding: 10px 12px; background: #fff; box-shadow: 0 0 0 1.5px #d5dce1; position: relative; z-index: 1; }
+  .dept.has { box-shadow: 0 0 0 2px #182026; }
+  .dept .dn { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: #5d6a73; font-weight: 700; display: flex; gap: 6px; align-items: center; }
+  .dept .dn i { width: 10px; height: 10px; border-radius: 3px; background: var(--c); display: inline-block; }
+  .dept .pins { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+  .pin { width: 30px; height: 30px; border-radius: 50% 50% 50% 4px; background: var(--c); color: #fff; font-weight: 700; display: grid; place-items: center; font-size: 13px; box-shadow: 0 2px 0 rgba(0,0,0,.18); }
+  .pin.miss { background: #fff; color: #b33a2c; box-shadow: inset 0 0 0 2px #b33a2c; }
+  .dept.door, .dept.till { background: #182026; color: #fff; display: grid; place-items: center; text-align: center; font-weight: 700; letter-spacing: .12em; font-size: 13px; box-shadow: none; }
+  .l-add { display: flex; margin-top: 14px; background: #fff; border-radius: 12px; padding: 4px; box-shadow: 0 1px 0 #cdd5db; }
+  .l-add input { flex: 1; min-width: 0; border: 0; padding: 10px 12px; font-size: 16px; outline: none; background: transparent; }
+  .l-add button { border: 0; background: #182026; color: #fff; border-radius: 9px; padding: 0 16px; font-weight: 700; cursor: pointer; }
+  .l-list { background: #fff; border-radius: 18px; padding: 6px 0; box-shadow: 0 1px 0 #cdd5db; }
+  .l-sec { padding: 10px 16px 4px; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; font-weight: 700; color: var(--c); display: flex; align-items: center; gap: 8px; }
+  .l-sec::after { content: ""; flex: 1; height: 1.5px; background: var(--c); opacity: .3; }
+  .l-it { display: grid; grid-template-columns: 34px 1fr auto; gap: 2px 10px; padding: 7px 16px; align-items: center; }
+  .l-it .pin { width: 26px; height: 26px; font-size: 12px; }
+  .l-it .n { font-weight: 700; font-size: 16px; }
+  .l-it .n .q { font-weight: 400; color: #5d6a73; font-size: 14px; margin-left: 4px; }
+  .l-it .p { font-weight: 700; font-size: 17px; font-variant-numeric: tabular-nums; text-align: right; }
+  .l-it .pn { grid-column: 2; font-size: 13px; color: #5d6a73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .l-it .alt { grid-column: 3; font-size: 12px; text-align: right; color: #5d6a73; white-space: nowrap; }
+  .l-it .alt.cheaper { color: #b33a2c; font-weight: 700; }
+  .l-it .acts { grid-column: 2 / -1; display: flex; gap: 10px; }
+  .l-it .acts button { border: 0; background: none; padding: 0; font-size: 12px; color: #5d6a73; cursor: pointer; text-decoration: underline; }
+  .l-it .acts button[aria-pressed="true"] { color: #182026; font-weight: 700; }
+  @media (max-width: 860px) { .l-body { grid-template-columns: 1fr; } .l-grid { grid-auto-rows: minmax(90px, auto); gap: 12px; } .l-plan { padding: 10px; } }
 </style>
+
 
 
 <div id="root"></div>
@@ -901,9 +1084,184 @@
       '<div class="h-sec"><h2>De rest van je lijst</h2><span>vetgedrukt = goedkoopst</span></div><div class="h-rest">' + rest + "</div></div>";
   } };
 
+  // ════════════════════════════════════════════════════════════════════
+  // ROUND 3 — different metaphors
+  // ════════════════════════════════════════════════════════════════════
+  const choice = {}; // itemId -> chainId the user put it at (I and K share it)
+  function chainFor(r) {
+    const c = choice[r.item.id];
+    if (c && r.by[c]) return c;
+    const ls = chains.filter((ch) => r.by[ch.id]).sort((a, b) => r.by[a.id].cost - r.by[b.id].cost);
+    return ls.length ? ls[0].id : null;
+  }
+  const cheapestId = (r) => {
+    const ls = chains.filter((ch) => r.by[ch.id]).sort((a, b) => r.by[a.id].cost - r.by[b.id].cost);
+    return ls.length ? ls[0].id : null;
+  };
+  const nameOf = (cid) => chains.find((c) => c.id === cid).name;
+
+  // ── I · Tassen ──
+  V.I = { name: "Tassen", render(s) {
+    const mode = s.rows.length && s.rows.every((r) => !choice[r.item.id]) ? "cheap"
+      : chains.find((c) => s.rows.every((r) => !r.by[c.id] || choice[r.item.id] === c.id))?.id || "mixed";
+    const bags = chains.map((c, ci) => {
+      const mine = s.rows.filter((r) => chainFor(r) === c.id);
+      const total = mine.reduce((n, r) => n + r.by[c.id].cost, 0);
+      const toks = mine.sort((a, b) => b.by[c.id].cost - a.by[c.id].cost).map((r) => {
+        const l = r.by[c.id], o = other(c.id), ol = r.by[o.id];
+        const fs = Math.round(14 + Math.min(12, l.cost / 40));
+        const forced = cheapestId(r) !== c.id;
+        const meta = !ol ? "alleen bij " + esc(c.name)
+          : ol.cost > l.cost ? esc(o.name) + " +" + euro(ol.cost - l.cost)
+          : ol.cost < l.cost ? '<span class="move">bij ' + esc(o.name) + " " + euro(l.cost - ol.cost) + " goedkoper</span>" : "even duur";
+        return '<button class="tok' + (forced ? " forced" : "") + '" data-act="move" data-id="' + r.item.id + '" title="' + esc(l.p.name) + '" style="font-size:' + fs + 'px">' +
+          '<span class="n">' + esc(r.item.noun) + ' <span style="font-weight:600;color:#7a6a58">' + qtyText(r.item) + "</span></span>" +
+          '<span class="p">' + euro(l.cost) + '</span><span class="m">' + meta + "</span></button>";
+      }).join("");
+      return '<section class="bag b' + ci + '"><div class="bh"><span class="nm">' + esc(c.name) + '</span><span class="tt">' + euro(total) + "</span></div>" +
+        '<div class="bs">' + mine.length + " artikel" + (mine.length === 1 ? "" : "en") + "</div>" +
+        '<div class="toks">' + (toks || '<div class="empty">Leeg — tik een artikel in de andere tas om het hierheen te halen.</div>') + "</div></section>";
+    }).join("");
+    const nowhere = s.rows.filter((r) => !chainFor(r));
+    const split = s.rows.reduce((n, r) => { const c = chainFor(r); return n + (c ? r.by[c].cost : 0); }, 0);
+    const used = chains.filter((c) => s.rows.some((r) => chainFor(r) === c.id));
+    const sum = used.length > 1 && s.best
+      ? "Twee tassen samen <b>" + euro(split) + "</b> · alles in één tas bij " + esc(s.best.chain.name) + " kost " + euro(s.best.cost - split) + " meer"
+      : "Alles in één tas: <b>" + euro(split) + "</b>";
+    return '<div class="i-wrap"><div class="i-head"><div><h1>Wat gaat in welke tas?</h1><p>Elk artikel ligt in de tas van de winkel waar het het goedkoopst is.</p></div>' +
+      '<form class="add i-add"><input name="q" placeholder="500 g rundergehakt" autocomplete="off"><button>Erbij</button></form></div>' +
+      '<div class="i-modes"><button data-act="mode" data-id="cheap" aria-pressed="' + (mode === "cheap") + '">Goedkoopst per artikel</button>' +
+      chains.map((c) => '<button data-act="mode" data-id="' + c.id + '" aria-pressed="' + (mode === c.id) + '">Alles bij ' + esc(c.name) + "</button>").join("") + "</div>" +
+      '<div class="i-bags">' + bags + "</div>" +
+      (nowhere.length ? '<div class="i-tray">Past in geen tas: ' + nowhere.map((r) => esc(r.item.noun)).join(", ") + "</div>" : "") +
+      '<p class="i-sum">' + sum + '</p><p class="i-hint">Tik op een artikel om het naar de andere tas te verplaatsen. Gestippeld = niet de goedkoopste keus.</p></div>';
+  } };
+
+  // ── J · Vertrekbord ──
+  const jPrev = {};
+  const W = { item: 13, qty: 6, price: 6, adv: 6 };
+  const flaps = (text, n, cls = "") => {
+    // Spaces stay as tiles (a board has no gaps), drawn blank.
+    const t = (text + " ".repeat(n)).slice(0, n).toUpperCase();
+    return '<span class="j-cell ' + cls + '">' + [...t].map((ch, i) =>
+      '<span class="fl' + (ch === " " ? " sp" : "") + '" style="--i:' + i + '">' + (ch === " " ? "·" : esc(ch)) + "</span>").join("") + "</span>";
+  };
+  const money = (c) => (c / 100).toFixed(2).replace(".", ",");
+  V.J = { name: "Vertrekbord", render(s) {
+    const head = '<div class="j-row j-hd">' + [["ARTIKEL", W.item], ["AANTAL", W.qty], ...chains.map((c) => [c.name.toUpperCase(), W.price]), ["ADVIES", W.adv]]
+      .map(([t, n]) => '<span' + (t === "AANTAL" ? ' class="j-q"' : "") + ' style="width:calc(var(--f) * .82 * ' + n + " + " + (n - 1) * 2 + 'px)">' + t + "</span>").join("") + "</div>";
+    const rows = s.rows.map((r) => {
+      const win = cheapestFor(r), cheapest = cheapestId(r);
+      const cells = [flaps(r.item.noun, W.item), flaps(qtyText(r.item).replace("×", "X"), W.qty, "dim j-q"),
+        ...chains.map((c) => r.by[c.id] ? flaps(money(r.by[c.id].cost).padStart(W.price), W.price, win === c.id ? "win" : "")
+          : flaps("  --  ", W.price, "dim")),
+        flaps(cheapest ? (win || !r.by[other(cheapest).id] ? nameOf(cheapest) : "GELIJK") : "GEEN", W.adv, "adv" + (cheapest ? "" : " none"))];
+      const key = r.item.id, txt = r.item.noun + "|" + chains.map((c) => r.by[c.id]?.cost).join("|");
+      const flip = jPrev[key] !== txt; jPrev[key] = txt;
+      return '<div class="j-row' + (flip ? " flip" : "") + '">' + cells.join("") + '<button class="j-x" data-act="remove" data-id="' + r.item.id + '" aria-label="Weg">✕</button></div>';
+    }).join("");
+    const totTxt = s.totals.map((t) => t.cost).join("|");
+    const flipT = jPrev.__tot !== totTxt; jPrev.__tot = totTxt;
+    const tot = '<div class="j-row j-tot' + (flipT ? " flip" : "") + '">' + flaps("TOTAAL", W.item) + flaps("", W.qty, "j-q") +
+      s.totals.map((t) => flaps(money(t.cost).padStart(W.price), W.price, s.best && s.best.chain.id === t.chain.id ? "win" : "")).join("") +
+      flaps(s.best ? s.best.chain.name : "?", W.adv, "adv" + (s.best ? "" : " none")) + "</div>";
+    const d = new Date(chains[0].observedAt + "T12:00:00").toLocaleDateString("nl-NL", { weekday: "long", day: "numeric", month: "long" });
+    return '<div class="j-board"><div class="j-top"><h1>BOODSCHAPPEN</h1><span>PRIJZEN ' + esc(d.toUpperCase()) + "</span></div>" + head + rows + tot +
+      '<form class="add j-add"><input name="q" placeholder="typ om toe te voegen · 500 g gehakt" autocomplete="off"><button>OK</button></form></div>' +
+      '<p class="j-note">Geel = goedkoopst voor dat artikel. Advies = waar je het haalt.</p>';
+  } };
+
+  // ── K · Eén voor één ──
+  let kIdx = 0;
+  V.K = { name: "Eén voor één", render(s) {
+    if (!s.rows.length) return '<div class="k-item"><h1>Lege lijst</h1><form class="add k-add"><input name="q" placeholder="Wat moet er in huis komen?" autocomplete="off"><button>Erbij</button></form></div>';
+    kIdx = Math.max(0, Math.min(kIdx, s.rows.length - 1));
+    const r = s.rows[kIdx], at = chainFor(r), cheapest = cheapestId(r);
+    const sides = chains.map((c, ci) => {
+      const l = r.by[c.id];
+      if (!l) return '<div class="k-side s' + ci + ' none"><span class="ch">' + esc(c.name) + '</span><span class="pn">Niet te koop bij ' + esc(c.name) + "</span></div>";
+      const o = r.by[other(c.id).id];
+      const flags = [l.offer ? '<span class="o">' + esc(l.offer) + "</span>" : "", l.over >= 2 ? "<span>pak is " + Math.round(l.over * 10) / 10 + "× wat je nodig hebt</span>" : "",
+        l.packs > 1 ? "<span>" + l.packs + " stuks pakken</span>" : ""].join("");
+      return '<button class="k-side s' + ci + (at === c.id ? " on" : "") + '" data-act="choose" data-id="' + c.id + '">' +
+        (cheapest === c.id && o && o.cost > l.cost ? '<span class="cheaper">' + euro(o.cost - l.cost) + " goedkoper</span>" : "") +
+        '<span class="ch">' + esc(c.name) + '</span><span class="pay">' + euro(l.cost) + '</span><span class="pn">' + esc(l.p.name) + "</span>" +
+        '<span class="meta">' + [l.p.packaging ? esc(l.p.packaging) : "", euro(l.p.unitPriceCents) + per[l.p.comparisonUnit]].filter(Boolean).join(" · ") + "</span>" +
+        '<span class="flags">' + flags + '</span><span class="pick"><i>' + (at === c.id ? "✓" : "") + "</i>" + (at === c.id ? "Hier halen" : "Hier halen?") + "</span></button>";
+    }).join("");
+    const sums = chains.map((c) => {
+      const mine = s.rows.filter((x) => chainFor(x) === c.id);
+      return esc(c.name) + " " + mine.length + "× · " + euro(mine.reduce((n, x) => n + x.by[c.id].cost, 0));
+    }).join(" &nbsp;·&nbsp; ");
+    const total = s.rows.reduce((n, x) => { const c = chainFor(x); return n + (c ? x.by[c].cost : 0); }, 0);
+    const chips = s.rows.map((x, i) => {
+      const c = chainFor(x), ci = chains.findIndex((ch) => ch.id === c);
+      return '<button class="' + (c ? "c" + ci : "cn") + (i === kIdx ? " cur" : "") + '" data-act="jump" data-id="' + i + '">' + esc(x.item.noun) + "</button>";
+    }).join("");
+    return '<div class="k-top"><span class="count">Artikel ' + (kIdx + 1) + " van " + s.rows.length + '</span><span class="nav">' +
+      '<button data-act="kprev" aria-label="Vorige"' + (kIdx === 0 ? " disabled" : "") + ">‹</button>" +
+      '<button data-act="knext" aria-label="Volgende"' + (kIdx === s.rows.length - 1 ? " disabled" : "") + ">›</button></span></div>" +
+      '<div class="k-item"><h1>' + esc(r.item.noun) + '</h1><div class="q">' + qtyText(r.item) +
+      '<span class="acts">' + acts(r.item, "vaste boodschap", "van de lijst") + "</span></div></div>" +
+      '<div class="k-split">' + sides + "</div>" +
+      '<div class="k-strip"><div class="sum"><span>' + sums + "</span><span>Samen <b>" + euro(total) + "</b></span></div>" +
+      '<div class="k-chips">' + chips + "</div>" +
+      '<form class="add k-add"><input name="q" placeholder="Iets vergeten? 500 g rundergehakt" autocomplete="off"><button>Erbij</button></form></div>';
+  } };
+
+  // ── L · Plattegrond ──
+  const DEPTS = [
+    { id: "agf", name: "Groente & fruit", c: "#3f8f4e", area: "1 / 2", keys: ["aardappel", "champignon", "courgette", "broccoli", "komkommer", "uien", "ui", "wortel", "spinazie", "tomat", "appel", "banaan", "sla", "paprika", "prei", "peer", "citroen"] },
+    { id: "brood", name: "Brood", c: "#c08a2e", area: "1 / 3", keys: ["brood", "croissant", "beschuit"] },
+    { id: "houd", name: "Houdbaar", c: "#7a5bb0", area: "2 / 3", keys: ["pindakaas", "rijst", "pasta", "saus", "olie", "koffie", "thee", "hagelslag", "jam", "soep", "bonen"] },
+    { id: "zuivel", name: "Zuivel & eieren", c: "#3b6fb6", area: "2 / 2", keys: ["melk", "eier", "ei", "kaas", "yoghurt", "boter", "room", "vla", "kwark"] },
+    { id: "vlees", name: "Vlees & vis", c: "#b33a2c", area: "2 / 1", keys: ["gehakt", "kip", "vlees", "worst", "vis", "zalm", "spek", "biefstuk", "ham"] },
+    { id: "diep", name: "Diepvries", c: "#2aa3b8", area: "3 / 1", keys: ["diepvries", "ijs", "friet"] },
+    { id: "rest", name: "Overig", c: "#6b7780", area: "3 / 2", keys: [] },
+  ];
+  const deptOf = (item) => {
+    const ws = item.noun.toLowerCase().split(/[^\p{L}]+/u);
+    return DEPTS.find((d) => d.keys.some((k) => ws.some((w) => w === k || (k.length > 2 && (w.startsWith(k) || w.endsWith(k)))))) || DEPTS[DEPTS.length - 1];
+  };
+  let lChain = null;
+  V.L = { name: "Plattegrond", render(s) {
+    if (!lChain) lChain = (s.best || s.totals.slice().sort((a, b) => b.filled - a.filled || a.cost - b.cost)[0]).chain.id;
+    const seg = s.totals.map((t) => '<button data-act="lchain" data-id="' + t.chain.id + '" aria-pressed="' + (t.chain.id === lChain) + '"><span class="k">' +
+      esc(t.chain.name) + (s.best && s.best.chain.id === t.chain.id ? " · goedkoopst" : "") + '</span><span class="v">' + (t.filled < t.total ? "≥" : "") + euro(t.cost) + "</span></button>").join("");
+    let n = 0;
+    const byDept = DEPTS.map((d) => ({ d, rows: s.rows.filter((r) => deptOf(r.item) === d).map((r) => ({ r, no: 0 })) }));
+    for (const g of byDept) for (const x of g.rows) x.no = ++n;
+    const tiles = byDept.map(({ d, rows }) => '<div class="dept' + (rows.length ? " has" : "") + '" data-dept="' + d.id + '" style="--c:' + d.c + ";grid-area:" + d.area + '">' +
+      '<div class="dn"><i></i>' + d.name + '</div><div class="pins">' + rows.map(({ r, no }) => '<span class="pin' + (r.by[lChain] ? "" : " miss") + '" title="' + esc(r.item.noun) + '">' + no + "</span>").join("") + "</div></div>").join("") +
+      '<div class="dept door" data-dept="door" style="grid-area:1 / 1">INGANG</div><div class="dept till" data-dept="till" style="grid-area:3 / 3">KASSA</div>';
+    const here = nameOf(lChain), there = other(lChain);
+    const list = byDept.filter((g) => g.rows.length).map(({ d, rows }) => '<div class="l-sec" style="--c:' + d.c + '">' + d.name + "</div>" + rows.map(({ r, no }) => {
+      const l = r.by[lChain], o = r.by[there.id];
+      const alt = o ? '<span class="alt' + (!l || o.cost < l.cost ? " cheaper" : "") + '">' + esc(there.name) + " " + euro(o.cost) + "</span>" : '<span class="alt"></span>';
+      return '<div class="l-it" style="--c:' + d.c + '"><span class="pin' + (l ? "" : " miss") + '">' + no + '</span><span class="n">' + esc(r.item.noun) + '<span class="q">' + qtyText(r.item) + "</span></span>" +
+        '<span class="p">' + (l ? euro(l.cost) : "—") + '</span><span class="pn">' + (l ? esc(l.p.name) + (l.offer ? " · " + esc(l.offer) : "") : "niet bij " + esc(here)) + "</span>" + alt +
+        '<span class="acts">' + acts(r.item, "vast", "weg") + "</span></div>";
+    }).join("")).join("");
+    return '<div class="l-wrap"><div class="l-head"><h1>Jouw route door de winkel<small>Genummerd in looproute. Rood omrand = hier niet te koop.</small></h1><div class="l-seg">' + seg + "</div></div>" +
+      '<div class="l-body"><div><div class="l-plan"><svg id="route"></svg><div class="l-grid">' + tiles + "</div></div>" +
+      '<form class="add l-add"><input name="q" placeholder="500 g rundergehakt" autocomplete="off"><button>Erbij</button></form></div>' +
+      '<div class="l-list">' + (list || '<p style="padding:14px 16px">Lege lijst.</p>') + "</div></div></div>";
+  }, after() {
+    // Dashed walking route through the department centres.
+    const plan = root.querySelector(".l-plan"), svg = root.querySelector("#route");
+    if (!plan || !svg) return;
+    const box = plan.getBoundingClientRect();
+    const pts = ["door", "agf", "brood", "houd", "zuivel", "vlees", "diep", "rest", "till"].map((id) => {
+      const r = plan.querySelector('[data-dept="' + id + '"]').getBoundingClientRect();
+      return (r.left + r.width / 2 - box.left) + "," + (r.top + r.height / 2 - box.top);
+    });
+    svg.setAttribute("viewBox", "0 0 " + box.width + " " + box.height);
+    svg.innerHTML = '<polyline points="' + pts.join(" ") + '" fill="none" stroke="#182026" stroke-width="4" stroke-dasharray="1 10" stroke-linecap="round" opacity=".6"/>';
+  } };
+
   // ── Wiring ──
-  // Round 2 is what the bar cycles; round 1 (A, C, D) is still reachable by ?variant=.
-  const keys = ["B", "E", "F", "G", "H"];
+  // Round 3 is what the bar cycles, with B as the reference; earlier rounds stay reachable by ?variant=.
+  const keys = ["B", "I", "J", "K", "L"];
   const root = document.getElementById("root");
   let current = new URLSearchParams(location.search).get("variant");
   if (!V[current]) current = "B";
@@ -913,6 +1271,7 @@
     document.getElementById("vlabel").textContent = current + " · " + V[current].name;
     const focused = document.activeElement && document.activeElement.name === "q";
     root.innerHTML = V[current].render(snapshot());
+    V[current].after?.();
     if (focused) root.querySelector("input[name=q]")?.focus();
   }
   function go(step) {
@@ -948,6 +1307,19 @@
       case "shop": shopAt = id; break;
       case "sort": sortBySaving = !sortBySaving; break;
       case "nextweek": folderNextWeek = !folderNextWeek; break;
+      case "move": {
+        const r = snapshot().rows.find((x) => x.item.id === id), to = r && other(chainFor(r));
+        if (to && r.by[to.id]) choice[id] = to.id;
+        break;
+      }
+      case "mode":
+        for (const i of list) { if (id === "cheap") delete choice[i.id]; else choice[i.id] = id; }
+        break;
+      case "choose": choice[list[kIdx].id] = id; break;
+      case "jump": kIdx = Number(id); break;
+      case "kprev": kIdx--; break;
+      case "knext": kIdx++; break;
+      case "lchain": lChain = id; break;
       case "finish": list = list.filter((i) => i.staple || !done.has(i.id)); done.clear(); break;
     }
     render();
