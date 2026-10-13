@@ -4,9 +4,14 @@ A throwaway UI prototype for the one screen the whole product rests on: a
 Basket, priced at every Chain, with Coverage inseparable from the total.
 
 ```sh
-node scripts/basket-from-db.ts > prototype/fixture.json
-# then inline fixture.json into the __FIXTURE__ slot in basket.html
+node scripts/catalogue-from-db.ts   # after each ingest; writes prototype/catalogue.js
+# then open prototype/basket.html in a browser, straight from disk
 ```
+
+The list is editable: type "500 g rundergehakt" and every Chain resolves it
+in the browser against its whole comparable catalogue. Items can be marked
+staples, which survive **Done shopping**; the list and any Corrections are kept
+in this browser's storage, for one user, with no server.
 
 ## What it is testing
 
@@ -57,5 +62,6 @@ larger than the requirement, so cells flag "pack is 10x what you need".
 
 ## Not built here
 
-No persistence, no accounts, no real Jumbo, no Recipes, and no attempt at
-own-brand equivalence. This is a design probe, not a slice of the product.
+No server, no accounts, no sharing between devices, no Recipes, no
+Suggestions, and no attempt at own-brand equivalence. Corrections stay in one
+browser rather than being folded back into a shared vocabulary (ADR-0004).

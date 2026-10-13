@@ -13,3 +13,8 @@ node_modules/
 # Generated from the archive by scripts/build-ui-fixture.ts, and inlined into
 # prototype/basket.html at publish time. Rebuildable, so not tracked.
 prototype/fixture.json
+
+# Every comparable Product, written from the database by
+# scripts/catalogue-from-db.ts for the basket page. Megabytes, rebuilt after
+# each ingest, so not tracked.
+prototype/catalogue.js
