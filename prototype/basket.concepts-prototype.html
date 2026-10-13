@@ -1,0 +1,690 @@
+<!--
+  PROTOTYPE, throwaway. Three concepts, each a different organising idea, each
+  with all three jobs (list, compare, shop), each built for many chains and a
+  phone first. Switch with the bar at the top or ?variant=A..C.
+
+    A  Ranglijst    — shops ranked like a race: position, total, gap to the leader;
+                      every item gets a podium
+    B  Prijsraster  — items × shops, each cell coloured cheap→dear within its row;
+                      the colour is where the difference is
+    C  Samensteller — per item, a row of shop chips sorted by price; tap where you
+                      buy it, a running receipt counts shops and money
+
+  Dirk and Jumbo are real. "6" adds four EXAMPLE chains with invented names and
+  prices derived from the real ones, marked "vb" everywhere — only to test scale.
+  In-memory state. Open from disk after `node scripts/catalogue-from-db.ts`.
+-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>mealdeal · concepts prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@500;600;700&family=Barlow+Condensed:ital,wght@0,700;1,700;1,800&family=JetBrains+Mono:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-size: 16px; line-height: 1.4; padding-top: calc(46px + env(safe-area-inset-top)); }
+  button, input { font: inherit; color: inherit; }
+  [hidden] { display: none !important; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 14px 16px 130px; }
+
+  /* ── Prototype bar: not part of any design ─────────────────────────── */
+  .proto {
+    position: fixed; top: calc(6px + env(safe-area-inset-top)); left: 50%; transform: translateX(-50%); z-index: 90;
+    display: flex; align-items: center; gap: 4px; background: #111; color: #fff; border-radius: 999px; padding: 4px;
+    font: 600 12.5px/1 ui-sans-serif, system-ui, sans-serif; box-shadow: 0 4px 18px rgba(0,0,0,.3); white-space: nowrap;
+  }
+  .proto button { border: 0; background: #2a2a2a; color: #fff; border-radius: 999px; height: 28px; min-width: 28px; padding: 0 9px; cursor: pointer; }
+  .proto button[aria-pressed="true"] { background: #fff; color: #111; }
+  .proto .lbl { padding: 0 8px; }
+  .proto .sep { width: 1px; height: 18px; background: #444; margin: 0 4px; }
+
+  /* Shared bits every concept restyles */
+  .tag { display: inline-flex; align-items: center; gap: 5px; font-weight: 700; white-space: nowrap; }
+  .tag::before { content: ""; width: 9px; height: 9px; border-radius: 2px; background: var(--c); flex: none; }
+  .vb { font-size: 10px; font-weight: 800; letter-spacing: .05em; border: 1.5px dashed currentColor; border-radius: 4px; padding: 0 4px; opacity: .7; text-transform: uppercase; }
+  .nav { display: flex; gap: 4px; }
+  .nav button { cursor: pointer; }
+  .nav .ic { display: none; }
+  @media (max-width: 720px) {
+    .nav.top { display: none; }
+    .nav.bottom { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; padding: 6px 8px calc(6px + env(safe-area-inset-bottom)); justify-content: space-around; }
+    .nav.bottom button { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 2px; font-size: 13px; }
+    .nav.bottom .ic { display: block; font-size: 19px; line-height: 1; }
+  }
+  @media (min-width: 721px) { .nav.bottom { display: none; } }
+  .add { display: flex; }
+  .add input { flex: 1; min-width: 0; outline: none; }
+  .hint { min-height: 1.3em; margin: 6px 2px 0; font-size: 14px; }
+
+  /* ════════════════════════════════════════════════════════════════════
+     A · RANGLIJST — race standings
+     ════════════════════════════════════════════════════════════════════ */
+  body[data-v="A"] { --ink: #0e0e0e; --mute: #6e6e6a; --line: #dedcd5; --bg: #f4f3ef; --card: #fff; --lime: #d6ff3d; --bad: #d4321c; --good: #1d7a3a;
+    background: var(--bg); color: var(--ink); font-family: Barlow, system-ui, sans-serif; }
+  .A-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 8px 0 4px; }
+  .A-brand { font: italic 800 26px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .01em; }
+  .A-brand b { background: var(--ink); color: var(--lime); padding: 0 6px; margin-right: 2px; }
+  body[data-v="A"] .nav.top button { border: 0; background: transparent; font: italic 700 18px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; padding: 10px 14px; transform: skewX(-10deg); }
+  body[data-v="A"] .nav.top button[aria-current="page"] { background: var(--ink); color: var(--lime); }
+  body[data-v="A"] .nav.bottom { background: var(--ink); }
+  body[data-v="A"] .nav.bottom button { border: 0; background: transparent; color: #aaa; font: italic 700 15px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; }
+  body[data-v="A"] .nav.bottom button[aria-current="page"] { color: var(--lime); }
+  .A-h1 { font: italic 800 clamp(40px, 9vw, 78px)/.9 "Barlow Condensed", sans-serif; text-transform: uppercase; margin: 14px 0 4px; letter-spacing: -.01em; }
+  .A-sub { color: var(--mute); margin: 0 0 16px; font-weight: 600; }
+  .A-sec { display: flex; align-items: baseline; gap: 10px; margin: 30px 0 8px; border-bottom: 3px solid var(--ink); padding-bottom: 4px; }
+  .A-sec h2 { font: italic 800 26px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; margin: 0; }
+  .A-sec span { color: var(--mute); font-size: 14px; font-weight: 600; }
+  .A-board { display: grid; gap: 4px; }
+  .A-row {
+    border: 0; width: 100%; text-align: left; cursor: pointer; background: var(--card); display: grid; align-items: center;
+    grid-template-columns: 52px 6px minmax(0, 1fr) 70px 104px 96px; gap: 0 12px; padding: 10px 14px 10px 0; position: relative;
+  }
+  .A-row .pos { font: italic 800 30px/1 "Barlow Condensed", sans-serif; text-align: center; }
+  .A-row .bar { align-self: stretch; background: var(--c); }
+  .A-row .nm { font-weight: 700; font-size: 19px; display: flex; flex-wrap: wrap; align-items: center; gap: 2px 8px; min-width: 0; }
+  .A-row .gapbar { grid-column: 3; height: 5px; background: var(--line); margin-top: 6px; position: relative; }
+  .A-row .gapbar i { position: absolute; inset: 0 auto 0 0; background: var(--bad); }
+  .A-row .cov { font: 600 14px/1 "JetBrains Mono", monospace; color: var(--mute); text-align: right; white-space: nowrap; }
+  .A-row .cov.bad { color: var(--bad); }
+  .A-row .tot { font: 700 22px/1 "JetBrains Mono", monospace; text-align: right; }
+  .A-row .gap { font: 700 16px/1 "JetBrains Mono", monospace; text-align: right; color: var(--bad); }
+  .A-row.lead { background: var(--ink); color: #fff; }
+  .A-row.lead .pos { color: var(--lime); } .A-row.lead .gap { color: var(--lime); } .A-row.lead .cov { color: #aaa; }
+  .A-row[aria-pressed="true"]::after { content: "✓ gekozen"; position: absolute; right: 14px; top: -9px; background: var(--lime); color: var(--ink); font: italic 800 13px/1 "Barlow Condensed", sans-serif; padding: 3px 7px; text-transform: uppercase; }
+  .A-row.combo .pos { font-size: 15px; }
+  .A-row.combo .bar { background: linear-gradient(var(--c1) 0 50%, var(--c2) 50%); }
+  .A-divider { font: italic 700 15px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; color: var(--mute); padding: 12px 0 4px 66px; }
+  .A-loss { background: var(--card); margin: -2px 0 6px 58px; padding: 8px 14px; font-size: 14px; color: var(--mute); border-left: 3px solid var(--bad); }
+  .A-loss b { color: var(--ink); }
+  .A-pod { display: grid; grid-template-columns: minmax(130px, 200px) 1fr; gap: 6px 14px; background: var(--card); padding: 12px 14px; align-items: start; }
+  .A-pod + .A-pod { margin-top: 4px; }
+  .A-pod .it { font-weight: 700; font-size: 18px; line-height: 1.1; }
+  .A-pod .it small { display: block; color: var(--mute); font-weight: 600; font-size: 14px; }
+  .A-pod ol { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  .A-pod li { display: flex; align-items: center; gap: 6px; border: 1.5px solid var(--line); padding: 4px 8px 4px 0; font-size: 14px; }
+  .A-pod li .p { font: italic 800 17px/1 "Barlow Condensed", sans-serif; width: 24px; text-align: center; }
+  .A-pod li .v { font: 700 14px/1 "JetBrains Mono", monospace; }
+  .A-pod li.first { background: var(--lime); border-color: var(--ink); }
+  .A-pod li.first .v { font-size: 15px; }
+  .A-pod li .d { font: 700 13px/1 "JetBrains Mono", monospace; color: var(--bad); }
+  .A-pod li.more { color: var(--mute); border-style: dashed; padding-left: 8px; }
+  body[data-v="A"] .add { background: var(--card); border: 3px solid var(--ink); }
+  body[data-v="A"] .add input { border: 0; background: transparent; padding: 12px 14px; font-size: 18px; font-weight: 600; }
+  body[data-v="A"] .add button { border: 0; background: var(--ink); color: var(--lime); font: italic 800 20px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; padding: 0 20px; cursor: pointer; }
+  .A-li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; background: var(--card); padding: 12px 14px; align-items: center; }
+  .A-li + .A-li { margin-top: 4px; }
+  .A-li .nm { font-weight: 700; font-size: 18px; }
+  .A-li .nm small { color: var(--mute); font-size: 15px; margin-left: 6px; font-weight: 600; }
+  .A-li .win { grid-column: 1; font-size: 14px; display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; color: var(--mute); font-weight: 600; }
+  .A-li .win .p1 { background: var(--lime); color: var(--ink); padding: 1px 7px; font: italic 800 14px/1.3 "Barlow Condensed", sans-serif; }
+  .A-li .win .v { font: 700 14px/1 "JetBrains Mono", monospace; color: var(--ink); }
+  .A-li .win .d { font: 700 13px/1 "JetBrains Mono", monospace; color: var(--bad); }
+  .A-li .ops { grid-column: 2; grid-row: 1 / 3; display: flex; gap: 4px; }
+  .A-li .ops button { border: 1.5px solid var(--line); background: transparent; width: 38px; height: 38px; cursor: pointer; font-size: 15px; }
+  .A-li .ops button[aria-pressed="true"] { background: var(--ink); color: var(--lime); border-color: var(--ink); }
+  .A-cta { margin-top: 18px; display: flex; flex-wrap: wrap; gap: 8px 16px; justify-content: space-between; align-items: center; background: var(--ink); color: #fff; padding: 14px 16px; }
+  .A-cta b { font: 700 22px/1 "JetBrains Mono", monospace; color: var(--lime); }
+  .A-cta button { border: 0; background: var(--lime); color: var(--ink); font: italic 800 18px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; padding: 10px 16px; cursor: pointer; }
+  .A-shop { margin-top: 18px; }
+  .A-shop header { display: flex; justify-content: space-between; align-items: baseline; border-left: 8px solid var(--c); padding: 6px 10px; background: var(--ink); color: #fff; }
+  .A-shop header b { font: italic 800 24px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; }
+  .A-shop header span { font: 700 16px/1 "JetBrains Mono", monospace; color: var(--lime); }
+  .A-ci { border: 0; width: 100%; text-align: left; cursor: pointer; display: grid; grid-template-columns: 44px 1fr auto; gap: 0 10px; align-items: center; background: var(--card); padding: 10px 14px 10px 6px; margin-top: 3px; }
+  .A-ci .t { width: 28px; height: 28px; border: 3px solid var(--ink); justify-self: center; display: grid; place-items: center; font-weight: 900; transform: skewX(-10deg); }
+  .A-ci .nm { font-weight: 700; font-size: 17px; }
+  .A-ci .g { grid-column: 2; font-size: 14px; color: var(--mute); }
+  .A-ci .v { grid-column: 3; grid-row: 1 / 3; font: 700 17px/1 "JetBrains Mono", monospace; }
+  .A-ci.done { opacity: .45; } .A-ci.done .t { background: var(--ink); color: var(--lime); } .A-ci.done .nm { text-decoration: line-through 2px; }
+  .A-lap { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(14px + env(safe-area-inset-bottom)); width: min(560px, calc(100% - 24px)); background: var(--ink); color: #fff; display: flex; gap: 12px; align-items: center; padding: 10px 14px; z-index: 40; }
+  .A-lap b { font: 700 18px/1 "JetBrains Mono", monospace; color: var(--lime); }
+  .A-lap .tr { flex: 1; height: 6px; background: #333; } .A-lap .tr i { display: block; height: 100%; background: var(--lime); }
+  .A-lap button { border: 0; background: var(--lime); color: var(--ink); font: italic 800 15px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; padding: 8px 12px; cursor: pointer; }
+  @media (max-width: 720px) {
+    .A-row { grid-template-columns: 40px 5px minmax(0, 1fr) auto; padding: 10px 12px 10px 0; gap: 0 10px; }
+    .A-row .pos { font-size: 24px; grid-row: 1 / 3; }
+    .A-row .bar { grid-row: 1 / 3; }
+    .A-row .nm { font-size: 17px; }
+    .A-row .cov { grid-column: 3; grid-row: 2; text-align: left; font-size: 12px; margin-top: 4px; }
+    .A-row .tot { grid-column: 4; grid-row: 1; font-size: 19px; }
+    .A-row .gap { grid-column: 4; grid-row: 2; font-size: 14px; margin-top: 4px; }
+    .A-row .gapbar { grid-column: 3 / -1; grid-row: 3; }
+    .A-row[aria-pressed="true"]::after { right: 8px; }
+    .A-divider { padding-left: 50px; }
+    .A-loss { margin-left: 45px; }
+    .A-pod { grid-template-columns: 1fr; }
+    .A-lap { bottom: calc(66px + env(safe-area-inset-bottom)); }
+  }
+
+  /* ════════════════════════════════════════════════════════════════════
+     B · PRIJSRASTER — the matrix
+     ════════════════════════════════════════════════════════════════════ */
+  body[data-v="B"] { --ink: #1b1d21; --mute: #6c7078; --line: #e3e0d8; --bg: #fbf9f4; --card: #fff; --sel: #1b1d21;
+    background: var(--bg); color: var(--ink); font-family: "IBM Plex Sans", system-ui, sans-serif; }
+  .B-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+  .B-brand { font: 600 20px/1 "IBM Plex Mono", monospace; letter-spacing: -.02em; }
+  .B-brand span { display: inline-block; width: 12px; height: 12px; margin-right: 2px; background: linear-gradient(90deg, #8fd6b8 0 33%, #f2dd8c 33% 66%, #f0a58f 66%); }
+  body[data-v="B"] .nav.top button { border: 0; background: transparent; padding: 8px 12px; font-weight: 600; color: var(--mute); border-bottom: 2px solid transparent; }
+  body[data-v="B"] .nav.top button[aria-current="page"] { color: var(--ink); border-bottom-color: var(--ink); }
+  body[data-v="B"] .nav.bottom { background: var(--card); border-top: 1px solid var(--line); }
+  body[data-v="B"] .nav.bottom button { border: 0; background: transparent; color: var(--mute); font-weight: 600; }
+  body[data-v="B"] .nav.bottom button[aria-current="page"] { color: var(--ink); }
+  .B-h1 { font-size: clamp(26px, 5vw, 38px); font-weight: 600; letter-spacing: -.02em; margin: 18px 0 4px; line-height: 1.1; }
+  .B-sub { color: var(--mute); margin: 0 0 14px; }
+  .B-legend { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--mute); margin: 0 0 10px; flex-wrap: wrap; }
+  .B-legend i { width: 120px; height: 10px; border-radius: 2px; background: linear-gradient(90deg, #8fd6b8, #f2dd8c, #f0a58f); }
+  .B-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--card); -webkit-overflow-scrolling: touch; }
+  .B-grid { border-collapse: separate; border-spacing: 0; width: 100%; font-variant-numeric: tabular-nums; }
+  .B-grid th, .B-grid td { padding: 0; border-bottom: 1px solid var(--line); }
+  .B-grid .rh { position: sticky; left: 0; z-index: 2; background: var(--card); text-align: left; padding: 8px 10px; min-width: 128px; max-width: 170px; box-shadow: 1px 0 0 var(--line), 6px 0 8px -6px rgba(0,0,0,.12); font-weight: 600; }
+  .B-grid .rh small { display: block; color: var(--mute); font-weight: 400; font-size: 13px; }
+  .B-grid thead th { vertical-align: bottom; }
+  .B-col { border: 0; background: transparent; cursor: pointer; width: 100%; min-width: 74px; padding: 10px 6px 8px; text-align: center; display: grid; gap: 3px; justify-items: center; border-top: 4px solid var(--c); }
+  .B-col .n { font-weight: 600; font-size: 14px; line-height: 1.1; }
+  .B-col .t { font: 600 16px/1 "IBM Plex Mono", monospace; }
+  .B-col .d { font: 600 12px/1 "IBM Plex Mono", monospace; color: #b0402a; }
+  .B-col .d.z { color: #1d7a52; }
+  .B-col .cv { font-size: 11px; color: var(--mute); }
+  .B-col[aria-pressed="true"] { background: var(--sel); color: #fff; } .B-col[aria-pressed="true"] .cv, .B-col[aria-pressed="true"] .d { color: #fff; opacity: .85; }
+  .B-cell { text-align: center; font: 500 15px/1 "IBM Plex Mono", monospace; padding: 12px 6px !important; position: relative; }
+  .B-cell.min { font-weight: 600; }
+  .B-cell.min::after { content: ""; position: absolute; inset: 4px; border: 2px solid var(--ink); border-radius: 4px; }
+  .B-cell.no { background: repeating-linear-gradient(-45deg, #f3f1ec 0 6px, #ebe8e1 6px 12px); color: var(--mute); }
+  .B-cell.sel { box-shadow: inset 3px 0 0 var(--sel), inset -3px 0 0 var(--sel); }
+  .B-foot td { font: 600 15px/1 "IBM Plex Mono", monospace; text-align: center; padding: 12px 6px; background: #f6f3ec; }
+  .B-foot .rh { background: #f6f3ec; }
+  .B-combo { margin: 14px 0 0; display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; justify-content: space-between; border: 1px dashed var(--ink); border-radius: 10px; padding: 12px 14px; background: var(--card); }
+  .B-combo button { border: 1px solid var(--ink); background: transparent; border-radius: 8px; padding: 8px 12px; font-weight: 600; cursor: pointer; }
+  .B-combo button[aria-pressed="true"] { background: var(--ink); color: #fff; }
+  body[data-v="B"] .add { border: 1px solid var(--ink); border-radius: 10px; background: var(--card); overflow: hidden; }
+  body[data-v="B"] .add input { border: 0; background: transparent; padding: 12px 14px; font-size: 17px; }
+  body[data-v="B"] .add button { border: 0; background: var(--ink); color: #fff; padding: 0 18px; font-weight: 600; cursor: pointer; }
+  .B-li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 12px; padding: 12px 2px; border-bottom: 1px solid var(--line); align-items: center; }
+  .B-li .nm { font-weight: 600; font-size: 17px; }
+  .B-li .nm small { color: var(--mute); font-weight: 400; margin-left: 6px; }
+  .B-li .strip { grid-column: 1; display: flex; gap: 2px; align-items: center; flex-wrap: wrap; }
+  .B-li .strip i { width: 26px; height: 18px; border-radius: 3px; position: relative; }
+  .B-li .strip i.min::after { content: ""; position: absolute; inset: -2px; border: 2px solid var(--ink); border-radius: 4px; }
+  .B-li .strip i.no { background: repeating-linear-gradient(-45deg, #f3f1ec 0 4px, #e3e0d8 4px 8px); }
+  .B-li .strip span { font-size: 13px; color: var(--mute); margin-left: 8px; }
+  .B-li .strip span b { color: var(--ink); font-family: "IBM Plex Mono", monospace; }
+  .B-li .ops { grid-column: 2; grid-row: 1 / 3; display: flex; gap: 4px; }
+  .B-li .ops button { border: 1px solid var(--line); background: var(--card); border-radius: 8px; width: 36px; height: 36px; cursor: pointer; }
+  .B-li .ops button[aria-pressed="true"] { background: var(--ink); color: #fff; }
+  .B-sec { font: 600 13px/1 "IBM Plex Mono", monospace; text-transform: uppercase; letter-spacing: .08em; color: var(--mute); margin: 26px 0 4px; }
+  .B-cta { margin-top: 18px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+  .B-cta button { border: 1px solid var(--ink); background: var(--ink); color: #fff; border-radius: 10px; padding: 10px 14px; font-weight: 600; cursor: pointer; }
+  .B-cta button.ghost { background: transparent; color: var(--ink); }
+  .B-shop { margin-top: 18px; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--card); }
+  .B-shop header { display: flex; justify-content: space-between; padding: 10px 14px; border-top: 5px solid var(--c); background: #f6f3ec; font-weight: 600; }
+  .B-shop header span { font-family: "IBM Plex Mono", monospace; }
+  .B-ci { border: 0; border-top: 1px solid var(--line); width: 100%; text-align: left; background: transparent; cursor: pointer; display: grid; grid-template-columns: 40px 1fr auto; align-items: center; gap: 0 10px; padding: 10px 14px 10px 4px; }
+  .B-ci .t { width: 22px; height: 22px; border: 1.5px solid var(--ink); border-radius: 5px; justify-self: center; display: grid; place-items: center; font-size: 14px; }
+  .B-ci .nm { font-weight: 600; } .B-ci .g { grid-column: 2; font-size: 13px; color: var(--mute); }
+  .B-ci .v { grid-column: 3; grid-row: 1 / 3; font-family: "IBM Plex Mono", monospace; font-weight: 600; }
+  .B-ci.done { opacity: .45; } .B-ci.done .t { background: var(--ink); color: #fff; } .B-ci.done .nm { text-decoration: line-through; }
+  .B-prog { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(14px + env(safe-area-inset-bottom)); width: min(540px, calc(100% - 24px)); background: var(--card); border: 1px solid var(--ink); border-radius: 10px; padding: 10px 14px; display: flex; gap: 12px; align-items: center; z-index: 40; font-family: "IBM Plex Mono", monospace; }
+  .B-prog .tr { flex: 1; height: 6px; background: var(--line); border-radius: 3px; } .B-prog .tr i { display: block; height: 100%; background: #1d7a52; border-radius: 3px; }
+  .B-prog button { border: 0; background: var(--ink); color: #fff; border-radius: 6px; padding: 6px 10px; cursor: pointer; font-family: "IBM Plex Sans", sans-serif; font-weight: 600; }
+  @media (max-width: 720px) { .B-prog { bottom: calc(68px + env(safe-area-inset-bottom)); } .B-grid .rh { min-width: 108px; max-width: 128px; font-size: 14px; } .B-col { min-width: 64px; } .B-cell { font-size: 13.5px; } }
+
+  /* ════════════════════════════════════════════════════════════════════
+     C · SAMENSTELLER — choose per item, running receipt
+     ════════════════════════════════════════════════════════════════════ */
+  body[data-v="C"] { --ink: #13201c; --mute: #5f6f6a; --line: #d5e3de; --bg: #eaf3ef; --card: #fff; --acc: #13201c; --bad: #c2412b; --good: #1d7a52;
+    background: var(--bg); color: var(--ink); font-family: "Plus Jakarta Sans", system-ui, sans-serif; }
+  .C-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 8px 0; }
+  .C-brand { font-weight: 800; font-size: 22px; letter-spacing: -.03em; }
+  .C-brand span { color: var(--good); }
+  body[data-v="C"] .nav.top { background: var(--card); border-radius: 14px; padding: 4px; }
+  body[data-v="C"] .nav.top button { border: 0; background: transparent; border-radius: 10px; padding: 8px 14px; font-weight: 700; color: var(--mute); }
+  body[data-v="C"] .nav.top button[aria-current="page"] { background: var(--ink); color: #fff; }
+  body[data-v="C"] .nav.bottom { background: var(--card); box-shadow: 0 -1px 0 var(--line); }
+  body[data-v="C"] .nav.bottom button { border: 0; background: transparent; border-radius: 12px; color: var(--mute); font-weight: 700; }
+  body[data-v="C"] .nav.bottom button[aria-current="page"] { background: var(--bg); color: var(--ink); }
+  .C-h1 { font-size: clamp(28px, 6vw, 42px); font-weight: 800; letter-spacing: -.035em; margin: 16px 0 4px; line-height: 1.05; }
+  .C-sub { color: var(--mute); margin: 0 0 14px; }
+  .C-modes { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 10px; }
+  .C-modes button { flex: none; border: 1.5px solid var(--ink); background: transparent; border-radius: 999px; padding: 7px 14px; font-weight: 700; cursor: pointer; font-size: 14px; }
+  .C-modes button[aria-pressed="true"] { background: var(--ink); color: #fff; }
+  .C-it { background: var(--card); border-radius: 18px; padding: 12px 0 12px; box-shadow: 0 1px 0 var(--line); }
+  .C-it + .C-it { margin-top: 8px; }
+  .C-it .top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 0 14px; }
+  .C-it .nm { font-weight: 800; font-size: 18px; }
+  .C-it .nm small { color: var(--mute); font-weight: 600; font-size: 15px; margin-left: 6px; }
+  .C-it .got { font-weight: 800; font-size: 18px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .C-it .got small { display: block; text-align: right; font-size: 12px; font-weight: 700; color: var(--bad); }
+  .C-it .got small.z { color: var(--good); }
+  .C-chips { display: flex; gap: 6px; overflow-x: auto; scroll-snap-type: x proximity; padding: 10px 14px 2px; scrollbar-width: none; }
+  .C-chips::-webkit-scrollbar { display: none; }
+  .C-chip {
+    flex: none; scroll-snap-align: start; border: 1.5px solid var(--line); background: var(--card); border-radius: 12px; padding: 6px 10px 6px 8px; cursor: pointer;
+    display: grid; grid-template-columns: auto auto; gap: 0 6px; align-items: center; text-align: left; min-width: 96px;
+  }
+  .C-chip .dot { width: 10px; height: 10px; border-radius: 3px; background: var(--c); grid-row: 1 / 3; }
+  .C-chip .n { font-size: 13px; font-weight: 700; white-space: nowrap; }
+  .C-chip .v { font-size: 14px; font-weight: 800; font-variant-numeric: tabular-nums; color: var(--bad); }
+  .C-chip .v.z { color: var(--good); }
+  .C-chip.on { border-color: var(--c); background: var(--c); color: #fff; }
+  .C-chip.on .v { color: #fff; } .C-chip.on .dot { background: #fff; }
+  .C-chip.no { opacity: .45; cursor: default; border-style: dashed; }
+  .C-it .ops { display: flex; gap: 2px; padding: 6px 10px 0; }
+  .C-it .ops button { border: 0; background: transparent; color: var(--mute); font-size: 13px; font-weight: 700; padding: 4px 6px; cursor: pointer; border-radius: 8px; }
+  .C-it .ops button[aria-pressed="true"] { background: var(--bg); color: var(--ink); }
+  body[data-v="C"] .add { background: var(--card); border-radius: 16px; padding: 5px; box-shadow: 0 1px 0 var(--line); }
+  body[data-v="C"] .add input { border: 0; background: transparent; padding: 10px 12px; font-size: 17px; font-weight: 600; }
+  body[data-v="C"] .add button { border: 0; background: var(--ink); color: #fff; border-radius: 12px; padding: 0 18px; font-weight: 800; cursor: pointer; }
+  .C-bon {
+    position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(14px + env(safe-area-inset-bottom)); z-index: 45; width: min(640px, calc(100% - 20px));
+    background: var(--ink); color: #fff; border-radius: 18px; padding: 10px 12px 10px 14px; box-shadow: 0 14px 34px rgba(10, 30, 25, .35); display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; align-items: center;
+  }
+  .C-bon .shops { display: flex; gap: 4px; flex-wrap: wrap; }
+  .C-bon .shops span { display: inline-flex; gap: 5px; align-items: center; background: rgba(255,255,255,.1); border-radius: 999px; padding: 3px 9px 3px 7px; font-size: 13px; font-weight: 700; }
+  .C-bon .shops span::before { content: ""; width: 9px; height: 9px; border-radius: 3px; background: var(--c); }
+  .C-bon .sum { text-align: right; }
+  .C-bon .sum b { font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .C-bon .sum small { display: block; font-size: 12px; font-weight: 700; opacity: .75; }
+  .C-bon .warn { grid-column: 1 / -1; font-size: 12.5px; color: #ffc7b8; font-weight: 700; }
+  .C-bon .save { grid-column: 1 / -1; font-size: 12.5px; color: #9ff0c9; font-weight: 700; }
+  .C-li { display: flex; align-items: center; gap: 10px; background: var(--card); border-radius: 14px; padding: 10px 10px 10px 14px; }
+  .C-li + .C-li { margin-top: 6px; }
+  .C-li .nm { flex: 1; font-weight: 800; } .C-li .nm small { color: var(--mute); font-weight: 600; margin-left: 6px; }
+  .C-li .from { font-size: 13px; color: var(--mute); font-weight: 600; }
+  .C-li button { border: 0; background: var(--bg); border-radius: 10px; width: 36px; height: 36px; cursor: pointer; }
+  .C-li button[aria-pressed="true"] { background: var(--ink); color: #fff; }
+  .C-sec { font-weight: 800; font-size: 15px; margin: 24px 0 8px; display: flex; gap: 8px; align-items: baseline; }
+  .C-sec span { color: var(--mute); font-weight: 600; font-size: 13px; }
+  .C-shop { margin-top: 18px; background: var(--card); border-radius: 18px; overflow: hidden; }
+  .C-shop header { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; background: var(--c); color: #fff; font-weight: 800; }
+  .C-ci { border: 0; border-top: 1px solid var(--line); width: 100%; text-align: left; background: transparent; cursor: pointer; display: grid; grid-template-columns: 44px 1fr auto; gap: 0 8px; align-items: center; padding: 10px 14px 10px 6px; }
+  .C-ci .t { width: 26px; height: 26px; border-radius: 9px; border: 2px solid var(--ink); justify-self: center; display: grid; place-items: center; font-weight: 800; }
+  .C-ci .nm { font-weight: 800; } .C-ci .g { grid-column: 2; font-size: 13px; color: var(--mute); }
+  .C-ci .v { grid-column: 3; grid-row: 1 / 3; font-weight: 800; }
+  .C-ci.done { opacity: .45; } .C-ci.done .t { background: var(--ink); color: #fff; } .C-ci.done .nm { text-decoration: line-through; }
+  body[data-v="C"] .wrap { padding-bottom: 170px; }
+  @media (max-width: 720px) { .C-bon { bottom: calc(70px + env(safe-area-inset-bottom)); } body[data-v="C"] .wrap { padding-bottom: 240px; } }
+</style>
+
+<div class="proto" role="toolbar" aria-label="Prototype">
+  <button id="prev" aria-label="Vorig concept">‹</button><span class="lbl" id="vlabel"></span><button id="next" aria-label="Volgend concept">›</button>
+  <span class="sep"></span>
+  <button data-chains="2">2</button><button data-chains="6">6 winkels</button>
+</div>
+<div id="root"></div>
+
+<script src="catalogue.js"></script>
+<script>
+  if (!window.CATALOGUE) { document.getElementById("root").textContent = "Run node scripts/catalogue-from-db.ts first."; throw new Error("no catalogue"); }
+  const data = window.CATALOGUE;
+
+  // ── Core, as in basket.html ─────────────────────────────────────────
+  const euro = (c) => "€" + (c / 100).toFixed(2).replace(".", ",");
+  const plus = (c) => "+" + euro(c);
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+  function stem(w) { let b; do { b = w; if (w.length > 4) w = w.replace(/(jes|je|en|e|s)$/, ""); } while (w !== b); return w; }
+  const wordsOf = (noun) => noun.toLowerCase().split(/[^\p{L}]+/u).filter((w) => w.length > 1).map(stem);
+  const products = {}, searchable = {};
+  for (const c of data.chains) {
+    products[c.id] = {};
+    searchable[c.id] = data.catalogue[c.id].map((r) => {
+      const id = c.id + "-" + r[0];
+      products[c.id][id] = { id, name: r[1], packaging: r[2], packQuantity: r[3], packUnit: r[4], comparisonUnit: r[5],
+        shelfPriceCents: r[6], offerPriceCents: r[7], unitPriceCents: r[8], offerWording: r[9], offerUpcoming: r[10] === 1 };
+      return { id, unit: r[5], words: r[1].toLowerCase().split(/[^\p{L}]+/u).filter(Boolean).map(stem) };
+    });
+  }
+  const matching = (cid, unit, words) => searchable[cid].filter((p) =>
+    (unit === null || p.unit === unit) && words.every((w) => p.words.some((n) => n.endsWith(w))));
+  const UNITS = { g: ["kg", .001], gr: ["kg", .001], gram: ["kg", .001], kg: ["kg", 1], kilo: ["kg", 1], ml: ["l", .001], cl: ["l", .01],
+    l: ["l", 1], liter: ["l", 1], x: ["piece", 1], "×": ["piece", 1], st: ["piece", 1], stuk: ["piece", 1], stuks: ["piece", 1] };
+  function parse(text) {
+    const t = text.trim().replace(/\s+/g, " "); if (!t) return null;
+    let quantity = null, unit = null, noun = t;
+    const m = t.match(/^(\d+(?:[.,]\d+)?)\s*(.*)$/);
+    if (m) {
+      quantity = Number(m[1].replace(",", ".")); noun = m[2];
+      const [first, ...rest] = noun.split(" "); const u = UNITS[first.toLowerCase().replace(/\.$/, "")];
+      if (u && rest.length) { unit = u[0]; quantity *= u[1]; noun = rest.join(" "); }
+    }
+    if (!noun || UNITS[noun.toLowerCase()] || !(quantity === null || quantity > 0)) return null;
+    if (unit === null) {
+      const tally = { kg: 0, l: 0, piece: 0 };
+      for (const c of data.chains) for (const p of matching(c.id, null, wordsOf(noun))) tally[p.unit]++;
+      if (quantity !== null && tally.piece > 0) unit = "piece";
+      else { unit = Object.keys(tally).sort((a, b) => tally[b] - tally[a])[0]; if (!tally[unit]) unit = "piece"; }
+      if (quantity === null) quantity = 1;
+    }
+    return { noun, quantity: Math.round(quantity * 1000) / 1000, unit };
+  }
+  const resolved = {};
+  function realLine(cid, item) {
+    const key = cid + "|" + item.unit + "|" + item.noun;
+    resolved[key] ??= matching(cid, item.unit, wordsOf(item.noun)).map((s) => products[cid][s.id])
+      .sort((a, b) => a.unitPriceCents - b.unitPriceCents || a.shelfPriceCents - b.shelfPriceCents)[0] || null;
+    const p = resolved[key]; if (!p) return null;
+    const offer = (p.offerPriceCents !== null || p.offerWording) && !p.offerUpcoming ? (p.offerWording || "actie") : null;
+    const price = offer && p.offerPriceCents ? p.offerPriceCents : p.shelfPriceCents;
+    const known = p.packQuantity > 0 && p.packUnit === item.unit;
+    const packs = known ? Math.max(1, Math.ceil(item.quantity / p.packQuantity)) : 1;
+    return { p, offer, packs, cost: packs * price, over: known ? p.packQuantity / item.quantity : 1 };
+  }
+  const qtyText = (i) => i.unit === "piece" ? i.quantity + "×" : (i.unit === "kg" && i.quantity < 1 ? i.quantity * 1000 + " g"
+    : i.unit === "l" && i.quantity < 1 ? i.quantity * 1000 + " ml" : i.quantity + " " + i.unit);
+
+  // ── Chains: two real, four EXAMPLES with invented names, only to test scale ──
+  const COLOURS = ["#1f7a5c", "#b03a64", "#2f62b3", "#d07a1c", "#6a4fb0", "#178a96"];
+  const REAL = data.chains.map((c, i) => ({ ...c, color: COLOURS[i], sim: false }));
+  const EXAMPLES = [
+    { id: "x1", name: "Kade", base: 0.94, miss: 0.08 }, { id: "x2", name: "Buurtsuper", base: 1.18, miss: 0.2 },
+    { id: "x3", name: "Groothal", base: 0.86, miss: 0.14 }, { id: "x4", name: "Markt Negen", base: 1.04, miss: 0.04 },
+  ].map((c, i) => ({ ...c, color: COLOURS[i + 2], sim: true }));
+  const hash = (s) => { let h = 2166136261; for (const ch of s) h = Math.imul(h ^ ch.charCodeAt(0), 16777619); return ((h >>> 0) % 10000) / 10000; };
+  function simLine(ch, item, reals) {
+    const base = reals.filter(Boolean).sort((a, b) => a.cost - b.cost)[0];
+    if (!base || hash(ch.id + "|m|" + item.noun) < ch.miss) return null;
+    const f = ch.base * (0.82 + 0.36 * hash(ch.id + "|f|" + item.noun));
+    return { p: { name: "Voorbeeldproduct " + item.noun, packaging: base.p.packaging }, offer: null, packs: base.packs,
+      cost: Math.max(19, Math.round(base.cost * f)), over: base.over };
+  }
+  const tag = (c) => '<span class="tag" style="--c:' + c.color + '">' + esc(c.name) + (c.sim ? ' <span class="vb">vb</span>' : "") + "</span>";
+
+  // ── State (in memory) ───────────────────────────────────────────────
+  let nid = 0;
+  let list = ["1 kg kruimige aardappelen", "250 g champignons", "2 courgettes", "500 g rundergehakt", "400 g broccoli",
+    "1 komkommer", "1 l halfvolle melk", "1 kg uien", "350 g pindakaas", "400 g spinazie", "6 eieren", "500 g wortelen"]
+    .map((t) => ({ id: "i" + nid++, staple: false, ...parse(t) }));
+  for (const n of ["halfvolle melk", "eieren", "pindakaas", "uien"]) list.find((i) => i.noun === n).staple = true;
+  const qs = new URLSearchParams(location.search);
+  let variant = ["A", "B", "C"].includes(qs.get("variant")) ? qs.get("variant") : "A";
+  let page = ["lijst", "vergelijk", "winkelen"].includes(qs.get("page")) ? qs.get("page") : "vergelijk";
+  let chainCount = qs.get("chains") === "2" ? 2 : 6;
+  // How items are sourced. base: "single" (one shop), "combo" (best pair) or "cheap" (each item's cheapest).
+  // pick: per-item overrides (C sets these).
+  let plan = { base: "single", shop: null };
+  const pick = {};
+  const done = new Set();
+  let openLoss = null, hint = "";
+
+  const allChains = () => chainCount === 6 ? [...REAL, ...EXAMPLES] : REAL;
+  const byId = (id) => [...REAL, ...EXAMPLES].find((c) => c.id === id);
+
+  function snapshot() {
+    const chains = allChains();
+    const rows = list.map((item) => {
+      const reals = REAL.map((c) => realLine(c.id, item));
+      const by = {}; REAL.forEach((c, i) => { by[c.id] = reals[i]; });
+      for (const c of chains) if (c.sim) by[c.id] = simLine(c, item, reals);
+      const avail = chains.filter((c) => by[c.id]).sort((a, b) => by[a.id].cost - by[b.id].cost);
+      return { item, by, avail, min: avail.length ? by[avail[0].id].cost : null, max: avail.length ? by[avail.at(-1).id].cost : null };
+    });
+    const totals = chains.map((c) => {
+      let cost = 0, filled = 0;
+      for (const r of rows) if (r.by[c.id]) { filled++; cost += r.by[c.id].cost; }
+      return { chain: c, cost, filled, total: rows.length, full: filled === rows.length && rows.length > 0 };
+    }).sort((a, b) => b.full - a.full || a.cost - b.cost);
+    const best = totals.find((t) => t.full) || null;
+    let combo = null;
+    for (let i = 0; i < chains.length; i++) for (let j = i + 1; j < chains.length; j++) {
+      const a = chains[i], b = chains[j]; let cost = 0, filled = 0; const from = {};
+      for (const r of rows) {
+        const la = r.by[a.id], lb = r.by[b.id]; if (!la && !lb) continue;
+        filled++; const p = !lb || (la && la.cost <= lb.cost) ? a : b; from[r.item.id] = p.id; cost += r.by[p.id].cost;
+      }
+      const cand = { ids: [a.id, b.id], cost, filled, from };
+      if (!combo || cand.filled > combo.filled || (cand.filled === combo.filled && cand.cost < combo.cost)) combo = cand;
+    }
+    if (combo && (combo.filled < rows.length || (best && combo.cost >= best.cost) || new Set(Object.values(combo.from)).size < 2)) combo = null;
+    return { chains, rows, totals, best, combo };
+  }
+  /** Where an item is bought under the current plan, or null. */
+  function sourceOf(r, s) {
+    const p = pick[r.item.id];
+    if (p && r.by[p]) return p;
+    if (plan.base === "cheap") return r.avail[0]?.id || null;
+    if (plan.base === "combo" && s.combo) return s.combo.from[r.item.id] || null;
+    const shop = plan.shop && s.chains.some((c) => c.id === plan.shop) ? plan.shop : (s.best || s.totals[0]).chain.id;
+    return r.by[shop] ? shop : null;
+  }
+  function planTotals(s) {
+    const per = {}; let total = 0, missing = 0;
+    for (const r of s.rows) { const c = sourceOf(r, s); if (!c) { missing++; continue; } per[c] = (per[c] || 0) + r.by[c].cost; total += r.by[c].cost; }
+    return { per, total, missing, shops: Object.keys(per) };
+  }
+  const pages = (labels) => ["lijst", "vergelijk", "winkelen"].map((k, i) => ({ k, label: labels[i] }));
+  function nav(labels, icons) {
+    const items = pages(labels);
+    const b = (cls) => '<nav class="nav ' + cls + '">' + items.map(({ k, label }, i) =>
+      '<button data-act="go" data-id="' + k + '"' + (k === page ? ' aria-current="page"' : "") + '><span class="ic">' + icons[i] + "</span>" + label + "</button>").join("") + "</nav>";
+    return [b("top"), b("bottom")];
+  }
+  const addForm = (ph) => '<form class="add"><input name="q" placeholder="' + ph + '" autocomplete="off"><button>Erbij</button></form><p class="hint">' + esc(hint) + "</p>";
+
+  // ════════════════════════════════════════════════════════════════════
+  // A · RANGLIJST
+  // ════════════════════════════════════════════════════════════════════
+  function A(s) {
+    const [navTop, navBottom] = nav(["Lijst", "Stand", "Winkelen"], ["☰", "🏁", "✓"]);
+    const head = '<div class="A-head"><div class="A-brand"><b>M</b>ealdeal</div>' + navTop + "</div>";
+    let body = "";
+    const pt = planTotals(s);
+    if (page === "vergelijk") {
+      const lead = s.best;
+      const maxGap = Math.max(1, ...s.totals.filter((t) => t.full).map((t) => t.cost - lead.cost));
+      const chosen = (id) => plan.base === "single" && sourceOfShop(s) === id;
+      const row = (t, pos) => {
+        const gap = lead && t.full ? t.cost - lead.cost : null;
+        const isLead = lead && t.chain.id === lead.chain.id;
+        return '<button class="A-row' + (isLead ? " lead" : "") + '" style="--c:' + t.chain.color + '" data-act="shop" data-id="' + t.chain.id + '" aria-pressed="' + chosen(t.chain.id) + '">' +
+          '<span class="pos">' + (t.full ? pos : "–") + '</span><span class="bar"></span><span class="nm">' + esc(t.chain.name) + (t.chain.sim ? '<span class="vb">vb</span>' : "") + "</span>" +
+          '<span class="cov' + (t.full ? "" : " bad") + '">' + t.filled + "/" + t.total + '</span><span class="tot">' + (t.full ? "" : "≥") + euro(t.cost) + "</span>" +
+          '<span class="gap">' + (isLead ? "LEIDER" : gap !== null ? plus(gap) : (t.total - t.filled) + " mist") + "</span>" +
+          (gap ? '<span class="gapbar"><i style="width:' + Math.round(gap / maxGap * 100) + '%"></i></span>' : "") + "</button>" +
+          (openLoss === t.chain.id && !isLead && lead ? loss(t) : "");
+      };
+      const loss = (t) => {
+        const worst = s.rows.filter((r) => r.by[t.chain.id] && r.by[lead.chain.id]).map((r) => ({ r, d: r.by[t.chain.id].cost - r.by[lead.chain.id].cost }))
+          .filter((x) => x.d > 0).sort((a, b) => b.d - a.d).slice(0, 3);
+        return '<div class="A-loss">Verliest het meest op ' + worst.map((x) => "<b>" + esc(x.r.item.noun) + "</b> " + plus(x.d)).join(", ") + ".</div>";
+      };
+      const full = s.totals.filter((t) => t.full), part = s.totals.filter((t) => !t.full);
+      let combo = "";
+      if (s.combo && lead) {
+        const [a, b] = s.combo.ids.map(byId);
+        combo = '<button class="A-row combo" style="--c1:' + a.color + ";--c2:" + b.color + '" data-act="combo" aria-pressed="' + (plan.base === "combo") + '">' +
+          '<span class="pos">DUO</span><span class="bar"></span><span class="nm">' + esc(a.name) + " + " + esc(b.name) + "</span>" +
+          '<span class="cov">2 winkels</span><span class="tot">' + euro(s.combo.cost) + '</span><span class="gap" style="color:var(--good)">−' + euro(lead.cost - s.combo.cost).slice(1) + "</span></button>";
+      }
+      const pods = s.rows.slice().sort((a, b) => (b.max - b.min) - (a.max - a.min)).map((r) => {
+        if (!r.avail.length) return '<div class="A-pod"><div class="it">' + esc(r.item.noun) + "<small>nergens te koop</small></div></div>";
+        const top = r.avail.slice(0, 3), rest = r.avail.length - 3;
+        return '<div class="A-pod"><div class="it">' + esc(r.item.noun) + "<small>" + qtyText(r.item) + (r.avail.length > 1 ? " · verschil " + euro(r.max - r.min) : "") + "</small></div><ol>" +
+          top.map((c, i) => '<li class="' + (i ? "" : "first") + '"><span class="p">' + (i + 1) + "</span>" + tag(c) + ' <span class="v">' + euro(r.by[c.id].cost) + "</span>" +
+            (i ? ' <span class="d">' + plus(r.by[c.id].cost - r.min) + "</span>" : "") + "</li>").join("") +
+          (rest > 0 ? '<li class="more">+' + rest + " duurder, tot " + plus(r.max - r.min) + "</li>" : "") + "</ol></div>";
+      }).join("");
+      body = '<h1 class="A-h1">' + (lead ? esc(lead.chain.name) + " leidt" : "Geen winnaar") + '</h1><p class="A-sub">' + (lead ? "Je hele lijst voor " + euro(lead.cost) + ". Achterstand per winkel, tik om te kiezen; tik nog eens voor waar hij verliest." : "Geen enkele winkel heeft alles.") + "</p>" +
+        '<div class="A-board">' + combo + full.map((t, i) => row(t, i + 1)).join("") + "</div>" +
+        (part.length ? '<div class="A-divider">Niet compleet — totaal is een ondergrens</div><div class="A-board">' + part.map((t) => row(t, 0)).join("") + "</div>" : "") +
+        '<div class="A-sec"><h2>Podium per artikel</h2><span>grootste verschil eerst</span></div>' + pods;
+    } else if (page === "lijst") {
+      const li = (r) => {
+        const w = r.avail[0], second = r.avail[1];
+        return '<div class="A-li"><span class="nm">' + esc(r.item.noun) + "<small>" + qtyText(r.item) + "</small></span>" +
+          '<span class="win">' + (w ? '<span class="p1">P1</span>' + tag(w) + ' <span class="v">' + euro(r.min) + "</span>" + (second ? '<span class="d">P2 ' + plus(r.by[second.id].cost - r.min) + "</span>" : "") : '<span class="d">nergens te koop</span>') + "</span>" +
+          '<span class="ops"><button data-act="staple" data-id="' + r.item.id + '" aria-pressed="' + r.item.staple + '" title="Vaste boodschap">📌</button><button data-act="remove" data-id="' + r.item.id + '" title="Weg">✕</button></span></div>';
+      };
+      const once = s.rows.filter((r) => !r.item.staple), st = s.rows.filter((r) => r.item.staple);
+      body = '<h1 class="A-h1">Je lijst</h1><p class="A-sub">Per artikel: wie wint (P1) en hoeveel de nummer twee achterligt.</p>' + addForm("500 g rundergehakt, 2 courgettes…") +
+        '<div class="A-sec"><h2>Deze keer</h2><span>' + once.length + "</span></div>" + once.map(li).join("") +
+        '<div class="A-sec"><h2>Vast</h2><span>' + st.length + " · blijven staan</span></div>" + st.map(li).join("") +
+        '<div class="A-cta"><span>' + pt.shops.map((id) => esc(byId(id).name)).join(" + ") + " · <b>" + euro(pt.total) + '</b></span><button data-act="go" data-id="vergelijk">Bekijk de stand</button></div>';
+    } else body = shopPage(s, pt, "A");
+    return '<div class="wrap">' + head + body + "</div>" + navBottom;
+  }
+  const sourceOfShop = (s) => plan.shop && s.chains.some((c) => c.id === plan.shop) ? plan.shop : (s.best || s.totals[0]).chain.id;
+
+  // Winkelen, shared structure, each concept's classes
+  function shopPage(s, pt, V) {
+    const groups = pt.shops.map((id) => ({ c: byId(id), rows: s.rows.filter((r) => sourceOf(r, s) === id) }));
+    const nowhere = s.rows.filter((r) => !sourceOf(r, s));
+    let left = 0, ticked = 0, n = 0;
+    for (const g of groups) for (const r of g.rows) { n++; if (done.has(r.item.id)) ticked++; else left += r.by[g.c.id].cost; }
+    const h1 = V === "A" ? '<h1 class="A-h1">Winkelen</h1>' : V === "B" ? '<h1 class="B-h1">Winkelen</h1>' : '<h1 class="C-h1">Winkelen</h1>';
+    const sub = '<p class="' + V + '-sub">' + groups.length + " winkel" + (groups.length > 1 ? "s" : "") + " · " + euro(pt.total) + (nowhere.length ? " · " + nowhere.length + " nergens in je plan" : "") + "</p>";
+    const shops = groups.map(({ c, rows }) => '<section class="' + V + '-shop" style="--c:' + c.color + '"><header><b>' + esc(c.name) + (c.sim ? ' <span class="vb">vb</span>' : "") + "</b><span>" + rows.length + " · " + euro(pt.per[c.id]) + "</span></header>" +
+      rows.map((r) => {
+        const l = r.by[c.id], d = done.has(r.item.id);
+        return '<button class="' + V + "-ci" + (d ? " done" : "") + '" data-act="tick" data-id="' + r.item.id + '"><span class="t">' + (d ? "✓" : "") + '</span><span class="nm">' + esc(r.item.noun) + " · " + qtyText(r.item) + "</span>" +
+          '<span class="g">' + (l.offer ? esc(l.offer) + " · " : "") + (l.packs > 1 ? l.packs + "× " : "") + esc(l.p.name) + (l.p.packaging ? " · " + esc(l.p.packaging) : "") + '</span><span class="v">' + euro(l.cost) + "</span></button>";
+      }).join("") + "</section>").join("");
+    const pct = n ? Math.round(ticked / n * 100) : 0;
+    const prog = V === "A" ? '<div class="A-lap"><b>' + ticked + "/" + n + '</b><span class="tr"><i style="width:' + pct + '%"></i></span><span>' + euro(left) + " te gaan</span>" + (ticked ? '<button data-act="finish">Finish</button>' : "") + "</div>"
+      : V === "B" ? '<div class="B-prog"><span>' + ticked + "/" + n + '</span><span class="tr"><i style="width:' + pct + '%"></i></span><span>' + euro(left) + "</span>" + (ticked ? '<button data-act="finish">Klaar</button>' : "") + "</div>"
+      : "";
+    return h1 + sub + shops + prog;
+  }
+
+  // ════════════════════════════════════════════════════════════════════
+  // B · PRIJSRASTER
+  // ════════════════════════════════════════════════════════════════════
+  const heat = (t) => { // 0 cheap → 1 dear: mint → sand → coral
+    const stops = [[143, 214, 184], [242, 221, 140], [240, 165, 143]];
+    const x = Math.max(0, Math.min(1, t)) * 2, i = Math.min(1, Math.floor(x)), f = x - i;
+    const [a, b] = [stops[i], stops[i + 1]];
+    return "rgb(" + a.map((v, k) => Math.round(v + (b[k] - v) * f)).join(",") + ")";
+  };
+  function B(s) {
+    const [navTop, navBottom] = nav(["Lijst", "Raster", "Winkelen"], ["☰", "▦", "✓"]);
+    const head = '<div class="B-head"><div class="B-brand"><span></span> mealdeal</div>' + navTop + "</div>";
+    const pt = planTotals(s);
+    let body = "";
+    if (page === "vergelijk") {
+      const cols = s.totals; // ranked
+      const base = s.best ? s.best.cost : null;
+      const selShop = plan.base === "single" ? sourceOfShop(s) : null;
+      const th = cols.map((t) => {
+        const d = base !== null && t.full ? t.cost - base : null;
+        return '<th><button class="B-col" style="--c:' + t.chain.color + '" data-act="shop" data-id="' + t.chain.id + '" aria-pressed="' + (selShop === t.chain.id) + '">' +
+          '<span class="n">' + esc(t.chain.name) + (t.chain.sim ? ' <span class="vb">vb</span>' : "") + '</span><span class="t">' + (t.full ? "" : "≥") + euro(t.cost) + "</span>" +
+          '<span class="d' + (d === 0 ? " z" : "") + '">' + (d === null ? t.total - t.filled + " mist" : d ? plus(d) : "laagst") + '</span><span class="cv">' + t.filled + "/" + t.total + "</span></button></th>";
+      }).join("");
+      const rows = s.rows.map((r) => '<tr><th class="rh">' + esc(r.item.noun) + "<small>" + qtyText(r.item) + "</small></th>" + cols.map((t) => {
+        const l = r.by[t.chain.id];
+        if (!l) return '<td class="B-cell no' + (selShop === t.chain.id ? " sel" : "") + '">—</td>';
+        const x = r.max > r.min ? (l.cost - r.min) / (r.max - r.min) : 0;
+        return '<td class="B-cell' + (l.cost === r.min ? " min" : "") + (selShop === t.chain.id ? " sel" : "") + '" style="background:' + heat(x) + '" title="' + esc(t.chain.name + " · " + l.p.name) + '">' + euro(l.cost).slice(1) + "</td>";
+      }).join("") + "</tr>").join("");
+      const combo = s.combo && s.best ? (() => { const [a, b] = s.combo.ids.map(byId); return '<div class="B-combo"><span>Twee winkels: ' + tag(a) + " + " + tag(b) + " = <b>" + euro(s.combo.cost) + "</b>, " + euro(s.best.cost - s.combo.cost) + " minder dan alleen " + esc(s.best.chain.name) + '</span><button data-act="combo" aria-pressed="' + (plan.base === "combo") + '">' + (plan.base === "combo" ? "Gekozen" : "Kies combinatie") + "</button></div>"; })() : "";
+      body = '<h1 class="B-h1">' + (s.best ? esc(s.best.chain.name) + " is het goedkoopst voor je lijst" : "Geen winkel heeft alles") + '</h1><p class="B-sub">Elke rij is één artikel, gekleurd van goedkoop naar duur binnen die rij. Omkaderd is het laagste. Tik een winkel om te kiezen.</p>' +
+        '<div class="B-legend"><span>goedkoop</span><i></i><span>duur</span><span>· gestreept = niet te koop</span></div>' +
+        '<div class="B-scroll"><table class="B-grid"><thead><tr><th class="rh" style="vertical-align:bottom">Artikel</th>' + th + "</tr></thead><tbody>" + rows + "</tbody></table></div>" + combo;
+    } else if (page === "lijst") {
+      const order = s.totals.map((t) => t.chain);
+      const li = (r) => '<div class="B-li"><span class="nm">' + esc(r.item.noun) + "<small>" + qtyText(r.item) + '</small></span><span class="strip">' + order.map((c) => {
+        const l = r.by[c.id]; if (!l) return '<i class="no" title="' + esc(c.name) + ': niet te koop"></i>';
+        const x = r.max > r.min ? (l.cost - r.min) / (r.max - r.min) : 0;
+        return '<i class="' + (l.cost === r.min ? "min" : "") + '" style="background:' + heat(x) + '" title="' + esc(c.name) + " " + euro(l.cost) + '"></i>';
+      }).join("") + (r.avail.length ? "<span>laagst <b>" + euro(r.min) + "</b> " + esc(r.avail[0].name) + (r.avail.length > 1 ? " · tot " + plus(r.max - r.min) : "") + "</span>" : "<span>nergens te koop</span>") +
+        '</span><span class="ops"><button data-act="staple" data-id="' + r.item.id + '" aria-pressed="' + r.item.staple + '" title="Vaste boodschap">📌</button><button data-act="remove" data-id="' + r.item.id + '" title="Weg">✕</button></span></div>';
+      const once = s.rows.filter((r) => !r.item.staple), st = s.rows.filter((r) => r.item.staple);
+      body = '<h1 class="B-h1">Boodschappenlijst</h1><p class="B-sub">Elk blokje is een winkel, in de volgorde van het raster. Groen is goedkoop voor dat artikel.</p>' + addForm("500 g rundergehakt, 2 courgettes…") +
+        '<div class="B-sec">Deze keer · ' + once.length + "</div>" + once.map(li).join("") + '<div class="B-sec">Vast · ' + st.length + "</div>" + st.map(li).join("") +
+        '<div class="B-cta"><span>' + pt.shops.map((id) => tag(byId(id))).join(" + ") + " · <b>" + euro(pt.total) + '</b></span><span><button class="ghost" data-act="go" data-id="vergelijk">Raster</button> <button data-act="go" data-id="winkelen">Winkelen</button></span></div>';
+    } else body = shopPage(s, pt, "B");
+    return '<div class="wrap">' + head + body + "</div>" + navBottom;
+  }
+
+  // ════════════════════════════════════════════════════════════════════
+  // C · SAMENSTELLER
+  // ════════════════════════════════════════════════════════════════════
+  function C(s) {
+    const [navTop, navBottom] = nav(["Lijst", "Samenstellen", "Winkelen"], ["☰", "🧺", "✓"]);
+    const head = '<div class="C-head"><div class="C-brand">meal<span>deal</span></div>' + navTop + "</div>";
+    const pt = planTotals(s);
+    let body = "";
+    const overrides = Object.keys(pick).filter((id) => list.some((i) => i.id === id)).length;
+    const mode = overrides ? "eigen" : plan.base;
+    const bon = (() => {
+      const ranked = pt.shops.map((id) => [id, pt.per[id]]).sort((a, b) => b[1] - a[1]);
+      const cheapAll = s.rows.reduce((n, r) => n + (r.min ?? 0), 0);
+      const extra = pt.total - cheapAll;
+      return '<div class="C-bon"><span class="shops">' + ranked.map(([id, v]) => '<span style="--c:' + byId(id).color + '">' + esc(byId(id).name) + " " + euro(v) + "</span>").join("") + "</span>" +
+        '<span class="sum"><b>' + euro(pt.total) + "</b><small>" + pt.shops.length + " winkel" + (pt.shops.length > 1 ? "s" : "") + "</small></span>" +
+        (pt.shops.length > 2 ? '<span class="warn">' + pt.shops.length + " winkels is veel ritten. Kies 'Max. 2 winkels' om te bundelen.</span>"
+          : extra > 0 ? '<span class="save">' + plus(extra) + " boven het absolute minimum (alles overal het goedkoopst)</span>" : '<span class="save">Dit is het absolute minimum.</span>') + "</div>";
+    })();
+    if (page === "vergelijk") {
+      const modes = [["single", "Eén winkel"], ["combo", "Max. 2 winkels"], ["cheap", "Overal het goedkoopst"]].map(([k, l]) =>
+        '<button data-act="mode" data-id="' + k + '" aria-pressed="' + (mode === k) + '">' + l + "</button>").join("") + (overrides ? '<button aria-pressed="true" data-act="mode" data-id="single">Eigen keuze · ' + overrides + " — reset</button>" : "");
+      const items = s.rows.map((r) => {
+        const at = sourceOf(r, s);
+        const chips = r.avail.map((c) => {
+          const d = r.by[c.id].cost - r.min;
+          return '<button class="C-chip' + (c.id === at ? " on" : "") + '" style="--c:' + c.color + '" data-act="pick" data-id="' + r.item.id + '" data-shop="' + c.id + '">' +
+            '<span class="dot"></span><span class="n">' + esc(c.name) + (c.sim ? " vb" : "") + '</span><span class="v' + (d ? "" : " z") + '">' + (d ? plus(d) : euro(r.min)) + "</span></button>";
+        }).join("") + s.chains.filter((c) => !r.by[c.id]).map((c) => '<span class="C-chip no" style="--c:' + c.color + '"><span class="dot"></span><span class="n">' + esc(c.name) + '</span><span class="v">—</span></span>').join("");
+        const got = at ? r.by[at].cost : null;
+        return '<div class="C-it"><div class="top"><span class="nm">' + esc(r.item.noun) + "<small>" + qtyText(r.item) + "</small></span>" +
+          '<span class="got">' + (got !== null ? euro(got) + (got > r.min ? "<small>" + plus(got - r.min) + " t.o.v. laagst</small>" : '<small class="z">laagst</small>') : "—") + "</span></div>" +
+          '<div class="C-chips">' + chips + "</div></div>";
+      }).join("");
+      body = '<h1 class="C-h1">Waar haal je wat?</h1><p class="C-sub">Per artikel staan de winkels op prijs. Tik waar je het koopt; de bon onderaan rekent mee.</p>' +
+        '<div class="C-modes">' + modes + "</div>" + items + bon;
+    } else if (page === "lijst") {
+      const li = (r) => { const at = sourceOf(r, s); return '<div class="C-li"><span class="nm">' + esc(r.item.noun) + "<small>" + qtyText(r.item) + '</small><div class="from">' + (at ? esc(byId(at).name) + " · " + euro(r.by[at].cost) : "nergens te koop") + "</div></span>" +
+        '<button data-act="staple" data-id="' + r.item.id + '" aria-pressed="' + r.item.staple + '" title="Vaste boodschap">📌</button><button data-act="remove" data-id="' + r.item.id + '" title="Weg">✕</button></div>'; };
+      const once = s.rows.filter((r) => !r.item.staple), st = s.rows.filter((r) => r.item.staple);
+      body = '<h1 class="C-h1">Boodschappenlijst</h1><p class="C-sub">Wat er in huis moet. Waar je het haalt, stel je samen op de volgende pagina.</p>' + addForm("500 g rundergehakt, 2 courgettes…") +
+        '<div class="C-sec">Deze keer <span>' + once.length + "</span></div>" + once.map(li).join("") + '<div class="C-sec">Vast <span>' + st.length + " · 📌 blijven staan</span></div>" + st.map(li).join("") + bon;
+    } else {
+      body = shopPage(s, pt, "C") + bon.replace('class="C-bon"', 'class="C-bon"') ;
+      const ticked = [...done].length;
+      if (ticked) body += '<div style="text-align:center;margin-top:18px"><button data-act="finish" style="border:0;background:var(--ink);color:#fff;border-radius:12px;padding:10px 18px;font-weight:800;cursor:pointer">Klaar met winkelen (' + ticked + ")</button></div>";
+    }
+    return '<div class="wrap">' + head + body + "</div>" + navBottom;
+  }
+
+  // ── Wiring ──────────────────────────────────────────────────────────
+  const VARIANTS = { A: ["Ranglijst", A], B: ["Prijsraster", B], C: ["Samensteller", C] };
+  const root = document.getElementById("root");
+  function render() {
+    document.body.dataset.v = variant;
+    document.getElementById("vlabel").textContent = variant + " · " + VARIANTS[variant][0];
+    for (const b of document.querySelectorAll("[data-chains]")) b.setAttribute("aria-pressed", String(Number(b.dataset.chains) === chainCount));
+    const focused = document.activeElement && document.activeElement.name === "q";
+    root.innerHTML = VARIANTS[variant][1](snapshot());
+    if (focused) root.querySelector("input[name=q]")?.focus();
+    const u = new URL(location.href); u.searchParams.set("variant", variant); u.searchParams.set("page", page); u.searchParams.set("chains", chainCount);
+    try { history.replaceState(null, "", u); } catch { /* file:// */ }
+  }
+  const keys = Object.keys(VARIANTS);
+  const go = (d) => { variant = keys[(keys.indexOf(variant) + d + keys.length) % keys.length]; render(); };
+  document.getElementById("prev").onclick = () => go(-1);
+  document.getElementById("next").onclick = () => go(1);
+  document.addEventListener("keydown", (e) => { if (e.target.closest("input")) return; if (e.key === "ArrowLeft") go(-1); if (e.key === "ArrowRight") go(1); });
+  document.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const input = e.target.querySelector("input[name=q]"), p = parse(input.value);
+    if (!p) { hint = "Niet gelezen — probeer “500 g rundergehakt”."; render(); return; }
+    list.unshift({ id: "i" + nid++, staple: false, ...p }); hint = "Toegevoegd: " + qtyText(p) + " " + p.noun; input.value = ""; render();
+  });
+  document.addEventListener("click", (e) => {
+    const ch = e.target.closest("[data-chains]"); if (ch) { chainCount = Number(ch.dataset.chains); render(); return; }
+    const b = e.target.closest("[data-act]"); if (!b) return;
+    const id = b.dataset.id;
+    switch (b.dataset.act) {
+      case "go": page = id; window.scrollTo(0, 0); break;
+      case "staple": { const it = list.find((i) => i.id === id); if (it) it.staple = !it.staple; break; }
+      case "remove": list = list.filter((i) => i.id !== id); done.delete(id); delete pick[id]; break;
+      case "shop":
+        if (plan.base === "single" && plan.shop === id) openLoss = openLoss === id ? null : id;
+        plan = { base: "single", shop: id }; for (const k in pick) delete pick[k]; break;
+      case "combo": plan = { base: "combo", shop: null }; for (const k in pick) delete pick[k]; break;
+      case "mode": plan = { base: id, shop: null }; for (const k in pick) delete pick[k]; break;
+      case "pick": pick[id] = b.dataset.shop; break;
+      case "tick": done.has(id) ? done.delete(id) : done.add(id); break;
+      case "finish": list = list.filter((i) => i.staple || !done.has(i.id)); done.clear(); page = "lijst"; break;
+    }
+    render();
+  });
+  render();
+</script>
