@@ -13,7 +13,7 @@
      Chain colours are ours, never a chain's brand colours. */
   :root {
     color-scheme: light;
-    --paper: #f3e7d6; --paper-2: #ead9c1; --card: #fffaf2;
+    --paper: #f3e7d6; --paper-2: #ead9c1; --card: #fffaf2; --card-deep: #fffaf2;
     --ink: #2b2118; --ink-2: #6b5a48; --ink-3: #9a8771; --line: #dcc8ab; --on-ink: #f3e7d6;
     --good: #2f7a3f; --good-wash: #d9ecd9; --bad: #b8432f; --bad-wash: #f6dcd4;
     --offer: #ffe9a3; --offer-ink: #2b2118; --scrim: rgba(30, 20, 10, .45);
@@ -25,22 +25,22 @@
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
       color-scheme: dark;
-      --paper: #1c1611; --paper-2: #2b2219; --card: #29211a;
+      --paper: #1c1611; --paper-2: #2b2219; --card: #29211a; --card-deep: #201a14;
       --ink: #f3e7d6; --ink-2: #cdbba4; --ink-3: #917f6b; --line: #3e3328; --on-ink: #1c1611;
       --good: #72c28e; --good-wash: rgba(114, 194, 142, .16); --bad: #f08c75; --bad-wash: rgba(240, 140, 117, .16);
       --offer: rgba(255, 214, 102, .18); --offer-ink: #ffd666; --scrim: rgba(0, 0, 0, .6);
       --bag-shade: rgba(0, 0, 0, .22); --lift: 0 14px 26px -14px rgba(0, 0, 0, .7);
-      --c0: #3f8f71; --c1: #b4557c; --c2: #4f80bd; --c3: #c4853a; --c4: #7b68bd; --c5: #3a9a99; --c6: #a08a3a; --c7: #c0604a;
+      --c0: #2e6f58; --c1: #b4557c; --c2: #4f80bd; --c3: #c4853a; --c4: #7b68bd; --c5: #3a9a99; --c6: #a08a3a; --c7: #c0604a;
     }
   }
   :root[data-theme="dark"] {
     color-scheme: dark;
-    --paper: #1c1611; --paper-2: #2b2219; --card: #29211a;
+    --paper: #1c1611; --paper-2: #2b2219; --card: #29211a; --card-deep: #201a14;
     --ink: #f3e7d6; --ink-2: #cdbba4; --ink-3: #917f6b; --line: #3e3328; --on-ink: #1c1611;
     --good: #72c28e; --good-wash: rgba(114, 194, 142, .16); --bad: #f08c75; --bad-wash: rgba(240, 140, 117, .16);
     --offer: rgba(255, 214, 102, .18); --offer-ink: #ffd666; --scrim: rgba(0, 0, 0, .6);
     --bag-shade: rgba(0, 0, 0, .22); --lift: 0 14px 26px -14px rgba(0, 0, 0, .7);
-    --c0: #3f8f71; --c1: #b4557c; --c2: #4f80bd; --c3: #c4853a; --c4: #7b68bd; --c5: #3a9a99; --c6: #a08a3a; --c7: #c0604a;
+    --c0: #2e6f58; --c1: #b4557c; --c2: #4f80bd; --c3: #c4853a; --c4: #7b68bd; --c5: #3a9a99; --c6: #a08a3a; --c7: #c0604a;
   }
 
   * { box-sizing: border-box; }
@@ -189,7 +189,7 @@
   .shop > header b { font-size: 22px; font-weight: 900; }
   .shop > header span { font-weight: 800; }
   .chk { display: grid; gap: 6px; }
-  .ci { background: var(--card); color: var(--ink); border-radius: 12px; display: grid; grid-template-columns: 46px 1fr auto; align-items: center; gap: 0 10px; padding: 10px 12px 10px 6px; cursor: pointer; border: 0; text-align: left; width: 100%; }
+  .ci { background: var(--card-deep); color: var(--ink); border-radius: 12px; display: grid; grid-template-columns: 46px 1fr auto; align-items: center; gap: 0 10px; padding: 10px 12px 10px 6px; cursor: pointer; border: 0; text-align: left; width: 100%; }
   .ci .tick { width: 30px; height: 30px; border-radius: 50%; border: 3px solid var(--ink); justify-self: center; display: grid; place-items: center; font-weight: 900; }
   .ci .nm { font-weight: 900; font-size: 17px; line-height: 1.15; }
   .ci .nm .q { font-weight: 700; color: var(--ink-3); font-size: 15px; margin-left: 4px; }
