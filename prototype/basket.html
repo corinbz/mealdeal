@@ -65,6 +65,15 @@
   h1 { font-size: clamp(28px, 6vw, 44px); font-weight: 900; letter-spacing: -.025em; line-height: 1.02; margin: 4px 0 6px; }
   .lede { color: var(--ink-2); margin: 0 0 18px; }
   .note { color: var(--ink-3); font-size: 13px; margin: 22px 0 0; }
+  /* How old the prices are. Out of date is loud on purpose: a comparison on
+     stale prices is a claim we cannot stand behind. */
+  .fresh { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; font-size: 14px; color: var(--ink-2); margin: -8px 0 16px; }
+  .fresh .when { font-weight: 800; color: var(--ink); }
+  .fresh.stale { background: var(--offer); color: var(--offer-ink); border-radius: 12px; padding: 8px 12px; margin-top: 0; }
+  .fresh.stale .when { color: inherit; }
+  .fresh .warn { font-weight: 900; }
+  .age { font-size: 13px; font-weight: 700; opacity: .9; }
+  .age.stale { display: inline-block; justify-self: start; background: var(--offer); color: var(--offer-ink); border-radius: 999px; padding: 1px 9px; opacity: 1; font-weight: 900; }
   @media (max-width: 720px) {
     .top .tabs { display: none; }
     .tabs.bottom {
@@ -185,9 +194,10 @@
   .plan b { font-size: 20px; font-weight: 900; }
   .plan button { border: 0; background: transparent; color: var(--on-ink); text-decoration: underline; font-weight: 800; cursor: pointer; padding: 0; }
   .shop { margin-top: 40px; padding: 16px 12px 12px; }
-  .shop > header { display: flex; justify-content: space-between; align-items: baseline; padding: 0 6px 10px; gap: 10px; }
+  .shop > header { display: flex; justify-content: space-between; align-items: start; padding: 0 6px 10px; gap: 10px; }
   .shop > header b { font-size: 22px; font-weight: 900; }
   .shop > header span { font-weight: 800; }
+  .shop > header > span:last-child { white-space: nowrap; }
   .chk { display: grid; gap: 6px; }
   .ci { background: var(--card-deep); color: var(--ink); border-radius: 12px; display: grid; grid-template-columns: 46px 1fr auto; align-items: center; gap: 0 10px; padding: 10px 12px 10px 6px; cursor: pointer; border: 0; text-align: left; width: 100%; }
   .ci .tick { width: 30px; height: 30px; border-radius: 50%; border: 3px solid var(--ink); justify-self: center; display: grid; place-items: center; font-weight: 900; }
@@ -308,6 +318,31 @@
   const chains = data.chains.map((c, i) => ({ ...c, color: "var(--c" + (i % 8) + ")" }));
   const chainById = (id) => chains.find((c) => c.id === id);
   const tag = (c) => '<span class="ct" style="--c:' + c.color + '">' + esc(c.name) + "</span>";
+
+  // ── Freshness: which day each Chain's prices are from ─────────────────
+  const STALE_AFTER_DAYS = 2;
+  const sweptOn = (c) => { if (!c.observedAt) return null; const [y, m, d] = c.observedAt.split("-").map(Number); return new Date(y, m - 1, d); };
+  /** Whole calendar days between the Sweep and today, in the viewer's own time zone. */
+  function ageDays(c) {
+    const day = sweptOn(c); if (!day) return null;
+    const now = new Date();
+    return Math.round((new Date(now.getFullYear(), now.getMonth(), now.getDate()) - day) / 86400000);
+  }
+  const isStale = (c) => { const a = ageDays(c); return a === null || a > STALE_AFTER_DAYS; };
+  function ageText(c) {
+    const a = ageDays(c);
+    if (a === null) return "datum onbekend";
+    const date = sweptOn(c).toLocaleDateString("nl-NL", { weekday: "short", day: "numeric", month: "short" });
+    return (a <= 0 ? "vandaag" : a === 1 ? "gisteren" : a === 2 ? "eergisteren" : a + " dagen oud") + " (" + date + ")";
+  }
+  /** One line per page, near the prices: every Chain's date, loud when any is out of date. */
+  function freshness(what) {
+    const stale = chains.filter(isStale);
+    return '<p class="fresh' + (stale.length ? " stale" : "") + '" role="' + (stale.length ? "alert" : "note") + '"><span>' + what + "</span>" +
+      chains.map((c) => "<span>" + tag(c) + ' <span class="when">' + esc(ageText(c)) + "</span></span>").join("") +
+      (stale.length ? '<span class="warn">Mogelijk niet meer actueel: ' + stale.map((c) => esc(c.name)).join(", ") + (stale.length > 1 ? " zijn" : " is") + " ouder dan " + STALE_AFTER_DAYS + " dagen.</span>" : "") + "</p>";
+  }
+  const bagAge = (c) => '<span class="age' + (isStale(c) ? " stale" : "") + '">prijzen ' + esc(ageText(c)) + (isStale(c) ? " · verouderd" : "") + "</span>";
 
   // ── Catalogue: positional rows, unpacked once ─────────────────────────
   // Row: [ref, name, packaging, packQuantity, packUnit, unit, shelf, offerPrice, unitPrice, wording, upcoming]
@@ -627,6 +662,7 @@
         '<button class="btn' + (added.has(rc.id) ? " on" : "") + '" data-act="recipe" data-id="' + rc.id + '">' + (added.has(rc.id) ? "✓ Op je lijst" : "Zet op mijn lijst") + "</button></div></article>").join("");
       return "<h1>Recepten van deze week</h1>" +
         '<p class="lede">Gekozen rond wat er nu in de aanbieding is, met de meeste korting bovenaan. Tik een recept voor de bereiding.</p>' +
+        freshness("Aanbiedingen en prijzen van") +
         '<p class="hint">' + esc(hint) + "</p>" +
         '<div class="sec"><h2>In de aanbieding</h2><span>waar deze recepten op draaien</span></div><div class="deals">' + deals + "</div>" +
         '<div class="recipes">' + cards + "</div>" +
@@ -651,6 +687,7 @@
       const staples = s.rows.filter((r) => r.item.staple), once = s.rows.filter((r) => !r.item.staple);
       const p = currentPlan(s), top = rankedRecipes()[0];
       return "<h1>Boodschappenlijst</h1><p class=\"lede\">Wat er in huis moet komen. Waar het het goedkoopst is, zie je bij Vergelijk.</p>" +
+        freshness("Prijzen van") +
         (top ? '<div class="banner"><span>Deze week: <b>' + esc(top.rc.name) + "</b>, " + top.best.deals + ' ingrediënten in de aanbieding</span><button class="btn" data-act="go" data-id="recepten">' + RECIPES.length + " recepten bekijken</button></div>" : "") +
         '<form class="add"><label for="q" hidden>Op de lijst zetten</label><input id="q" name="q" placeholder="500 g rundergehakt, 2 courgettes, melk…" autocomplete="off"><button>Erbij</button></form>' +
         '<p class="hint' + (hint.startsWith("!") ? " warn" : "") + '">' + esc(hint.replace(/^!/, "")) + "</p>" +
@@ -673,7 +710,7 @@
           '<span class="tt">' + (t.full ? "" : "<small>≥</small>") + euro(t.cost) + "</span>" +
           (diff === null ? '<span class="df">' + (t.total - t.filled) + " ontbreekt</span>" : '<span class="df' + (diff ? "" : " zero") + '">' + (diff ? "+" + euro(diff) : "goedkoopst") + "</span>") +
           '<span class="cov">' + s.rows.map((r) => '<i class="' + (r.by[c.id] ? "" : "miss") + '"></i>').join("") + "</span>" +
-          '<span class="cv">' + t.filled + " van " + t.total + " te koop" + (t.full ? "" : " · totaal is een ondergrens") + "</span>" +
+          '<span class="cv">' + t.filled + " van " + t.total + " te koop" + (t.full ? "" : " · totaal is een ondergrens") + "</span>" + bagAge(c) +
           '<span class="pick"><i>' + (on ? "✓" : "") + "</i>" + (on ? "Gekozen" : "Kies deze tas") + "</span></button>";
       };
       let combo = "";
@@ -703,6 +740,7 @@
       }).join("");
       return "<h1>" + (s.best ? "Alles bij " + esc(s.best.chain.name) + ": " + euro(s.best.cost) : "Geen winkel heeft alles") + "</h1>" +
         '<p class="lede">Elke winkel is een tas met jouw hele lijst erin, van goedkoop naar duur. Tik een tas om er te gaan winkelen.</p>' +
+        freshness("Prijzen van") +
         '<div class="rack">' + combo + s.totals.map(bag).join("") + "</div>" +
         '<div class="sec" style="margin-top:38px"><h2>Waar zit het verschil?</h2><span>grootste verschil bovenaan · tik voor alle prijzen en om een product te corrigeren</span></div>' +
         '<div class="legend">' + chains.map(tag).join("") + "<span>· omcirkeld = goedkoopst</span></div>" +
@@ -718,7 +756,7 @@
       const nowhere = s.rows.filter((r) => !sourceOf(r, p, s));
       let left = 0, ticked = 0, count = 0, total = 0;
       for (const g of groups) for (const r of g.rows) { const c = r.by[g.c.id].cost; total += c; count++; if (done.has(r.item.id)) ticked++; else left += c; }
-      const shops = groups.map(({ c, rows }) => '<section class="bag shop" style="--c:' + c.color + '"><header><b>' + esc(c.name) + "</b><span>" + rows.length + " · " +
+      const shops = groups.map(({ c, rows }) => '<section class="bag shop" style="--c:' + c.color + '"><header><span><b>' + esc(c.name) + "</b><br>" + bagAge(c) + "</span><span>" + rows.length + " · " +
         euro(rows.reduce((n, r) => n + r.by[c.id].cost, 0)) + '</span></header><div class="chk">' + rows.map((r) => {
           const l = r.by[c.id], d = done.has(r.item.id);
           return '<button class="ci' + (d ? " done" : "") + '" data-act="tick" data-id="' + r.item.id + '" aria-pressed="' + d + '"><span class="tick">' + (d ? "✓" : "") + "</span>" +
@@ -728,7 +766,7 @@
             '<span class="v">' + euro(l.cost) + "</span></button>";
         }).join("") + "</div></section>").join("");
       const pct = count ? Math.round(ticked / count * 100) : 0;
-      return "<h1>Winkelen</h1>" +
+      return "<h1>Winkelen</h1>" + freshness("Prijzen van") +
         '<div class="plan"><span>' + (p.kind === "combo" ? "Twee winkels:" : "Alles bij") + " " + p.ids.map((id) => esc(chainById(id).name)).join(" + ") + " · <b>" + euro(total) + "</b></span>" +
         '<button data-act="go" data-id="vergelijk">andere tas kiezen</button></div>' + shops +
         (nowhere.length ? '<div class="missing">Hier niet te koop: ' + nowhere.map((r) => esc(r.item.noun)).join(", ") + "</div>" : "") +
