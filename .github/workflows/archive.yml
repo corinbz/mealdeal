@@ -88,6 +88,17 @@ jobs:
         id: today
         run: echo "date=$(date -u +%F)" >> "$GITHUB_OUTPUT"
 
+      # Stop before writing anything if the bucket is near R2's free tier, and
+      # warn at half of it. R2 has no spending cap, so a bug that uploads in a
+      # loop would otherwise only show up on the invoice. See src/archive/usage.ts.
+      - name: Check the bucket stays inside R2's free tier
+        run: |
+          aws s3api list-objects-v2 \
+            --bucket "${{ secrets.R2_BUCKET }}" \
+            --endpoint-url "https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com" \
+            --output json > bucket-listing.json
+          npm run --silent archive:usage -- bucket-listing.json
+
       # Pull back any partial archive for today before running. The archiver
       # skips steps whose file already exists, so a retried run resumes
       # instead of re-requesting everything a failed attempt already got.

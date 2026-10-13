@@ -11,6 +11,7 @@
     "archive": "node src/archive/cli.ts",
     "typecheck": "tsc --noEmit",
     "archive:check": "node src/archive/check.ts",
+    "archive:usage": "node src/archive/usage-check.ts",
     "db:up": "docker start mealdeal-pg || docker run -d --name mealdeal-pg -e POSTGRES_PASSWORD=mealdeal -e POSTGRES_USER=mealdeal -e POSTGRES_DB=mealdeal -p 5433:5432 postgres:17-alpine",
     "db:migrate": "node -e \"const {connect,migrate}=await import('./src/ingest/db.ts');const db=connect();await migrate(db);await db.end();console.log('schema applied')\" --input-type=module",
     "ingest": "node src/ingest/cli.ts",

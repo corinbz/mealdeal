@@ -222,6 +222,14 @@ objects, and never needs to create or delete a bucket.
 - **It will not start if the credentials are absent.** Archiving a day and
   then failing to upload it is worse than not running: it looks like success,
   and that day cannot be re-recorded.
+- **It stops before writing anything if the bucket nears R2's free tier.**
+  Normal use is about 2 MB and 1300 uploads a day: under 1 GB a year against
+  10 GB free, and about 4% of the 1,000,000 free monthly writes. R2 has no
+  spending cap, though, so a bug that uploads in a loop would only show up on
+  the invoice. `npm run archive:usage` reads the bucket listing first: at half
+  of either limit it puts a warning on the run, at 80% it fails the run. It
+  counts this month's writes as objects modified this month, because the S3
+  API cannot report operation counts.
 - **It restores any partial archive for today before running**, so a retry
   resumes rather than re-requesting everything a failed attempt already got.
 - **It uploads even when the run failed part-way.** A partial day is worth
