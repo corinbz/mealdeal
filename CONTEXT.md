@@ -17,8 +17,7 @@ A single physical location belonging to a Chain, at a street address.
 _Avoid_: Branch, location, outlet, shop
 
 **National Chain**:
-A Chain with Stores throughout the Netherlands. Albert Heijn and Jumbo are the
-two the project starts with.
+A Chain with Stores throughout the Netherlands, such as Albert Heijn or Jumbo.
 _Avoid_: Big chain, major chain
 
 **Regional Chain**:
@@ -28,8 +27,19 @@ _Avoid_: Local chain, small chain
 ### Products and prices
 
 **Product**:
-One purchasable item in a Chain's assortment, at a single pack size.
+One purchasable item in a Chain's assortment, at a single Pack Size.
 _Avoid_: Item, SKU, article
+
+**Chain Reference**:
+The identifier a Chain uses for one of its own Products. It is meaningful only
+inside that Chain and asserts nothing across Chains, unlike an EAN.
+_Avoid_: SKU, article number, product id, barcode
+
+**Pack Size**:
+The quantity of a Product in one package, as the Chain states it. Kept as
+written even when it names no quantity, since a Product whose Pack Size cannot
+be read has no Unit Price and so is not a comparison candidate.
+_Avoid_: Packaging, unit size, content, volume
 
 **Shelf Price**:
 What a Chain charges for a Product when no Offer applies.
@@ -49,6 +59,20 @@ _Avoid_: Price per kg, normalised price, unit cost
 The quantity an Ingredient is compared by — per kilogram, per litre, or per
 piece. Products are only ever compared against others sharing one.
 _Avoid_: Measure, uom, denomination
+
+### Recording
+
+**Sweep**:
+One pass over a Chain's catalogue, capturing everything it published at that
+moment. Prices are only ever read from a Sweep already taken, never fetched
+while a user waits.
+_Avoid_: Run, scrape, crawl, job, import
+
+**Observation**:
+What one Sweep recorded about one Product — its Shelf Price, Unit Price and
+any Offer — at one moment and one scope. Observations accumulate and are never
+revised: a price not recorded on the day cannot be recovered afterwards.
+_Avoid_: Sample, datapoint, snapshot, price record
 
 ### Baskets and comparison
 

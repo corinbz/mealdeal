@@ -1,7 +1,8 @@
 # Ingest
 
-Reads a day out of the archive and records it as Products, price observations
-and Offers in Postgres. This is the data foundation Basket comparison reads.
+Reads a Sweep out of the archive and records it as Products, Observations and
+Offers in Postgres. This is the data foundation Basket comparison reads, and
+the reason it reads the archive rather than the Chains is ADR-0005.
 
 ```sh
 npm run db:up          # local Postgres in Docker, on :5433

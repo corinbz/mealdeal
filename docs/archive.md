@@ -1,7 +1,8 @@
 # Raw response archive
 
-A scheduled job that records, once a day, exactly what each Chain's public
-endpoint said. It parses nothing and derives nothing.
+Takes a **Sweep** of each Chain once a day — one pass over its catalogue,
+recording exactly what its public endpoint said. It parses nothing and derives
+nothing.
 
 ## Why this exists before the ingest pipeline
 
