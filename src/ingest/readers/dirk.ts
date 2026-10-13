@@ -54,6 +54,37 @@ interface OfferRow {
 const text = (value: unknown): string | null =>
   typeof value === "string" && value.trim() ? value.trim() : null;
 
+/**
+ * `ACTIE` is simply Dutch for "promotion" — a template marker on Dirk's price
+ * sign, carrying nothing the normal/offer price pair does not already say.
+ * It is a sentinel in the same class as an offer price of 0, and treating it
+ * as advertised wording put the literal string "ACTIE_" on screen as though
+ * it were the deal.
+ */
+const GENERIC_PROMOTION_MARKER = /^actie$/i;
+
+/**
+ * The Offer's advertised wording, or null when the Chain published none.
+ *
+ * Dirk sends no `promotionText` at all — 0 of 264 Offers in the swept day —
+ * so for Dirk this is usually null, and an Offer's meaning comes from its
+ * price pair rather than from words. The price sign is still worth reading,
+ * because a minority of it is real: `VR, ZA & ZO` ("Fri, Sat & Sun") is a day
+ * restriction a shopper needs. So the sign is kept when it says something and
+ * dropped when it is only the generic marker.
+ *
+ * Nothing here composes or interprets (ADR-0002): a kept sign is the Chain's
+ * own string, whitespace-normalised and otherwise untouched.
+ */
+function advertisedWording(raw: OfferRow): string | null {
+  const promotion = text(raw.promotionText);
+  if (promotion) return promotion;
+
+  const sign = text(raw.textPriceSign)?.replace(/[\s_]+/g, " ").trim();
+  if (!sign || GENERIC_PROMOTION_MARKER.test(sign)) return null;
+  return sign;
+}
+
 export const dirkReader: ChainReader = {
   chainId: "dirk",
 
@@ -152,9 +183,7 @@ export const dirkReader: ChainReader = {
             chainOfferRef: ref,
             storeRef: typeof raw.storeId === "number" ? String(raw.storeId) : null,
             headline: text(raw.headerText),
-            // Whichever wording the Chain actually filled in, unaltered.
-            wording:
-              text(raw.promotionText) ?? text(raw.textPriceSign) ?? text(raw.subText),
+            wording: advertisedWording(raw),
             startsAt: parseInstant(raw.startDate),
             endsAt: endDateOrOpenEnded(raw.endDate),
             isUpcoming: upcoming,

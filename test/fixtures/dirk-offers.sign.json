@@ -1,0 +1,59 @@
+[
+  {
+    "_why": "Price-sign values RECORDED from Dirk on 2026-10-13. 255 of 264 Offers carried the first form, 9 the second; none carried a promotionText, so the third row is constructed to cover that path.",
+    "data": {
+      "listOffers": {
+        "key": 1,
+        "currentOffers": [
+          {
+            "_case": "RECORDED. The generic marker: 'ACTIE' is just Dutch for 'promotion' and says nothing the price pair does not. 255 of 264 Offers looked like this.",
+            "offerId": 991001,
+            "storeId": 66,
+            "headerText": "1 de Beste Andijvie",
+            "promotionText": null,
+            "textPriceSign": "ACTIE_\n ",
+            "textPriceSign1": "ACTIE",
+            "textPriceSign2": "\n ",
+            "normalPrice": 1.29,
+            "offerPrice": 0.99,
+            "priceDate": "2026-10-13T10:34:49.785+02:00",
+            "startDate": "2026-10-07T00:00:00.000+02:00",
+            "endDate": "2049-12-31T23:59:59.000+01:00",
+            "productIds": [900001]
+          },
+          {
+            "_case": "RECORDED. A genuine day restriction a shopper needs, which must survive the marker filter. 9 of 264 Offers looked like this.",
+            "offerId": 991002,
+            "storeId": 66,
+            "headerText": "Cappuccino bavarois taartje",
+            "promotionText": null,
+            "textPriceSign": "VR, ZA & ZO_actie",
+            "textPriceSign1": "VR, ZA & ZO",
+            "textPriceSign2": "actie",
+            "normalPrice": 0,
+            "offerPrice": 5.99,
+            "priceDate": "2026-10-13T10:34:49.785+02:00",
+            "startDate": "2026-10-07T00:00:00.000+02:00",
+            "endDate": "2026-10-20T23:59:59.000+02:00",
+            "productIds": [900002]
+          },
+          {
+            "_case": "CONSTRUCTED. Dirk published no promotionText on the swept day, so this path cannot be recorded yet.",
+            "offerId": 991003,
+            "storeId": 66,
+            "headerText": "Dubbelfrisss",
+            "promotionText": "2 voor 6,00",
+            "textPriceSign": "ACTIE_\n ",
+            "normalPrice": 4.99,
+            "offerPrice": 3.99,
+            "priceDate": "2026-10-13T10:34:49.785+02:00",
+            "startDate": "2026-10-07T00:00:00.000+02:00",
+            "endDate": "2026-10-20T23:59:59.000+02:00",
+            "productIds": [900004]
+          }
+        ],
+        "upcomingOffers": []
+      }
+    }
+  }
+]

@@ -206,3 +206,24 @@ test("records one observation per product per store, not one per web group", asy
   // about the Chain's catalogue worth keeping in the report.
   assert.equal(result.counts.productsSeen, 10);
 });
+
+test("drops the generic promotion marker but keeps a real restriction", async () => {
+  // Dirk sends no promotionText at all (0 of 264 Offers in the swept day) and
+  // fills its price sign with a template marker: "ACTIE_\n " — Dutch for
+  // "promotion". Storing that as advertised wording put the literal string
+  // "ACTIE_" on screen as though it were the deal. A minority of signs are
+  // real, though, and must survive: "VR, ZA & ZO" is a day restriction.
+  const root = await writeFixtureArchive({
+    dirk: { "offers/store-66/dept-1": ["dirk-offers.sign.json"] },
+  });
+  const reading = await dirkReader.read(root, FIXTURE_DATE);
+  await record(db, "dirk", FIXTURE_DATE, reading);
+
+  const { rows } = await db.query<{ chain_offer_ref: string; wording: string | null }>(
+    "SELECT chain_offer_ref, wording FROM offer_observation ORDER BY chain_offer_ref",
+  );
+  const byRef = Object.fromEntries(rows.map((r) => [r.chain_offer_ref, r.wording]));
+  assert.equal(byRef["991001"], null, "the generic marker is not wording");
+  assert.equal(byRef["991002"], "VR, ZA & ZO actie", "a real restriction survives");
+  assert.equal(byRef["991003"], "2 voor 6,00", "promotionText wins when present");
+});

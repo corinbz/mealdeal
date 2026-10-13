@@ -173,9 +173,16 @@ export const jumboReader: ChainReader = {
           storeRef: null,
           headline: text(raw.title),
           // Jumbo's mechanics arrive as human-readable tag text ("1+1 gratis",
-          // "25% korting"). Joined, never parsed: the effective unit price of
-          // a Dutch Offer depends on how many you buy (ADR-0002).
-          wording: tags.length ? tags.join(" · ") : text(raw.subtitle),
+          // "25% korting", "2e halve prijs"). Joined, never parsed: the
+          // effective unit price of a Dutch Offer depends on how many you buy
+          // (ADR-0002).
+          //
+          // No fallback to `subtitle`. It holds things like a supplier name
+          // ("Van Wijngaarden"), and an earlier fallback put those on screen
+          // in the slot reserved for the deal — which reads as though the
+          // brand were the offer. An Offer with no tags has no advertised
+          // mechanics, and null says exactly that.
+          wording: tags.length ? tags.join(" · ") : null,
           startsAt,
           endsAt: parseInstant(raw.endDate),
           isUpcoming,
