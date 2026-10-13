@@ -60,6 +60,17 @@ const sameWords = (a: string, b: string): boolean => {
 };
 
 /**
+ * Delivery perks: "Gratis bezorging", "€ 1,50 bezorgkorting". Terms for
+ * online delivery, not a reduction on any Product's price, so not Offers
+ * (issue #5). Their conditions ("Vanaf € 12,00", "Bij elke 2 stuks") arrive
+ * as separate tags and are only ever seen alongside a perk.
+ */
+const isDeliveryPerk = (tag: string) => /bezorg/i.test(tag);
+const isPerkCondition = (tag: string) => /^(vanaf\s*€|bij\s+(elke?\s+)?(\d+\s+)?stuks?$)/i.test(tag);
+/** Tag text can carry zero-width spaces ("Gratis bezorging\u200b"). */
+const tagText = (value: unknown) => text(typeof value === "string" ? value.replace(/[\u200b-\u200d\ufeff]/g, "") : value);
+
+/**
  * Jumbo states the unit as a bare word. Anything else is left unmapped.
  *
  * `pieces` and `kg` are the spellings observed in live responses. `pieces` in
@@ -211,12 +222,18 @@ export const jumboReader: ChainReader = {
         // match only — "Gratis lepelsetje" sits inside its title and is the
         // whole offer.
         const title = text(raw.title);
-        const tags = Array.isArray(raw.tags)
+        const sent = Array.isArray(raw.tags)
           ? (raw.tags as { text?: unknown }[])
-              .map((t) => text(t.text))
+              .map((t) => tagText(t.text))
               .filter((t): t is string => t !== null)
               .filter((t) => title === null || !sameWords(t, title))
           : [];
+        // A delivery perk and its conditions are dropped. A promotion that was
+        // nothing but a perk is not an Offer and is not recorded at all; the
+        // archive still holds it verbatim.
+        const perk = sent.some(isDeliveryPerk);
+        const tags = perk ? sent.filter((t) => !isDeliveryPerk(t) && !isPerkCondition(t)) : sent;
+        if (perk && tags.length === 0) continue;
 
         offers.push({
           chainOfferRef: ref,

@@ -1,6 +1,6 @@
 [
   {
-    "_why": "RECORDED LIVE on 2026-10-13: five of the 359 promotions Jumbo returned, chosen for small product lists or for the case they show. The bracketed timezone is a java.time format that Date rejects outright.",
+    "_why": "RECORDED LIVE on 2026-10-13: seven of the 359 promotions Jumbo returned, chosen for small product lists or for the case they show. The bracketed timezone is a java.time format that Date rejects outright.",
     "data": {
       "promotions": [
         {
@@ -150,6 +150,60 @@
             },
             {
               "sku": "433059TRA"
+            }
+          ]
+        },
+        {
+          "_case": "A delivery perk, not a deal: free delivery above an order value. Nothing about the Shelf Price changes, so it is not an Offer and is not recorded as one (issue #5). The tag carries a zero-width space exactly as sent. Product list cut to 3; everything else as recorded.",
+          "id": "3021143",
+          "title": "M&M's, Snickers, Twix, Mars en Extra",
+          "subtitle": "Bestel voor \u20ac 12,00 of meer aan deze producten en je betaalt geen bezorgkosten \u200b",
+          "startDate": "2026-10-14T00:01:00+02:00[Europe/Amsterdam]",
+          "endDate": "2026-10-20T23:59:59+02:00[Europe/Amsterdam]",
+          "tags": [
+            {
+              "text": "Gratis bezorging\u200b"
+            },
+            {
+              "text": "Vanaf \u20ac 12,00"
+            }
+          ],
+          "products": [
+            {
+              "sku": "745588ZK"
+            },
+            {
+              "sku": "781614DS"
+            },
+            {
+              "sku": "189963STK"
+            }
+          ]
+        },
+        {
+          "_case": "Another delivery perk: a discount on delivery costs per item bought, with its condition as a second tag. Not an Offer, not recorded (issue #5). Product list cut to 3; everything else as recorded.",
+          "id": "3021237",
+          "title": "Coca-Cola",
+          "subtitle": "Bij elk stuk van deze producten krijg je \u20ac 2,00 korting op je bezorgkosten",
+          "startDate": "2026-10-14T00:01:00+02:00[Europe/Amsterdam]",
+          "endDate": "2026-10-20T23:59:59+02:00[Europe/Amsterdam]",
+          "tags": [
+            {
+              "text": "\u20ac2,00 bezorgkorting"
+            },
+            {
+              "text": "Bij elk stuk"
+            }
+          ],
+          "products": [
+            {
+              "sku": "712418PAK"
+            },
+            {
+              "sku": "712417PAK"
+            },
+            {
+              "sku": "712419PAK"
             }
           ]
         }

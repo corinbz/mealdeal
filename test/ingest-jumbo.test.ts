@@ -239,6 +239,20 @@ test("keeps a tag that is only part of the title", async () => {
   assert.equal(rows[0]!.wording, "Gratis lepelsetje · Alleen online - OP=OP");
 });
 
+test("does not record a delivery perk as an Offer", async () => {
+  await ingestJumbo();
+  const { rows } = await db.query<{ chain_offer_ref: string }>(
+    "SELECT chain_offer_ref FROM offer_observation WHERE chain_offer_ref IN ('3021143', '3021237')",
+  );
+  // "Gratis bezorging · Vanaf € 12,00" and "€2,00 bezorgkorting · Bij elk
+  // stuk" are terms for online delivery. No Product's price changes, so they
+  // are not Offers, and shown in the deal slot they read as discounts.
+  assert.deepEqual(rows, []);
+  const { rows: kept } = await db.query<{ n: string }>("SELECT count(*) AS n FROM offer_observation");
+  // The real Offers in the same response are all still recorded.
+  assert.equal(Number(kept[0]!.n), 5);
+});
+
 test("parses the bracketed timezone and flags next week's offer", async () => {
   await ingestJumbo();
   const { rows } = await db.query<{

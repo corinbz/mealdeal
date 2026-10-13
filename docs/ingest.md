@@ -118,6 +118,16 @@ What the real data also settled, which guesses had not:
   `Gratis bezorging`, `Alleen in de winkel`. Several are not discounts at all
   — a channel restriction is not a price — which is the clearest case yet for
   ADR-0002's refusal to derive anything from them.
+- Wording is still kept verbatim, but some text a Chain sends is not wording
+  for a deal and is left out:
+  - **Dirk's `ACTIE_` price sign** is a template marker, not wording. Its
+    other signs ("VR, ZA & ZO") are kept.
+  - **A Jumbo tag that only repeats the promotion's title** is a brand
+    page's label ("Red Band" tagged "Red Band").
+  - **Jumbo delivery perks** ("Gratis bezorging · Vanaf € 12,00",
+    "€ 1,50 bezorgkorting · Bij elke 2 stuks") change no Product's price, so a
+    promotion that is only a perk is not recorded as an Offer at all (issue
+    #5): 37 of the 359 on 2026-10-13.
 - EAN coverage is total where Dirk's is nil: **76 of 76** ingested Jumbo
   Products carried one, against 0 of 963 for Dirk.
 
