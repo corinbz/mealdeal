@@ -1,0 +1,2094 @@
+<title>Mealdeal Kiloprijs</title>
+<style>
+  /* ── Tokens ───────────────────────────────────────────────────────────
+     Light is the base palette. Dark redefines only these tokens, twice:
+     once behind prefers-color-scheme (guarded so an explicit light choice
+     wins) and once behind the data-theme stamp (so the toggle wins too).
+     No component below reads a literal colour. */
+  :root {
+    --paper:      #f4f6f2;
+    --surface:    #ffffff;
+    --surface-2:  #ecefe8;
+    --ink:        #161b19;
+    --ink-soft:   #4c5551;
+    --ink-faint:  #7d8783;
+    --rule:       #d6dbd3;
+    --rule-firm:  #b7bfb7;
+    --accent:     #0b5d4c;
+    --accent-ink: #ffffff;
+    --accent-wash:#dceae4;
+    --amber:      #96620a;
+    --amber-wash: #f6ecd8;
+    --clay:       #9a3b29;
+    --clay-wash:  #f6e3de;
+    --scrim:      rgba(22, 27, 25, 0.42);
+
+    --display: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --data: ui-monospace, "SF Mono", "Cascadia Mono", "Roboto Mono", Menlo, Consolas, monospace;
+
+    --step--1: 0.78rem;
+    --step-0:  0.94rem;
+    --step-1:  1.18rem;
+    --step-2:  1.62rem;
+    --step-3:  2.3rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper:      #0f1311;
+      --surface:    #171c19;
+      --surface-2:  #1f2622;
+      --ink:        #e8ece8;
+      --ink-soft:   #a3aca7;
+      --ink-faint:  #767f7a;
+      --rule:       #2b332e;
+      --rule-firm:  #3d4842;
+      --accent:     #58b79d;
+      --accent-ink: #07130f;
+      --accent-wash:#16302a;
+      --amber:      #d7a34a;
+      --amber-wash: #2d2516;
+      --clay:       #dc8572;
+      --clay-wash:  #33201c;
+      --scrim:      rgba(4, 8, 6, 0.62);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper:      #0f1311;
+    --surface:    #171c19;
+    --surface-2:  #1f2622;
+    --ink:        #e8ece8;
+    --ink-soft:   #a3aca7;
+    --ink-faint:  #767f7a;
+    --rule:       #2b332e;
+    --rule-firm:  #3d4842;
+    --accent:     #58b79d;
+    --accent-ink: #07130f;
+    --accent-wash:#16302a;
+    --amber:      #d7a34a;
+    --amber-wash: #2d2516;
+    --clay:       #dc8572;
+    --clay-wash:  #33201c;
+    --scrim:      rgba(4, 8, 6, 0.62);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: var(--step-0);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: clamp(1.25rem, 3vw, 2.75rem) clamp(1rem, 3vw, 2rem) 4rem; }
+
+  /* ── Masthead ─────────────────────────────────────────────────────── */
+  .masthead { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.5rem 1rem; }
+  .wordmark {
+    font-family: var(--display);
+    font-size: var(--step-3);
+    letter-spacing: -0.02em;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .wordmark em { font-style: normal; color: var(--accent); }
+  .masthead p { margin: 0; color: var(--ink-soft); max-width: 60ch; }
+  .thesis {
+    margin: 1.25rem 0 0;
+    padding: 0.85rem 1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-wash);
+    color: var(--ink);
+    max-width: 68ch;
+    font-size: var(--step-0);
+  }
+  .thesis strong { font-weight: 650; }
+
+  /* ── Provenance ───────────────────────────────────────────────────── */
+  .provenance {
+    margin: 1.5rem 0 0;
+    display: flex; flex-wrap: wrap; gap: 0.5rem;
+    font-size: var(--step--1);
+  }
+  .tag {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.28rem 0.55rem;
+    border: 1px solid var(--rule-firm);
+    border-radius: 2px;
+    background: var(--surface);
+    font-family: var(--data);
+    letter-spacing: 0.01em;
+  }
+  .tag.sim { border-color: var(--amber); color: var(--amber); background: var(--amber-wash); }
+  .tag::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  .tag.sim::before { background: var(--amber); }
+
+  /* ── Controls ─────────────────────────────────────────────────────── */
+  .controls { margin: 1.75rem 0 0.75rem; display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; }
+  button {
+    font: inherit; font-size: var(--step--1);
+    padding: 0.42rem 0.8rem;
+    border: 1px solid var(--rule-firm);
+    border-radius: 2px;
+    background: var(--surface);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); color: var(--accent); }
+  button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  button:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .controls .spacer { flex: 1 1 auto; }
+  .controls .count { font-family: var(--data); font-size: var(--step--1); color: var(--ink-faint); }
+
+  /* ── Totals: coverage is fused into the same block as the total ───── */
+  .totals { display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin: 0 0 0.35rem; }
+  .total {
+    border: 1px solid var(--rule-firm);
+    border-top: 3px solid var(--rule-firm);
+    background: var(--surface);
+    padding: 0.9rem 1rem 0.8rem;
+  }
+  .total.lead { border-top-color: var(--accent); }
+  .total .who { display: flex; align-items: baseline; justify-content: space-between; gap: 0.5rem; }
+  .total .who h2 { font-family: var(--display); font-size: var(--step-1); margin: 0; }
+  .total .who .kind { font-size: var(--step--1); color: var(--ink-faint); }
+  .total .figure {
+    font-family: var(--data);
+    font-size: var(--step-2);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+    margin: 0.3rem 0 0;
+    display: flex; align-items: baseline; gap: 0.3rem;
+  }
+  .total .bound { color: var(--clay); font-size: var(--step-1); }
+  /* The coverage seal sits inside the total's box, above the hairline, so
+     the two cannot be read apart. A total without it means nothing. */
+  .coverage { margin-top: 0.55rem; padding-top: 0.5rem; border-top: 1px dashed var(--rule-firm); font-size: var(--step--1); }
+  .coverage .bar { display: flex; gap: 2px; margin-bottom: 0.4rem; }
+  .coverage .bar i { height: 6px; flex: 1 1 auto; background: var(--accent); border-radius: 1px; }
+  .coverage .bar i.miss { background: var(--clay-wash); box-shadow: inset 0 0 0 1px var(--clay); }
+  .coverage .read { font-family: var(--data); font-variant-numeric: tabular-nums; color: var(--ink-soft); }
+  .coverage .warn { color: var(--clay); }
+  .verdict {
+    margin: 0 0 1.5rem;
+    font-size: var(--step--1);
+    padding: 0.6rem 0.8rem;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    background: var(--surface-2);
+    color: var(--ink-soft);
+  }
+  .verdict.blocked { border-color: var(--clay); background: var(--clay-wash); color: var(--ink); }
+
+  /* ── Comparison grid ──────────────────────────────────────────────── */
+  .grid { border: 1px solid var(--rule-firm); background: var(--surface); }
+  .row { display: grid; grid-template-columns: minmax(190px, 1.1fr) repeat(2, minmax(0, 1.45fr)); }
+  .row + .row { border-top: 1px solid var(--rule); }
+  .head { background: var(--surface-2); font-size: var(--step--1); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-faint); }
+  .head > * { padding: 0.55rem 0.9rem; }
+  .head > * + * { border-left: 1px solid var(--rule); }
+
+  .req { padding: 0.9rem; border-right: 1px solid var(--rule); }
+  .req .qty {
+    display: inline-block;
+    font-family: var(--data); font-size: var(--step--1);
+    font-variant-numeric: tabular-nums;
+    padding: 0.12rem 0.4rem;
+    border: 1px solid var(--rule-firm); border-radius: 2px;
+    background: var(--surface-2);
+    margin-bottom: 0.3rem;
+  }
+  .req .what { display: block; font-family: var(--display); font-size: var(--step-1); line-height: 1.25; }
+  .req .note { font-size: var(--step--1); color: var(--ink-faint); }
+
+  .cell { padding: 0.9rem; border-left: 1px solid var(--rule); display: flex; flex-direction: column; gap: 0.35rem; text-align: left; width: 100%; background: none; border-radius: 0; cursor: pointer; }
+  .cell:hover { background: var(--surface-2); border-color: var(--rule); color: inherit; }
+  .cell:hover .unit { color: var(--accent); }
+  /* The shelf label, inverted: the unit price is the comparison figure, so
+     it is the largest thing here. The pack price is the small print. */
+  .unit {
+    font-family: var(--data);
+    font-size: var(--step-2);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .unit span { font-size: var(--step--1); color: var(--ink-faint); letter-spacing: 0; }
+  .prod { font-size: var(--step--1); line-height: 1.35; }
+  .prod b { font-weight: 600; }
+  .pack { font-family: var(--data); font-size: var(--step--1); font-variant-numeric: tabular-nums; color: var(--ink-soft); }
+  .flags { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+  .flag { font-size: var(--step--1); font-family: var(--data); padding: 0.1rem 0.35rem; border-radius: 2px; border: 1px solid; }
+  .flag.offer { color: var(--accent); border-color: var(--accent); background: var(--accent-wash); }
+  .flag.soon { color: var(--amber); border-color: var(--amber); background: var(--amber-wash); }
+  .flag.over { color: var(--amber); border-color: var(--amber); background: transparent; }
+  .flag.fixed { color: var(--ink-soft); border-color: var(--rule-firm); background: var(--surface-2); }
+  .flag.sim { color: var(--amber); border-color: var(--amber); background: transparent; }
+  .cell.none { color: var(--clay); cursor: default; background: var(--clay-wash); }
+  .cell.none:hover { background: var(--clay-wash); }
+  .cell.none .unit { font-size: var(--step-1); }
+
+  /* ── Correction drawer ────────────────────────────────────────────── */
+  .scrim { position: fixed; inset: 0; background: var(--scrim); opacity: 0; pointer-events: none; transition: opacity 160ms; }
+  .scrim.on { opacity: 1; pointer-events: auto; }
+  .drawer {
+    position: fixed; top: 0; right: 0; height: 100%; width: min(430px, 100%);
+    background: var(--surface); border-left: 1px solid var(--rule-firm);
+    transform: translateX(100%); transition: transform 200ms ease;
+    display: flex; flex-direction: column; z-index: 2;
+  }
+  .drawer.on { transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .scrim, .drawer { transition: none; }
+  }
+  .drawer header { padding: 1rem 1.1rem 0.8rem; border-bottom: 1px solid var(--rule); }
+  .drawer header .eyebrow { font-size: var(--step--1); text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-faint); }
+  .drawer header h3 { font-family: var(--display); font-size: var(--step-1); margin: 0.2rem 0 0.35rem; }
+  .drawer header p { margin: 0; font-size: var(--step--1); color: var(--ink-soft); }
+  .drawer .list { overflow-y: auto; padding: 0.6rem; display: flex; flex-direction: column; gap: 0.4rem; }
+  .alt { border: 1px solid var(--rule); border-radius: 2px; padding: 0.6rem 0.7rem; background: var(--surface); cursor: pointer; display: grid; gap: 0.25rem; text-align: left; }
+  .alt:hover { border-color: var(--accent); }
+  .alt.on { border-color: var(--accent); background: var(--accent-wash); }
+  .alt .top { display: flex; justify-content: space-between; align-items: baseline; gap: 0.6rem; }
+  .alt .u { font-family: var(--data); font-size: var(--step-1); font-variant-numeric: tabular-nums; }
+  .alt .n { font-size: var(--step--1); line-height: 1.3; }
+  .alt .m { font-family: var(--data); font-size: var(--step--1); color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+  .drawer footer { margin-top: auto; padding: 0.8rem 1.1rem; border-top: 1px solid var(--rule); font-size: var(--step--1); color: var(--ink-faint); }
+
+  .foot { margin-top: 2rem; font-size: var(--step--1); color: var(--ink-faint); display: grid; gap: 0.5rem; max-width: 80ch; }
+  .foot code { font-family: var(--data); color: var(--ink-soft); }
+  .foot b { color: var(--ink-soft); font-weight: 600; }
+
+  @media (max-width: 720px) {
+    .row { grid-template-columns: 1fr; }
+    .req { border-right: none; border-bottom: 1px solid var(--rule); }
+    .cell { border-left: none; border-bottom: 1px solid var(--rule); }
+    .head { display: none; }
+  }
+</style>
+
+<div class="wrap">
+  <div class="masthead">
+    <h1 class="wordmark">meal<em>deal</em></h1>
+    <p>One basket, priced at every chain that can actually fill it.</p>
+  </div>
+
+  <p class="thesis">
+    Dutch shelf labels already carry a unit price — buried in grey small print beneath
+    the headline deal. <strong>That small print is the only number that compares.</strong>
+    So it is the largest figure in every cell below, and the pack price is the footnote.
+  </p>
+
+  <div class="provenance" id="provenance"></div>
+
+  <div class="controls">
+    <button id="upcoming" aria-pressed="false">Include next week's offers</button>
+    <button id="reset" hidden>Undo corrections</button>
+    <span class="spacer"></span>
+    <span class="count" id="corrections"></span>
+  </div>
+
+  <div class="totals" id="totals"></div>
+  <p class="verdict" id="verdict"></p>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="foot">
+    <p><b>Dirk prices are real.</b> Product names, pack sizes, shelf prices and offer
+      wording come from <code>archive/2026-10-13/dirk</code> — one store, one morning,
+      recorded as the chain sent it. <b>Jumbo prices are invented</b> and every one is
+      marked <code>simulated</code>: Jumbo's endpoint refuses an honest client, so there
+      is nothing real to show yet.</p>
+    <p>A basket item is a <b>requirement</b>, not a product — each chain resolves it
+      against its own assortment. Resolution picks the lowest unit price among products
+      sharing a comparison unit, which is why several rows below are visibly wrong.
+      Correcting one is the point, not a workaround.</p>
+    <p>Offer wording is shown exactly as the chain wrote it. Nothing here converts
+      <code>1+1 gratis</code> into a percentage, because the true effective price
+      depends on how many you buy.</p>
+  </div>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
+  <header>
+    <div class="eyebrow" id="drawer-chain"></div>
+    <h3 id="drawer-title"></h3>
+    <p id="drawer-note"></p>
+  </header>
+  <div class="list" id="drawer-list"></div>
+  <footer>Corrections are reviewed and folded back into the shared vocabulary — they do not stay private to one shopper.</footer>
+</aside>
+
+<script type="application/json" id="fixture">{
+  "generatedAt": "2026-10-13T15:48:53.127Z",
+  "basket": {
+    "name": "Weekboodschappen",
+    "items": [
+      {
+        "id": "aardappelen",
+        "text": "1 kg kruimige aardappelen",
+        "noun": "kruimige aardappelen",
+        "quantity": 1,
+        "unit": "kg"
+      },
+      {
+        "id": "champignons",
+        "text": "250 g champignons",
+        "noun": "champignons",
+        "quantity": 0.25,
+        "unit": "kg"
+      },
+      {
+        "id": "appels",
+        "text": "1 kg appels",
+        "noun": "appels",
+        "quantity": 1,
+        "unit": "kg"
+      },
+      {
+        "id": "courgette",
+        "text": "2 courgettes",
+        "noun": "courgettes",
+        "quantity": 2,
+        "unit": "piece"
+      },
+      {
+        "id": "gehakt",
+        "text": "500 g rundergehakt",
+        "noun": "rundergehakt",
+        "quantity": 0.5,
+        "unit": "kg"
+      },
+      {
+        "id": "broccoli",
+        "text": "400 g broccoli",
+        "noun": "broccoli",
+        "quantity": 0.4,
+        "unit": "kg"
+      },
+      {
+        "id": "wortelen",
+        "text": "500 g wortelen",
+        "noun": "wortelen",
+        "quantity": 0.5,
+        "unit": "kg"
+      },
+      {
+        "id": "komkommer",
+        "text": "1 komkommer",
+        "noun": "komkommer",
+        "quantity": 1,
+        "unit": "piece"
+      },
+      {
+        "id": "zalm",
+        "text": "300 g zalmfilet",
+        "noun": "zalmfilet",
+        "quantity": 0.3,
+        "unit": "kg"
+      },
+      {
+        "id": "uien",
+        "text": "1 kg uien",
+        "noun": "uien",
+        "quantity": 1,
+        "unit": "kg"
+      },
+      {
+        "id": "tomaten",
+        "text": "500 g snoeptomaatjes",
+        "noun": "snoeptomaatjes",
+        "quantity": 0.5,
+        "unit": "kg"
+      },
+      {
+        "id": "spinazie",
+        "text": "400 g spinazie",
+        "noun": "spinazie",
+        "quantity": 0.4,
+        "unit": "kg"
+      }
+    ]
+  },
+  "chains": [
+    {
+      "id": "dirk",
+      "name": "Dirk",
+      "kind": "Regional Chain",
+      "provenance": "archived",
+      "store": "Store 66",
+      "observedAt": "2026-10-13",
+      "catalogueSize": 960
+    },
+    {
+      "id": "jumbo",
+      "name": "Jumbo",
+      "kind": "National Chain",
+      "provenance": "simulated",
+      "store": null,
+      "observedAt": null,
+      "catalogueSize": 29
+    }
+  ],
+  "products": {
+    "dirk": {
+      "dirk-113451": {
+        "id": "dirk-113451",
+        "name": "1 de Beste Gekookte aardappelen kruimig",
+        "brand": "1 de Beste",
+        "packaging": "500 g",
+        "packQuantity": 0.5,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 89,
+        "offerPriceCents": null,
+        "unitPriceCents": 178,
+        "simulated": false
+      },
+      "dirk-49869": {
+        "id": "dirk-49869",
+        "name": "Vers Voordeel Aardappelen kruimig",
+        "brand": "Vers Voordeel",
+        "packaging": "4 kg",
+        "packQuantity": 4,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 129,
+        "offerPriceCents": null,
+        "unitPriceCents": 32,
+        "simulated": false
+      },
+      "dirk-52225": {
+        "id": "dirk-52225",
+        "name": "Bio+ Biologische aardappelen kruimig",
+        "brand": "Bio+",
+        "packaging": "1 kg",
+        "packQuantity": 1,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 148,
+        "offerPriceCents": null,
+        "unitPriceCents": 148,
+        "simulated": false
+      },
+      "dirk-25561": {
+        "id": "dirk-25561",
+        "name": "Aardappelen kruimig los",
+        "brand": "",
+        "packaging": "1 kg",
+        "packQuantity": 1,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 198,
+        "offerPriceCents": null,
+        "unitPriceCents": 198,
+        "simulated": false
+      },
+      "dirk-103911": {
+        "id": "dirk-103911",
+        "name": "1 de Beste Aardappelen kruimig",
+        "brand": "1 de Beste",
+        "packaging": "3 kg",
+        "packQuantity": 3,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 349,
+        "offerPriceCents": null,
+        "unitPriceCents": 116,
+        "simulated": false
+      },
+      "dirk-108147": {
+        "id": "dirk-108147",
+        "name": "1 de Beste Aardappelen vastkokend",
+        "brand": "1 de Beste",
+        "packaging": "1 kg",
+        "packQuantity": 1,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 119,
+        "offerPriceCents": 109,
+        "unitPriceCents": 109,
+        "simulated": false
+      },
+      "dirk-108146": {
+        "id": "dirk-108146",
+        "name": "1 de Beste Aardappelen kruimig",
+        "brand": "1 de Beste",
+        "packaging": "1 kg",
+        "packQuantity": 1,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 119,
+        "offerPriceCents": 109,
+        "unitPriceCents": 109,
+        "simulated": false
+      },
+      "dirk-99068": {
+        "id": "dirk-99068",
+        "name": "Vleeschmeesters Rundergehakt",
+        "brand": "Vleeschmeesters",
+        "packaging": "1 kg",
+        "packQuantity": 1,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 1065,
+        "offerPriceCents": null,
+        "unitPriceCents": 1065,
+        "simulated": false
+      },
+      "dirk-99070": {
+        "id": "dirk-99070",
+        "name": "Vleeschmeesters Rundergehakt 500 gram",
+        "brand": "Vleeschmeesters",
+        "packaging": "500 g",
+        "packQuantity": 0.5,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 538,
+        "offerPriceCents": 399,
+        "unitPriceCents": 798,
+        "simulated": false
+      },
+      "dirk-119001": {
+        "id": "dirk-119001",
+        "name": "Vleeschmeesters Rundergehakt gekruid 400 gram",
+        "brand": "Vleeschmeesters",
+        "packaging": "400 g",
+        "packQuantity": 0.4,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 469,
+        "offerPriceCents": null,
+        "unitPriceCents": 1173,
+        "simulated": false
+      },
+      "dirk-99069": {
+        "id": "dirk-99069",
+        "name": "Vleeschmeesters Rundergehakt 300 gram",
+        "brand": "Vleeschmeesters",
+        "packaging": "300 g",
+        "packQuantity": 0.3,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 419,
+        "offerPriceCents": null,
+        "unitPriceCents": 1397,
+        "simulated": false
+      },
+      "dirk-99055": {
+        "id": "dirk-99055",
+        "name": "Vleeschmeesters Rundergehakt extra mager 300 gram",
+        "brand": "Vleeschmeesters",
+        "packaging": "300 g",
+        "packQuantity": 0.3,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 442,
+        "offerPriceCents": null,
+        "unitPriceCents": 1473,
+        "simulated": false
+      },
+      "dirk-99251": {
+        "id": "dirk-99251",
+        "name": "Actie rundergehakt",
+        "brand": "",
+        "packaging": "500 g",
+        "packQuantity": 0.5,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 429,
+        "offerPriceCents": 399,
+        "unitPriceCents": 798,
+        "simulated": false
+      },
+      "dirk-21321": {
+        "id": "dirk-21321",
+        "name": "Vivera Spinazie kaas filet 2 stuks",
+        "brand": "Vivera",
+        "packaging": "200 g",
+        "packQuantity": 0.2,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 359,
+        "offerPriceCents": null,
+        "unitPriceCents": 1795,
+        "simulated": false
+      },
+      "dirk-61773": {
+        "id": "dirk-61773",
+        "name": "Garden Gourmet Spinazie kaas rondo",
+        "brand": "Garden Gourmet",
+        "packaging": "180 g",
+        "packQuantity": 0.18,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 395,
+        "offerPriceCents": 179,
+        "unitPriceCents": 994,
+        "simulated": false
+      },
+      "dirk-120264": {
+        "id": "dirk-120264",
+        "name": "Zalmfilet met huid 4 st.",
+        "brand": "",
+        "packaging": "500 g",
+        "packQuantity": 0.5,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 1125,
+        "offerPriceCents": null,
+        "unitPriceCents": 2250,
+        "simulated": false
+      },
+      "dirk-120262": {
+        "id": "dirk-120262",
+        "name": "Zalmfilet met huid",
+        "brand": "",
+        "packaging": "150 g",
+        "packQuantity": 0.15,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 399,
+        "offerPriceCents": null,
+        "unitPriceCents": 2660,
+        "simulated": false
+      },
+      "dirk-120265": {
+        "id": "dirk-120265",
+        "name": "Zalmfilet zonder huid",
+        "brand": "",
+        "packaging": "300 g",
+        "packQuantity": 0.3,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 949,
+        "offerPriceCents": null,
+        "unitPriceCents": 3163,
+        "simulated": false
+      },
+      "dirk-124439": {
+        "id": "dirk-124439",
+        "name": "Zalmfilet met huid met bbq schaaltje",
+        "brand": "",
+        "packaging": "400 g",
+        "packQuantity": 0.4,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 879,
+        "offerPriceCents": null,
+        "unitPriceCents": 2198,
+        "simulated": false
+      },
+      "dirk-120263": {
+        "id": "dirk-120263",
+        "name": "Zalmfilet met huid 2 st.",
+        "brand": "",
+        "packaging": "250 g",
+        "packQuantity": 0.25,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 599,
+        "offerPriceCents": null,
+        "unitPriceCents": 2396,
+        "simulated": false
+      },
+      "dirk-116311": {
+        "id": "dirk-116311",
+        "name": "Sea Fresh Zalmfilet teriyaki 2st",
+        "brand": "Sea Fresh",
+        "packaging": "250 g",
+        "packQuantity": 0.25,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 549,
+        "offerPriceCents": 549,
+        "unitPriceCents": 2196,
+        "simulated": false
+      },
+      "dirk-102725": {
+        "id": "dirk-102725",
+        "name": "Bio+ Rundergehakt 300 gram",
+        "brand": "Bio+",
+        "packaging": "300 g",
+        "packQuantity": 0.3,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 412,
+        "offerPriceCents": null,
+        "unitPriceCents": 1373,
+        "simulated": false
+      },
+      "dirk-102726": {
+        "id": "dirk-102726",
+        "name": "Bio+ Rundergehakt mager 300 gram",
+        "brand": "Bio+",
+        "packaging": "300 g",
+        "packQuantity": 0.3,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 585,
+        "offerPriceCents": null,
+        "unitPriceCents": 1950,
+        "simulated": false
+      },
+      "dirk-123581": {
+        "id": "dirk-123581",
+        "name": "1 de Beste Appelmoes extra kwaliteit",
+        "brand": "1 de Beste",
+        "packaging": "710 g",
+        "packQuantity": 0.71,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 28,
+        "offerPriceCents": null,
+        "unitPriceCents": 39,
+        "simulated": false
+      },
+      "dirk-123582": {
+        "id": "dirk-123582",
+        "name": "1 de Beste Appelmoes extra kwaliteit",
+        "brand": "1 de Beste",
+        "packaging": "360 g",
+        "packQuantity": 0.36,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 25,
+        "offerPriceCents": null,
+        "unitPriceCents": 69,
+        "simulated": false
+      },
+      "dirk-43381": {
+        "id": "dirk-43381",
+        "name": "1 de Beste Gesneden uienringen",
+        "brand": "1 de Beste",
+        "packaging": "300 g",
+        "packQuantity": 0.3,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 158,
+        "offerPriceCents": null,
+        "unitPriceCents": 527,
+        "simulated": false
+      },
+      "dirk-118433": {
+        "id": "dirk-118433",
+        "name": "1 de Beste Ovengroente prei peen champignons",
+        "brand": "1 de Beste",
+        "packaging": "600 g",
+        "packQuantity": 0.6,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 429,
+        "offerPriceCents": null,
+        "unitPriceCents": 715,
+        "simulated": false
+      },
+      "dirk-119488": {
+        "id": "dirk-119488",
+        "name": "Bio+ Uien snippers",
+        "brand": "Bio+",
+        "packaging": "175 g",
+        "packQuantity": 0.17500000000000002,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 205,
+        "offerPriceCents": null,
+        "unitPriceCents": 1171,
+        "simulated": false
+      },
+      "dirk-103737": {
+        "id": "dirk-103737",
+        "name": "1 de Beste Champignons",
+        "brand": "1 de Beste",
+        "packaging": "250 g",
+        "packQuantity": 0.25,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 105,
+        "offerPriceCents": null,
+        "unitPriceCents": 420,
+        "simulated": false
+      },
+      "dirk-103738": {
+        "id": "dirk-103738",
+        "name": "1 de Beste Champignons middel",
+        "brand": "1 de Beste",
+        "packaging": "400 g",
+        "packQuantity": 0.4,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 162,
+        "offerPriceCents": null,
+        "unitPriceCents": 405,
+        "simulated": false
+      },
+      "dirk-103740": {
+        "id": "dirk-103740",
+        "name": "1 de Beste Kastanje champignons middel",
+        "brand": "1 de Beste",
+        "packaging": "400 g",
+        "packQuantity": 0.4,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 199,
+        "offerPriceCents": null,
+        "unitPriceCents": 498,
+        "simulated": false
+      },
+      "dirk-62922": {
+        "id": "dirk-62922",
+        "name": "1 de Beste Spinazie gewassen kleinverpakking",
+        "brand": "1 de Beste",
+        "packaging": "200 g",
+        "packQuantity": 0.2,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 165,
+        "offerPriceCents": null,
+        "unitPriceCents": 825,
+        "simulated": false
+      },
+      "dirk-41683": {
+        "id": "dirk-41683",
+        "name": "1 de Beste Snoepkomkommer",
+        "brand": "1 de Beste",
+        "packaging": "10 stuks",
+        "packQuantity": 10,
+        "comparisonUnit": "piece",
+        "shelfPriceCents": 269,
+        "offerPriceCents": null,
+        "unitPriceCents": 27,
+        "simulated": false
+      },
+      "dirk-43423": {
+        "id": "dirk-43423",
+        "name": "1 de Beste Wortelen geschrapt voordeel verpakking",
+        "brand": "1 de Beste",
+        "packaging": "500 g",
+        "packQuantity": 0.5,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 98,
+        "offerPriceCents": null,
+        "unitPriceCents": 196,
+        "simulated": false
+      },
+      "dirk-49951": {
+        "id": "dirk-49951",
+        "name": "Mini komkommer",
+        "brand": "",
+        "packaging": "3 stuks",
+        "packQuantity": 3,
+        "comparisonUnit": "piece",
+        "shelfPriceCents": 99,
+        "offerPriceCents": null,
+        "unitPriceCents": 33,
+        "simulated": false
+      },
+      "dirk-116185": {
+        "id": "dirk-116185",
+        "name": "Uien los",
+        "brand": "",
+        "packaging": "1 kg",
+        "packQuantity": 1,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 98,
+        "offerPriceCents": null,
+        "unitPriceCents": 98,
+        "simulated": false
+      },
+      "dirk-103735": {
+        "id": "dirk-103735",
+        "name": "1 de Beste Gesneden champignons",
+        "brand": "1 de Beste",
+        "packaging": "250 g",
+        "packQuantity": 0.25,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 149,
+        "offerPriceCents": null,
+        "unitPriceCents": 596,
+        "simulated": false
+      },
+      "dirk-58196": {
+        "id": "dirk-58196",
+        "name": "1 de Beste Broccoliroosjes",
+        "brand": "1 de Beste",
+        "packaging": "400 g",
+        "packQuantity": 0.4,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 205,
+        "offerPriceCents": null,
+        "unitPriceCents": 513,
+        "simulated": false
+      },
+      "dirk-104069": {
+        "id": "dirk-104069",
+        "name": "Bio+ Kastanje champignons bio",
+        "brand": "Bio+",
+        "packaging": "250 g",
+        "packQuantity": 0.25,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 199,
+        "offerPriceCents": null,
+        "unitPriceCents": 796,
+        "simulated": false
+      },
+      "dirk-4520": {
+        "id": "dirk-4520",
+        "name": "Bio+ Biologische komkommer",
+        "brand": "Bio+",
+        "packaging": "Per stuk",
+        "packQuantity": 1,
+        "comparisonUnit": "piece",
+        "shelfPriceCents": 139,
+        "offerPriceCents": null,
+        "unitPriceCents": 139,
+        "simulated": false
+      },
+      "dirk-116188": {
+        "id": "dirk-116188",
+        "name": "1 de Beste Rode uien",
+        "brand": "1 de Beste",
+        "packaging": "1 Kg",
+        "packQuantity": 1,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 115,
+        "offerPriceCents": null,
+        "unitPriceCents": 115,
+        "simulated": false
+      },
+      "dirk-116186": {
+        "id": "dirk-116186",
+        "name": "1 de Beste Uien",
+        "brand": "1 de Beste",
+        "packaging": "1 kg",
+        "packQuantity": 1,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 89,
+        "offerPriceCents": null,
+        "unitPriceCents": 89,
+        "simulated": false
+      },
+      "dirk-6316": {
+        "id": "dirk-6316",
+        "name": "Bio+ Biologische broccoli",
+        "brand": "Bio+",
+        "packaging": "400 g",
+        "packQuantity": 0.4,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 199,
+        "offerPriceCents": null,
+        "unitPriceCents": 498,
+        "simulated": false
+      },
+      "dirk-4511": {
+        "id": "dirk-4511",
+        "name": "1 de Beste Snoeptomaatjes 500 gram",
+        "brand": "1 de Beste",
+        "packaging": "Per schaal",
+        "packQuantity": 0.5,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 275,
+        "offerPriceCents": null,
+        "unitPriceCents": 550,
+        "simulated": false
+      },
+      "dirk-4463": {
+        "id": "dirk-4463",
+        "name": "Komkommer",
+        "brand": "",
+        "packaging": "Per stuk",
+        "packQuantity": 1,
+        "comparisonUnit": "piece",
+        "shelfPriceCents": 67,
+        "offerPriceCents": null,
+        "unitPriceCents": 67,
+        "simulated": false
+      },
+      "dirk-4439": {
+        "id": "dirk-4439",
+        "name": "Courgette",
+        "brand": "",
+        "packaging": "Per stuk",
+        "packQuantity": 1,
+        "comparisonUnit": "piece",
+        "shelfPriceCents": 75,
+        "offerPriceCents": null,
+        "unitPriceCents": 75,
+        "simulated": false
+      },
+      "dirk-103736": {
+        "id": "dirk-103736",
+        "name": "1 de Beste Kastanje champignons gesneden",
+        "brand": "1 de Beste",
+        "packaging": "250 g",
+        "packQuantity": 0.25,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 179,
+        "offerPriceCents": null,
+        "unitPriceCents": 716,
+        "simulated": false
+      },
+      "dirk-6636": {
+        "id": "dirk-6636",
+        "name": "Bio+ Biologische courgette",
+        "brand": "Bio+",
+        "packaging": "Per stuk",
+        "packQuantity": 1,
+        "comparisonUnit": "piece",
+        "shelfPriceCents": 99,
+        "offerPriceCents": null,
+        "unitPriceCents": 99,
+        "simulated": false
+      },
+      "dirk-57072": {
+        "id": "dirk-57072",
+        "name": "1 de Beste Spinazie ongewassen",
+        "brand": "1 de Beste",
+        "packaging": "450 g",
+        "packQuantity": 0.45,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 179,
+        "offerPriceCents": null,
+        "unitPriceCents": 398,
+        "simulated": false
+      },
+      "dirk-116187": {
+        "id": "dirk-116187",
+        "name": "1 de Beste Uien",
+        "brand": "1 de Beste",
+        "packaging": "2 kg",
+        "packQuantity": 2,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 169,
+        "offerPriceCents": null,
+        "unitPriceCents": 85,
+        "simulated": false
+      },
+      "dirk-4431": {
+        "id": "dirk-4431",
+        "name": "Broccoli",
+        "brand": "",
+        "packaging": "1 kg (ca. 2 stuks)",
+        "packQuantity": 1,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 230,
+        "offerPriceCents": 138,
+        "unitPriceCents": 138,
+        "simulated": false
+      },
+      "dirk-83882": {
+        "id": "dirk-83882",
+        "name": "1 de Beste Zongedroogde tomaatjes op olie",
+        "brand": "1 de Beste",
+        "packaging": "280 g",
+        "packQuantity": 0.28,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 128,
+        "offerPriceCents": null,
+        "unitPriceCents": 457,
+        "simulated": false
+      },
+      "dirk-5307": {
+        "id": "dirk-5307",
+        "name": "Hak Doperwtjes met worteltjes",
+        "brand": "Hak",
+        "packaging": "680 g",
+        "packQuantity": 0.68,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 255,
+        "offerPriceCents": null,
+        "unitPriceCents": 375,
+        "simulated": false
+      },
+      "dirk-6589": {
+        "id": "dirk-6589",
+        "name": "Hak Spinazie",
+        "brand": "Hak",
+        "packaging": "630 g",
+        "packQuantity": 0.63,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 329,
+        "offerPriceCents": null,
+        "unitPriceCents": 522,
+        "simulated": false
+      },
+      "dirk-95057": {
+        "id": "dirk-95057",
+        "name": "Hak Spinazie",
+        "brand": "Hak",
+        "packaging": "330 g",
+        "packQuantity": 0.33,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 235,
+        "offerPriceCents": null,
+        "unitPriceCents": 712,
+        "simulated": false
+      },
+      "dirk-109389": {
+        "id": "dirk-109389",
+        "name": "Heinz Tomato Frito Creations met gekarameliseerde uien & sjalotten",
+        "brand": "Heinz",
+        "packaging": "350 g",
+        "packQuantity": 0.35000000000000003,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 199,
+        "offerPriceCents": null,
+        "unitPriceCents": 569,
+        "simulated": false
+      },
+      "dirk-111891": {
+        "id": "dirk-111891",
+        "name": "1 de Beste Doperwten en wortelen",
+        "brand": "1 de Beste",
+        "packaging": "680 g",
+        "packQuantity": 0.68,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 43,
+        "offerPriceCents": null,
+        "unitPriceCents": 63,
+        "simulated": false
+      },
+      "dirk-112227": {
+        "id": "dirk-112227",
+        "name": "1 de Beste Wortelen extra fijn",
+        "brand": "1 de Beste",
+        "packaging": "680 g",
+        "packQuantity": 0.68,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 93,
+        "offerPriceCents": null,
+        "unitPriceCents": 137,
+        "simulated": false
+      },
+      "dirk-112443": {
+        "id": "dirk-112443",
+        "name": "1 de Beste Doperwten en wortelen extra fijn",
+        "brand": "1 de Beste",
+        "packaging": "200 g",
+        "packQuantity": 0.2,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 39,
+        "offerPriceCents": null,
+        "unitPriceCents": 195,
+        "simulated": false
+      },
+      "dirk-113285": {
+        "id": "dirk-113285",
+        "name": "1 de Beste Doperwten en wortelen fijn",
+        "brand": "1 de Beste",
+        "packaging": "340 g",
+        "packQuantity": 0.34,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 34,
+        "offerPriceCents": null,
+        "unitPriceCents": 100,
+        "simulated": false
+      },
+      "dirk-114997": {
+        "id": "dirk-114997",
+        "name": "1 de Beste Doperwten en wortelen extra fijn",
+        "brand": "1 de Beste",
+        "packaging": "400 g",
+        "packQuantity": 0.4,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 69,
+        "offerPriceCents": null,
+        "unitPriceCents": 173,
+        "simulated": false
+      },
+      "dirk-116057": {
+        "id": "dirk-116057",
+        "name": "1 de Beste Rode kool met appel",
+        "brand": "1 de Beste",
+        "packaging": "340 g",
+        "packQuantity": 0.34,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 29,
+        "offerPriceCents": null,
+        "unitPriceCents": 85,
+        "simulated": false
+      },
+      "dirk-116284": {
+        "id": "dirk-116284",
+        "name": "1 de Beste Rode kool met appel",
+        "brand": "1 de Beste",
+        "packaging": "680 g",
+        "packQuantity": 0.68,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 30,
+        "offerPriceCents": null,
+        "unitPriceCents": 44,
+        "simulated": false
+      },
+      "dirk-120379": {
+        "id": "dirk-120379",
+        "name": "1 de Beste Wortelen extra fijn",
+        "brand": "1 de Beste",
+        "packaging": "340 g",
+        "packQuantity": 0.34,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 73,
+        "offerPriceCents": null,
+        "unitPriceCents": 215,
+        "simulated": false
+      },
+      "dirk-125367": {
+        "id": "dirk-125367",
+        "name": "1 de Beste Champignons gesneden",
+        "brand": "1 de Beste",
+        "packaging": "280 g",
+        "packQuantity": 0.28,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 97,
+        "offerPriceCents": null,
+        "unitPriceCents": 346,
+        "simulated": false
+      },
+      "dirk-6363": {
+        "id": "dirk-6363",
+        "name": "Hak Spinazie met room",
+        "brand": "Hak",
+        "packaging": "345 g",
+        "packQuantity": 0.34500000000000003,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 285,
+        "offerPriceCents": null,
+        "unitPriceCents": 826,
+        "simulated": false
+      }
+    },
+    "jumbo": {
+      "jumbo-aardappelen-0": {
+        "id": "jumbo-aardappelen-0",
+        "name": "Jumbo Huismerk Kruimige aardappelen 500 g",
+        "brand": "Jumbo Huismerk",
+        "packaging": "500 g",
+        "packQuantity": 0.5,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 52,
+        "offerPriceCents": null,
+        "unitPriceCents": 104,
+        "simulated": true
+      },
+      "jumbo-aardappelen-1": {
+        "id": "jumbo-aardappelen-1",
+        "name": "Kruimige aardappelen 1 kg",
+        "brand": null,
+        "packaging": "1 kg",
+        "packQuantity": 1,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 115,
+        "offerPriceCents": null,
+        "unitPriceCents": 115,
+        "simulated": true
+      },
+      "jumbo-aardappelen-2": {
+        "id": "jumbo-aardappelen-2",
+        "name": "Jumbo Biologisch Kruimige aardappelen 750 g",
+        "brand": "Jumbo Biologisch",
+        "packaging": "750 g",
+        "packQuantity": 0.75,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 97,
+        "offerPriceCents": null,
+        "unitPriceCents": 129,
+        "simulated": true
+      },
+      "jumbo-champignons-0": {
+        "id": "jumbo-champignons-0",
+        "name": "Jumbo Champignons 500 g",
+        "brand": "Jumbo",
+        "packaging": "500 g",
+        "packQuantity": 0.5,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 309,
+        "offerPriceCents": 232,
+        "unitPriceCents": 464,
+        "simulated": true
+      },
+      "jumbo-champignons-1": {
+        "id": "jumbo-champignons-1",
+        "name": "Champignons 1 kg",
+        "brand": null,
+        "packaging": "1 kg",
+        "packQuantity": 1,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 633,
+        "offerPriceCents": 475,
+        "unitPriceCents": 475,
+        "simulated": true
+      },
+      "jumbo-appels-0": {
+        "id": "jumbo-appels-0",
+        "name": "Jumbo Appels 500 g",
+        "brand": "Jumbo",
+        "packaging": "500 g",
+        "packQuantity": 0.5,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 128,
+        "offerPriceCents": null,
+        "unitPriceCents": 256,
+        "simulated": true
+      },
+      "jumbo-appels-1": {
+        "id": "jumbo-appels-1",
+        "name": "Appels 1 kg",
+        "brand": null,
+        "packaging": "1 kg",
+        "packQuantity": 1,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 277,
+        "offerPriceCents": null,
+        "unitPriceCents": 277,
+        "simulated": true
+      },
+      "jumbo-courgette-0": {
+        "id": "jumbo-courgette-0",
+        "name": "Jumbo Huismerk Courgettes per stuk",
+        "brand": "Jumbo Huismerk",
+        "packaging": "per stuk",
+        "packQuantity": 1,
+        "comparisonUnit": "piece",
+        "shelfPriceCents": 73,
+        "offerPriceCents": null,
+        "unitPriceCents": 73,
+        "simulated": true
+      },
+      "jumbo-courgette-1": {
+        "id": "jumbo-courgette-1",
+        "name": "Jumbo Huismerk Courgettes 2 stuks",
+        "brand": "Jumbo Huismerk",
+        "packaging": "2 stuks",
+        "packQuantity": 2,
+        "comparisonUnit": "piece",
+        "shelfPriceCents": 198,
+        "offerPriceCents": null,
+        "unitPriceCents": 99,
+        "simulated": true
+      },
+      "jumbo-courgette-2": {
+        "id": "jumbo-courgette-2",
+        "name": "Jumbo Courgettes per stuk",
+        "brand": "Jumbo",
+        "packaging": "per stuk",
+        "packQuantity": 1,
+        "comparisonUnit": "piece",
+        "shelfPriceCents": 109,
+        "offerPriceCents": null,
+        "unitPriceCents": 109,
+        "simulated": true
+      },
+      "jumbo-courgette-3": {
+        "id": "jumbo-courgette-3",
+        "name": "Jumbo Huismerk Courgettes 2 stuks",
+        "brand": "Jumbo Huismerk",
+        "packaging": "2 stuks",
+        "packQuantity": 2,
+        "comparisonUnit": "piece",
+        "shelfPriceCents": 148,
+        "offerPriceCents": null,
+        "unitPriceCents": 74,
+        "simulated": true
+      },
+      "jumbo-gehakt-0": {
+        "id": "jumbo-gehakt-0",
+        "name": "Jumbo Rundergehakt 500 g",
+        "brand": "Jumbo",
+        "packaging": "500 g",
+        "packQuantity": 0.5,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 530,
+        "offerPriceCents": null,
+        "unitPriceCents": 1060,
+        "simulated": true
+      },
+      "jumbo-gehakt-1": {
+        "id": "jumbo-gehakt-1",
+        "name": "Rundergehakt 1 kg",
+        "brand": null,
+        "packaging": "1 kg",
+        "packQuantity": 1,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 918,
+        "offerPriceCents": null,
+        "unitPriceCents": 918,
+        "simulated": true
+      },
+      "jumbo-gehakt-2": {
+        "id": "jumbo-gehakt-2",
+        "name": "Jumbo Rundergehakt 750 g",
+        "brand": "Jumbo",
+        "packaging": "750 g",
+        "packQuantity": 0.75,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 664,
+        "offerPriceCents": 498,
+        "unitPriceCents": 664,
+        "simulated": true
+      },
+      "jumbo-broccoli-0": {
+        "id": "jumbo-broccoli-0",
+        "name": "Broccoli 500 g",
+        "brand": null,
+        "packaging": "500 g",
+        "packQuantity": 0.5,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 141,
+        "offerPriceCents": 106,
+        "unitPriceCents": 212,
+        "simulated": true
+      },
+      "jumbo-broccoli-1": {
+        "id": "jumbo-broccoli-1",
+        "name": "Jumbo Broccoli 1 kg",
+        "brand": "Jumbo",
+        "packaging": "1 kg",
+        "packQuantity": 1,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 381,
+        "offerPriceCents": null,
+        "unitPriceCents": 381,
+        "simulated": true
+      },
+      "jumbo-broccoli-2": {
+        "id": "jumbo-broccoli-2",
+        "name": "Jumbo Biologisch Broccoli 750 g",
+        "brand": "Jumbo Biologisch",
+        "packaging": "750 g",
+        "packQuantity": 0.75,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 288,
+        "offerPriceCents": null,
+        "unitPriceCents": 384,
+        "simulated": true
+      },
+      "jumbo-broccoli-3": {
+        "id": "jumbo-broccoli-3",
+        "name": "Broccoli 500 g",
+        "brand": null,
+        "packaging": "500 g",
+        "packQuantity": 0.5,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 162,
+        "offerPriceCents": null,
+        "unitPriceCents": 324,
+        "simulated": true
+      },
+      "jumbo-wortelen-0": {
+        "id": "jumbo-wortelen-0",
+        "name": "Jumbo Biologisch Wortelen 500 g",
+        "brand": "Jumbo Biologisch",
+        "packaging": "500 g",
+        "packQuantity": 0.5,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 73,
+        "offerPriceCents": null,
+        "unitPriceCents": 146,
+        "simulated": true
+      },
+      "jumbo-wortelen-1": {
+        "id": "jumbo-wortelen-1",
+        "name": "Jumbo Wortelen 1 kg",
+        "brand": "Jumbo",
+        "packaging": "1 kg",
+        "packQuantity": 1,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 136,
+        "offerPriceCents": null,
+        "unitPriceCents": 136,
+        "simulated": true
+      },
+      "jumbo-wortelen-2": {
+        "id": "jumbo-wortelen-2",
+        "name": "Wortelen 750 g",
+        "brand": null,
+        "packaging": "750 g",
+        "packQuantity": 0.75,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 93,
+        "offerPriceCents": null,
+        "unitPriceCents": 124,
+        "simulated": true
+      },
+      "jumbo-komkommer-0": {
+        "id": "jumbo-komkommer-0",
+        "name": "Jumbo Komkommer per stuk",
+        "brand": "Jumbo",
+        "packaging": "per stuk",
+        "packQuantity": 1,
+        "comparisonUnit": "piece",
+        "shelfPriceCents": 125,
+        "offerPriceCents": null,
+        "unitPriceCents": 125,
+        "simulated": true
+      },
+      "jumbo-komkommer-1": {
+        "id": "jumbo-komkommer-1",
+        "name": "Jumbo Huismerk Komkommer 2 stuks",
+        "brand": "Jumbo Huismerk",
+        "packaging": "2 stuks",
+        "packQuantity": 2,
+        "comparisonUnit": "piece",
+        "shelfPriceCents": 222,
+        "offerPriceCents": null,
+        "unitPriceCents": 111,
+        "simulated": true
+      },
+      "jumbo-uien-0": {
+        "id": "jumbo-uien-0",
+        "name": "Jumbo Uien 500 g",
+        "brand": "Jumbo",
+        "packaging": "500 g",
+        "packQuantity": 0.5,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 67,
+        "offerPriceCents": null,
+        "unitPriceCents": 134,
+        "simulated": true
+      },
+      "jumbo-uien-1": {
+        "id": "jumbo-uien-1",
+        "name": "Uien 1 kg",
+        "brand": null,
+        "packaging": "1 kg",
+        "packQuantity": 1,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 104,
+        "offerPriceCents": null,
+        "unitPriceCents": 104,
+        "simulated": true
+      },
+      "jumbo-uien-2": {
+        "id": "jumbo-uien-2",
+        "name": "Uien 750 g",
+        "brand": null,
+        "packaging": "750 g",
+        "packQuantity": 0.75,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 87,
+        "offerPriceCents": null,
+        "unitPriceCents": 116,
+        "simulated": true
+      },
+      "jumbo-spinazie-0": {
+        "id": "jumbo-spinazie-0",
+        "name": "Jumbo Biologisch Spinazie 500 g",
+        "brand": "Jumbo Biologisch",
+        "packaging": "500 g",
+        "packQuantity": 0.5,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 269,
+        "offerPriceCents": null,
+        "unitPriceCents": 538,
+        "simulated": true
+      },
+      "jumbo-spinazie-1": {
+        "id": "jumbo-spinazie-1",
+        "name": "Jumbo Biologisch Spinazie 1 kg",
+        "brand": "Jumbo Biologisch",
+        "packaging": "1 kg",
+        "packQuantity": 1,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 462,
+        "offerPriceCents": null,
+        "unitPriceCents": 462,
+        "simulated": true
+      },
+      "jumbo-spinazie-2": {
+        "id": "jumbo-spinazie-2",
+        "name": "Spinazie 750 g",
+        "brand": null,
+        "packaging": "750 g",
+        "packQuantity": 0.75,
+        "comparisonUnit": "kg",
+        "shelfPriceCents": 332,
+        "offerPriceCents": null,
+        "unitPriceCents": 443,
+        "simulated": true
+      }
+    }
+  },
+  "resolutions": {
+    "dirk": {
+      "aardappelen": {
+        "chosenId": "dirk-49869",
+        "candidateIds": [
+          "dirk-49869",
+          "dirk-108146",
+          "dirk-103911",
+          "dirk-52225",
+          "dirk-113451",
+          "dirk-25561"
+        ]
+      },
+      "champignons": {
+        "chosenId": "dirk-125367",
+        "candidateIds": [
+          "dirk-125367",
+          "dirk-103738",
+          "dirk-103737",
+          "dirk-103740",
+          "dirk-103735",
+          "dirk-118433",
+          "dirk-103736",
+          "dirk-104069"
+        ]
+      },
+      "appels": {
+        "chosenId": "dirk-49869",
+        "candidateIds": [
+          "dirk-49869",
+          "dirk-123581",
+          "dirk-116284",
+          "dirk-123582",
+          "dirk-116057",
+          "dirk-108147",
+          "dirk-108146",
+          "dirk-103911"
+        ]
+      },
+      "courgette": {
+        "chosenId": "dirk-4439",
+        "candidateIds": [
+          "dirk-4439",
+          "dirk-6636"
+        ]
+      },
+      "gehakt": {
+        "chosenId": "dirk-99070",
+        "candidateIds": [
+          "dirk-99070",
+          "dirk-99251",
+          "dirk-99068",
+          "dirk-119001",
+          "dirk-102725",
+          "dirk-99069",
+          "dirk-99055",
+          "dirk-102726"
+        ]
+      },
+      "broccoli": {
+        "chosenId": "dirk-4431",
+        "candidateIds": [
+          "dirk-4431",
+          "dirk-6316",
+          "dirk-58196"
+        ]
+      },
+      "wortelen": {
+        "chosenId": "dirk-111891",
+        "candidateIds": [
+          "dirk-111891",
+          "dirk-113285",
+          "dirk-112227",
+          "dirk-114997",
+          "dirk-112443",
+          "dirk-43423",
+          "dirk-120379",
+          "dirk-5307"
+        ]
+      },
+      "komkommer": {
+        "chosenId": "dirk-41683",
+        "candidateIds": [
+          "dirk-41683",
+          "dirk-49951",
+          "dirk-4463",
+          "dirk-4520"
+        ]
+      },
+      "zalm": {
+        "chosenId": "dirk-116311",
+        "candidateIds": [
+          "dirk-116311",
+          "dirk-124439",
+          "dirk-120264",
+          "dirk-120263",
+          "dirk-120262",
+          "dirk-120265"
+        ]
+      },
+      "uien": {
+        "chosenId": "dirk-116187",
+        "candidateIds": [
+          "dirk-116187",
+          "dirk-116186",
+          "dirk-116185",
+          "dirk-116188",
+          "dirk-43381",
+          "dirk-109389",
+          "dirk-119488"
+        ]
+      },
+      "tomaten": {
+        "chosenId": "dirk-83882",
+        "candidateIds": [
+          "dirk-83882",
+          "dirk-4511"
+        ]
+      },
+      "spinazie": {
+        "chosenId": "dirk-57072",
+        "candidateIds": [
+          "dirk-57072",
+          "dirk-6589",
+          "dirk-95057",
+          "dirk-62922",
+          "dirk-6363",
+          "dirk-61773",
+          "dirk-21321"
+        ]
+      }
+    },
+    "jumbo": {
+      "aardappelen": {
+        "chosenId": "jumbo-aardappelen-0",
+        "candidateIds": [
+          "jumbo-aardappelen-0",
+          "jumbo-aardappelen-1",
+          "jumbo-aardappelen-2"
+        ]
+      },
+      "champignons": {
+        "chosenId": "jumbo-champignons-0",
+        "candidateIds": [
+          "jumbo-champignons-0",
+          "jumbo-champignons-1"
+        ]
+      },
+      "appels": {
+        "chosenId": "jumbo-appels-0",
+        "candidateIds": [
+          "jumbo-appels-0",
+          "jumbo-appels-1"
+        ]
+      },
+      "courgette": {
+        "chosenId": "jumbo-courgette-0",
+        "candidateIds": [
+          "jumbo-courgette-0",
+          "jumbo-courgette-3",
+          "jumbo-courgette-1",
+          "jumbo-courgette-2"
+        ]
+      },
+      "gehakt": {
+        "chosenId": "jumbo-gehakt-2",
+        "candidateIds": [
+          "jumbo-gehakt-2",
+          "jumbo-gehakt-1",
+          "jumbo-gehakt-0"
+        ]
+      },
+      "broccoli": {
+        "chosenId": "jumbo-broccoli-0",
+        "candidateIds": [
+          "jumbo-broccoli-0",
+          "jumbo-broccoli-3",
+          "jumbo-broccoli-1",
+          "jumbo-broccoli-2"
+        ]
+      },
+      "wortelen": {
+        "chosenId": "jumbo-wortelen-2",
+        "candidateIds": [
+          "jumbo-wortelen-2",
+          "jumbo-wortelen-1",
+          "jumbo-wortelen-0"
+        ]
+      },
+      "komkommer": {
+        "chosenId": "jumbo-komkommer-1",
+        "candidateIds": [
+          "jumbo-komkommer-1",
+          "jumbo-komkommer-0"
+        ]
+      },
+      "zalm": null,
+      "uien": {
+        "chosenId": "jumbo-uien-1",
+        "candidateIds": [
+          "jumbo-uien-1",
+          "jumbo-uien-2",
+          "jumbo-uien-0"
+        ]
+      },
+      "tomaten": null,
+      "spinazie": {
+        "chosenId": "jumbo-spinazie-2",
+        "candidateIds": [
+          "jumbo-spinazie-2",
+          "jumbo-spinazie-1",
+          "jumbo-spinazie-0"
+        ]
+      }
+    }
+  },
+  "offers": {
+    "dirk": {
+      "dirk-108147": {
+        "wording": "ACTIE_\n ",
+        "headline": "1 de Beste Aardappelen",
+        "endDate": "2026-10-13T23:59:00.000Z",
+        "upcoming": false,
+        "simulated": false
+      },
+      "dirk-108146": {
+        "wording": "ACTIE_\n ",
+        "headline": "1 de Beste Aardappelen",
+        "endDate": "2026-10-13T23:59:00.000Z",
+        "upcoming": false,
+        "simulated": false
+      },
+      "dirk-99070": {
+        "wording": null,
+        "headline": null,
+        "endDate": null,
+        "upcoming": false,
+        "simulated": false
+      },
+      "dirk-99251": {
+        "wording": "ACTIE_\n ",
+        "headline": "De Vleeschmeesters Rundergehakt",
+        "endDate": "2026-10-13T23:59:00.000Z",
+        "upcoming": false,
+        "simulated": false
+      },
+      "dirk-61773": {
+        "wording": "ACTIE_\n ",
+        "headline": "Garden Gourmet",
+        "endDate": "2026-10-13T23:59:00.000Z",
+        "upcoming": false,
+        "simulated": false
+      },
+      "dirk-116311": {
+        "wording": "ACTIE_\n ",
+        "headline": "Zalmfilet teriyaki",
+        "endDate": "2026-10-13T23:59:00.000Z",
+        "upcoming": false,
+        "simulated": false
+      },
+      "dirk-4431": {
+        "wording": "ACTIE_\n ",
+        "headline": "Hollandse broccoli",
+        "endDate": "2026-10-13T23:59:00.000Z",
+        "upcoming": false,
+        "simulated": false
+      }
+    },
+    "jumbo": {
+      "jumbo-champignons-0": {
+        "wording": "1+1 gratis",
+        "headline": null,
+        "endDate": null,
+        "upcoming": true,
+        "simulated": true
+      },
+      "jumbo-champignons-1": {
+        "wording": "2e halve prijs",
+        "headline": null,
+        "endDate": null,
+        "upcoming": false,
+        "simulated": true
+      },
+      "jumbo-gehakt-2": {
+        "wording": "25% korting",
+        "headline": null,
+        "endDate": null,
+        "upcoming": false,
+        "simulated": true
+      },
+      "jumbo-broccoli-0": {
+        "wording": "3 voor 5,00",
+        "headline": null,
+        "endDate": null,
+        "upcoming": false,
+        "simulated": true
+      }
+    }
+  }
+}</script>
+<script>
+  const data = JSON.parse(document.getElementById("fixture").textContent);
+  const corrections = {};       // "chainId:itemId" -> productId
+  let showUpcoming = false;
+
+  const euro = (cents) => "€" + (cents / 100).toFixed(2);
+  const unitLabel = { kg: "/kg", l: "/l", piece: " each" };
+  const packLabel = { kg: "kg", l: "l", piece: "" };
+
+  function chosenId(chainId, itemId) {
+    const key = chainId + ":" + itemId;
+    if (key in corrections) return corrections[key];
+    const r = data.resolutions[chainId][itemId];
+    return r ? r.chosenId : null;
+  }
+
+  function offerFor(chainId, productId) {
+    const o = data.offers[chainId][productId];
+    if (!o) return null;
+    if (o.upcoming && !showUpcoming) return null;
+    return o;
+  }
+
+  /** What you actually pay: whole packs, because you cannot buy 0.4 of one. */
+  function line(chainId, item) {
+    const id = chosenId(chainId, item.id);
+    if (!id) return null;
+    const p = data.products[chainId][id];
+    const offer = offerFor(chainId, id);
+    const price = offer && p.offerPriceCents ? p.offerPriceCents : p.shelfPriceCents;
+    const packs = Math.max(1, Math.ceil(item.quantity / p.packQuantity));
+    return {
+      product: p, offer, packs,
+      unitCents: Math.round(price / p.packQuantity),
+      costCents: packs * price,
+      overshoot: p.packQuantity / item.quantity,
+    };
+  }
+
+  function tally(chainId) {
+    let cost = 0, filled = 0;
+    for (const item of data.basket.items) {
+      const l = line(chainId, item);
+      if (!l) continue;
+      filled++; cost += l.costCents;
+    }
+    return { cost, filled, total: data.basket.items.length };
+  }
+
+  function renderProvenance() {
+    document.getElementById("provenance").innerHTML = data.chains.map((c) => {
+      const sim = c.provenance === "simulated";
+      const detail = sim
+        ? "simulated prices"
+        : c.store + " · observed " + c.observedAt + " · " + c.catalogueSize + " products";
+      return '<span class="tag' + (sim ? " sim" : "") + '">' + c.name + " — " + detail + "</span>";
+    }).join("");
+  }
+
+  function renderTotals() {
+    const results = data.chains.map((c) => ({ chain: c, ...tally(c.id) }));
+    const best = results.filter((r) => r.filled === r.total).sort((a, b) => a.cost - b.cost)[0];
+
+    document.getElementById("totals").innerHTML = results.map((r) => {
+      const missing = r.total - r.filled;
+      const lead = best && best.chain.id === r.chain.id && results.every((x) => x.filled === x.total);
+      const bar = data.basket.items.map((item) =>
+        '<i class="' + (line(r.chain.id, item) ? "" : "miss") + '"></i>').join("");
+      return '<section class="total' + (lead ? " lead" : "") + '">' +
+        '<div class="who"><h2>' + r.chain.name + "</h2><span class='kind'>" + r.chain.kind + "</span></div>" +
+        '<p class="figure">' +
+          (missing ? '<span class="bound" title="A lower bound: items are missing">at least</span>' : "") +
+          euro(r.cost) +
+        "</p>" +
+        '<div class="coverage"><div class="bar">' + bar + "</div>" +
+          '<span class="read' + (missing ? " warn" : "") + '">' +
+            r.filled + " of " + r.total + " items covered" +
+            (missing ? " · " + missing + " missing" : "") +
+          "</span></div>" +
+      "</section>";
+    }).join("");
+
+    const incomplete = results.filter((r) => r.filled < r.total);
+    const verdict = document.getElementById("verdict");
+    if (incomplete.length) {
+      verdict.className = "verdict blocked";
+      verdict.textContent = "No winner yet. " + incomplete.map((r) =>
+        r.chain.name + " cannot fill " + (r.total - r.filled) + " of " + r.total + " items"
+      ).join(", ") + ", so its total is a floor, not a price. Comparing totals across different coverage is how a basket comparison lies.";
+    } else {
+      const [cheap, dear] = results.slice().sort((a, b) => a.cost - b.cost);
+      verdict.className = "verdict";
+      verdict.textContent = cheap.chain.name + " fills the whole basket for " +
+        euro(cheap.cost) + ", " + euro(dear.cost - cheap.cost) + " less than " + dear.chain.name + ".";
+    }
+  }
+
+  function renderGrid() {
+    const head = '<div class="row head"><div>Requirement</div>' +
+      data.chains.map((c) => "<div>" + c.name + "</div>").join("") + "</div>";
+
+    const rows = data.basket.items.map((item) => {
+      const cells = data.chains.map((c) => {
+        const l = line(c.id, item);
+        if (!l) {
+          return '<div class="cell none"><span class="unit">not stocked</span>' +
+            '<span class="prod">Nothing in ' + c.name + "'s assortment satisfies this requirement.</span></div>";
+        }
+        const corrected = (c.id + ":" + item.id) in corrections;
+        const flags = [];
+        if (l.offer) flags.push('<span class="flag ' + (l.offer.upcoming ? "soon" : "offer") + '">' +
+          (l.offer.upcoming ? "next week · " : "") + (l.offer.wording || "offer") + "</span>");
+        if (l.overshoot >= 2) flags.push('<span class="flag over">pack is ' +
+          (Math.round(l.overshoot * 10) / 10) + "× what you need</span>");
+        if (corrected) flags.push('<span class="flag fixed">corrected</span>');
+        if (l.product.simulated) flags.push('<span class="flag sim">simulated</span>');
+
+        return '<button class="cell" data-chain="' + c.id + '" data-item="' + item.id + '">' +
+          '<span class="unit">' + euro(l.unitCents) + "<span>" + unitLabel[l.product.comparisonUnit] + "</span></span>" +
+          '<span class="prod"><b>' + l.product.name + "</b></span>" +
+          '<span class="pack">' + (l.packs > 1 ? l.packs + " × " : "") +
+            (l.product.packaging || "?") + " · " + euro(l.costCents) + "</span>" +
+          '<span class="flags">' + flags.join("") + "</span>" +
+        "</button>";
+      }).join("");
+
+      return '<div class="row"><div class="req">' +
+        '<span class="qty">' + item.quantity + " " + (packLabel[item.unit] || "×") + "</span>" +
+        '<span class="what">' + item.noun + "</span>" +
+        '<span class="note">' + item.text + "</span>" +
+      "</div>" + cells + "</div>";
+    }).join("");
+
+    document.getElementById("grid").innerHTML = head + rows;
+  }
+
+  // ── Correction drawer ───────────────────────────────────────────────
+  let open = null;
+  function openDrawer(chainId, itemId) {
+    const r = data.resolutions[chainId][itemId];
+    if (!r) return;
+    const item = data.basket.items.find((i) => i.id === itemId);
+    const chain = data.chains.find((c) => c.id === chainId);
+    open = { chainId, itemId };
+
+    document.getElementById("drawer-chain").textContent = chain.name + " · correction";
+    document.getElementById("drawer-title").textContent = item.text;
+    document.getElementById("drawer-note").textContent =
+      "Resolution picked the lowest unit price among " + chain.name +
+      "'s products sharing this comparison unit. Pick the one that actually satisfies the requirement.";
+
+    const current = chosenId(chainId, itemId);
+    document.getElementById("drawer-list").innerHTML = r.candidateIds.map((id) => {
+      const p = data.products[chainId][id];
+      const offer = offerFor(chainId, id);
+      const price = offer && p.offerPriceCents ? p.offerPriceCents : p.shelfPriceCents;
+      return '<button class="alt' + (id === current ? " on" : "") + '" data-pick="' + id + '">' +
+        '<span class="top"><span class="u">' + euro(Math.round(price / p.packQuantity)) +
+          "<span style='font-size:var(--step--1);color:var(--ink-faint)'>" + unitLabel[p.comparisonUnit] + "</span></span>" +
+          '<span class="m">' + euro(price) + "</span></span>" +
+        '<span class="n">' + p.name + "</span>" +
+        '<span class="m">' + (p.packaging || "?") + (offer ? " · " + (offer.wording || "offer") : "") + "</span>" +
+      "</button>";
+    }).join("");
+
+    document.getElementById("scrim").classList.add("on");
+    const d = document.getElementById("drawer");
+    d.classList.add("on");
+    d.setAttribute("aria-hidden", "false");
+  }
+
+  function closeDrawer() {
+    open = null;
+    document.getElementById("scrim").classList.remove("on");
+    const d = document.getElementById("drawer");
+    d.classList.remove("on");
+    d.setAttribute("aria-hidden", "true");
+  }
+
+  function renderAll() {
+    renderTotals();
+    renderGrid();
+    const n = Object.keys(corrections).length;
+    document.getElementById("corrections").textContent = n ? n + " correction" + (n > 1 ? "s" : "") + " applied" : "";
+    document.getElementById("reset").hidden = n === 0;
+  }
+
+  document.getElementById("grid").addEventListener("click", (e) => {
+    const cell = e.target.closest(".cell[data-chain]");
+    if (cell) openDrawer(cell.dataset.chain, cell.dataset.item);
+  });
+  document.getElementById("drawer-list").addEventListener("click", (e) => {
+    const alt = e.target.closest("[data-pick]");
+    if (!alt || !open) return;
+    corrections[open.chainId + ":" + open.itemId] = alt.dataset.pick;
+    closeDrawer();
+    renderAll();
+  });
+  document.getElementById("scrim").addEventListener("click", closeDrawer);
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeDrawer(); });
+  document.getElementById("upcoming").addEventListener("click", (e) => {
+    showUpcoming = !showUpcoming;
+    e.currentTarget.setAttribute("aria-pressed", String(showUpcoming));
+    renderAll();
+  });
+  document.getElementById("reset").addEventListener("click", () => {
+    for (const k of Object.keys(corrections)) delete corrections[k];
+    renderAll();
+  });
+
+  renderProvenance();
+  renderAll();
+</script>

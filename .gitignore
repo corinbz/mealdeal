@@ -9,3 +9,7 @@ node_modules/
 # Written by scripts/setup-r2-archive.sh: R2 credentials for syncing the
 # archive by hand. Never commit these.
 .env
+
+# Generated from the archive by scripts/build-ui-fixture.ts, and inlined into
+# prototype/basket.html at publish time. Rebuildable, so not tracked.
+prototype/fixture.json
