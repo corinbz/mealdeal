@@ -4,7 +4,7 @@ A throwaway UI prototype for the one screen the whole product rests on: a
 Basket, priced at every Chain, with Coverage inseparable from the total.
 
 ```sh
-node scripts/build-ui-fixture.ts > prototype/fixture.json
+node scripts/basket-from-db.ts > prototype/fixture.json
 # then inline fixture.json into the __FIXTURE__ slot in basket.html
 ```
 
@@ -31,17 +31,12 @@ the pack price is the footnote.
 
 ## Where the data comes from
 
-**Dirk is real** — product names, pack sizes, Shelf Prices and Offer wording
-read straight out of `archive/<date>/dirk`, one Store on one morning, as the
-Chain sent it. 963 products, 264 Offers.
-
-**Jumbo is simulated** and every field says so. Jumbo's endpoint tarpits an
-honest client (see `docs/archive.md`), so there is nothing real to show. Its
-prices are anchored to realistic market unit prices — deliberately NOT to
-Dirk's resolved Products, since several of those resolutions misfire onto
-something cheap and unrelated, which made the simulated Chain absurdly cheap
-across the board. Two requirements are left unresolvable on purpose: Coverage
-below 100% is the normal case, and a UI that never shows it is lying.
+**Both Chains are real.** The fixture is resolved against the ingested
+database, so every name, Pack Size, Shelf Price and Offer wording came from a
+Sweep: 7,359 Dirk products from Store 66 and 17,104 Jumbo products, which Jumbo
+prices nationally. Coverage happens to be 12 of 12 at both today; the UI still
+shows it beside every total, because a Basket a Chain cannot fill is the normal
+case.
 
 ## The wrong answers are the point
 
@@ -52,7 +47,6 @@ it is left crude so its failures are visible:
 | --- | --- | --- |
 | 1 kg appels | Aardappelen kruimig | "appel" also matches "aard**appel**" |
 | 500 g wortelen | Doperwten en wortelen | tinned peas, not fresh carrots |
-| 500 g snoeptomaatjes | Zongedroogde tomaatjes op olie | sun-dried, in oil |
 | 1 komkommer | Snoepkomkommer 10 stuks | cheapest per piece, but forces a 10-pack |
 
 Correcting one is the demonstration, not a workaround: Corrections are the
