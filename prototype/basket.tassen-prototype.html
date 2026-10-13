@@ -2,6 +2,7 @@
   PROTOTYPE, throwaway. The "Tassen" direction (variant I) grown into three
   pages, mobile and desktop, with an overview built to survive many chains.
 
+    Recepten  — EXAMPLE recipes built around this week's real Offers; one tap adds the ingredients
     Lijst     — the groceries list itself: add, staples vs one-offs, one price hint each
     Vergelijk — every chain as a ranked bag card (total, +difference, coverage),
                 the best two-shop combination, and a price line per item
@@ -362,7 +363,61 @@
   html[data-style="zacht"] .ci { border-radius: 16px; } html[data-style="zacht"] .ci .tick { border-width: 2px; border-color: var(--ink-3); }
   html[data-style="zacht"] .ci.done .tick { background: var(--good); border-color: var(--good); color: #fff; }
   html[data-style="zacht"] .delta { background: #f8e3e8; } html[data-style="zacht"] .delta.zero { background: #dff0e7; }
+  /* ── Recepten ─────────────────────────────────────────────────────── */
+  .deals { display: flex; gap: 8px; overflow-x: auto; padding: 2px 2px 10px; margin: 0 -2px; scrollbar-width: thin; }
+  .deal { flex: none; background: var(--card); border-radius: 12px; padding: 8px 12px; box-shadow: 0 2px 0 var(--line); display: grid; gap: 1px; min-width: 150px; }
+  .deal .n { font-weight: 800; font-size: 15px; }
+  .deal .v { font-weight: 900; font-size: 18px; font-variant-numeric: tabular-nums; }
+  .deal .w { font-size: 13px; font-weight: 700; color: var(--good); }
+  .deal .was { font-size: 13px; color: var(--ink-3); text-decoration: line-through; margin-left: 4px; font-weight: 600; }
+  .recipes { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 40px 16px; margin-top: 34px; }
+  .rc { position: relative; background: var(--card); border-radius: 10px 10px 20px 20px; box-shadow: 0 2px 0 var(--line), 0 14px 26px -18px rgba(60,30,0,.45); display: flex; flex-direction: column; }
+  .rc::before { /* the bag handle, so a recipe reads as one more bag */
+    content: ""; position: absolute; left: 50%; top: -22px; width: 38%; height: 30px; transform: translateX(-50%);
+    border: 7px solid var(--line); border-bottom: 0; border-radius: 40px 40px 0 0;
+  }
+  .rc .hd { padding: 16px 16px 10px; border-bottom: 1px dashed var(--line); }
+  .rc .ex { font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); border: 1.5px dashed var(--ink-3); border-radius: 6px; padding: 0 6px; }
+  .rc h3 { margin: 8px 0 2px; font-size: 21px; font-weight: 900; line-height: 1.15; letter-spacing: -.01em; }
+  .rc .meta { color: var(--ink-2); font-size: 14px; font-weight: 600; }
+  .rc .save { margin: 10px 0 0; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .rc .save b { background: var(--good); color: #fff; border-radius: 999px; padding: 3px 11px; font-size: 16px; font-weight: 900; }
+  .rc .save span { font-size: 14px; color: var(--ink-2); font-weight: 700; }
+  .rc ul { list-style: none; margin: 0; padding: 8px 16px; display: grid; gap: 6px; flex: 1; }
+  .rc li { display: grid; grid-template-columns: 1fr auto; gap: 0 10px; align-items: baseline; }
+  .rc li .l { font-weight: 700; font-size: 15px; }
+  .rc li .p { font-weight: 800; font-variant-numeric: tabular-nums; }
+  .rc li .d { grid-column: 1 / -1; font-size: 13px; color: var(--ink-2); display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; }
+  .rc li .d .o { background: #ffe9a3; color: #2b2118; border-radius: 6px; padding: 0 6px; font-weight: 800; }
+  .rc li .d .was { text-decoration: line-through; color: var(--ink-3); }
+  .rc li.miss .p { color: var(--bad); }
+  .rc .ft { padding: 10px 16px 14px; border-top: 1px dashed var(--line); display: grid; gap: 10px; }
+  .rc .shops { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 14px; color: var(--ink-2); }
+  .rc .shops .best { color: var(--ink); }
+  .rc .shops .best b { font-weight: 900; }
+  .rc .ft button { border: 0; background: var(--ink); color: var(--paper); border-radius: 999px; padding: 10px 16px; font-weight: 900; cursor: pointer; }
+  .rc .ft button.on { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 2px var(--ink); }
+  .rc-banner { margin: 0 0 6px; background: var(--card); border-radius: var(--r); padding: 12px 14px; box-shadow: 0 2px 0 var(--line); display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .rc-banner b { font-weight: 900; }
+  .rc-banner button { border: 0; background: var(--good); color: #fff; border-radius: 999px; padding: 8px 14px; font-weight: 900; cursor: pointer; }
+  .rc-note { color: var(--ink-3); font-size: 13px; margin: 20px 0 0; }
+  /* Styles: give recipe cards the same treatment as each style's other cards. */
+  html[data-style="riso"] .rc, html[data-style="riso"] .deal, html[data-style="riso"] .rc-banner { border-radius: 4px; box-shadow: 4px 4px 0 rgba(232, 51, 111, .6); border: 2px solid var(--ink); }
+  html[data-style="riso"] .rc::before { border-color: var(--ink); }
+  html[data-style="riso"] .rc h3 { font-family: "Archivo Black", Impact, sans-serif; font-weight: 400; text-transform: uppercase; }
+  html[data-style="nacht"] .rc, html[data-style="nacht"] .deal, html[data-style="nacht"] .rc-banner { box-shadow: inset 0 0 0 1px var(--line); }
+  html[data-style="nacht"] .rc li .d .o { background: rgba(255, 210, 90, .2); color: #ffd25a; }
+  html[data-style="nacht"] .rc .save b, html[data-style="nacht"] .rc-banner button { color: #0e1116; }
+  html[data-style="blok"] .rc, html[data-style="blok"] .deal, html[data-style="blok"] .rc-banner { border: 3px solid var(--ink); box-shadow: 5px 5px 0 var(--ink); border-radius: 8px; }
+  html[data-style="blok"] .rc::before { border-color: var(--ink); border-width: 6px; }
+  html[data-style="blok"] .rc h3 { font-family: "Archivo Black", Impact, sans-serif; font-weight: 400; }
+  html[data-style="blok"] .rc .save b { background: #7ee08a; color: var(--ink); box-shadow: inset 0 0 0 2px var(--ink); }
+  html[data-style="zacht"] .rc, html[data-style="zacht"] .deal, html[data-style="zacht"] .rc-banner { box-shadow: 0 6px 24px rgba(40, 40, 60, .07); border-radius: 22px; }
+  html[data-style="zacht"] .rc h3 { font-family: Fraunces, Georgia, serif; font-weight: 600; }
+  html[data-style="zacht"] .rc::before { border-color: #ddd3ee; border-width: 4px; }
+  @media (max-width: 720px) { .recipes { grid-template-columns: 1fr; } .tabs.bottom button { font-size: 12px; } }
 </style>
+
 
 
 <div class="proto" role="group" aria-label="Prototype">
@@ -483,7 +538,7 @@
     .map((t) => ({ id: "i" + nid++, staple: false, ...parse(t) }));
   for (const n of ["halfvolle melk", "eieren", "pindakaas", "uien"]) list.find((i) => i.noun === n).staple = true;
   const params = new URLSearchParams(location.search);
-  let page = ["lijst", "vergelijk", "winkelen"].includes(params.get("page")) ? params.get("page") : "lijst";
+  let page = ["recepten", "lijst", "vergelijk", "winkelen"].includes(params.get("page")) ? params.get("page") : "lijst";
   let chainCount = params.get("chains") === "6" ? 6 : 2;
   let plan = null;          // { kind: "single", ids: [id] } | { kind: "combo", ids: [a, b] }
   let openRow = null;       // Vergelijk: expanded item
@@ -559,8 +614,132 @@
     }).join("") + "</div>";
   }
 
+  // ── Recipes: EXAMPLE recipes, real prices and real Offers ─────────────
+  // Written around what Dirk and Jumbo actually had on offer in the swept
+  // week. The recipes are invented; every price, product and offer wording
+  // on the page comes from the catalogue. Each ingredient names the words a
+  // product must carry (each must END a word of the name, as in the list)
+  // and words that rule a product out, because the general matcher is too
+  // crude for short words ("ui" is inside "kaneelsuisse").
+  const PET = ["kattenvoer", "hondenvoer", "kat ", "hond"];
+  const RECIPES = [
+    { id: "andijvie", name: "Andijviestamppot met rookworst", persons: 4, minutes: 30, ingredients: [
+      { noun: "kruimige aardappelen", q: 1, unit: "kg", find: ["aardappelen", "kruimig"] },
+      { noun: "andijvie", q: 0.5, unit: "kg", find: ["andijvie"], not: ["stamppot", "salade"] },
+      { noun: "rookworst", q: 0.275, unit: "kg", find: ["rookworst"], not: ["erwtensoep", "stamppot", "broodje", "vegetarisch", "kip"] },
+      { noun: "halfvolle melk", q: 0.25, unit: "l", find: ["halfvolle", "melk"], not: ["koffie", "karnemelk", "cups"] },
+      { noun: "uien", q: 0.5, unit: "kg", find: ["uien"], not: ["gebakken", "crispy", "soep", "rode"] }] },
+    { id: "wraps", name: "Wraps met gehakt, paprika en avocado", persons: 4, minutes: 25, ingredients: [
+      { noun: "tortilla's", q: 8, unit: "piece", find: ["tortilla"], not: ["chips"] },
+      { noun: "rundergehakt", q: 0.5, unit: "kg", find: ["rundergehakt"], not: ["bal", "schnitzel"] },
+      { noun: "puntpaprika", q: 0.5, unit: "kg", find: ["puntpaprika"] },
+      { noun: "avocado's", q: 2, unit: "piece", find: ["avocado"], not: ["dip", "guacamole", "olie"] },
+      { noun: "uien", q: 0.5, unit: "kg", find: ["uien"], not: ["gebakken", "crispy", "soep", "rode"] }] },
+    { id: "pompoen", name: "Romige pompoensoep", persons: 4, minutes: 40, ingredients: [
+      { noun: "pompoen", q: 1, unit: "piece", find: ["pompoen"], not: ["soep", "stamp", "pitten", "verspakket", "spaghetti"] },
+      { noun: "uien", q: 0.5, unit: "kg", find: ["uien"], not: ["gebakken", "crispy", "soep", "rode"] },
+      { noun: "wortelen", q: 0.5, unit: "kg", find: ["wortelen"], not: ["doperwt", "erwt", "sap", "salade"] },
+      { noun: "kookroom", q: 0.25, unit: "l", find: ["kookroom"] }] },
+    { id: "spruitjes", name: "Spruitjes met gehaktbal en puree", persons: 4, minutes: 45, ingredients: [
+      { noun: "spruiten", q: 0.75, unit: "kg", find: ["spruiten"] },
+      { noun: "kruimige aardappelen", q: 1, unit: "kg", find: ["aardappelen", "kruimig"] },
+      { noun: "rundergehakt", q: 0.5, unit: "kg", find: ["rundergehakt"], not: ["bal", "schnitzel"] },
+      { noun: "halfvolle melk", q: 0.25, unit: "l", find: ["halfvolle", "melk"], not: ["koffie", "karnemelk", "cups"] }] },
+    { id: "pesto", name: "Spaghetti pesto met broccoli", persons: 4, minutes: 20, ingredients: [
+      { noun: "spaghetti", q: 0.5, unit: "kg", find: ["spaghetti"], not: ["saus", "pompoen", "kruiden"] },
+      { noun: "pesto", q: 0.185, unit: "kg", find: ["pesto"], not: ["verspakket", "presto", "pasta"] },
+      { noun: "broccoli", q: 0.5, unit: "kg", find: ["broccoli"], not: ["stamppot", "soep", "mix"] },
+      { noun: "belegen kaas", q: 0.15, unit: "kg", find: ["belegen", "plakken"], not: ["geit", "vegan", "smeer"] }] },
+    { id: "bloemkool", name: "Bloemkool met kaassaus en aardappelen", persons: 4, minutes: 35, ingredients: [
+      { noun: "bloemkool", q: 1, unit: "piece", find: ["bloemkool"], not: ["rijst", "stamppot", "soep", "roosjes"] },
+      { noun: "halfvolle melk", q: 0.5, unit: "l", find: ["halfvolle", "melk"], not: ["koffie", "karnemelk", "cups"] },
+      { noun: "belegen kaas", q: 0.15, unit: "kg", find: ["belegen", "plakken"], not: ["geit", "vegan", "smeer"] },
+      { noun: "kruimige aardappelen", q: 1, unit: "kg", find: ["aardappelen", "kruimig"] }] },
+  ];
+  const ingText = (g) => qtyText({ quantity: g.q, unit: g.unit }) + " " + g.noun;
+
+  /** Cheapest way to buy one ingredient at one chain, Offers included. */
+  const ingCache = {};
+  function ingLine(cid, g) {
+    const key = cid + "|" + g.noun + "|" + g.q + g.unit;
+    if (key in ingCache) return ingCache[key];
+    const all = Object.values(products[cid]).filter((p) => {
+      const n = p.name.toLowerCase(), ws = n.split(/[^\p{L}]+/u);
+      return p.comparisonUnit === g.unit && g.find.every((f) => ws.some((w) => w.endsWith(f)))
+        && ![...(g.not || []), ...PET].some((x) => n.includes(x));
+    }).map((p) => {
+      const offer = (p.offerPriceCents !== null || p.offerWording) && !p.offerUpcoming;
+      const price = offer && p.offerPriceCents ? p.offerPriceCents : p.shelfPriceCents;
+      // A piece count below one is a mis-parsed pack ("8 Stuks 320 g" read as 0.32 pieces): trust it as one pack.
+      const known = p.packQuantity > 0 && p.packUnit === g.unit && !(g.unit === "piece" && p.packQuantity < 1);
+      const packs = known ? Math.max(1, Math.ceil(g.q / p.packQuantity)) : 1;
+      return { p, packs, cost: packs * price, offer: offer ? (p.offerWording || null) : null, onOffer: offer,
+        was: offer && p.offerPriceCents && p.offerPriceCents < p.shelfPriceCents ? packs * p.shelfPriceCents : null };
+    }).sort((a, b) => a.cost - b.cost);
+    return (ingCache[key] = all[0] || null);
+  }
+  /** A recipe priced at every real chain; the cheapest first. Example chains have no Offers, so they are left out. */
+  function priceRecipe(rc) {
+    const at = REAL.map((c) => {
+      const lines = rc.ingredients.map((g) => ingLine(c.id, g));
+      const have = lines.filter(Boolean);
+      return { chain: c, lines, cost: have.reduce((n, l) => n + l.cost, 0), missing: lines.length - have.length,
+        deals: have.filter((l) => l.onOffer).length, saving: have.reduce((n, l) => n + (l.was ? l.was - l.cost : 0), 0) };
+    }).sort((a, b) => a.missing - b.missing || a.cost - b.cost);
+    return { rc, at, best: at[0] };
+  }
+  const added = new Set(); // recipe ids put on the list this session
+  function addRecipe(id) {
+    const rc = RECIPES.find((r) => r.id === id); if (!rc) return;
+    let n = 0;
+    for (const g of rc.ingredients) {
+      if (list.some((i) => i.noun === g.noun && i.unit === g.unit)) continue;
+      list.unshift({ id: "i" + nid++, staple: false, noun: g.noun, quantity: g.q, unit: g.unit }); n++;
+    }
+    added.add(id);
+    hint = n ? rc.name + ": " + n + " ingrediënt" + (n === 1 ? "" : "en") + " op je lijst gezet" : rc.name + ": alles stond al op je lijst";
+  }
+
   // ── Pages ────────────────────────────────────────────────────────────
   const PAGES = {
+    recepten: { label: "Recepten", ic: "🍳", render(s) {
+      const priced = RECIPES.map(priceRecipe).sort((a, b) => b.best.saving - a.best.saving || b.best.deals - a.best.deals);
+      // The Offers the recipes are built on, each once, biggest saving first.
+      const seen = new Map();
+      for (const { at } of priced) for (const x of at) x.lines.forEach((l, i) => {
+        if (!l || !l.onOffer) return;
+        const k = x.chain.id + "|" + l.p.id;
+        if (!seen.has(k)) seen.set(k, { c: x.chain, l });
+      });
+      const gain = (l) => l.was ? l.was - l.cost : 0;
+      const deals = [...seen.values()].sort((a, b) => gain(b.l) - gain(a.l)).map(({ c, l }) =>
+        '<div class="deal"><span class="n">' + esc(l.p.name) + "</span><span>" + tag(c) + '</span><span class="v">' + euro(l.cost) + (l.was ? '<span class="was">' + euro(l.was) + "</span>" : "") + "</span>" +
+        (l.offer ? '<span class="w">' + esc(l.offer) + "</span>" : '<span class="w">−' + euro(l.was - l.cost) + "</span>") + "</div>").join("");
+      const cards = priced.map(({ rc, at, best }) => {
+        const items = rc.ingredients.map((g, i) => {
+          const l = best.lines[i];
+          if (!l) return '<li class="miss"><span class="l">' + esc(ingText(g)) + '</span><span class="p">—</span><span class="d">niet bij ' + esc(best.chain.name) + "</span></li>";
+          return '<li><span class="l">' + esc(ingText(g)) + '</span><span class="p">' + euro(l.cost) + "</span>" +
+            '<span class="d">' + (l.onOffer ? '<span class="o">' + esc(l.offer || "aanbieding") + "</span>" : "") + (l.was ? '<span class="was">' + euro(l.was) + "</span>" : "") +
+            esc((l.packs > 1 ? l.packs + "× " : "") + l.p.name) + "</span></li>";
+        }).join("");
+        const shops = at.map((x, i) => '<span class="' + (i ? "" : "best") + '">' + tag(x.chain) + " <b>" + euro(x.cost) + "</b>" + (x.missing ? " · " + x.missing + " mist" : "") + "</span>").join("");
+        const on = added.has(rc.id);
+        return '<article class="rc"><div class="hd"><span class="ex">voorbeeldrecept</span><h3>' + esc(rc.name) + "</h3>" +
+          '<div class="meta">' + rc.persons + " personen · " + rc.minutes + " min · " + euro(Math.round(best.cost / rc.persons)) + " p.p.</div>" +
+          '<div class="save">' + (best.saving ? "<b>" + euro(best.saving) + " korting</b>" : "") + "<span>" + best.deals + " van " + rc.ingredients.length + " in de aanbieding bij " + esc(best.chain.name) + "</span></div></div>" +
+          "<ul>" + items + "</ul>" +
+          '<div class="ft"><div class="shops">' + shops + "</div>" +
+          '<button data-act="recipe" data-id="' + rc.id + '" class="' + (on ? "on" : "") + '">' + (on ? "✓ Op je lijst" : "Zet op mijn lijst") + "</button></div></article>";
+      }).join("");
+      return "<h1>Recepten van deze week</h1>" +
+        '<p class="lede">Gekozen rond wat er nu in de aanbieding is, met de meeste korting bovenaan. Eén tik zet de ingrediënten op je lijst.</p>' +
+        '<p class="hint">' + esc(hint) + "</p>" +
+        '<div class="sec"><h2>In de aanbieding</h2><span>waar deze recepten op draaien</span></div><div class="deals">' + deals + "</div>" +
+        '<div class="recipes">' + cards + "</div>" +
+        '<p class="rc-note">De recepten zijn voorbeelden. Prijzen, producten en acties zijn echt: Dirk en Jumbo, week van ' + esc(REAL[0].observedAt) + ". Voorbeeldwinkels hebben geen aanbiedingen en tellen hier niet mee.</p>";
+    } },
+
     lijst: { label: "Lijst", ic: "☰", render(s) {
       const card = (r) => {
         const cheapest = r.avail[0];
@@ -576,7 +755,10 @@
       const staples = s.rows.filter((r) => r.item.staple), once = s.rows.filter((r) => !r.item.staple);
       const p = currentPlan(s);
       const planCost = s.rows.reduce((n, r) => { const c = sourceOf(r, p, s); return n + (c ? r.by[c].cost : 0); }, 0);
+      const top = RECIPES.map(priceRecipe).sort((a, b) => b.best.saving - a.best.saving)[0];
       return "<h1>Boodschappenlijst</h1><p class=\"lede\">Wat er in huis moet komen. Prijzen vergelijk je op de volgende pagina.</p>" +
+        '<div class="rc-banner"><span>Deze week: <b>' + esc(top.rc.name) + "</b>, " + top.best.deals + " ingrediënten in de aanbieding</span>" +
+        '<button data-act="go" data-id="recepten">' + RECIPES.length + " recepten bekijken</button></div>" +
         '<form class="add" data-form="add"><input name="q" placeholder="500 g rundergehakt, 2 courgettes, melk…" autocomplete="off"><button>Erbij</button></form>' +
         '<p class="hint' + (hint.startsWith("!") ? " warn" : "") + '">' + esc(hint.replace(/^!/, "")) + "</p>" +
         '<div class="sec"><h2>Deze keer</h2><span>' + once.length + " · gaan eraf na het winkelen</span></div>" +
@@ -666,7 +848,7 @@
   const main = document.getElementById("main");
   function render() {
     const s = snapshot();
-    const counts = { lijst: s.rows.length, vergelijk: s.chains.length, winkelen: s.rows.length - done.size };
+    const counts = { recepten: RECIPES.length, lijst: s.rows.length, vergelijk: s.chains.length, winkelen: s.rows.length - done.size };
     for (const nav of ["tabs-top", "tabs-bottom"]) document.getElementById(nav).innerHTML = Object.entries(PAGES).map(([k, v]) =>
       '<button data-act="go" data-id="' + k + '"' + (k === page ? ' aria-current="page"' : "") + '><span class="ic">' + v.ic + "</span>" + v.label + '<span class="n">' + counts[k] + "</span></button>").join("");
     for (const b of document.querySelectorAll(".proto button")) b.setAttribute("aria-pressed", String(Number(b.dataset.chains) === chainCount));
@@ -701,6 +883,7 @@
     const id = b.dataset.id;
     switch (b.dataset.act) {
       case "go": page = id; window.scrollTo(0, 0); break;
+      case "recipe": addRecipe(id); break;
       case "staple": { const it = list.find((i) => i.id === id); if (it) it.staple = !it.staple; break; }
       case "remove": list = list.filter((i) => i.id !== id); done.delete(id); break;
       case "plan": plan = { kind: "single", ids: [id] }; break;
