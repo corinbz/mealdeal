@@ -1,6 +1,16 @@
 <!--
-  PROTOTYPE, throwaway. Four design directions for the basket page, switchable
-  with ?variant=A..D or the bar at the bottom (← → keys work too).
+  PROTOTYPE, throwaway. Design directions for the basket page, switchable with
+  ?variant= or the bar at the bottom (← → keys work too). The bar cycles round
+  2; round 1's A, C and D stay reachable by URL.
+
+  Round 2, all in B's readable idiom, each testing one question:
+    B  Schap        — the baseline the user leaned towards
+    E  Licht schap  — light palette; winner in full, the other chain a strip
+    F  Prijslijst   — B's type as a dense table: does it hold at 30+ items?
+    G  Twee winkels — split by where each item is cheapest: is a 2nd shop worth it?
+    H  Folder       — offers on your list first, like the weekly flyer
+
+  Round 1:
 
     A  Kassabon   — the list as a till receipt, both chains in two columns
     B  Schap      — every item a shelf with the two chains' price labels on it
@@ -294,7 +304,202 @@
   .trolley .meter { flex: 1; height: 6px; background: rgba(255,255,255,.15); max-width: 140px; }
   .trolley .meter i { display: block; height: 100%; background: #ffd36b; }
   .trolley button { background: #ffd36b; color: #26302c; border: 0; padding: 8px 12px; font-weight: 600; cursor: pointer; }
+  /* ════════════════════════════════════════════════════════════════════
+     ROUND 2 — all in B's readable idiom: condensed type, huge unit price
+     ════════════════════════════════════════════════════════════════════ */
+
+  /* ── E · LICHT SCHAP: winner large, the other chain a strip ───────── */
+  body[data-v="E"] {
+    background: #eceee9; color: #16201c; font-family: "Barlow Condensed", "Arial Narrow", sans-serif; padding: 0 0 110px;
+  }
+  .e-top { background: #fff; border-bottom: 1px solid #d5dad6; padding: 22px clamp(16px, 4vw, 48px) 18px; }
+  .e-top .row { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 14px 30px; max-width: 1100px; margin: 0 auto; }
+  .e-top h1 { margin: 0; font-family: Anton, Impact, sans-serif; font-weight: 400; font-size: clamp(34px, 5vw, 54px); line-height: .95; text-transform: uppercase; }
+  .e-top h1 span { display: block; font-family: "Barlow Condensed", sans-serif; font-weight: 600; font-size: 18px; text-transform: none; color: #5d6a64; letter-spacing: .02em; }
+  .e-tots { display: flex; gap: 8px; }
+  .e-tot { border: 2px solid #16201c; padding: 6px 14px 8px; min-width: 150px; background: #fff; }
+  .e-tot.best { background: #16201c; color: #fff; }
+  .e-tot .k { font-weight: 700; letter-spacing: .14em; text-transform: uppercase; font-size: 13px; }
+  .e-tot .v { font-family: Anton, Impact, sans-serif; font-size: 36px; line-height: 1; }
+  .e-tot .s { font-size: 14px; font-weight: 600; opacity: .75; }
+  .e-tot .s.bad { color: #c1361f; opacity: 1; }
+  .e-add { max-width: 1100px; margin: 16px auto 0; display: flex; }
+  .e-add input { flex: 1; min-width: 0; border: 2px solid #16201c; border-right: 0; padding: 11px 14px; font-size: 20px; font-weight: 600; outline: none; background: #fff; }
+  .e-add input:focus { box-shadow: inset 0 -4px 0 #ffcf3a; }
+  .e-add button { border: 0; background: #ffcf3a; padding: 0 22px; font-family: Anton, Impact, sans-serif; font-size: 20px; cursor: pointer; border: 2px solid #16201c; }
+  .e-list { max-width: 1100px; margin: 22px auto 0; padding: 0 clamp(16px, 4vw, 48px); display: grid; gap: 14px; }
+  .e-item { display: grid; grid-template-columns: 190px 1fr; gap: 0 18px; align-items: stretch; }
+  .e-item .what { padding-top: 8px; }
+  .e-item .what .q { font-weight: 700; font-size: 15px; letter-spacing: .12em; color: #8a6a00; }
+  .e-item .what .n { font-weight: 700; font-size: 27px; line-height: 1; text-transform: uppercase; }
+  .e-item .what .acts { margin-top: 8px; display: flex; gap: 6px; }
+  .e-item .what .acts button { border: 1.5px solid #b9c1bc; background: #fff; padding: 1px 8px; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; cursor: pointer; }
+  .e-item .what .acts button[aria-pressed="true"] { background: #16201c; color: #fff; border-color: #16201c; }
+  .e-card { background: #fff; border: 1px solid #d5dad6; border-bottom: 6px solid #a7b1ac; box-shadow: 0 6px 0 -3px #c8cfcb; }
+  .e-item > * { min-width: 0; }
+  .e-win { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 14px; padding: 12px 14px 10px; position: relative; }
+  .e-win .ch { font-weight: 700; font-size: 13px; letter-spacing: .16em; text-transform: uppercase; color: #fff; background: #16201c; justify-self: start; padding: 1px 7px; }
+  .e-win .pn { font-size: 20px; font-weight: 600; line-height: 1.1; margin-top: 4px; }
+  .e-win .pk { font-size: 16px; color: #4a5551; font-weight: 500; }
+  .e-win .pr { grid-row: 1 / 4; grid-column: 2; text-align: right; font-family: Anton, Impact, sans-serif; font-size: 54px; line-height: .9; }
+  .e-win .pr small { display: block; font-family: "Barlow Condensed", sans-serif; font-weight: 700; font-size: 16px; color: #5d6a64; }
+  .e-win .pay { grid-column: 1 / -1; display: flex; justify-content: space-between; gap: 10px; border-top: 1px solid #e4e8e5; padding-top: 6px; margin-top: 6px; font-size: 17px; font-weight: 600; }
+  .e-win .tagx { font-size: 14px; font-weight: 700; padding: 1px 7px; margin-left: 6px; }
+  .e-win .tagx.o { background: #e8452c; color: #fff; }
+  .e-win .tagx.w { background: #fff1c2; color: #6b5200; }
+  .e-card.best { border-bottom-color: #ffcf3a; }
+  .e-other { display: flex; justify-content: space-between; gap: 12px; padding: 7px 14px; background: #f3f5f2; border-top: 1px dashed #c8cfcb; font-size: 16px; color: #4a5551; font-weight: 500; }
+  .e-other b { color: #16201c; }
+  .e-other .more { color: #c1361f; font-weight: 700; white-space: nowrap; }
+  .e-other .ell { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .e-none { padding: 18px 14px; font-size: 18px; font-weight: 600; color: #c1361f; }
+  @media (max-width: 700px) {
+    .e-item { grid-template-columns: 1fr; }
+    .e-item .what { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; padding: 0 0 6px; }
+    .e-item .what .acts { margin: 0 0 0 auto; }
+    .e-win .pr { font-size: 42px; }
+    .e-win .pn { font-size: 17px; }
+  }
+
+  /* ── F · PRIJSLIJST: B's type, table density ───────────────────────── */
+  body[data-v="F"] { background: #1d2321; color: #f2efe6; font-family: "Barlow Condensed", "Arial Narrow", sans-serif; padding: 0 0 110px; }
+  .f-wrap { max-width: 1100px; margin: 0 auto; padding: 0 clamp(12px, 3vw, 32px); }
+  .f-head { position: sticky; top: 0; z-index: 5; background: #1d2321; padding: 16px 0 0; }
+  .f-head .top { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; }
+  .f-head h1 { margin: 0; font-family: Anton, Impact, sans-serif; font-weight: 400; font-size: 34px; text-transform: uppercase; letter-spacing: .01em; }
+  .f-head h1 em { font-style: normal; color: #ffcf3a; }
+  .f-head form { flex: 1 1 280px; display: flex; }
+  .f-head input { flex: 1; min-width: 0; background: #2b3330; border: 2px solid #3c4743; border-right: 0; color: #f2efe6; padding: 8px 12px; font-size: 18px; font-weight: 600; outline: none; }
+  .f-head input:focus { border-color: #ffcf3a; }
+  .f-head form button { background: #ffcf3a; color: #1d2321; border: 0; padding: 0 16px; font-family: Anton, Impact, sans-serif; font-size: 17px; cursor: pointer; }
+  .f-grid { display: grid; grid-template-columns: minmax(150px, 1.1fr) repeat(2, minmax(0, 1.3fr)); }
+  .f-cols { margin-top: 12px; background: #f2efe6; color: #1d2321; }
+  .f-cols > div { padding: 8px 12px; }
+  .f-cols .lbl { font-weight: 700; letter-spacing: .14em; text-transform: uppercase; font-size: 13px; display: flex; flex-direction: column; justify-content: end; }
+  .f-cols .chain { border-left: 1px solid #c9cdc6; display: flex; justify-content: space-between; align-items: end; gap: 8px; }
+  .f-cols .chain .k { font-weight: 700; letter-spacing: .14em; text-transform: uppercase; font-size: 13px; }
+  .f-cols .chain .v { font-family: Anton, Impact, sans-serif; font-size: 30px; line-height: 1; }
+  .f-cols .chain .s { font-size: 13px; font-weight: 600; color: #5d6a64; }
+  .f-cols .chain.best { background: #ffcf3a; }
+  .f-cols .chain .s.bad { color: #b4321e; }
+  .f-row { border-bottom: 1px solid #323b37; }
+  .f-row:hover { background: #232a27; }
+  .f-row > div { padding: 9px 12px; min-width: 0; }
+  .f-row .what { display: flex; align-items: baseline; gap: 8px; }
+  .f-row .what .n { font-size: 21px; font-weight: 700; text-transform: uppercase; line-height: 1.05; }
+  .f-row .what .q { font-size: 15px; font-weight: 700; color: #ffcf3a; white-space: nowrap; }
+  .f-row .what .acts { margin-left: auto; display: flex; gap: 4px; opacity: .55; }
+  .f-row:hover .what .acts, .f-row .what .acts:focus-within { opacity: 1; }
+  .f-row .what .acts button { background: none; border: 1px solid #4a5551; color: #c9d0cc; font-size: 12px; font-weight: 700; padding: 0 6px; cursor: pointer; text-transform: uppercase; }
+  .f-row .what .acts button[aria-pressed="true"] { background: #f2efe6; color: #1d2321; }
+  .f-cell { border-left: 1px solid #323b37; display: grid; grid-template-columns: 1fr auto; gap: 0 10px; align-items: baseline; }
+  .f-cell .pr { font-family: Anton, Impact, sans-serif; font-size: 26px; line-height: 1; grid-column: 2; grid-row: 1; text-align: right; }
+  .f-cell .pr small { font-family: "Barlow Condensed", sans-serif; font-size: 13px; color: #8b9792; font-weight: 700; }
+  .f-cell .pn { font-size: 15px; color: #c9d0cc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; grid-row: 1; }
+  .f-cell .pk { font-size: 14px; color: #8b9792; grid-column: 1 / -1; display: flex; gap: 6px; align-items: center; }
+  .f-cell .pk b { color: #f2efe6; font-weight: 600; }
+  .f-cell .chip { font-size: 12px; font-weight: 700; padding: 0 5px; }
+  .f-cell .chip.o { background: #e8452c; color: #fff; }
+  .f-cell .chip.w { border: 1px solid #ffcf3a; color: #ffcf3a; }
+  .f-cell.win .pr { color: #ffcf3a; }
+  .f-cell.win { box-shadow: inset 4px 0 0 #ffcf3a; }
+  .f-cell.none { color: #8b9792; font-style: italic; font-size: 15px; display: flex; align-items: center; }
+  @media (max-width: 680px) {
+    .f-grid { grid-template-columns: 1fr 1fr; }
+    .f-row .what, .f-cols .lbl { grid-column: 1 / -1; }
+    .f-cols .lbl { display: none; }
+    .f-cols .chain:nth-of-type(2) { border-left: 0; }
+    .f-row .f-cell:nth-of-type(2) { border-left: 0; }
+    .f-row .what { padding-bottom: 0; }
+    .f-cell .pr { font-size: 22px; }
+  }
+
+  /* ── G · TWEE WINKELS: split the list by where each item is cheapest ─ */
+  body[data-v="G"] { background: #f2efe6; color: #16201c; font-family: "Barlow Condensed", "Arial Narrow", sans-serif; padding: 0 0 110px; }
+  .g-wrap { max-width: 1100px; margin: 0 auto; padding: 24px clamp(16px, 4vw, 40px) 0; }
+  .g-q { font-family: Anton, Impact, sans-serif; font-weight: 400; font-size: clamp(32px, 5vw, 52px); line-height: .98; text-transform: uppercase; margin: 0; max-width: 20ch; }
+  .g-ans { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 18px 0 0; }
+  .g-opt { background: #fff; border: 2px solid #16201c; padding: 10px 14px 12px; }
+  .g-opt.pick { background: #16201c; color: #fff; }
+  .g-opt .k { font-weight: 700; font-size: 14px; letter-spacing: .14em; text-transform: uppercase; }
+  .g-opt .v { font-family: Anton, Impact, sans-serif; font-size: 40px; line-height: 1.05; }
+  .g-opt .s { font-size: 16px; font-weight: 600; opacity: .8; }
+  .g-opt .s.bad { color: #c1361f; opacity: 1; }
+  .g-opt.pick .s.bad { color: #ff9b85; }
+  .g-verdict { margin: 12px 0 0; font-size: 20px; font-weight: 600; max-width: 60ch; }
+  .g-add { display: flex; margin: 18px 0 0; max-width: 620px; }
+  .g-add input { flex: 1; min-width: 0; border: 2px solid #16201c; border-right: 0; background: #fff; padding: 10px 12px; font-size: 19px; font-weight: 600; outline: none; }
+  .g-add button { background: #ffcf3a; border: 2px solid #16201c; padding: 0 18px; font-family: Anton, Impact, sans-serif; font-size: 18px; cursor: pointer; }
+  .g-cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-top: 24px; }
+  .g-col h2 { margin: 0; display: flex; justify-content: space-between; align-items: baseline; border-bottom: 4px solid #16201c; padding-bottom: 4px; font-family: Anton, Impact, sans-serif; font-weight: 400; font-size: 30px; text-transform: uppercase; }
+  .g-col h2 small { font-family: "Barlow Condensed", sans-serif; font-weight: 700; font-size: 18px; }
+  .g-it { display: grid; grid-template-columns: 1fr auto; gap: 0 12px; padding: 10px 0; border-bottom: 1px solid #cfcabd; align-items: baseline; }
+  .g-it .n { font-weight: 700; font-size: 21px; text-transform: uppercase; line-height: 1.05; }
+  .g-it .n .q { color: #8a6a00; font-size: 16px; margin-left: 4px; }
+  .g-it .pr { font-family: Anton, Impact, sans-serif; font-size: 26px; text-align: right; }
+  .g-it .pn { font-size: 15px; color: #4a5551; grid-column: 1; }
+  .g-it .gap { grid-column: 2; text-align: right; font-size: 14px; font-weight: 700; color: #2f7a3f; white-space: nowrap; }
+  .g-it .gap.tiny { color: #8b9792; }
+  .g-it .acts { grid-column: 1 / -1; display: flex; gap: 6px; margin-top: 4px; }
+  .g-it .acts button { border: 1px solid #b9b3a4; background: transparent; font-size: 13px; font-weight: 700; text-transform: uppercase; padding: 0 7px; cursor: pointer; }
+  .g-it .acts button[aria-pressed="true"] { background: #16201c; color: #fff; border-color: #16201c; }
+  .g-it.tiny { opacity: .75; }
+  .g-none { margin-top: 18px; padding: 12px 14px; border: 2px dashed #c1361f; color: #c1361f; font-size: 18px; font-weight: 600; }
+  @media (max-width: 720px) { .g-ans { grid-template-columns: 1fr; } .g-cols { grid-template-columns: 1fr; } }
+
+  /* ── H · FOLDER: the offers on your list first ─────────────────────── */
+  body[data-v="H"] { background: #fff; color: #111; font-family: "Barlow Condensed", "Arial Narrow", sans-serif; padding: 0 0 110px; }
+  .h-band { background: #e8452c; color: #fff; padding: 20px clamp(16px, 4vw, 40px) 22px; }
+  .h-band .in { max-width: 1100px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 12px 24px; }
+  .h-band h1 { margin: 0; font-family: Anton, Impact, sans-serif; font-weight: 400; font-size: clamp(38px, 6vw, 68px); line-height: .92; text-transform: uppercase; }
+  .h-band h1 small { display: block; font-family: "Barlow Condensed", sans-serif; font-size: 20px; font-weight: 600; text-transform: none; opacity: .9; }
+  .h-tots { display: flex; gap: 8px; }
+  .h-tot { background: #fff; color: #111; padding: 6px 12px 8px; min-width: 130px; transform: rotate(-1.5deg); }
+  .h-tot + .h-tot { transform: rotate(1.2deg); }
+  .h-tot.best { background: #ffd400; }
+  .h-tot .k { font-weight: 700; letter-spacing: .12em; font-size: 13px; text-transform: uppercase; }
+  .h-tot .v { font-family: Anton, Impact, sans-serif; font-size: 34px; line-height: 1; }
+  .h-tot .s { font-size: 14px; font-weight: 600; }
+  .h-main { max-width: 1100px; margin: 0 auto; padding: 0 clamp(16px, 4vw, 40px); }
+  .h-add { display: flex; margin: 18px 0 0; }
+  .h-add input { flex: 1; min-width: 0; border: 3px solid #111; border-right: 0; padding: 10px 12px; font-size: 19px; font-weight: 600; outline: none; }
+  .h-add button { border: 3px solid #111; background: #ffd400; font-family: Anton, Impact, sans-serif; font-size: 18px; padding: 0 18px; cursor: pointer; }
+  .h-sec { margin: 26px 0 10px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; border-bottom: 3px solid #111; padding-bottom: 4px; }
+  .h-sec h2 { margin: 0; font-family: Anton, Impact, sans-serif; font-weight: 400; font-size: 30px; text-transform: uppercase; }
+  .h-sec span { font-size: 17px; font-weight: 600; color: #555; }
+  .h-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+  .h-tile { border: 3px solid #111; padding: 12px 12px 10px; position: relative; background: #fff; display: grid; gap: 4px; align-content: start; min-height: 190px; }
+  .h-tile.soon { border-style: dashed; }
+  .h-burst {
+    justify-self: start; background: #ffd400; color: #111; font-family: Anton, Impact, sans-serif; font-size: 24px; line-height: 1.05;
+    padding: 6px 12px; transform: rotate(-3deg); margin: -2px 0 4px -4px; box-shadow: 3px 3px 0 #111; max-width: 100%;
+  }
+  .h-tile.soon .h-burst { background: #fff; border: 2px dashed #111; box-shadow: none; }
+  .h-tile .ch { font-weight: 700; letter-spacing: .14em; font-size: 13px; text-transform: uppercase; color: #e8452c; }
+  .h-tile .n { font-weight: 700; font-size: 22px; text-transform: uppercase; line-height: 1; }
+  .h-tile .pn { font-size: 15px; color: #444; }
+  .h-tile .foot { margin-top: auto; display: flex; justify-content: space-between; align-items: baseline; border-top: 1px solid #ddd; padding-top: 6px; }
+  .h-tile .foot .pr { font-family: Anton, Impact, sans-serif; font-size: 30px; line-height: 1; }
+  .h-tile .foot .was { font-size: 15px; color: #777; text-decoration: line-through; }
+  .h-tile .vs { font-size: 14px; font-weight: 600; color: #555; }
+  .h-tile .vs.good { color: #2f7a3f; }
+  .h-tile .vs.bad { color: #c1361f; }
+  .h-rest { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 0 24px; }
+  .h-r { display: grid; grid-template-columns: 1fr auto auto; gap: 0 14px; align-items: baseline; border-bottom: 1px solid #ddd; padding: 8px 0; }
+  .h-r .n { font-weight: 700; font-size: 19px; text-transform: uppercase; }
+  .h-r .n .q { color: #777; font-size: 15px; margin-left: 4px; }
+  .h-r .p { font-family: Anton, Impact, sans-serif; font-size: 20px; text-align: right; min-width: 64px; color: #999; }
+  .h-r .p.win { color: #111; }
+  .h-r .p small { font-family: "Barlow Condensed", sans-serif; font-size: 11px; font-weight: 700; display: block; letter-spacing: .1em; color: #999; text-transform: uppercase; }
+  .h-r .acts { grid-column: 1 / -1; display: flex; gap: 6px; }
+  .h-r .acts button { border: 0; background: none; padding: 0; font-size: 13px; font-weight: 700; color: #777; text-decoration: underline; cursor: pointer; text-transform: uppercase; }
+  .h-r .acts button[aria-pressed="true"] { color: #e8452c; }
+  .h-empty { font-size: 18px; font-weight: 600; color: #555; padding: 8px 0; }
+  @media (max-width: 520px) { .h-sec h2 { font-size: 24px; } .h-rest { grid-template-columns: 1fr; } }
+  .h-toggle { margin-left: auto; border: 2px solid #111; background: #fff; font-weight: 700; font-size: 14px; text-transform: uppercase; padding: 2px 8px; cursor: pointer; }
+  .h-toggle[aria-pressed="true"] { background: #111; color: #fff; }
 </style>
+
 
 <div id="root"></div>
 <div class="proto-bar" role="toolbar" aria-label="Prototype variant">
@@ -549,11 +754,159 @@
       (inCart ? '<button data-act="finish">Klaar</button>' : "") + "</div>";
   } };
 
+  // ════════════════════════════════════════════════════════════════════
+  // ROUND 2 — B's idiom, four different questions
+  // ════════════════════════════════════════════════════════════════════
+  const other = (cid) => chains.find((c) => c.id !== cid);
+  const totalsLine = (t) => t.filled < t.total ? (t.total - t.filled) + " van " + t.total + " niet te koop" : "alle " + t.total + " te koop";
+  const overText = (l) => l.over >= 2 ? Math.round(l.over * 10) / 10 + "× wat je nodig hebt" : "";
+  const acts = (item, a = "vast", b = "weg") =>
+    '<button data-act="staple" data-id="' + item.id + '" aria-pressed="' + item.staple + '">' + a + "</button>" +
+    '<button data-act="remove" data-id="' + item.id + '">' + b + "</button>";
+
+  V.E = { name: "Licht schap", render(s) {
+    const tots = s.totals.map((t) => {
+      const best = s.best && s.best.chain.id === t.chain.id;
+      return '<div class="e-tot' + (best ? " best" : "") + '"><div class="k">' + esc(t.chain.name) + (best ? " · goedkoopst" : "") + "</div>" +
+        '<div class="v">' + (t.filled < t.total ? "≥" : "") + euro(t.cost) + '</div><div class="s' + (t.filled < t.total ? " bad" : "") + '">' + totalsLine(t) + "</div></div>";
+    }).join("");
+    const items = s.rows.map((r) => {
+      // The cheaper chain gets the full label; with only one stocking it, that one.
+      const ls = chains.map((c) => [c, r.by[c.id]]).filter(([, l]) => l).sort((a, b) => a[1].cost - b[1].cost);
+      let card;
+      if (!ls.length) card = '<div class="e-card"><div class="e-none">Bij geen van beide te koop</div></div>';
+      else {
+        const [[wc, wl], second] = ls;
+        const best = ls.length === chains.length && second && wl.cost < second[1].cost;
+        const tags = (wl.offer ? '<span class="tagx o">' + esc(wl.offer) + "</span>" : "") + (overText(wl) ? '<span class="tagx w">' + overText(wl) + "</span>" : "");
+        const otherLine = second
+          ? '<div class="e-other"><span class="ell"><b>' + esc(second[0].name) + "</b> " + euro(second[1].p.unitPriceCents) + per[second[1].p.comparisonUnit] + " · " + esc(second[1].p.name) + "</span>" +
+            '<span class="more">' + (second[1].cost > wl.cost ? "+" + euro(second[1].cost - wl.cost) : "even duur") + "</span></div>"
+          : '<div class="e-other"><span><b>' + esc(other(wc.id).name) + "</b> heeft dit niet</span></div>";
+        card = '<div class="e-card' + (best ? " best" : "") + '"><div class="e-win">' +
+          '<span class="ch">' + esc(wc.name) + (best ? " · goedkoopst" : "") + "</span>" +
+          '<span class="pr">' + euro(wl.p.unitPriceCents) + "<small>" + per[wl.p.comparisonUnit] + "</small></span>" +
+          '<span class="pn">' + esc(wl.p.name) + "</span>" +
+          '<span class="pk">' + [wl.p.packaging ? esc(wl.p.packaging) : "", wl.packs > 1 ? wl.packs + " stuks pakken" : ""].filter(Boolean).join(" · ") + "</span>" +
+          '<div class="pay"><span>Je betaalt' + tags + "</span><span>" + euro(wl.cost) + "</span></div></div>" + otherLine + "</div>";
+      }
+      return '<div class="e-item"><div class="what"><div class="q">' + qtyText(r.item) + '</div><div class="n">' + esc(r.item.noun) + '</div><div class="acts">' + acts(r.item) + "</div></div>" + card + "</div>";
+    }).join("");
+    return '<header class="e-top"><div class="row"><h1>Jouw lijst<span>Per artikel de goedkoopste, de ander eronder</span></h1><div class="e-tots">' + tots + "</div></div>" +
+      '<form class="add e-add"><input name="q" placeholder="Zet iets op de lijst — 500 g rundergehakt" autocomplete="off"><button>+ ERBIJ</button></form></header>' +
+      '<div class="e-list">' + items + "</div>";
+  } };
+
+  V.F = { name: "Prijslijst", render(s) {
+    const cols = s.totals.map((t) => {
+      const best = s.best && s.best.chain.id === t.chain.id;
+      return '<div class="chain' + (best ? " best" : "") + '"><div><div class="k">' + esc(t.chain.name) + '</div><div class="s' + (t.filled < t.total ? " bad" : "") + '">' + totalsLine(t) + "</div></div>" +
+        '<div class="v">' + (t.filled < t.total ? "≥" : "") + euro(t.cost) + "</div></div>";
+    }).join("");
+    const rows = s.rows.map((r) => {
+      const win = cheapestFor(r);
+      const cells = chains.map((c) => {
+        const l = r.by[c.id];
+        if (!l) return '<div class="f-cell none">niet te koop</div>';
+        const chips = (l.offer ? '<span class="chip o">' + esc(l.offer) + "</span>" : "") + (l.over >= 2 ? '<span class="chip w">' + Math.round(l.over * 10) / 10 + "×</span>" : "");
+        return '<div class="f-cell' + (win === c.id ? " win" : "") + '"><span class="pn" title="' + esc(l.p.name) + '">' + esc(l.p.name) + "</span>" +
+          '<span class="pr">' + euro(l.p.unitPriceCents) + "<small>" + per[l.p.comparisonUnit] + "</small></span>" +
+          '<span class="pk"><b>' + euro(l.cost) + "</b>" + (l.packs > 1 ? " · " + l.packs + " stuks" : "") + chips + "</span></div>";
+      }).join("");
+      return '<div class="f-grid f-row"><div class="what"><span class="n">' + esc(r.item.noun) + '</span><span class="q">' + qtyText(r.item) + '</span><span class="acts">' + acts(r.item) + "</span></div>" + cells + "</div>";
+    }).join("");
+    return '<div class="f-wrap"><div class="f-head"><div class="top"><h1>Prijs<em>lijst</em></h1>' +
+      '<form class="add"><input name="q" placeholder="500 g rundergehakt" autocomplete="off"><button>+ ERBIJ</button></form></div>' +
+      '<div class="f-grid f-cols"><div class="lbl">' + s.rows.length + " artikelen</div>" + cols + "</div></div>" + rows + "</div>";
+  } };
+
+  V.G = { name: "Twee winkels", render(s) {
+    // Split: every item from wherever it is cheapest. Only items both stock can be compared.
+    const groups = Object.fromEntries(chains.map((c) => [c.id, []]));
+    const neither = [];
+    let split = 0;
+    for (const r of s.rows) {
+      const ls = chains.map((c) => [c, r.by[c.id]]).filter(([, l]) => l).sort((a, b) => a[1].cost - b[1].cost);
+      if (!ls.length) { neither.push(r); continue; }
+      const [[wc, wl], second] = ls;
+      split += wl.cost;
+      groups[wc.id].push({ r, l: wl, gap: second ? second[1].cost - wl.cost : null });
+    }
+    const single = s.totals.filter((t) => t.filled === t.total).sort((a, b) => a.cost - b.cost)[0];
+    const extra = single ? single.cost - split : null;
+    const opts = s.totals.map((t) =>
+      '<div class="g-opt' + (single && single.chain.id === t.chain.id && extra < 300 ? " pick" : "") + '"><div class="k">Alles bij ' + esc(t.chain.name) + '</div><div class="v">' + (t.filled < t.total ? "≥" : "") + euro(t.cost) + '</div><div class="s' + (t.filled < t.total ? " bad" : "") + '">' + totalsLine(t) + "</div></div>").join("") +
+      '<div class="g-opt' + (!single || extra >= 300 ? " pick" : "") + '"><div class="k">Allebei bezoeken</div><div class="v">' + euro(split) + '</div><div class="s">' +
+      chains.map((c) => groups[c.id].length + " bij " + esc(c.name)).join(" · ") + "</div></div>";
+    const verdict = single
+      ? extra <= 0 ? "Eén winkel is al het goedkoopst: alles bij " + esc(single.chain.name) + "."
+        : "Twee winkels scheelt " + euro(extra) + " ten opzichte van alles bij " + esc(single.chain.name) + ". " +
+          (extra < 300 ? "Waarschijnlijk niet de extra rit waard." : "Dat is de moeite van een tweede winkel.")
+      : "Geen van beide heeft alles — met twee winkels kom je het verst.";
+    const col = (c) => {
+      const g = groups[c.id].sort((a, b) => (b.gap ?? 0) - (a.gap ?? 0));
+      const sum = g.reduce((n, x) => n + x.l.cost, 0);
+      return '<div class="g-col"><h2>' + esc(c.name) + " <small>" + g.length + " artikelen · " + euro(sum) + "</small></h2>" +
+        (g.length ? g.map(({ r, l, gap }) => {
+          const tiny = gap !== null && gap < 25;
+          return '<div class="g-it' + (tiny ? " tiny" : "") + '"><span class="n">' + esc(r.item.noun) + '<span class="q">' + qtyText(r.item) + "</span></span>" +
+            '<span class="pr">' + euro(l.cost) + '</span><span class="pn">' + esc(l.p.name) + (l.offer ? " · " + esc(l.offer) : "") + "</span>" +
+            '<span class="gap' + (tiny ? " tiny" : "") + '">' + (gap === null ? "alleen hier" : gap === 0 ? "even duur" : euro(gap) + " goedkoper") + "</span>" +
+            '<span class="acts">' + acts(r.item) + "</span></div>";
+        }).join("") : '<div class="g-it"><span class="pn">Niets is hier goedkoper.</span></div>') + "</div>";
+    };
+    return '<div class="g-wrap"><h1 class="g-q">Eén winkel of twee?</h1><div class="g-ans">' + opts + '</div><p class="g-verdict">' + verdict + "</p>" +
+      '<form class="add g-add"><input name="q" placeholder="Zet iets op de lijst — 500 g rundergehakt" autocomplete="off"><button>+ ERBIJ</button></form>' +
+      '<div class="g-cols">' + chains.map(col).join("") + "</div>" +
+      (neither.length ? '<div class="g-none">Nergens te koop: ' + neither.map((r) => esc(r.item.noun)).join(", ") + "</div>" : "") + "</div>";
+  } };
+
+  let folderNextWeek = false;
+  V.H = { name: "Folder", render(s) {
+    // An Offer on the Product each Chain resolved to. Upcoming ones only when asked.
+    const tiles = [];
+    for (const r of s.rows) for (const c of chains) {
+      const l = r.by[c.id]; if (!l) continue;
+      const p = l.p, has = p.offerPriceCents !== null || p.offerWording;
+      if (!has || (p.offerUpcoming && !folderNextWeek)) continue;
+      const o = r.by[other(c.id).id];
+      const price = p.offerPriceCents ?? p.shelfPriceCents;
+      tiles.push({ r, c, l, p, o, price });
+    }
+    const tileHtml = tiles.map(({ r, c, l, p, o, price }) => {
+      const cost = l.packs * price;
+      const vs = o ? (o.cost > cost ? '<span class="vs good">' + euro(o.cost - cost) + " goedkoper dan " + esc(other(c.id).name) + "</span>"
+        : o.cost < cost ? '<span class="vs bad">' + esc(other(c.id).name) + " is nog " + euro(cost - o.cost) + " goedkoper</span>" : '<span class="vs">even duur als ' + esc(other(c.id).name) + "</span>")
+        : '<span class="vs">alleen bij ' + esc(c.name) + "</span>";
+      return '<div class="h-tile' + (p.offerUpcoming ? " soon" : "") + '"><span class="h-burst">' + (p.offerUpcoming ? "VOLGENDE WEEK · " : "") + esc(p.offerWording || "ACTIE") + "</span>" +
+        '<span class="ch">' + esc(c.name) + '</span><span class="n">' + esc(r.item.noun) + "</span>" +
+        '<span class="pn">' + esc(p.name) + (p.packaging ? " · " + esc(p.packaging) : "") + "</span>" + vs +
+        '<div class="foot"><span class="pr">' + euro(cost) + "</span>" + (p.offerPriceCents && p.offerPriceCents < p.shelfPriceCents ? '<span class="was">' + euro(l.packs * p.shelfPriceCents) + "</span>" : "") + "</div></div>";
+    }).join("");
+    const rest = s.rows.map((r) => {
+      const win = cheapestFor(r);
+      return '<div class="h-r"><span class="n">' + esc(r.item.noun) + '<span class="q">' + qtyText(r.item) + "</span></span>" +
+        chains.map((c) => { const l = r.by[c.id]; return '<span class="p' + (win === c.id || (!win && l) ? " win" : "") + '"><small>' + esc(c.name) + "</small>" + (l ? euro(l.cost) : "—") + "</span>"; }).join("") +
+        '<span class="acts">' + acts(r.item, "vast", "weg") + "</span></div>";
+    }).join("");
+    const tots = s.totals.map((t) => {
+      const best = s.best && s.best.chain.id === t.chain.id;
+      return '<div class="h-tot' + (best ? " best" : "") + '"><div class="k">' + esc(t.chain.name) + '</div><div class="v">' + (t.filled < t.total ? "≥" : "") + euro(t.cost) + '</div><div class="s">' + totalsLine(t) + "</div></div>";
+    }).join("");
+    return '<div class="h-band"><div class="in"><h1>Deze week<br>op jouw lijst<small>' + tiles.length + " aanbieding" + (tiles.length === 1 ? "" : "en") + " bij wat je al koopt</small></h1>" +
+      '<div class="h-tots">' + tots + "</div></div></div>" +
+      '<div class="h-main"><form class="add h-add"><input name="q" placeholder="Zet iets op de lijst — 500 g rundergehakt" autocomplete="off"><button>+ ERBIJ</button></form>' +
+      '<div class="h-sec"><h2>In de aanbieding</h2><span>alleen op producten van je lijst</span><button class="h-toggle" data-act="nextweek" aria-pressed="' + folderNextWeek + '">ook volgende week</button></div>' +
+      (tileHtml ? '<div class="h-tiles">' + tileHtml + "</div>" : '<p class="h-empty">Niets op je lijst is deze week in de aanbieding.</p>') +
+      '<div class="h-sec"><h2>De rest van je lijst</h2><span>vetgedrukt = goedkoopst</span></div><div class="h-rest">' + rest + "</div></div>";
+  } };
+
   // ── Wiring ──
-  const keys = Object.keys(V);
+  // Round 2 is what the bar cycles; round 1 (A, C, D) is still reachable by ?variant=.
+  const keys = ["B", "E", "F", "G", "H"];
   const root = document.getElementById("root");
   let current = new URLSearchParams(location.search).get("variant");
-  if (!V[current]) current = "A";
+  if (!V[current]) current = "B";
 
   function render() {
     document.body.dataset.v = current;
@@ -594,6 +947,7 @@
       case "tick": done.has(id) ? done.delete(id) : done.add(id); break;
       case "shop": shopAt = id; break;
       case "sort": sortBySaving = !sortBySaving; break;
+      case "nextweek": folderNextWeek = !folderNextWeek; break;
       case "finish": list = list.filter((i) => i.staple || !done.has(i.id)); done.clear(); break;
     }
     render();
