@@ -175,6 +175,23 @@ test("joins several tags without interpreting any of them", async () => {
   assert.equal(rows[0]!.wording, "voor 1,09 · Alleen online");
 });
 
+test("stores no wording for a brand page whose only tag repeats its title", async () => {
+  await ingestJumbo();
+  const { rows } = await db.query<{ wording: string | null; headline: string }>(
+    "SELECT wording, headline FROM offer_observation WHERE chain_offer_ref = '3020885'",
+  );
+  assert.equal(rows[0]!.wording, null);
+  assert.equal(rows[0]!.headline, "Wayang");
+});
+
+test("keeps a tag that is only part of the title", async () => {
+  await ingestJumbo();
+  const { rows } = await db.query<{ wording: string }>(
+    "SELECT wording FROM offer_observation WHERE chain_offer_ref = '3023008'",
+  );
+  assert.equal(rows[0]!.wording, "Gratis lepelsetje · Alleen online - OP=OP");
+});
+
 test("parses the bracketed timezone and flags next week's offer", async () => {
   await ingestJumbo();
   const { rows } = await db.query<{

@@ -1,6 +1,6 @@
 [
   {
-    "_why": "RECORDED LIVE on 2026-10-13: three of the 359 promotions Jumbo returned, chosen for small product lists. The bracketed timezone is a java.time format that Date rejects outright.",
+    "_why": "RECORDED LIVE on 2026-10-13: five of the 359 promotions Jumbo returned, chosen for small product lists or for the case they show. The bracketed timezone is a java.time format that Date rejects outright.",
     "data": {
       "promotions": [
         {
@@ -78,6 +78,78 @@
           "products": [
             {
               "sku": "479521STK"
+            }
+          ]
+        },
+        {
+          "_case": "A brand page, not a deal: the only tag repeats the title, as on 13 of the 359 promotions recorded (Red Band, Frisia, Van Wijngaarden...). Stored with no wording, because a name in the deal slot reads as though the brand were the offer. Product list cut from 124 to 3; everything else as recorded.",
+          "id": "3020885",
+          "title": "Wayang",
+          "subtitle": "Wayang<br>Wayang",
+          "startDate": "2026-09-30T00:01:00+02:00[Europe/Amsterdam]",
+          "endDate": "2026-10-20T23:59:00+02:00[Europe/Amsterdam]",
+          "tags": [
+            {
+              "text": "Wayang"
+            }
+          ],
+          "products": [
+            {
+              "sku": "234667DSL"
+            },
+            {
+              "sku": "191892DS"
+            },
+            {
+              "sku": "734025DS"
+            }
+          ]
+        },
+        {
+          "_case": "The near-miss the brand-page rule must not catch: \"Gratis lepelsetje\" is contained in the title but is not the title, and it is the actual mechanic.",
+          "id": "3023008",
+          "title": "Gratis lepelsetje bij aankoop van een Olvarit Variatiemenu",
+          "subtitle": "Maximaal 2 lepelsetjes per bestelling",
+          "startDate": "2026-10-07T00:01:00+02:00[Europe/Amsterdam]",
+          "endDate": "2026-11-03T23:59:00+01:00[Europe/Amsterdam]",
+          "tags": [
+            {
+              "text": "Gratis lepelsetje"
+            },
+            {
+              "text": "Alleen online - OP=OP"
+            }
+          ],
+          "products": [
+            {
+              "sku": "479261TRA"
+            },
+            {
+              "sku": "433080TRA"
+            },
+            {
+              "sku": "495976TRA"
+            },
+            {
+              "sku": "433082TRA"
+            },
+            {
+              "sku": "433081TRA"
+            },
+            {
+              "sku": "478443TRA"
+            },
+            {
+              "sku": "479209TRA"
+            },
+            {
+              "sku": "495977TRA"
+            },
+            {
+              "sku": "479208TRA"
+            },
+            {
+              "sku": "433059TRA"
             }
           ]
         }

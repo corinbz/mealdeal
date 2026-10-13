@@ -50,6 +50,11 @@ interface JumboPromotion {
 const text = (value: unknown): string | null =>
   typeof value === "string" && value.trim() ? value.trim() : null;
 
+const sameWords = (a: string, b: string): boolean => {
+  const fold = (s: string) => s.split(/\s+/).join(" ").toLowerCase();
+  return fold(a) === fold(b);
+};
+
 /**
  * Jumbo states the unit as a bare word. Anything else is left unmapped.
  *
@@ -162,16 +167,22 @@ export const jumboReader: ChainReader = {
         // single most useful thing in its feed.
         const isUpcoming = startsAt !== null && startsAt.getTime() > observedAt.getTime();
 
+        // A tag that only repeats the title is a brand page's label, not
+        // mechanics: "Red Band" tagged "Red Band" advertises no deal. Exact
+        // match only — "Gratis lepelsetje" sits inside its title and is the
+        // whole offer.
+        const title = text(raw.title);
         const tags = Array.isArray(raw.tags)
           ? (raw.tags as { text?: unknown }[])
               .map((t) => text(t.text))
               .filter((t): t is string => t !== null)
+              .filter((t) => title === null || !sameWords(t, title))
           : [];
 
         offers.push({
           chainOfferRef: ref,
           storeRef: null,
-          headline: text(raw.title),
+          headline: title,
           // Jumbo's mechanics arrive as human-readable tag text ("1+1 gratis",
           // "25% korting", "2e halve prijs"). Joined, never parsed: the
           // effective unit price of a Dutch Offer depends on how many you buy
