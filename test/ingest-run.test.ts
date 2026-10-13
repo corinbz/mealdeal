@@ -134,7 +134,7 @@ test("counts a graphql error as a parse failure and still records the rest", asy
   assert.equal(result.counts.parseFailures, 1);
   assert.match(result.notes ?? "", /parse failure/);
   // The failing category did not take the working one down with it.
-  assert.equal(result.counts.productsRecorded, 6);
+  assert.equal(result.counts.productsRecorded, 8);
 });
 
 test("records nothing, and says so, when the archive holds no responses", async () => {

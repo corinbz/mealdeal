@@ -44,9 +44,9 @@ export interface ChainReading {
     * candidates. Measured, not hidden.
     *
     * Deliberately counts the outcome rather than one cause of it. Dirk reaches
-    * it by unparseable pack wording; Jumbo reaches it by publishing no Unit
-    * Price for a Product, since we never derive one for a Chain that computes
-    * its own. Counting only pack-parsing failures undercounted Jumbo by 39.
+    * it by unparseable pack wording; Jumbo by publishing no Unit Price for a
+    * Product whose title states no quantity either. Counting only
+    * pack-parsing failures undercounted Jumbo by 39.
     */
   readonly withoutUnitPrice: number;
   readonly parseFailures: string[];

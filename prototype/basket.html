@@ -422,9 +422,9 @@
   const isOffer = (p) => (p.offerPriceCents !== null || !!p.offerWording) && !p.offerUpcoming;
   /** Whole packs, because you cannot buy 0.4 of one. */
   function packsFor(p, quantity, unit) {
-    // A pack size in another unit than the item, or a piece count below one,
-    // is not usable arithmetic (see issue #3): one pack is all we can say.
-    const known = p.packQuantity > 0 && p.packUnit === unit && !(unit === "piece" && p.packQuantity < 1);
+    // A pack size in another unit than the item (3 soup sachets, for a
+    // requirement in kg) is not usable arithmetic: one pack is all we can say.
+    const known = p.packQuantity > 0 && p.packUnit === unit;
     return { known, packs: known ? Math.max(1, Math.ceil(quantity / p.packQuantity)) : 1 };
   }
   function line(chainId, item) {

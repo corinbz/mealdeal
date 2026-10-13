@@ -81,7 +81,7 @@ for (const chain of chains) {
         ORDER BY o.chain_product_ref, o.observed_at DESC
      )
      SELECT p.chain_product_ref, p.name, p.pack_text, p.pack_quantity,
-            p.comparison_unit AS pack_unit, l.comparison_unit, l.shelf_price_cents, l.offer_price_cents,
+            p.pack_unit, l.comparison_unit, l.shelf_price_cents, l.offer_price_cents,
             l.unit_price_cents, off.wording, off.is_upcoming
        FROM latest l
        JOIN product p USING (chain_id, chain_product_ref)

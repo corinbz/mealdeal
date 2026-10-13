@@ -80,7 +80,18 @@ in 2049 means "open-ended" rather than a twenty-three year promotion.
 
 **Jumbo** is the opposite: it publishes an EAN and a pre-computed Unit Price,
 and its prices are national — so where Dirk's Unit Price is always `derived`,
-Jumbo's is `chain`.
+Jumbo's is usually `chain`.
+
+The exception is the comparison rule: **by weight or volume whenever one is
+known, by the piece only when none is** (issue #3). Jumbo prices some packs per
+piece whose title states a weight ("Tortilla Wraps 8 Stuks 320 g"); those are
+compared on a per-kg figure derived from the title and marked `derived`. A
+Product with no Jumbo figure gets one derived from its title the same way.
+
+`product.pack_unit` says what `pack_quantity` counts. It can differ from
+`comparison_unit`, which is the Unit Price's unit: Jumbo prices "Kop Champignon
+Soep 3 Stuks" per kg, and its pack is 3 pieces. Pack arithmetic (packs needed
+for a requirement) may only use `pack_quantity` when `pack_unit` matches.
 
 Its reader is now proved against real data. Every product row the Jumbo tests
 assert against was **recorded** from the live endpoint on 2026-10-13, bar one:

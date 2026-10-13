@@ -1,9 +1,11 @@
 import { readStep, payloadOf } from "../archive.ts";
 import {
   centsFrom,
+  deriveUnitPrice,
   parseInstant,
   parsePackSize,
   type ComparisonUnit,
+  type PackSize,
 } from "../normalise.ts";
 import type { ChainReader, ChainReading, OfferReading, PriceReading } from "./types.ts";
 
@@ -12,9 +14,11 @@ import type { ChainReader, ChainReading, OfferReading, PriceReading } from "./ty
  *
  * The opposite data-quality case to Dirk: Jumbo publishes an EAN and a
  * pre-computed Unit Price, and its prices are national rather than per-Store.
- * Where a Chain computes a Unit Price we store theirs, because that figure is
- * what the Chain legally represents to the consumer at the shelf -- ours would
- * be a second opinion on a number they already published.
+ * Where Jumbo computes a Unit Price per kg or litre we store theirs, because
+ * that figure is what the Chain legally represents at the shelf. One rule
+ * outranks that: compare by weight whenever a weight is known (issue #3). So a
+ * Product Jumbo prices per piece but whose title states a weight is compared
+ * on a weight price we derive, marked as ours; see unitPriceFor.
  *
  * Exercised on the real catalogue: 17,104 Products from a full 1134-category
  * walk on 2026-10-13, of which 17,072 carried an EAN and 16,938 a Unit Price
@@ -74,6 +78,45 @@ function comparisonUnit(unit: unknown): ComparisonUnit | null {
   return null;
 }
 
+/**
+ * Which Unit Price a Jumbo Product is compared on: by weight or volume
+ * whenever one is known, by the piece only when none is (the owner's rule,
+ * issue #3). In order:
+ *
+ *   1. Jumbo's own figure, when it is per kg or per litre.
+ *   2. One derived from the pack, when the title states a weight or volume.
+ *      Jumbo prices "Tortilla Wraps 8 Stuks 320 g" per piece; by weight it
+ *      compares with every other wrap sold by the gram.
+ *   3. Jumbo's own per-piece figure.
+ *   4. One derived per piece from a count in the title.
+ *
+ * Derived figures use the price paid, the Offer price when there is one, as
+ * Jumbo's own do, and are marked as ours.
+ */
+function unitPriceFor(
+  chainCents: number | null,
+  chainUnit: ComparisonUnit | null,
+  pack: PackSize | null,
+  paidCents: number,
+): Pick<PriceReading, "unitPriceCents" | "comparisonUnit" | "unitPriceSource"> {
+  const byMeasure = (u: ComparisonUnit | null | undefined) => u === "kg" || u === "l";
+  if (chainCents !== null && byMeasure(chainUnit)) {
+    return { unitPriceCents: chainCents, comparisonUnit: chainUnit, unitPriceSource: "chain" };
+  }
+  if (pack && byMeasure(pack.unit)) {
+    return { unitPriceCents: deriveUnitPrice(paidCents, pack), comparisonUnit: pack.unit, unitPriceSource: "derived" };
+  }
+  if (chainCents !== null) {
+    // A figure whose unit Jumbo left out stays unmapped: guessing "piece"
+    // would let a per-something price be compared with a per-piece one.
+    return { unitPriceCents: chainCents, comparisonUnit: chainUnit, unitPriceSource: "chain" };
+  }
+  if (pack) {
+    return { unitPriceCents: deriveUnitPrice(paidCents, pack), comparisonUnit: pack.unit, unitPriceSource: "derived" };
+  }
+  return { unitPriceCents: null, comparisonUnit: chainUnit, unitPriceSource: null };
+}
+
 export const jumboReader: ChainReader = {
   chainId: "jumbo",
 
@@ -124,10 +167,8 @@ export const jumboReader: ChainReader = {
         // archive, so the pack wording available to us is the title itself.
         // Kept verbatim rather than re-written into a tidier form.
         const pack = parsePackSize(name);
-        // Jumbo's own figure or nothing: we do not derive a second opinion on
-        // a number the Chain already publishes, so a null pricePerUnit means
-        // this Product has no Unit Price however readable its pack size is.
-        if (chainUnitCents === null) withoutUnitPrice++;
+        const unit = unitPriceFor(chainUnitCents, chainUnit, pack, centsFrom(row.price?.promoPrice) ?? shelf);
+        if (unit.unitPriceCents === null) withoutUnitPrice++;
 
         const ean = text(row.ean);
         prices.push({
@@ -142,9 +183,7 @@ export const jumboReader: ChainReader = {
           observedAt: parseInstant(record.at) ?? new Date(`${date}T00:00:00Z`),
           shelfPriceCents: shelf,
           offerPriceCents: centsFrom(row.price?.promoPrice),
-          unitPriceCents: chainUnitCents,
-          comparisonUnit: chainUnit ?? pack?.unit ?? null,
-          unitPriceSource: chainUnitCents !== null ? "chain" : null,
+          ...unit,
         });
       }
     }

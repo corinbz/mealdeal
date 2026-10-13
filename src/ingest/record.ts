@@ -108,20 +108,21 @@ export async function record(
       // carries the price. Only the latter is history.
       await client.query(
         `INSERT INTO product
-           (chain_id, chain_product_ref, name, brand, pack_text, pack_quantity,
+           (chain_id, chain_product_ref, name, brand, pack_text, pack_quantity, pack_unit,
             comparison_unit, is_weight_product, first_seen_on, last_seen_on)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $9)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $10)
          ON CONFLICT (chain_id, chain_product_ref) DO UPDATE SET
            name = EXCLUDED.name,
            brand = EXCLUDED.brand,
            pack_text = EXCLUDED.pack_text,
            pack_quantity = EXCLUDED.pack_quantity,
+           pack_unit = EXCLUDED.pack_unit,
            comparison_unit = EXCLUDED.comparison_unit,
            is_weight_product = EXCLUDED.is_weight_product,
            last_seen_on = GREATEST(product.last_seen_on, EXCLUDED.last_seen_on)`,
         [
           chainId, price.chainProductRef, price.name, price.brand, price.packText,
-          price.pack?.quantity ?? null, price.comparisonUnit,
+          price.pack?.quantity ?? null, price.pack?.unit ?? null, price.comparisonUnit,
           price.isWeightProduct, archiveDate,
         ],
       );

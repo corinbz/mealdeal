@@ -32,13 +32,21 @@ CREATE TABLE IF NOT EXISTS product (
   -- so improving the parser later can recover Products without re-scraping
   -- time that has already passed.
   pack_text         text,
+  -- The pack size and what it counts. pack_unit is the pack's own unit and
+  -- may differ from comparison_unit, the Unit Price's: Jumbo prices
+  -- "Kop Champignon Soep 3 Stuks" per kg, and its pack is 3 pieces.
   pack_quantity     numeric,
+  pack_unit         text CHECK (pack_unit IN ('kg', 'l', 'piece')),
   comparison_unit   text CHECK (comparison_unit IN ('kg', 'l', 'piece')),
   is_weight_product boolean NOT NULL DEFAULT false,
   first_seen_on     date NOT NULL,
   last_seen_on      date NOT NULL,
   PRIMARY KEY (chain_id, chain_product_ref)
 );
+
+-- Added after the first ingests (issue #3); a database created before it
+-- gets the column here, filled in by the next ingest of each day.
+ALTER TABLE product ADD COLUMN IF NOT EXISTS pack_unit text CHECK (pack_unit IN ('kg', 'l', 'piece'));
 
 CREATE TABLE IF NOT EXISTS product_ean (
   chain_id          text NOT NULL,

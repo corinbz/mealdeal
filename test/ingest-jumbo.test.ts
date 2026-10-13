@@ -128,7 +128,7 @@ test("leaves an unstated comparison unit unmapped", async () => {
   assert.equal(rows[0]!.comparison_unit, null);
 });
 
-test("leaves the unit price unset when the chain publishes none", async () => {
+test("derives a weight price when the chain publishes none but the title states a weight", async () => {
   await ingestJumbo();
   const { rows } = await db.query<{
     unit_price_cents: number | null; unit_price_source: string | null; comparison_unit: string | null;
@@ -136,11 +136,58 @@ test("leaves the unit price unset when the chain publishes none", async () => {
     `SELECT unit_price_cents, unit_price_source, comparison_unit
        FROM price_observation WHERE chain_product_ref = '620416TRA'`,
   );
-  // No pricePerUnit was sent. We do not quietly substitute our own figure,
-  // but the pack size parsed out of the title is still recorded.
-  assert.equal(rows[0]!.unit_price_cents, null);
-  assert.equal(rows[0]!.unit_price_source, null);
-  assert.equal(rows[0]!.comparison_unit, "kg");
+  // No pricePerUnit was sent. "350 g" is in the title, and the owner's rule
+  // (issue #3) is to compare by weight whenever a weight is known: EUR 1.89
+  // over 0.35 kg, marked as our figure rather than the Chain's.
+  assert.deepEqual(rows[0], { unit_price_cents: 540, unit_price_source: "derived", comparison_unit: "kg" });
+});
+
+test("compares by weight when the chain prices per piece but the title states a weight", async () => {
+  await ingestJumbo();
+  const { rows } = await db.query<{
+    unit_price_cents: number; unit_price_source: string; comparison_unit: string; pack_quantity: string; pack_unit: string;
+  }>(
+    `SELECT o.unit_price_cents, o.unit_price_source, o.comparison_unit, p.pack_quantity, p.pack_unit
+       FROM product p JOIN price_observation o USING (chain_id, chain_product_ref)
+      WHERE p.chain_product_ref = '81319ZK'`,
+  );
+  // "8 Stuks 320 g" at EUR 2.65. Jumbo's own figure is 33 c per piece; by
+  // weight it is 828 c/kg. The pack is stored as 0.32 in kg -- it used to be
+  // stored as 0.32 labelled "piece", so 8 tortillas came out as 25 packs.
+  assert.deepEqual(rows[0], {
+    unit_price_cents: 828, unit_price_source: "derived", comparison_unit: "kg", pack_quantity: "0.32", pack_unit: "kg",
+  });
+});
+
+test("keeps the chain's weight price when the title counts pieces", async () => {
+  await ingestJumbo();
+  const { rows } = await db.query<{
+    unit_price_cents: number; unit_price_source: string; comparison_unit: string; pack_quantity: string; pack_unit: string;
+  }>(
+    `SELECT o.unit_price_cents, o.unit_price_source, o.comparison_unit, p.pack_quantity, p.pack_unit
+       FROM product p JOIN price_observation o USING (chain_id, chain_product_ref)
+      WHERE p.chain_product_ref = '718875DS'`,
+  );
+  // Soup sachets, "3 Stuks", priced by Jumbo per kg. The weight price is
+  // theirs and stays; the pack is 3 pieces and says so, not 3 kg.
+  assert.deepEqual(rows[0], {
+    unit_price_cents: 736, unit_price_source: "chain", comparison_unit: "kg", pack_quantity: "3", pack_unit: "piece",
+  });
+});
+
+test("compares by the piece only when no weight is known", async () => {
+  await ingestJumbo();
+  const { rows } = await db.query<{ comparison_unit: string; unit_price_source: string; pack_unit: string | null }>(
+    `SELECT o.comparison_unit, o.unit_price_source, p.pack_unit
+       FROM product p JOIN price_observation o USING (chain_id, chain_product_ref)
+      WHERE p.chain_product_ref IN ('302241PAK', '526991STK') ORDER BY p.chain_product_ref`,
+  );
+  // "Paprika Mix 3 Stuks" and loose "Komkommer": no weight anywhere, so
+  // Jumbo's own per-piece figure is what compares.
+  assert.deepEqual(rows, [
+    { comparison_unit: "piece", unit_price_source: "chain", pack_unit: "piece" },
+    { comparison_unit: "piece", unit_price_source: "chain", pack_unit: null },
+  ]);
 });
 
 test("records one observation per product per run, not one per category", async () => {
@@ -151,8 +198,8 @@ test("records one observation per product per run, not one per category", async 
   // This sku really does arrive twice in the recorded data, because Jumbo's
   // categories overlap.
   assert.equal(Number(rows[0]!.n), 1);
-  assert.equal(result.counts.productsSeen, 7);
-  assert.equal(result.counts.productsRecorded, 6);
+  assert.equal(result.counts.productsSeen, 9);
+  assert.equal(result.counts.productsRecorded, 8);
 });
 
 test("keeps offer mechanics as the words the chain wrote", async () => {

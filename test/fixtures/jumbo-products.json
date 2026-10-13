@@ -103,6 +103,36 @@
               }
             },
             "promotions": []
+          },
+          {
+            "_case": "Priced per piece by Jumbo, but the title states a weight. Compared by weight (owner's rule, issue #3): the stored pack is 0.32 kg, labelled kg -- not 0.32 pieces, which made 8 tortillas cost 25 packs.",
+            "sku": "81319ZK",
+            "title": "Santa Maria Tortilla Wraps Medium 8 Stuks 320 g",
+            "ean": "7311310331276",
+            "price": {
+              "price": 265,
+              "promoPrice": null,
+              "pricePerUnit": {
+                "price": 33,
+                "unit": "pieces"
+              }
+            },
+            "promotions": []
+          },
+          {
+            "_case": "The reverse of the row above: Jumbo prices per kg and the title counts pieces. The weight price is the Chain's own and is kept; the pack is 3 pieces, labelled piece -- not 3 kg.",
+            "sku": "718875DS",
+            "title": "Jumbo Kop Champignon Soep 3 Stuks",
+            "ean": "8718452923540",
+            "price": {
+              "price": 39,
+              "promoPrice": null,
+              "pricePerUnit": {
+                "price": 736,
+                "unit": "kg"
+              }
+            },
+            "promotions": []
           }
         ]
       }
@@ -114,7 +144,7 @@
       "searchProducts": {
         "products": [
           {
-            "_case": "No pricePerUnit at all: no Unit Price is taken from the Chain, and the pack size parsed out of the title is still recorded.",
+            "_case": "No pricePerUnit at all. The title states a weight, so the Unit Price is derived per kg from it and marked as ours (issue #3).",
             "sku": "620416TRA",
             "title": "Jumbo Pindakaas 350 g",
             "ean": "8718265032415",
