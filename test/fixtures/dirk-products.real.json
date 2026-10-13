@@ -1,0 +1,291 @@
+[
+  {
+    "data": {
+      "productsAssortment": [
+        {
+          "productId": 113455,
+          "productNumber": null,
+          "storeId": 66,
+          "normalPrice": 2.25,
+          "offerPrice": 0,
+          "priceDate": "2026-10-13T17:38:24.832+02:00",
+          "startDate": "2026-05-11T00:00:00.000+02:00",
+          "endDate": "2049-12-31T23:59:59.000+01:00",
+          "isSingleUsePlastic": false,
+          "singleUsePlasticValue": 0,
+          "productInformation": {
+            "productId": 113455,
+            "productNumber": "473600",
+            "brand": "1 de Beste",
+            "headerText": "1 de Beste Pofaardappel met knoflooksaus",
+            "subText": "",
+            "packaging": "500 g",
+            "isWeightProduct": false,
+            "maxAmount": null,
+            "department": "Aardappelen, groente & fruit",
+            "webgroup": "Aardappelen"
+          },
+          "productOffer": null
+        },
+        {
+          "productId": 113451,
+          "productNumber": null,
+          "storeId": 66,
+          "normalPrice": 0.89,
+          "offerPrice": 0,
+          "priceDate": "2026-10-13T17:38:24.832+02:00",
+          "startDate": "2026-02-18T00:00:00.000+01:00",
+          "endDate": "2049-12-31T23:59:59.000+01:00",
+          "isSingleUsePlastic": false,
+          "singleUsePlasticValue": 0,
+          "productInformation": {
+            "productId": 113451,
+            "productNumber": "472580",
+            "brand": "1 de Beste",
+            "headerText": "1 de Beste Gekookte aardappelen kruimig",
+            "subText": "",
+            "packaging": "500 g",
+            "isWeightProduct": false,
+            "maxAmount": null,
+            "department": "Aardappelen, groente & fruit",
+            "webgroup": "Aardappelen"
+          },
+          "productOffer": null
+        },
+        {
+          "productId": 113446,
+          "productNumber": null,
+          "storeId": 66,
+          "normalPrice": 1.29,
+          "offerPrice": 0,
+          "priceDate": "2026-10-13T17:38:24.832+02:00",
+          "startDate": "2026-03-09T00:00:00.000+01:00",
+          "endDate": "2049-12-31T23:59:59.000+01:00",
+          "isSingleUsePlastic": false,
+          "singleUsePlasticValue": 0,
+          "productInformation": {
+            "productId": 113446,
+            "productNumber": "472574",
+            "brand": "1 de Beste",
+            "headerText": "1 de Beste Aardappelschijfjes",
+            "subText": "",
+            "packaging": "700 g",
+            "isWeightProduct": false,
+            "maxAmount": null,
+            "department": "Aardappelen, groente & fruit",
+            "webgroup": "Aardappelen"
+          },
+          "productOffer": null
+        },
+        {
+          "productId": 113448,
+          "productNumber": null,
+          "storeId": 66,
+          "normalPrice": 0.99,
+          "offerPrice": 0,
+          "priceDate": "2026-10-13T17:38:24.832+02:00",
+          "startDate": "2026-02-18T00:00:00.000+01:00",
+          "endDate": "2049-12-31T23:59:59.000+01:00",
+          "isSingleUsePlastic": false,
+          "singleUsePlasticValue": 0,
+          "productInformation": {
+            "productId": 113448,
+            "productNumber": "472576",
+            "brand": "1 de Beste",
+            "headerText": "1 de Beste Bistro minikrieltjes",
+            "subText": "",
+            "packaging": "500 g",
+            "isWeightProduct": false,
+            "maxAmount": null,
+            "department": "Aardappelen, groente & fruit",
+            "webgroup": "Aardappelen"
+          },
+          "productOffer": null
+        },
+        {
+          "productId": 113447,
+          "productNumber": null,
+          "storeId": 66,
+          "normalPrice": 0.99,
+          "offerPrice": 0,
+          "priceDate": "2026-10-13T17:38:24.832+02:00",
+          "startDate": "2026-02-18T00:00:00.000+01:00",
+          "endDate": "2049-12-31T23:59:59.000+01:00",
+          "isSingleUsePlastic": false,
+          "singleUsePlasticValue": 0,
+          "productInformation": {
+            "productId": 113447,
+            "productNumber": "472575",
+            "brand": "1 de Beste",
+            "headerText": "1 de Beste Krieltjes",
+            "subText": "",
+            "packaging": "500 g",
+            "isWeightProduct": false,
+            "maxAmount": null,
+            "department": "Aardappelen, groente & fruit",
+            "webgroup": "Aardappelen"
+          },
+          "productOffer": null
+        },
+        null
+      ]
+    }
+  },
+  {
+    "data": {
+      "productsAssortment": [
+        {
+          "productId": 100968,
+          "productNumber": null,
+          "storeId": 66,
+          "normalPrice": 2.39,
+          "offerPrice": 1.99,
+          "priceDate": "2026-10-13T17:38:25.537+02:00",
+          "startDate": "2026-10-07T00:00:00.000+02:00",
+          "endDate": "2026-10-13T23:59:59.000+02:00",
+          "isSingleUsePlastic": false,
+          "singleUsePlasticValue": 0,
+          "productInformation": {
+            "productId": 100968,
+            "productNumber": "459131",
+            "brand": "1 de Beste",
+            "headerText": "1 de Beste Verse frites",
+            "subText": "",
+            "packaging": "1 kg",
+            "isWeightProduct": false,
+            "maxAmount": null,
+            "department": "Aardappelen, groente & fruit",
+            "webgroup": "Aardappelen"
+          },
+          "productOffer": null
+        },
+        {
+          "productId": 103916,
+          "productNumber": null,
+          "storeId": 66,
+          "normalPrice": 3.49,
+          "offerPrice": 0,
+          "priceDate": "2026-10-13T17:38:25.537+02:00",
+          "startDate": "2026-09-12T00:00:00.000+02:00",
+          "endDate": "2049-12-31T23:59:59.000+01:00",
+          "isSingleUsePlastic": false,
+          "singleUsePlasticValue": 0,
+          "productInformation": {
+            "productId": 103916,
+            "productNumber": "464204",
+            "brand": "1 de Beste",
+            "headerText": "1 de Beste Aardappelen vastkokend",
+            "subText": "",
+            "packaging": "3 kg",
+            "isWeightProduct": false,
+            "maxAmount": null,
+            "department": "Aardappelen, groente & fruit",
+            "webgroup": "Aardappelen"
+          },
+          "productOffer": null
+        },
+        {
+          "productId": 103915,
+          "productNumber": null,
+          "storeId": 66,
+          "normalPrice": 3.49,
+          "offerPrice": 0,
+          "priceDate": "2026-10-13T17:38:25.537+02:00",
+          "startDate": "2026-09-12T00:00:00.000+02:00",
+          "endDate": "2049-12-31T23:59:59.000+01:00",
+          "isSingleUsePlastic": false,
+          "singleUsePlasticValue": 0,
+          "productInformation": {
+            "productId": 103915,
+            "productNumber": "464203",
+            "brand": "1 de Beste",
+            "headerText": "1 de Beste Aardappelen vastkokend",
+            "subText": "",
+            "packaging": "3 kg",
+            "isWeightProduct": false,
+            "maxAmount": null,
+            "department": "Aardappelen, groente & fruit",
+            "webgroup": "Aardappelen"
+          },
+          "productOffer": null
+        },
+        {
+          "productId": 113450,
+          "productNumber": null,
+          "storeId": 66,
+          "normalPrice": 0.89,
+          "offerPrice": 0,
+          "priceDate": "2026-10-13T17:38:25.537+02:00",
+          "startDate": "2026-09-14T04:57:00.000+02:00",
+          "endDate": "2049-12-31T23:59:59.000+01:00",
+          "isSingleUsePlastic": false,
+          "singleUsePlasticValue": 0,
+          "productInformation": {
+            "productId": 113450,
+            "productNumber": "472579",
+            "brand": "1 de Beste",
+            "headerText": "1 de Beste Gekookte aardappelen vastkokend",
+            "subText": "",
+            "packaging": "500 g",
+            "isWeightProduct": false,
+            "maxAmount": null,
+            "department": "Aardappelen, groente & fruit",
+            "webgroup": "Aardappelen"
+          },
+          "productOffer": null
+        },
+        {
+          "productId": 12910,
+          "productNumber": null,
+          "storeId": 66,
+          "normalPrice": 2.49,
+          "offerPrice": 0,
+          "priceDate": "2026-10-13T17:38:25.537+02:00",
+          "startDate": "2026-10-06T04:56:00.000+02:00",
+          "endDate": "2049-12-31T23:59:59.000+01:00",
+          "isSingleUsePlastic": false,
+          "singleUsePlasticValue": 0,
+          "productInformation": {
+            "productId": 12910,
+            "productNumber": "221111",
+            "brand": "Poldergoud",
+            "headerText": "Poldergoud Stamppotaardappelen zeer kruimig",
+            "subText": "",
+            "packaging": "1,5 kg",
+            "isWeightProduct": false,
+            "maxAmount": null,
+            "department": "Aardappelen, groente & fruit",
+            "webgroup": "Aardappelen"
+          },
+          "productOffer": null
+        },
+        {
+          "productId": 25560,
+          "productNumber": null,
+          "storeId": 66,
+          "normalPrice": 2.78,
+          "offerPrice": 0,
+          "priceDate": "2026-10-13T17:38:25.537+02:00",
+          "startDate": "2026-09-23T00:00:00.000+02:00",
+          "endDate": "2026-10-13T23:59:59.000+02:00",
+          "isSingleUsePlastic": false,
+          "singleUsePlasticValue": 0,
+          "productInformation": {
+            "productId": 25560,
+            "productNumber": "268549",
+            "brand": "",
+            "headerText": "Zoete aardappelen",
+            "subText": "",
+            "packaging": "1 kg",
+            "isWeightProduct": true,
+            "maxAmount": null,
+            "department": "Aardappelen, groente & fruit",
+            "webgroup": "Aardappelen"
+          },
+          "productOffer": null
+        },
+        null
+      ]
+    }
+  }
+]

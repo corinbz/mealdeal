@@ -1,0 +1,138 @@
+[
+  {
+    "data": {
+      "listOffers": {
+        "key": 1,
+        "importId": null,
+        "currentOffers": [
+          {
+            "offerId": 139561,
+            "key": null,
+            "storeId": 66,
+            "headerText": "1 de Beste Andijvie ",
+            "subText": null,
+            "packaging": "Zak 250 gram.",
+            "promotionText": null,
+            "normalPrice": 1.29,
+            "offerPrice": 0.99,
+            "priceDate": "2026-10-13 17:40:29",
+            "startDate": "2026-10-07T00:00:00.000Z",
+            "endDate": "2026-10-13T23:59:00.000Z",
+            "embargoDate": "0001-01-01T00:00:00.000Z",
+            "disclaimerStartDate": "2026-10-07T00:00:00.000Z",
+            "disclaimerEndDate": "2026-10-13T00:00:00.000Z",
+            "type": "SingleProductOffer",
+            "textPriceSign": "ACTIE_\n ",
+            "textPriceSign1": "ACTIE",
+            "textPriceSign2": "\n ",
+            "productIds": [
+              43418
+            ]
+          },
+          {
+            "offerId": 139562,
+            "key": null,
+            "storeId": 66,
+            "headerText": "1 de Beste Hollandse spruiten",
+            "subText": null,
+            "packaging": "Per zak.",
+            "promotionText": null,
+            "normalPrice": 1.89,
+            "offerPrice": 0.99,
+            "priceDate": "2026-10-13 17:40:29",
+            "startDate": "2026-10-07T00:00:00.000Z",
+            "endDate": "2026-10-13T23:59:00.000Z",
+            "embargoDate": "0001-01-01T00:00:00.000Z",
+            "disclaimerStartDate": "2026-10-07T00:00:00.000Z",
+            "disclaimerEndDate": "2026-10-13T00:00:00.000Z",
+            "type": "SingleProductOffer",
+            "textPriceSign": "ACTIE_\n ",
+            "textPriceSign1": "ACTIE",
+            "textPriceSign2": "\n ",
+            "productIds": [
+              4535
+            ]
+          }
+        ],
+        "upcomingOffers": [
+          {
+            "offerId": 139851,
+            "key": null,
+            "storeId": 66,
+            "headerText": "Hollandse aardbeien",
+            "subText": null,
+            "packaging": "Bak 400 gram.",
+            "promotionText": null,
+            "normalPrice": 0,
+            "offerPrice": 2.49,
+            "priceDate": "2026-10-14 00:00:00",
+            "startDate": "2026-10-14T00:00:00.000Z",
+            "endDate": "2026-10-18T23:59:00.000Z",
+            "embargoDate": "0001-01-01T00:00:00.000Z",
+            "disclaimerStartDate": "2026-10-16T00:00:00.000Z",
+            "disclaimerEndDate": "2026-10-18T00:00:00.000Z",
+            "type": "SingleProductOffer",
+            "textPriceSign": "VR, ZA & ZO_actie",
+            "textPriceSign1": "VR, ZA & ZO",
+            "textPriceSign2": "actie",
+            "productIds": [
+              118477
+            ]
+          },
+          {
+            "offerId": 139736,
+            "key": null,
+            "storeId": 66,
+            "headerText": "Hak groente of appelmoes",
+            "subText": null,
+            "packaging": "Pot 330 - 370 gram (m.u.v. haricots verts).",
+            "promotionText": null,
+            "normalPrice": 2.85,
+            "offerPrice": 0.89,
+            "priceDate": "2026-10-14 00:00:00",
+            "startDate": "2026-10-14T00:00:00.000Z",
+            "endDate": "2026-10-20T23:59:00.000Z",
+            "embargoDate": "0001-01-01T00:00:00.000Z",
+            "disclaimerStartDate": "2026-10-14T00:00:00.000Z",
+            "disclaimerEndDate": "2026-10-20T00:00:00.000Z",
+            "type": "MultiProductOffer",
+            "textPriceSign": "ACTIE_\n ",
+            "textPriceSign1": "ACTIE",
+            "textPriceSign2": "\n ",
+            "productIds": [
+              5526,
+              127872,
+              127865,
+              127866,
+              127867,
+              127870,
+              127869,
+              127868,
+              127871,
+              5654,
+              59498,
+              3111,
+              13056,
+              3109,
+              5332,
+              5326,
+              5330,
+              5328,
+              5323,
+              18898,
+              5525,
+              9906,
+              95057,
+              6363,
+              59650,
+              66472,
+              5333,
+              7011,
+              5422
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

@@ -1,0 +1,11 @@
+[
+  {
+    "_why": "The archiver stores GraphQL validation errors rather than discarding them, because an error is how we learn a field we depend on was renamed. A run must report it and still record every step that did work.",
+    "errors": [
+      {
+        "message": "Cannot query field \"pricePerUnit\" on type \"Price\".",
+        "extensions": { "code": "GRAPHQL_VALIDATION_FAILED" }
+      }
+    ]
+  }
+]

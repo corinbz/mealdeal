@@ -1,0 +1,93 @@
+[
+  {
+    "_why": "Edge cases that do not all occur naturally in one archived slice. Shapes copied from real Dirk responses; values chosen to exercise one decision each.",
+    "data": {
+      "productsAssortment": [
+        {
+          "_case": "Far-future end date is Dirk's open-ended sentinel, and offerPrice 0 means no Offer rather than free.",
+          "productId": 900001,
+          "productNumber": "900001",
+          "storeId": 66,
+          "normalPrice": 1.54,
+          "offerPrice": 0.0,
+          "priceDate": "2026-10-13T10:34:49.785+02:00",
+          "startDate": "2026-10-05T00:00:00.000+02:00",
+          "endDate": "2049-12-31T23:59:59.000+01:00",
+          "isSingleUsePlastic": false,
+          "singleUsePlasticValue": 0,
+          "productInformation": {
+            "productId": 900001, "productNumber": "900001",
+            "brand": "Zuivelmeester", "headerText": "Zuivelmeester Halfvolle melk",
+            "subText": null, "packaging": "2 liter", "isWeightProduct": false,
+            "maxAmount": 99, "department": 4, "webgroup": 40
+          },
+          "productOffer": null
+        },
+        {
+          "_case": "Pack size stated only in the name; packaging names a container with no quantity.",
+          "productId": 900002,
+          "productNumber": "900002",
+          "storeId": 66,
+          "normalPrice": 2.75,
+          "offerPrice": 0.0,
+          "priceDate": "2026-10-13T10:34:49.785+02:00",
+          "endDate": "2049-12-31T23:59:59.000+01:00",
+          "isSingleUsePlastic": false,
+          "singleUsePlasticValue": 0,
+          "productInformation": {
+            "brand": "1 de Beste", "headerText": "1 de Beste Snoeptomaatjes 500 gram",
+            "packaging": "Per schaal", "isWeightProduct": false
+          }
+        },
+        {
+          "_case": "Nothing anywhere states a quantity: no Unit Price can be derived, and that must be recorded as a measured gap rather than guessed.",
+          "productId": 900003,
+          "productNumber": "900003",
+          "storeId": 66,
+          "normalPrice": 3.49,
+          "offerPrice": 0.0,
+          "priceDate": "2026-10-13T10:34:49.785+02:00",
+          "endDate": "2049-12-31T23:59:59.000+01:00",
+          "isSingleUsePlastic": false,
+          "singleUsePlasticValue": 0,
+          "productInformation": {
+            "brand": null, "headerText": "Bloemen boeket seizoen",
+            "packaging": "Per bos", "isWeightProduct": false
+          }
+        },
+        {
+          "_case": "Multipack: total quantity is what compares, not the number of units.",
+          "productId": 900004,
+          "productNumber": "900004",
+          "storeId": 66,
+          "normalPrice": 4.99,
+          "offerPrice": 3.99,
+          "priceDate": "2026-10-13T10:34:49.785+02:00",
+          "endDate": "2026-10-20T23:59:59.000+02:00",
+          "isSingleUsePlastic": false,
+          "singleUsePlasticValue": 0,
+          "productInformation": {
+            "brand": "Dubbelfrisss", "headerText": "Dubbelfrisss Appel kers",
+            "packaging": "24 x 300ml", "isWeightProduct": false
+          }
+        },
+        {
+          "_case": "Weight-priced: recorded as such and not treated as a fixed pack.",
+          "productId": 900005,
+          "productNumber": "900005",
+          "storeId": 66,
+          "normalPrice": 12.95,
+          "offerPrice": 0.0,
+          "priceDate": "2026-10-13T10:34:49.785+02:00",
+          "endDate": "2049-12-31T23:59:59.000+01:00",
+          "isSingleUsePlastic": false,
+          "singleUsePlasticValue": 0,
+          "productInformation": {
+            "brand": null, "headerText": "Oude kaas stuk",
+            "packaging": "1 kg", "isWeightProduct": true
+          }
+        }
+      ]
+    }
+  }
+]

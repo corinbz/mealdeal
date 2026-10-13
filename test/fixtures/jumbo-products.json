@@ -1,0 +1,67 @@
+[
+  {
+    "_why": "Jumbo's edge tarpits an honest client, so no real Jumbo response was ever archived. Field names are the archiver's verified selection set; the envelope around them is the part the edge refused to confirm. Marked UNVERIFIED in src/archive/chains/jumbo.ts.",
+    "data": {
+      "searchProducts": {
+        "products": [
+          {
+            "_case": "Pre-computed Unit Price: the Chain's own figure is stored rather than ours, because that is what it represents to the shopper at the shelf. Prices are integer cents.",
+            "sku": "59938PAK",
+            "title": "Heineken Premium Pilsener Bier Draaidop Fles 12 x 250ml",
+            "ean": "8712000030957",
+            "price": {
+              "price": 1399,
+              "promoPrice": 1049,
+              "pricePerUnit": { "price": 350, "unit": "l" }
+            },
+            "promotions": [{ "id": "3020974", "tags": [{ "text": "25% korting" }] }]
+          },
+          {
+            "_case": "No promo price, unit in kg.",
+            "sku": "498518PAK",
+            "title": "Jumbo Verse Halfvolle Melk 1 L",
+            "ean": "8717228611711",
+            "price": {
+              "price": 129,
+              "promoPrice": null,
+              "pricePerUnit": { "price": 129, "unit": "l" }
+            },
+            "promotions": []
+          },
+          {
+            "_case": "Same sku as the first row: Jumbo's categories overlap, so one Product arrives several times per run and must yield one observation, not one per category.",
+            "sku": "59938PAK",
+            "title": "Heineken Premium Pilsener Bier Draaidop Fles 12 x 250ml",
+            "ean": "8712000030957",
+            "price": {
+              "price": 1399,
+              "promoPrice": 1049,
+              "pricePerUnit": { "price": 350, "unit": "l" }
+            },
+            "promotions": []
+          },
+          {
+            "_case": "No pricePerUnit at all: no Unit Price is recorded from the Chain, and the title still yields a pack size.",
+            "sku": "620416TRA",
+            "title": "Jumbo Pindakaas 350 g",
+            "ean": "8718265032415",
+            "price": { "price": 189, "promoPrice": null, "pricePerUnit": null },
+            "promotions": []
+          },
+          {
+            "_case": "Unit the mapper does not know: left unmapped rather than guessed.",
+            "sku": "710779STK",
+            "title": "Jumbo Bospeen Bundel",
+            "ean": null,
+            "price": {
+              "price": 149,
+              "promoPrice": null,
+              "pricePerUnit": { "price": 149, "unit": "bundel" }
+            },
+            "promotions": []
+          }
+        ]
+      }
+    }
+  }
+]

@@ -10,10 +10,18 @@
   "scripts": {
     "archive": "node src/archive/cli.ts",
     "typecheck": "tsc --noEmit",
-    "archive:check": "node src/archive/check.ts"
+    "archive:check": "node src/archive/check.ts",
+    "db:up": "docker start mealdeal-pg || docker run -d --name mealdeal-pg -e POSTGRES_PASSWORD=mealdeal -e POSTGRES_USER=mealdeal -e POSTGRES_DB=mealdeal -p 5433:5432 postgres:17-alpine",
+    "db:migrate": "node -e \"const {connect,migrate}=await import('./src/ingest/db.ts');const db=connect();await migrate(db);await db.end();console.log('schema applied')\" --input-type=module",
+    "ingest": "node src/ingest/cli.ts",
+    "test": "node --test --test-concurrency=1 \"test/**/*.test.ts\""
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
+    "@types/pg": "^8.23.1",
     "typescript": "^5.9.0"
+  },
+  "dependencies": {
+    "pg": "^8.23.1"
   }
 }

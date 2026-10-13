@@ -1,0 +1,29 @@
+[
+  {
+    "_why": "Shape and values from the source research, which verified this query live. The bracketed timezone is a java.time format that Date rejects outright.",
+    "data": {
+      "promotions": [
+        {
+          "_case": "Running now. Mechanics arrive as human-readable tag text and are stored as written.",
+          "id": "3021014",
+          "title": "Redefine Meat, Oma's of Impossible Meat vleesvervangers",
+          "subtitle": "alle varianten",
+          "startDate": "2026-10-07T00:01:00+02:00[Europe/Amsterdam]",
+          "endDate": "2026-10-13T23:59:59+02:00[Europe/Amsterdam]",
+          "tags": [{ "text": "1+1 gratis" }, { "text": "Alleen online" }],
+          "products": [{ "sku": "620416TRA" }, { "sku": "710779STK" }]
+        },
+        {
+          "_case": "Starts next week. Jumbo publishes Offers before they begin, which is what offer-driven meal planning needs.",
+          "id": "3021099",
+          "title": "Heineken pilsener",
+          "subtitle": null,
+          "startDate": "2026-10-14T00:01:00+02:00[Europe/Amsterdam]",
+          "endDate": "2026-10-20T23:59:59+02:00[Europe/Amsterdam]",
+          "tags": [{ "text": "25% korting" }],
+          "products": [{ "sku": "59938PAK" }]
+        }
+      ]
+    }
+  }
+]

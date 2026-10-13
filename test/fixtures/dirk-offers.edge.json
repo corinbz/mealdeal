@@ -1,0 +1,49 @@
+[
+  {
+    "_why": "An Offer with the far-future end-date sentinel, and one announced but not yet started.",
+    "data": {
+      "listOffers": {
+        "key": 1,
+        "importId": null,
+        "currentOffers": [
+          {
+            "offerId": 990001,
+            "storeId": 66,
+            "headerText": "Dubbelfrisss",
+            "subText": "alle varianten",
+            "promotionText": "2 voor 6,00",
+            "normalPrice": 4.99,
+            "offerPrice": 3.99,
+            "priceDate": "2026-10-13T10:34:49.785+02:00",
+            "startDate": "2026-10-07T00:00:00.000+02:00",
+            "endDate": "2049-12-31T23:59:59.000+01:00",
+            "embargoDate": null,
+            "type": 1,
+            "textPriceSign": "2 voor",
+            "textPriceSign1": "6",
+            "textPriceSign2": "00",
+            "productIds": [900004]
+          }
+        ],
+        "upcomingOffers": [
+          {
+            "offerId": 990002,
+            "storeId": 66,
+            "headerText": "Zuivelmeester zuivel",
+            "subText": null,
+            "promotionText": "1+1 gratis",
+            "normalPrice": 1.54,
+            "offerPrice": 0.77,
+            "priceDate": "2026-10-13T10:34:49.785+02:00",
+            "startDate": "2026-10-14T00:00:00.000+02:00",
+            "endDate": "2026-10-20T23:59:59.000+02:00",
+            "embargoDate": "2026-10-13T00:00:00.000+02:00",
+            "type": 1,
+            "textPriceSign": null,
+            "productIds": [900001]
+          }
+        ]
+      }
+    }
+  }
+]
