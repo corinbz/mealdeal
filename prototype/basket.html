@@ -1,433 +1,350 @@
 <meta charset="utf-8">
-<title>Mealdeal Kiloprijs</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>mealdeal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&display=swap">
 <style>
   /* ── Tokens ───────────────────────────────────────────────────────────
-     Light is the base palette. Dark redefines only these tokens, twice:
-     once behind prefers-color-scheme (guarded so an explicit light choice
-     wins) and once behind the data-theme stamp (so the toggle wins too).
-     No component below reads a literal colour. */
+     Kraft is the light theme and the base. Donker, the dark one, redefines
+     only tokens: behind prefers-color-scheme (unless the page is set to
+     light) and behind data-theme="dark" (when it is set to dark). No
+     component reads a literal colour, so both themes come for free.
+     Chain colours are ours, never a chain's brand colours. */
   :root {
-    --paper:      #f4f6f2;
-    --surface:    #ffffff;
-    --surface-2:  #ecefe8;
-    --ink:        #161b19;
-    --ink-soft:   #4c5551;
-    --ink-faint:  #7d8783;
-    --rule:       #d6dbd3;
-    --rule-firm:  #b7bfb7;
-    --accent:     #0b5d4c;
-    --accent-ink: #ffffff;
-    --accent-wash:#dceae4;
-    --amber:      #96620a;
-    --amber-wash: #f6ecd8;
-    --clay:       #9a3b29;
-    --clay-wash:  #f6e3de;
-    --scrim:      rgba(22, 27, 25, 0.42);
-
-    --display: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
-    --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    --data: ui-monospace, "SF Mono", "Cascadia Mono", "Roboto Mono", Menlo, Consolas, monospace;
-
-    --step--1: 0.78rem;
-    --step-0:  0.94rem;
-    --step-1:  1.18rem;
-    --step-2:  1.62rem;
-    --step-3:  2.3rem;
+    color-scheme: light;
+    --paper: #f3e7d6; --paper-2: #ead9c1; --card: #fffaf2;
+    --ink: #2b2118; --ink-2: #6b5a48; --ink-3: #9a8771; --line: #dcc8ab; --on-ink: #f3e7d6;
+    --good: #2f7a3f; --good-wash: #d9ecd9; --bad: #b8432f; --bad-wash: #f6dcd4;
+    --offer: #ffe9a3; --offer-ink: #2b2118; --scrim: rgba(30, 20, 10, .45);
+    --bag-shade: rgba(0, 0, 0, .12); --lift: 0 14px 24px -16px rgba(60, 30, 0, .6);
+    --c0: #2f6b57; --c1: #8a3b5c; --c2: #3b6aa0; --c3: #c0772b; --c4: #5b4a9e; --c5: #2b8a8a; --c6: #7a6a2a; --c7: #a8452f;
+    --r: 16px;
+    --font: Nunito, ui-rounded, "SF Pro Rounded", system-ui, sans-serif;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --paper:      #0f1311;
-      --surface:    #171c19;
-      --surface-2:  #1f2622;
-      --ink:        #e8ece8;
-      --ink-soft:   #a3aca7;
-      --ink-faint:  #767f7a;
-      --rule:       #2b332e;
-      --rule-firm:  #3d4842;
-      --accent:     #58b79d;
-      --accent-ink: #07130f;
-      --accent-wash:#16302a;
-      --amber:      #d7a34a;
-      --amber-wash: #2d2516;
-      --clay:       #dc8572;
-      --clay-wash:  #33201c;
-      --scrim:      rgba(4, 8, 6, 0.62);
+      color-scheme: dark;
+      --paper: #1c1611; --paper-2: #2b2219; --card: #29211a;
+      --ink: #f3e7d6; --ink-2: #cdbba4; --ink-3: #917f6b; --line: #3e3328; --on-ink: #1c1611;
+      --good: #72c28e; --good-wash: rgba(114, 194, 142, .16); --bad: #f08c75; --bad-wash: rgba(240, 140, 117, .16);
+      --offer: rgba(255, 214, 102, .18); --offer-ink: #ffd666; --scrim: rgba(0, 0, 0, .6);
+      --bag-shade: rgba(0, 0, 0, .22); --lift: 0 14px 26px -14px rgba(0, 0, 0, .7);
+      --c0: #3f8f71; --c1: #b4557c; --c2: #4f80bd; --c3: #c4853a; --c4: #7b68bd; --c5: #3a9a99; --c6: #a08a3a; --c7: #c0604a;
     }
   }
   :root[data-theme="dark"] {
-    --paper:      #0f1311;
-    --surface:    #171c19;
-    --surface-2:  #1f2622;
-    --ink:        #e8ece8;
-    --ink-soft:   #a3aca7;
-    --ink-faint:  #767f7a;
-    --rule:       #2b332e;
-    --rule-firm:  #3d4842;
-    --accent:     #58b79d;
-    --accent-ink: #07130f;
-    --accent-wash:#16302a;
-    --amber:      #d7a34a;
-    --amber-wash: #2d2516;
-    --clay:       #dc8572;
-    --clay-wash:  #33201c;
-    --scrim:      rgba(4, 8, 6, 0.62);
+    color-scheme: dark;
+    --paper: #1c1611; --paper-2: #2b2219; --card: #29211a;
+    --ink: #f3e7d6; --ink-2: #cdbba4; --ink-3: #917f6b; --line: #3e3328; --on-ink: #1c1611;
+    --good: #72c28e; --good-wash: rgba(114, 194, 142, .16); --bad: #f08c75; --bad-wash: rgba(240, 140, 117, .16);
+    --offer: rgba(255, 214, 102, .18); --offer-ink: #ffd666; --scrim: rgba(0, 0, 0, .6);
+    --bag-shade: rgba(0, 0, 0, .22); --lift: 0 14px 26px -14px rgba(0, 0, 0, .7);
+    --c0: #3f8f71; --c1: #b4557c; --c2: #4f80bd; --c3: #c4853a; --c4: #7b68bd; --c5: #3a9a99; --c6: #a08a3a; --c7: #c0604a;
   }
 
   * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    background: var(--paper);
-    color: var(--ink);
-    font-family: var(--sans);
-    font-size: var(--step-0);
-    line-height: 1.5;
-    -webkit-font-smoothing: antialiased;
-  }
-  .wrap { max-width: 1120px; margin: 0 auto; padding: clamp(1.25rem, 3vw, 2.75rem) clamp(1rem, 3vw, 2rem) 4rem; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font); font-size: 16px; line-height: 1.4; }
+  body.locked { overflow: hidden; }
+  button, input { font: inherit; color: inherit; }
+  [hidden] { display: none !important; }
+  :focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
 
-  /* ── Masthead ─────────────────────────────────────────────────────── */
-  .masthead { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.5rem 1rem; }
-  .wordmark {
-    font-family: var(--display);
-    font-size: var(--step-3);
-    letter-spacing: -0.02em;
-    margin: 0;
-    text-wrap: balance;
-  }
-  .wordmark em { font-style: normal; color: var(--accent); }
-  .masthead p { margin: 0; color: var(--ink-soft); max-width: 60ch; }
-  .thesis {
-    margin: 1.25rem 0 0;
-    padding: 0.85rem 1rem;
-    border-left: 3px solid var(--accent);
-    background: var(--accent-wash);
-    color: var(--ink);
-    max-width: 68ch;
-    font-size: var(--step-0);
-  }
-  .thesis strong { font-weight: 650; }
-
-  /* ── Provenance ───────────────────────────────────────────────────── */
-  .provenance {
-    margin: 1.5rem 0 0;
-    display: flex; flex-wrap: wrap; gap: 0.5rem;
-    font-size: var(--step--1);
-  }
-  .tag {
-    display: inline-flex; align-items: center; gap: 0.4rem;
-    padding: 0.28rem 0.55rem;
-    border: 1px solid var(--rule-firm);
-    border-radius: 2px;
-    background: var(--surface);
-    font-family: var(--data);
-    letter-spacing: 0.01em;
-  }
-  .tag.sim { border-color: var(--amber); color: var(--amber); background: var(--amber-wash); }
-  .tag::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
-  .tag.sim::before { background: var(--amber); }
-
-  /* ── Controls ─────────────────────────────────────────────────────── */
-  .controls { margin: 1.75rem 0 0.75rem; display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; }
-  button {
-    font: inherit; font-size: var(--step--1);
-    padding: 0.42rem 0.8rem;
-    border: 1px solid var(--rule-firm);
-    border-radius: 2px;
-    background: var(--surface);
-    color: var(--ink);
-    cursor: pointer;
-  }
-  button:hover { border-color: var(--accent); color: var(--accent); }
-  button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
-  button:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  .controls .spacer { flex: 1 1 auto; }
-  .controls .count { font-family: var(--data); font-size: var(--step--1); color: var(--ink-faint); }
-
-  /* ── Totals: coverage is fused into the same block as the total ───── */
-  .totals { display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin: 0 0 0.35rem; }
-  .total {
-    border: 1px solid var(--rule-firm);
-    border-top: 3px solid var(--rule-firm);
-    background: var(--surface);
-    padding: 0.9rem 1rem 0.8rem;
-  }
-  .total.lead { border-top-color: var(--accent); }
-  .total .who { display: flex; align-items: baseline; justify-content: space-between; gap: 0.5rem; }
-  .total .who h2 { font-family: var(--display); font-size: var(--step-1); margin: 0; }
-  .total .who .kind { font-size: var(--step--1); color: var(--ink-faint); }
-  .total .figure {
-    font-family: var(--data);
-    font-size: var(--step-2);
-    font-variant-numeric: tabular-nums;
-    letter-spacing: -0.02em;
-    margin: 0.3rem 0 0;
-    display: flex; align-items: baseline; gap: 0.3rem;
-  }
-  .total .bound { color: var(--clay); font-size: var(--step-1); }
-  /* The coverage seal sits inside the total's box, above the hairline, so
-     the two cannot be read apart. A total without it means nothing. */
-  .coverage { margin-top: 0.55rem; padding-top: 0.5rem; border-top: 1px dashed var(--rule-firm); font-size: var(--step--1); }
-  .coverage .bar { display: flex; gap: 2px; margin-bottom: 0.4rem; }
-  .coverage .bar i { height: 6px; flex: 1 1 auto; background: var(--accent); border-radius: 1px; }
-  .coverage .bar i.miss { background: var(--clay-wash); box-shadow: inset 0 0 0 1px var(--clay); }
-  .coverage .read { font-family: var(--data); font-variant-numeric: tabular-nums; color: var(--ink-soft); }
-  .coverage .warn { color: var(--clay); }
-  .verdict {
-    margin: 0 0 1.5rem;
-    font-size: var(--step--1);
-    padding: 0.6rem 0.8rem;
-    border: 1px solid var(--rule);
-    border-radius: 2px;
-    background: var(--surface-2);
-    color: var(--ink-soft);
-  }
-  .verdict.blocked { border-color: var(--clay); background: var(--clay-wash); color: var(--ink); }
-
-  /* ── Comparison grid ──────────────────────────────────────────────── */
-  .grid { border: 1px solid var(--rule-firm); background: var(--surface); }
-  .row { display: grid; grid-template-columns: minmax(190px, 1.1fr) repeat(2, minmax(0, 1.45fr)); }
-  .row + .row { border-top: 1px solid var(--rule); }
-  .head { background: var(--surface-2); font-size: var(--step--1); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-faint); }
-  .head > * { padding: 0.55rem 0.9rem; }
-  .head > * + * { border-left: 1px solid var(--rule); }
-
-  .req { padding: 0.9rem; border-right: 1px solid var(--rule); }
-  .req .qty {
-    display: inline-block;
-    font-family: var(--data); font-size: var(--step--1);
-    font-variant-numeric: tabular-nums;
-    padding: 0.12rem 0.4rem;
-    border: 1px solid var(--rule-firm); border-radius: 2px;
-    background: var(--surface-2);
-    margin-bottom: 0.3rem;
-  }
-  .req .what { display: block; font-family: var(--display); font-size: var(--step-1); line-height: 1.25; }
-  .req .note { font-size: var(--step--1); color: var(--ink-faint); }
-
-  .cell { padding: 0.9rem; border-left: 1px solid var(--rule); display: flex; flex-direction: column; gap: 0.35rem; text-align: left; width: 100%; background: none; border-radius: 0; cursor: pointer; }
-  .cell:hover { background: var(--surface-2); border-color: var(--rule); color: inherit; }
-  .cell:hover .unit { color: var(--accent); }
-  /* The shelf label, inverted: the unit price is the comparison figure, so
-     it is the largest thing here. The pack price is the small print. */
-  .unit {
-    font-family: var(--data);
-    font-size: var(--step-2);
-    font-variant-numeric: tabular-nums;
-    letter-spacing: -0.02em;
-    line-height: 1;
-  }
-  .unit span { font-size: var(--step--1); color: var(--ink-faint); letter-spacing: 0; }
-  .prod { font-size: var(--step--1); line-height: 1.35; }
-  .prod b { font-weight: 600; }
-  .pack { font-family: var(--data); font-size: var(--step--1); font-variant-numeric: tabular-nums; color: var(--ink-soft); }
-  .flags { display: flex; flex-wrap: wrap; gap: 0.3rem; }
-  .flag { font-size: var(--step--1); font-family: var(--data); padding: 0.1rem 0.35rem; border-radius: 2px; border: 1px solid; }
-  .flag.offer { color: var(--accent); border-color: var(--accent); background: var(--accent-wash); }
-  .flag.soon { color: var(--amber); border-color: var(--amber); background: var(--amber-wash); }
-  .flag.over { color: var(--amber); border-color: var(--amber); background: transparent; }
-  .flag.fixed { color: var(--ink-soft); border-color: var(--rule-firm); background: var(--surface-2); }
-  .flag.sim { color: var(--amber); border-color: var(--amber); background: transparent; }
-  .cell.none { color: var(--clay); cursor: default; background: var(--clay-wash); }
-  .cell.none:hover { background: var(--clay-wash); }
-  .cell.none .unit { font-size: var(--step-1); }
-
-  /* ── Correction drawer ────────────────────────────────────────────── */
-  .scrim { position: fixed; inset: 0; background: var(--scrim); opacity: 0; pointer-events: none; transition: opacity 160ms; }
-  .scrim.on { opacity: 1; pointer-events: auto; }
-  .drawer {
-    position: fixed; top: 0; right: 0; height: 100%; width: min(430px, 100%);
-    background: var(--surface); border-left: 1px solid var(--rule-firm);
-    transform: translateX(100%); transition: transform 200ms ease;
-    display: flex; flex-direction: column; z-index: 2;
-  }
-  .drawer.on { transform: none; }
-  @media (prefers-reduced-motion: reduce) {
-    .scrim, .drawer { transition: none; }
-  }
-  .drawer header { padding: 1rem 1.1rem 0.8rem; border-bottom: 1px solid var(--rule); }
-  .drawer header .eyebrow { font-size: var(--step--1); text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-faint); }
-  .drawer header h3 { font-family: var(--display); font-size: var(--step-1); margin: 0.2rem 0 0.35rem; }
-  .drawer header p { margin: 0; font-size: var(--step--1); color: var(--ink-soft); }
-  .drawer .list { overflow-y: auto; padding: 0.6rem; display: flex; flex-direction: column; gap: 0.4rem; }
-  .alt { border: 1px solid var(--rule); border-radius: 2px; padding: 0.6rem 0.7rem; background: var(--surface); cursor: pointer; display: grid; gap: 0.25rem; text-align: left; }
-  .alt:hover { border-color: var(--accent); }
-  .alt.on { border-color: var(--accent); background: var(--accent-wash); }
-  .alt .top { display: flex; justify-content: space-between; align-items: baseline; gap: 0.6rem; }
-  .alt .u { font-family: var(--data); font-size: var(--step-1); font-variant-numeric: tabular-nums; }
-  .alt .n { font-size: var(--step--1); line-height: 1.3; }
-  .alt .m { font-family: var(--data); font-size: var(--step--1); color: var(--ink-soft); font-variant-numeric: tabular-nums; }
-  .drawer footer { margin-top: auto; padding: 0.8rem 1.1rem; border-top: 1px solid var(--rule); font-size: var(--step--1); color: var(--ink-faint); }
-
-  .foot { margin-top: 2rem; font-size: var(--step--1); color: var(--ink-faint); display: grid; gap: 0.5rem; max-width: 80ch; }
-  .foot code { font-family: var(--data); color: var(--ink-soft); }
-  .foot b { color: var(--ink-soft); font-weight: 600; }
-
+  /* ── Shell: top tabs on a desktop, a bottom bar on a phone ─────────── */
+  .top { max-width: 1080px; margin: 0 auto; padding: calc(14px + env(safe-area-inset-top)) 16px 0; display: flex; align-items: center; gap: 18px; }
+  .brand { font-weight: 900; font-size: 24px; letter-spacing: -.02em; }
+  .brand i { display: inline-block; width: 22px; height: 18px; margin-right: 6px; vertical-align: -2px; background: var(--ink); border-radius: 3px 3px 7px 7px; position: relative; }
+  .brand i::before { content: ""; position: absolute; left: 5px; right: 5px; top: -7px; height: 9px; border: 2.5px solid var(--ink); border-bottom: 0; border-radius: 8px 8px 0 0; }
+  .tabs { display: flex; gap: 4px; background: var(--paper-2); border-radius: 999px; padding: 4px; }
+  .tabs button { border: 0; background: transparent; border-radius: 999px; padding: 8px 16px; font-weight: 800; cursor: pointer; color: var(--ink-2); display: flex; gap: 6px; align-items: center; }
+  .tabs button[aria-current="page"] { background: var(--ink); color: var(--on-ink); }
+  .tabs .n { font-size: 12px; background: var(--bag-shade); border-radius: 999px; padding: 1px 7px; }
+  .tabs .ic { display: none; }
+  .theme { margin-left: auto; border: 0; background: var(--paper-2); color: var(--ink-2); border-radius: 999px; height: 38px; padding: 0 14px; font-weight: 800; cursor: pointer; }
+  main { max-width: 1080px; margin: 0 auto; padding: 18px 16px 120px; }
+  h1 { font-size: clamp(28px, 6vw, 44px); font-weight: 900; letter-spacing: -.025em; line-height: 1.02; margin: 4px 0 6px; }
+  .lede { color: var(--ink-2); margin: 0 0 18px; }
+  .note { color: var(--ink-3); font-size: 13px; margin: 22px 0 0; }
   @media (max-width: 720px) {
-    .row { grid-template-columns: 1fr; }
-    .req { border-right: none; border-bottom: 1px solid var(--rule); }
-    .cell { border-left: none; border-bottom: 1px solid var(--rule); }
-    .head { display: none; }
+    .top .tabs { display: none; }
+    .tabs.bottom {
+      display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; border-radius: 0; padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
+      background: var(--card); box-shadow: 0 -1px 0 var(--line), 0 -8px 24px rgba(0, 0, 0, .1); justify-content: space-around;
+    }
+    .tabs.bottom button { flex: 1; flex-direction: column; gap: 2px; padding: 6px 2px; font-size: 12.5px; border-radius: 12px; }
+    .tabs.bottom .ic { display: block; font-size: 20px; line-height: 1; }
+  }
+  @media (min-width: 721px) { .tabs.bottom { display: none; } }
+
+  /* ── Shared pieces ────────────────────────────────────────────────── */
+  .ct { display: inline-flex; align-items: center; gap: 6px; font-weight: 800; white-space: nowrap; }
+  .ct::before { content: ""; width: 10px; height: 10px; border-radius: 3px; background: var(--c); flex: none; }
+  .delta { font-weight: 800; font-size: 14px; border-radius: 999px; padding: 2px 9px; background: var(--bad-wash); color: var(--bad); white-space: nowrap; }
+  .delta.zero { background: var(--good-wash); color: var(--good); }
+  .o { background: var(--offer); color: var(--offer-ink); border-radius: 6px; padding: 0 6px; font-weight: 800; }
+  .add { display: flex; background: var(--card); border-radius: 999px; padding: 5px; box-shadow: 0 2px 0 var(--line); }
+  .add input { flex: 1; min-width: 0; border: 0; background: transparent; padding: 10px 16px; font-size: 17px; font-weight: 700; outline: none; }
+  .add button { border: 0; background: var(--ink); color: var(--on-ink); border-radius: 999px; padding: 0 20px; font-weight: 800; cursor: pointer; }
+  .hint { color: var(--ink-3); font-size: 14px; margin: 8px 4px 0; min-height: 1.4em; }
+  .hint.warn { color: var(--bad); font-weight: 700; }
+  .sec { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin: 26px 0 10px; }
+  .sec h2 { margin: 0; font-size: 20px; font-weight: 900; }
+  .sec span { color: var(--ink-3); font-size: 14px; font-weight: 700; }
+  .btn { border: 0; background: var(--ink); color: var(--on-ink); border-radius: 999px; padding: 10px 16px; font-weight: 900; cursor: pointer; }
+  .btn.ghost { background: transparent; color: inherit; box-shadow: inset 0 0 0 2px currentColor; }
+
+  /* The price line: one dot per chain, placed by what the item costs there. */
+  .pl { position: relative; height: 26px; margin: 0 10px; }
+  .pl::before { content: ""; position: absolute; left: 0; right: 0; top: 12px; height: 3px; border-radius: 3px; background: var(--line); }
+  .pl .dot { position: absolute; top: 6px; width: 15px; height: 15px; margin-left: -7.5px; border-radius: 50%; background: var(--c); box-shadow: 0 0 0 2.5px var(--card); }
+  .pl .dot.min { width: 19px; height: 19px; top: 4px; margin-left: -9.5px; box-shadow: 0 0 0 2.5px var(--card), 0 0 0 4.5px var(--ink); }
+  .pl.mini { height: 14px; margin: 0 6px; }
+  .pl.mini::before { top: 6px; height: 2px; }
+  .pl.mini .dot { top: 3px; width: 9px; height: 9px; margin-left: -4.5px; box-shadow: 0 0 0 1.5px var(--card); }
+  .pl.mini .dot.min { width: 11px; height: 11px; top: 2px; margin-left: -5.5px; box-shadow: 0 0 0 1.5px var(--card), 0 0 0 3px var(--ink); }
+  .pl-ends { display: flex; justify-content: space-between; font-size: 13px; font-weight: 800; color: var(--ink-2); }
+  .pl-ends .lo { color: var(--good); }
+
+  /* A bag: the chain's colour, a handle, white text. Recipe cards borrow the handle. */
+  .bag { position: relative; background: var(--c); color: #fff; border-radius: 10px 10px 22px 22px; box-shadow: inset 0 -8px 0 var(--bag-shade), var(--lift); }
+  .bag::before { content: ""; position: absolute; left: 50%; top: -22px; width: 40%; max-width: 200px; height: 30px; transform: translateX(-50%); border: 7px solid var(--c); border-bottom: 0; border-radius: 40px 40px 0 0; }
+
+  /* ── Lijst ────────────────────────────────────────────────────────── */
+  .banner { margin: 0 0 14px; background: var(--card); border-radius: var(--r); padding: 12px 14px; box-shadow: 0 2px 0 var(--line); display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .banner b { font-weight: 900; }
+  .banner .btn { background: var(--good); color: var(--on-ink); }
+  .items { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; }
+  .it { background: var(--card); border-radius: var(--r); padding: 12px 14px 10px; box-shadow: 0 2px 0 var(--line); display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; }
+  .it .nm { font-weight: 900; font-size: 18px; line-height: 1.15; }
+  .it .q { border: 0; background: var(--paper-2); color: var(--ink-2); border-radius: 8px; padding: 1px 7px; margin-left: 6px; font-weight: 800; font-size: 14px; cursor: pointer; }
+  .it .q:hover { color: var(--ink); }
+  .it .ops { display: flex; gap: 2px; align-items: start; }
+  .it .ops button { border: 0; background: transparent; border-radius: 10px; width: 36px; height: 36px; cursor: pointer; font-size: 16px; color: var(--ink-3); }
+  .it .ops button:hover { background: var(--paper); color: var(--ink); }
+  .it .ops button[aria-pressed="true"] { color: var(--ink); background: var(--paper-2); }
+  .it .guess { grid-column: 1 / -1; font-size: 13px; color: var(--bad); font-weight: 700; }
+  .it .best { grid-column: 1 / -1; font-size: 14px; color: var(--ink-2); font-weight: 600; display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; }
+  .it .best b { color: var(--ink); font-weight: 900; }
+  .it .best .none { color: var(--bad); font-weight: 800; }
+  .it .pl { grid-column: 1 / -1; margin-top: 4px; }
+  .foot {
+    margin-top: 22px; background: var(--ink); color: var(--on-ink); border-radius: var(--r); padding: 14px 16px;
+    display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between;
+  }
+  .foot b { font-size: 22px; font-weight: 900; }
+  .foot .btn { background: var(--on-ink); color: var(--ink); }
+  .foot .btn.ghost { background: transparent; color: var(--on-ink); }
+
+  /* ── Vergelijk ────────────────────────────────────────────────────── */
+  .rack { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 30px 14px; margin-top: 34px; }
+  .bagc { border: 0; text-align: left; cursor: pointer; padding: 18px 16px 14px; display: grid; gap: 4px; }
+  .bagc .rank { position: absolute; top: 12px; right: 14px; font-weight: 900; font-size: 13px; background: rgba(255,255,255,.22); border-radius: 999px; padding: 2px 9px; }
+  .bagc .nm { font-weight: 900; font-size: 19px; padding-right: 40px; }
+  .bagc .tt { font-weight: 900; font-size: 34px; letter-spacing: -.02em; line-height: 1.05; font-variant-numeric: tabular-nums; }
+  .bagc .tt small { font-size: 18px; opacity: .85; margin-right: 2px; }
+  .bagc .df { justify-self: start; font-weight: 900; font-size: 15px; background: #fff; color: #b8432f; border-radius: 999px; padding: 2px 10px; }
+  .bagc .df.zero { color: #2f7a3f; }
+  .bagc .cov { display: flex; gap: 2px; margin-top: 8px; }
+  .bagc .cov i { flex: 1; height: 6px; border-radius: 2px; background: rgba(255,255,255,.85); }
+  .bagc .cov i.miss { background: rgba(0,0,0,.28); }
+  .bagc .cv { font-size: 13px; font-weight: 700; opacity: .9; }
+  .bagc .pick { margin-top: 6px; display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 14px; }
+  .bagc .pick i { width: 22px; height: 22px; border-radius: 50%; border: 2.5px solid #fff; display: grid; place-items: center; font-style: normal; font-size: 13px; }
+  .bagc[aria-pressed="true"] { outline: 4px solid var(--ink); outline-offset: 4px; }
+  .bagc[aria-pressed="true"] .pick i { background: #fff; color: #2b2118; }
+  .bagc.combo { background: linear-gradient(90deg, var(--c1x) 0 50%, var(--c2x) 50% 100%); }
+  .bagc.combo::before { border-color: var(--ink); }
+  @media (max-width: 720px) {
+    .rack { grid-template-columns: 1fr; gap: 26px; }
+    .bagc { grid-template-columns: 1fr auto; align-items: center; padding: 14px 14px 12px; }
+    .bagc .nm { grid-column: 1; padding-right: 0; } .bagc .tt { grid-column: 2; grid-row: 1 / 3; text-align: right; font-size: 30px; }
+    .bagc .df { grid-column: 1; } .bagc .cov, .bagc .cv, .bagc .pick { grid-column: 1 / -1; }
+    .bagc .rank { display: none; }
+  }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 14px; color: var(--ink-2); margin: 6px 0 12px; }
+  .diffs { display: grid; gap: 8px; }
+  .df-row { background: var(--card); border-radius: var(--r); box-shadow: 0 2px 0 var(--line); }
+  .df-row > button { width: 100%; border: 0; background: transparent; text-align: left; cursor: pointer; padding: 12px 14px 10px; display: grid; grid-template-columns: minmax(130px, 220px) 1fr auto; gap: 4px 16px; align-items: center; }
+  .df-row .nm { font-weight: 900; font-size: 17px; line-height: 1.15; }
+  .df-row .nm .q { display: block; font-weight: 700; color: var(--ink-3); font-size: 14px; }
+  .df-row .spread { font-weight: 900; font-size: 15px; text-align: right; white-space: nowrap; }
+  .df-row .spread small { display: block; font-size: 12px; color: var(--ink-3); font-weight: 700; }
+  .df-row .open { border-top: 1px dashed var(--line); padding: 8px 14px 12px; display: grid; gap: 6px; }
+  .df-row .pr { display: grid; grid-template-columns: auto 1fr auto auto auto; gap: 10px; align-items: center; font-size: 15px; }
+  .df-row .pr .pn { color: var(--ink-2); font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+  .df-row .pr .v { font-weight: 900; font-variant-numeric: tabular-nums; text-align: right; }
+  .df-row .pr .fix { border: 0; background: transparent; color: var(--ink-2); text-decoration: underline; font-weight: 800; font-size: 13px; cursor: pointer; padding: 0; }
+  @media (max-width: 720px) {
+    .df-row > button { grid-template-columns: 1fr auto; }
+    .df-row > button .plw { grid-column: 1 / -1; grid-row: 2; }
+    .df-row .pr { grid-template-columns: auto 1fr auto auto; } .df-row .pr .pn { grid-column: 1 / -1; grid-row: 2; }
   }
 
-  /* ── List editor ──────────────────────────────────────────────────── */
-  .add { margin: 1.75rem 0 0; display: flex; flex-wrap: wrap; gap: 0.5rem; }
-  .add input {
-    flex: 1 1 18rem; min-width: 0;
-    font: inherit; font-size: var(--step-0);
-    padding: 0.5rem 0.7rem;
-    border: 1px solid var(--rule-firm); border-radius: 2px;
-    background: var(--surface); color: var(--ink);
+  /* ── Winkelen ─────────────────────────────────────────────────────── */
+  .plan { background: var(--ink); color: var(--on-ink); border-radius: var(--r); padding: 14px 16px; display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; justify-content: space-between; }
+  .plan b { font-size: 20px; font-weight: 900; }
+  .plan button { border: 0; background: transparent; color: var(--on-ink); text-decoration: underline; font-weight: 800; cursor: pointer; padding: 0; }
+  .shop { margin-top: 40px; padding: 16px 12px 12px; }
+  .shop > header { display: flex; justify-content: space-between; align-items: baseline; padding: 0 6px 10px; gap: 10px; }
+  .shop > header b { font-size: 22px; font-weight: 900; }
+  .shop > header span { font-weight: 800; }
+  .chk { display: grid; gap: 6px; }
+  .ci { background: var(--card); color: var(--ink); border-radius: 12px; display: grid; grid-template-columns: 46px 1fr auto; align-items: center; gap: 0 10px; padding: 10px 12px 10px 6px; cursor: pointer; border: 0; text-align: left; width: 100%; }
+  .ci .tick { width: 30px; height: 30px; border-radius: 50%; border: 3px solid var(--ink); justify-self: center; display: grid; place-items: center; font-weight: 900; }
+  .ci .nm { font-weight: 900; font-size: 17px; line-height: 1.15; }
+  .ci .nm .q { font-weight: 700; color: var(--ink-3); font-size: 15px; margin-left: 4px; }
+  .ci .g { grid-column: 2; font-size: 14px; color: var(--ink-2); font-weight: 600; }
+  .ci .g .w { color: var(--bad); font-weight: 800; }
+  .ci .v { grid-column: 3; grid-row: 1 / 3; font-weight: 900; font-size: 18px; font-variant-numeric: tabular-nums; }
+  .ci.done { opacity: .5; }
+  .ci.done .tick { background: var(--ink); color: var(--card); }
+  .ci.done .nm { text-decoration: line-through 2.5px; }
+  .missing { margin-top: 18px; border: 2px dashed var(--bad); color: var(--bad); border-radius: var(--r); padding: 12px 14px; font-weight: 800; }
+  .progress {
+    position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(14px + env(safe-area-inset-bottom)); z-index: 30;
+    width: min(560px, calc(100% - 24px)); background: var(--card); border-radius: 999px; padding: 8px 8px 8px 18px; box-shadow: 0 0 0 1px var(--line), 0 10px 30px rgba(0, 0, 0, .25);
+    display: flex; align-items: center; gap: 12px;
   }
-  .add input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
-  .add button { font-size: var(--step-0); }
-  .add .hint { flex-basis: 100%; margin: 0; font-size: var(--step--1); color: var(--ink-faint); }
-  .add .hint.warn { color: var(--clay); }
-  .req .tools { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.55rem; }
-  .req .tools button { padding: 0.15rem 0.45rem; }
-  .req .note.guess { color: var(--amber); }
-  .req button.qty { cursor: pointer; color: var(--ink); }
-  .req button.qty:hover { border-color: var(--accent); color: var(--accent); }
-  .empty { padding: 1.5rem 0.9rem; color: var(--ink-soft); }
+  .progress .bar { flex: 1; height: 8px; border-radius: 99px; background: var(--paper-2); overflow: hidden; }
+  .progress .bar i { display: block; height: 100%; background: var(--good); }
+  .progress b { font-weight: 900; font-variant-numeric: tabular-nums; }
+  @media (max-width: 720px) { .progress { bottom: calc(76px + env(safe-area-inset-bottom)); } }
+
+  /* ── Recepten ─────────────────────────────────────────────────────── */
+  .deals { display: flex; gap: 8px; overflow-x: auto; padding: 2px 2px 10px; margin: 0 -2px; }
+  .deal { flex: none; background: var(--card); border-radius: 12px; padding: 8px 12px; box-shadow: 0 2px 0 var(--line); display: grid; gap: 1px; min-width: 150px; }
+  .deal .n { font-weight: 800; font-size: 15px; }
+  .deal .v { font-weight: 900; font-size: 18px; font-variant-numeric: tabular-nums; }
+  .deal .w { font-size: 13px; font-weight: 700; color: var(--good); }
+  .was { font-size: 13px; color: var(--ink-3); text-decoration: line-through; margin-left: 4px; font-weight: 600; }
+  .recipes { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 40px 16px; margin-top: 34px; }
+  .rc { position: relative; background: var(--card); border-radius: 10px 10px 20px 20px; box-shadow: 0 2px 0 var(--line), var(--lift); display: flex; flex-direction: column; }
+  .rc::before { content: ""; position: absolute; left: 50%; top: -22px; width: 38%; height: 30px; transform: translateX(-50%); border: 7px solid var(--line); border-bottom: 0; border-radius: 40px 40px 0 0; }
+  .rc .hd { padding: 16px 16px 10px; border-bottom: 1px dashed var(--line); cursor: pointer; border-radius: 10px 10px 0 0; }
+  .rc .hd:hover h3 { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+  .ex { font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); border: 1.5px dashed var(--ink-3); border-radius: 6px; padding: 0 6px; }
+  .rc h3 { margin: 8px 0 2px; font-size: 21px; font-weight: 900; line-height: 1.15; letter-spacing: -.01em; }
+  .rc .meta { color: var(--ink-2); font-size: 14px; font-weight: 600; }
+  .rc .save { margin: 10px 0 0; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .rc .save b { background: var(--good); color: var(--on-ink); border-radius: 999px; padding: 3px 11px; font-size: 16px; font-weight: 900; }
+  .rc .save span { font-size: 14px; color: var(--ink-2); font-weight: 700; }
+  .rc .more { display: inline-flex; margin-top: 8px; font-size: 14px; font-weight: 800; color: var(--ink-2); }
+  .rc ul { list-style: none; margin: 0; padding: 8px 16px; display: grid; gap: 6px; flex: 1; }
+  .rc li, .rd .ing li { display: grid; grid-template-columns: 1fr auto; gap: 0 10px; align-items: baseline; }
+  .rc li .l, .rd .ing li .l { font-weight: 700; }
+  .rc li .p, .rd .ing li .p { font-weight: 800; font-variant-numeric: tabular-nums; }
+  .rc li .d, .rd .ing li .d { grid-column: 1 / -1; font-size: 13px; color: var(--ink-2); }
+  .rc li.miss .p { color: var(--bad); }
+  .rc .ft { padding: 10px 16px 14px; border-top: 1px dashed var(--line); display: grid; gap: 10px; }
+  .chains { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 14px; color: var(--ink-2); }
+  .chains .best { color: var(--ink); }
+  .btn.on { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 2px var(--ink); }
+  @media (max-width: 720px) { .recipes { grid-template-columns: 1fr; } }
+
+  /* ── Sheets: recipe method and corrections. A panel on a desktop, full screen on a phone. ── */
+  .scrim { position: fixed; inset: 0; z-index: 70; background: var(--scrim); }
+  .sheet { position: fixed; z-index: 71; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(920px, calc(100% - 32px)); max-height: calc(100% - 48px); overflow-y: auto; background: var(--paper); color: var(--ink); border-radius: 22px; box-shadow: 0 30px 80px rgba(0, 0, 0, .35); }
+  .sheet.narrow { width: min(520px, calc(100% - 32px)); }
+  .sheet header { position: sticky; top: 0; z-index: 1; background: var(--paper); padding: 16px 20px 12px; border-bottom: 1px dashed var(--line); display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; align-items: start; }
+  .sheet header h2 { margin: 6px 0 2px; font-size: clamp(22px, 4vw, 32px); font-weight: 900; letter-spacing: -.02em; line-height: 1.1; }
+  .sheet header .meta { color: var(--ink-2); font-weight: 600; font-size: 15px; }
+  .sheet .x { border: 0; background: var(--card); color: var(--ink); border-radius: 999px; width: 42px; height: 42px; font-size: 20px; cursor: pointer; box-shadow: 0 2px 0 var(--line); }
+  .rd .body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr); gap: 22px; padding: 18px 20px 20px; }
+  .sheet h3 { margin: 0 0 10px; font-size: 17px; font-weight: 900; }
+  .rd .ing { background: var(--card); border-radius: 16px; padding: 14px 16px; box-shadow: 0 2px 0 var(--line); align-self: start; }
+  .rd .ing ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .rd .kast, .rd .tot { margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--line); font-size: 14px; color: var(--ink-2); }
+  .rd .kast b { color: var(--ink); }
+  .rd .ing .btn { margin-top: 12px; width: 100%; }
+  .rd ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .rd ol button { width: 100%; border: 0; text-align: left; cursor: pointer; background: var(--card); border-radius: 16px; padding: 12px 14px; box-shadow: 0 2px 0 var(--line); display: grid; grid-template-columns: 40px 1fr; gap: 12px; align-items: start; font-size: 16px; line-height: 1.45; }
+  .rd ol .n { width: 36px; height: 36px; border-radius: 50%; background: var(--ink); color: var(--on-ink); display: grid; place-items: center; font-weight: 900; font-size: 17px; }
+  .rd ol button.done { opacity: .5; } .rd ol button.done .t { text-decoration: line-through; } .rd ol button.done .n { background: var(--good); }
+  .rd .tip { color: var(--ink-3); font-size: 13px; margin: 10px 2px 0; }
+  .cd .list { padding: 12px 16px 18px; display: grid; gap: 6px; }
+  .alt { border: 0; text-align: left; cursor: pointer; background: var(--card); border-radius: 12px; padding: 10px 12px; box-shadow: 0 2px 0 var(--line); display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; }
+  .alt.on { box-shadow: 0 0 0 2.5px var(--ink); }
+  .alt .n { font-weight: 800; } .alt .v { font-weight: 900; font-variant-numeric: tabular-nums; } .alt .m { grid-column: 1 / -1; font-size: 13px; color: var(--ink-2); }
+  .cd .reset { margin: 0 16px 18px; }
+  @media (max-width: 720px) {
+    .sheet, .sheet.narrow { left: 0; top: 0; transform: none; width: 100%; height: 100%; max-height: none; border-radius: 0; }
+    .sheet header { padding-top: calc(14px + env(safe-area-inset-top)); }
+    .rd .body { grid-template-columns: 1fr; padding-bottom: calc(24px + env(safe-area-inset-bottom)); }
+  }
 </style>
 
-<div class="wrap">
-  <div class="masthead">
-    <h1 class="wordmark">meal<em>deal</em></h1>
-    <p>Your shopping list, priced at every chain that can actually fill it.</p>
-  </div>
-
-  <p class="thesis">
-    Dutch shelf labels already carry a unit price — buried in grey small print beneath
-    the headline deal. <strong>That small print is the only number that compares.</strong>
-    So it is the largest figure in every cell below, and the pack price is the footnote.
-  </p>
-
-  <div class="provenance" id="provenance"></div>
-
-  <form class="add" id="add" autocomplete="off">
-    <label for="add-text" hidden>Add to the list</label>
-    <input id="add-text" placeholder="500 g rundergehakt, 2 courgettes, 1 l halfvolle melk">
-    <button type="submit">Add</button>
-    <p class="hint" id="add-hint">Quantity, unit, then what it is. Without a unit, the page guesses one from what the chains sell.</p>
-  </form>
-
-  <div class="controls">
-    <button id="upcoming" aria-pressed="false">Include next week's offers</button>
-    <button id="done" hidden>Done shopping</button>
-    <button id="reset" hidden>Undo corrections</button>
-    <span class="spacer"></span>
-    <span class="count" id="corrections"></span>
-  </div>
-
-  <div class="totals" id="totals"></div>
-  <p class="verdict" id="verdict"></p>
-
-  <div class="grid" id="grid"></div>
-
-  <div class="foot">
-    <p><b>Every price here is real</b>, read from the latest Sweep of each chain (dated
-      above). Names, pack sizes, prices and offer wording are as the chains sent them —
-      nothing is simulated, and nothing is derived from an offer's wording. Rebuild with
-      <code>node scripts/catalogue-from-db.ts</code> after an ingest.</p>
-    <p>Unit prices come from each chain where it publishes its own, and are derived
-      from pack size where it does not.</p>
-    <p>A list item is a <b>requirement</b>, not a product — each chain resolves it
-      against its own assortment, picking the lowest unit price among products whose
-      name contains every word you typed. That is crude, and some rows will be wrong.
-      Click a price to correct it; the correction is remembered for next time.</p>
-    <p>A <b>staple</b> stays on the list between trips. Everything else is a one-off,
-      cleared by <b>Done shopping</b>. The list lives in this browser only.</p>
-    <p>Offer wording is shown exactly as the chain wrote it. Nothing here converts
-      <code>1+1 gratis</code> into a percentage, because the true effective price
-      depends on how many you buy.</p>
-  </div>
-</div>
-
-<div class="scrim" id="scrim"></div>
-<aside class="drawer" id="drawer" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
-  <header>
-    <div class="eyebrow" id="drawer-chain"></div>
-    <h3 id="drawer-title"></h3>
-    <p id="drawer-note"></p>
-  </header>
-  <div class="list" id="drawer-list"></div>
-  <footer>Corrections are saved in this browser and applied whenever this item is on the list.</footer>
-</aside>
+<header class="top">
+  <div class="brand"><i></i>mealdeal</div>
+  <nav class="tabs" id="tabs-top" aria-label="Pagina's"></nav>
+  <button class="theme" id="theme" title="Licht of donker"></button>
+</header>
+<main id="main"></main>
+<nav class="tabs bottom" id="tabs-bottom" aria-label="Pagina's"></nav>
+<div id="sheet"></div>
 
 <script src="catalogue.js"></script>
 <script>
   if (!window.CATALOGUE) {
-    document.getElementById("grid").innerHTML =
-      '<p class="empty">No catalogue loaded. Run <code>node scripts/catalogue-from-db.ts</code>, ' +
+    document.getElementById("main").innerHTML =
+      "<h1>Geen prijzen geladen</h1><p class=\"lede\">Run <code>node scripts/catalogue-from-db.ts</code>, " +
       "which writes <code>prototype/catalogue.js</code> next to this page, then reload.</p>";
     throw new Error("catalogue.js missing");
   }
   const data = window.CATALOGUE;
-  let showUpcoming = false;
 
-  const euro = (cents) => "€" + (cents / 100).toFixed(2);
-  const unitLabel = { kg: "/kg", l: "/l", piece: " each" };
-  const packLabel = { kg: "kg", l: "l", piece: "×" };
+  const euro = (cents) => "€" + (cents / 100).toFixed(2).replace(".", ",");
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 
-  // ── Storage: this browser only, and the page works without it ──────
-  const LIST_KEY = "mealdeal.list.v1";
-  const CORRECTIONS_KEY = "mealdeal.corrections.v1";
-  function load(key) {
-    try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : null; } catch { return null; }
+  // ── Storage: this browser only; the page works without it ─────────────
+  function load(key, fallback) {
+    try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch { return fallback; }
   }
   function save(key, value) {
     try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* private window: session only */ }
   }
 
-  // ── Catalogue: positional rows, unpacked on first use ───────────────
+  // ── Chains: one colour slot each, defined per theme in CSS ────────────
+  const chains = data.chains.map((c, i) => ({ ...c, color: "var(--c" + (i % 8) + ")" }));
+  const chainById = (id) => chains.find((c) => c.id === id);
+  const tag = (c) => '<span class="ct" style="--c:' + c.color + '">' + esc(c.name) + "</span>";
+
+  // ── Catalogue: positional rows, unpacked once ─────────────────────────
   // Row: [ref, name, packaging, packQuantity, packUnit, unit, shelf, offerPrice, unitPrice, wording, upcoming]
-  const products = {};   // chainId -> id -> product
-  const searchable = {}; // chainId -> [{ id, unit, name (lowercased) }]
-  for (const c of data.chains) {
-    products[c.id] = {};
-    searchable[c.id] = data.catalogue[c.id].map((r) => {
-      const id = c.id + "-" + r[0];
-      products[c.id][id] = {
-        id, name: r[1], packaging: r[2], packQuantity: r[3], packUnit: r[4], comparisonUnit: r[5],
-        shelfPriceCents: r[6], offerPriceCents: r[7], unitPriceCents: r[8],
-        offerWording: r[9], offerUpcoming: r[10] === 1,
-      };
-      return { id, unit: r[5], words: r[1].toLowerCase().split(/[^\p{L}]+/u).filter(Boolean).map(stem) };
-    });
-  }
-
-  // ── Reading what was typed ──────────────────────────────────────────
-  const UNITS = {
-    g: ["kg", 0.001], gr: ["kg", 0.001], gram: ["kg", 0.001], kg: ["kg", 1], kilo: ["kg", 1],
-    ml: ["l", 0.001], cl: ["l", 0.01], l: ["l", 1], liter: ["l", 1], litre: ["l", 1],
-    x: ["piece", 1], "×": ["piece", 1], st: ["piece", 1], stuk: ["piece", 1], stuks: ["piece", 1],
-  };
-
-  /** Trims Dutch plurals and inflections: "aardappelen" and "kruimige" meet "aardappel kruimig". */
   function stem(w) {
     // Repeated, so singular and plural meet: courgettes -> courgette -> courgett.
     let before;
     do { before = w; if (w.length > 4) w = w.replace(/(jes|je|en|e|s)$/, ""); } while (w !== before);
     return w;
   }
-
-  /** The words a product name must all carry, as typed. */
-  function wordsOf(noun) {
-    return noun.toLowerCase().split(/[^\p{L}]+/u).filter((w) => w.length > 1).map(stem);
+  const products = {}, searchable = {};
+  for (const c of chains) {
+    products[c.id] = {};
+    searchable[c.id] = data.catalogue[c.id].map((r) => {
+      const id = c.id + "-" + r[0];
+      products[c.id][id] = {
+        id, name: r[1], packaging: r[2], packQuantity: r[3], packUnit: r[4], comparisonUnit: r[5],
+        shelfPriceCents: r[6], offerPriceCents: r[7], unitPriceCents: r[8], offerWording: r[9], offerUpcoming: r[10] === 1,
+      };
+      return { id, unit: r[5], words: r[1].toLowerCase().split(/[^\p{L}]+/u).filter(Boolean).map(stem) };
+    });
   }
+
+  // ── Reading what was typed ────────────────────────────────────────────
+  const UNITS = {
+    g: ["kg", 0.001], gr: ["kg", 0.001], gram: ["kg", 0.001], kg: ["kg", 1], kilo: ["kg", 1],
+    ml: ["l", 0.001], cl: ["l", 0.01], l: ["l", 1], liter: ["l", 1], litre: ["l", 1],
+    x: ["piece", 1], "×": ["piece", 1], st: ["piece", 1], stuk: ["piece", 1], stuks: ["piece", 1],
+  };
+  const wordsOf = (noun) => noun.toLowerCase().split(/[^\p{L}]+/u).filter((w) => w.length > 1).map(stem);
 
   /**
    * Every typed word must END some word of the name. A Dutch compound names
-   * its kind last: koffiemelk is milk and rundergehakt is gehakt, while
-   * melkbiscuits are biscuits. Still crude ("appel" ends "aardappel"); that
-   * is what Corrections are for.
+   * its kind last: koffiemelk is milk, melkbiscuits are biscuits. Still
+   * crude ("appel" ends "aardappel"); that is what Corrections are for.
    */
-  function matching(chainId, unit, words) {
-    return searchable[chainId].filter((p) =>
-      (unit === null || p.unit === unit) && words.every((w) => p.words.some((n) => n.endsWith(w))));
-  }
+  const matching = (chainId, unit, words) => searchable[chainId].filter((p) =>
+    (unit === null || p.unit === unit) && words.every((w) => p.words.some((n) => n.endsWith(w))));
 
   /** "500 g rundergehakt" -> { quantity: 0.5, unit: "kg", noun: "rundergehakt" }. */
   function parse(text) {
@@ -440,18 +357,15 @@
       noun = m[2];
       const [first, ...rest] = noun.split(" ");
       const u = UNITS[first.toLowerCase().replace(/\.$/, "")];
-      if (u && rest.length) {
-        unit = u[0]; quantity *= u[1]; noun = rest.join(" ");
-      }
+      if (u && rest.length) { unit = u[0]; quantity *= u[1]; noun = rest.join(" "); }
     }
     if (!noun || UNITS[noun.toLowerCase()] || !(quantity === null || quantity > 0)) return null;
     let guessed = false;
     if (unit === null) {
-      // No unit written. A bare count ("2 courgettes") means pieces when the
-      // chains sell it by the piece; otherwise take the unit most of the
-      // matching products are compared in, so "melk" becomes litres.
+      // No unit written. A count ("2 courgettes") means pieces when the chains
+      // sell it by the piece; otherwise the unit most matching products use.
       const tally = { kg: 0, l: 0, piece: 0 };
-      for (const c of data.chains) for (const p of matching(c.id, null, wordsOf(noun))) tally[p.unit]++;
+      for (const c of chains) for (const p of matching(c.id, null, wordsOf(noun))) tally[p.unit]++;
       if (quantity !== null && tally.piece > 0) unit = "piece";
       else {
         unit = Object.keys(tally).sort((a, b) => tally[b] - tally[a])[0];
@@ -462,333 +376,466 @@
     }
     return { text: t, noun, quantity: Math.round(quantity * 1000) / 1000, unit, guessed };
   }
+  const qtyText = (i) => i.unit === "piece" ? i.quantity + "×"
+    : i.unit === "kg" && i.quantity < 1 ? Math.round(i.quantity * 1000) + " g"
+    : i.unit === "l" && i.quantity < 1 ? Math.round(i.quantity * 1000) + " ml" : i.quantity + " " + i.unit;
 
-  // ── The list ────────────────────────────────────────────────────────
-  const SEED = [
-    "1 kg kruimige aardappelen", "250 g champignons", "1 kg appels", "2 courgettes",
-    "500 g rundergehakt", "400 g broccoli", "500 g wortelen", "1 komkommer",
-    "1 l halfvolle melk", "1 kg uien", "350 g pindakaas", "400 g spinazie",
-  ];
+  // ── State ─────────────────────────────────────────────────────────────
+  const SEED = ["1 kg kruimige aardappelen", "250 g champignons", "2 courgettes", "500 g rundergehakt", "400 g broccoli",
+    "1 komkommer", "1 l halfvolle melk", "1 kg uien", "350 g pindakaas", "400 g spinazie", "6 eieren", "500 g wortelen"];
   let nextId = 0;
   const newId = () => "i" + Date.now().toString(36) + (nextId++).toString(36);
-
-  let list = load(LIST_KEY);
-  if (!Array.isArray(list)) {
-    list = SEED.map((t) => ({ id: newId(), staple: false, ...parse(t) }));
-  }
-  const corrections = load(CORRECTIONS_KEY) || {}; // "chain|unit|noun" -> productId
+  let list = load("mealdeal.list.v1", null);
+  if (!Array.isArray(list)) list = SEED.map((t) => ({ id: newId(), staple: false, ...parse(t) }));
+  const corrections = load("mealdeal.corrections.v1", {}); // "chain|unit|noun" -> productId
+  let plan = load("mealdeal.plan.v1", null);                // { kind: "single" | "combo", ids }
+  const done = new Set(load("mealdeal.done.v1", []));       // ticked while shopping
+  let theme = load("mealdeal.theme.v1", "system");          // "system" | "light" | "dark"
+  const PAGE_KEYS = ["recepten", "lijst", "vergelijk", "winkelen"];
+  let page = PAGE_KEYS.includes(location.hash.slice(1)) ? location.hash.slice(1) : "lijst";
+  let hint = "", openRow = null, sheet = null;              // sheet: { kind: "recipe", id } | { kind: "fix", chainId, itemId }
+  const added = new Set(), stepsDone = {};
 
   function persist() {
-    save(LIST_KEY, list);
-    save(CORRECTIONS_KEY, corrections);
+    save("mealdeal.list.v1", list); save("mealdeal.corrections.v1", corrections);
+    save("mealdeal.plan.v1", plan); save("mealdeal.done.v1", [...done]);
   }
 
-  // ── Resolution ──────────────────────────────────────────────────────
+  // ── Resolution ────────────────────────────────────────────────────────
   const correctionKey = (chainId, item) => chainId + "|" + item.unit + "|" + item.noun.toLowerCase();
-
-  /** The ten cheapest by Unit Price; the first is the default Resolution. */
   const resolved = {};
+  /** The ten cheapest by Unit Price; the first is the default Resolution. */
   function candidates(chainId, item) {
     const key = correctionKey(chainId, item);
-    if (!(key in resolved)) {
-      // Ties on Unit Price (rounded to a cent, so a 120-pack of bags is 0)
-      // go to the cheaper pack.
-      resolved[key] = matching(chainId, item.unit, wordsOf(item.noun))
-        .map((s) => products[chainId][s.id])
-        .sort((a, b) => a.unitPriceCents - b.unitPriceCents || a.shelfPriceCents - b.shelfPriceCents)
-        .slice(0, 10)
-        .map((p) => p.id);
-    }
+    // Ties on Unit Price (rounded to a cent, so a 120-pack of bags is 0) go to the cheaper pack.
+    resolved[key] ??= matching(chainId, item.unit, wordsOf(item.noun))
+      .map((s) => products[chainId][s.id])
+      .sort((a, b) => a.unitPriceCents - b.unitPriceCents || a.shelfPriceCents - b.shelfPriceCents)
+      .slice(0, 10).map((p) => p.id);
     return resolved[key];
   }
-
   function chosenId(chainId, item) {
     const fixed = corrections[correctionKey(chainId, item)];
     if (fixed && products[chainId][fixed]) return fixed;
     return candidates(chainId, item)[0] || null;
   }
-
-  function offerFor(p) {
-    if (p.offerPriceCents === null && !p.offerWording) return null;
-    if (p.offerUpcoming && !showUpcoming) return null;
-    return { wording: p.offerWording, upcoming: p.offerUpcoming };
+  const isOffer = (p) => (p.offerPriceCents !== null || !!p.offerWording) && !p.offerUpcoming;
+  /** Whole packs, because you cannot buy 0.4 of one. */
+  function packsFor(p, quantity, unit) {
+    // A pack size in another unit than the item, or a piece count below one,
+    // is not usable arithmetic (see issue #3): one pack is all we can say.
+    const known = p.packQuantity > 0 && p.packUnit === unit && !(unit === "piece" && p.packQuantity < 1);
+    return { known, packs: known ? Math.max(1, Math.ceil(quantity / p.packQuantity)) : 1 };
   }
-
-  /** What you actually pay: whole packs, because you cannot buy 0.4 of one. */
   function line(chainId, item) {
     const id = chosenId(chainId, item);
     if (!id) return null;
     const p = products[chainId][id];
-    const offer = offerFor(p);
+    const offer = isOffer(p) ? (p.offerWording || "aanbieding") : null;
     const price = offer && p.offerPriceCents ? p.offerPriceCents : p.shelfPriceCents;
-    // A chain can publish a Unit Price without a Pack Size in the same unit
-    // — loose produce, or "3 Stuks" priced per kg. One pack is then all we
-    // can honestly say, and there is no overshoot to compute.
-    const known = typeof p.packQuantity === "number" && p.packQuantity > 0 && p.packUnit === item.unit;
-    const packs = known ? Math.max(1, Math.ceil(item.quantity / p.packQuantity)) : 1;
-    return {
-      product: p, offer, packs,
-      unitCents: p.unitPriceCents,
-      costCents: packs * price,
-      overshoot: known ? p.packQuantity / item.quantity : 1,
-    };
+    const { known, packs } = packsFor(p, item.quantity, item.unit);
+    return { p, offer, packs, cost: packs * price, over: known ? p.packQuantity / item.quantity : 1 };
   }
 
-  function tally(chainId) {
-    let cost = 0, filled = 0;
-    for (const item of list) {
-      const l = line(chainId, item);
-      if (!l) continue;
-      filled++; cost += l.costCents;
-    }
-    return { cost, filled, total: list.length };
-  }
-
-  // ── Rendering ───────────────────────────────────────────────────────
-  function renderProvenance() {
-    document.getElementById("provenance").innerHTML = data.chains.map((c) =>
-      // No store means the chain prices nationally, not per store.
-      '<span class="tag">' + esc(c.name) + " — " + esc(c.store ?? "national") +
-        " · observed " + esc(c.observedAt ?? "never") + " · " +
-        c.catalogueSize.toLocaleString("en") + " products</span>"
-    ).join("");
-  }
-
-  function renderTotals() {
-    const results = data.chains.map((c) => ({ chain: c, ...tally(c.id) }));
-    const best = results.filter((r) => r.filled === r.total).sort((a, b) => a.cost - b.cost)[0];
-
-    document.getElementById("totals").innerHTML = results.map((r) => {
-      const missing = r.total - r.filled;
-      const lead = list.length && best && best.chain.id === r.chain.id && results.every((x) => x.filled === x.total);
-      const bar = list.map((item) =>
-        '<i class="' + (line(r.chain.id, item) ? "" : "miss") + '"></i>').join("");
-      return '<section class="total' + (lead ? " lead" : "") + '">' +
-        '<div class="who"><h2>' + esc(r.chain.name) + "</h2><span class='kind'>" + esc(r.chain.kind) + "</span></div>" +
-        '<p class="figure">' +
-          (missing ? '<span class="bound" title="A lower bound: items are missing">at least</span>' : "") +
-          euro(r.cost) +
-        "</p>" +
-        '<div class="coverage"><div class="bar">' + bar + "</div>" +
-          '<span class="read' + (missing ? " warn" : "") + '">' +
-            r.filled + " of " + r.total + " items covered" +
-            (missing ? " · " + missing + " missing" : "") +
-          "</span></div>" +
-      "</section>";
-    }).join("");
-
-    const verdict = document.getElementById("verdict");
-    verdict.hidden = list.length === 0;
-    const incomplete = results.filter((r) => r.filled < r.total);
-    if (incomplete.length) {
-      verdict.className = "verdict blocked";
-      verdict.textContent = "No winner yet. " + incomplete.map((r) =>
-        r.chain.name + " cannot fill " + (r.total - r.filled) + " of " + r.total + " items"
-      ).join(", ") + ", so its total is a floor, not a price. Comparing totals across different coverage is how a basket comparison lies.";
-    } else if (results.length > 1) {
-      const [cheap, dear] = results.slice().sort((a, b) => a.cost - b.cost);
-      verdict.className = "verdict";
-      verdict.textContent = cheap.chain.name + " fills the whole list for " +
-        euro(cheap.cost) + ", " + euro(dear.cost - cheap.cost) + " less than " + dear.chain.name + ".";
-    }
-  }
-
-  function renderGrid() {
-    if (!list.length) {
-      document.getElementById("grid").innerHTML =
-        '<p class="empty">The list is empty. Add something above.</p>';
-      return;
-    }
-    const head = '<div class="row head"><div>Requirement</div>' +
-      data.chains.map((c) => "<div>" + esc(c.name) + "</div>").join("") + "</div>";
-
+  function snapshot() {
     const rows = list.map((item) => {
-      const cells = data.chains.map((c) => {
-        const l = line(c.id, item);
-        if (!l) {
-          return '<div class="cell none"><span class="unit">not stocked</span>' +
-            '<span class="prod">Nothing in ' + esc(c.name) + "'s assortment matches every word of this item.</span></div>";
-        }
-        const corrected = correctionKey(c.id, item) in corrections;
-        const flags = [];
-        if (l.offer) flags.push('<span class="flag ' + (l.offer.upcoming ? "soon" : "offer") + '">' +
-          (l.offer.upcoming ? "next week · " : "") + esc(l.offer.wording || "offer") + "</span>");
-        if (l.overshoot >= 2) flags.push('<span class="flag over">pack is ' +
-          (Math.round(l.overshoot * 10) / 10) + "× what you need</span>");
-        if (corrected) flags.push('<span class="flag fixed">corrected</span>');
-
-        return '<button class="cell" data-chain="' + c.id + '" data-item="' + item.id + '">' +
-          '<span class="unit">' + euro(l.unitCents) + "<span>" + unitLabel[l.product.comparisonUnit] + "</span></span>" +
-          '<span class="prod"><b>' + esc(l.product.name) + "</b></span>" +
-          '<span class="pack">' + (l.packs > 1 ? l.packs + " × " : "") +
-            (l.product.packaging ? esc(l.product.packaging) + " · " : "") + euro(l.costCents) + "</span>" +
-          '<span class="flags">' + flags.join("") + "</span>" +
-        "</button>";
-      }).join("");
-
-      const qty = item.unit === "piece" ? item.quantity + " ×" : item.quantity + " " + packLabel[item.unit];
-      return '<div class="row"><div class="req">' +
-        '<button class="qty" data-unit="' + item.id + '" title="Switch unit">' + qty + "</button>" +
-        '<span class="what">' + esc(item.noun) + "</span>" +
-        (item.guessed
-          ? '<span class="note guess">You wrote "' + esc(item.text) + '"; unit guessed. Click the amount to switch.</span>'
-          : '<span class="note">' + esc(item.text) + "</span>") +
-        '<div class="tools">' +
-          '<button data-staple="' + item.id + '" aria-pressed="' + item.staple + '">staple</button>' +
-          '<button data-remove="' + item.id + '" aria-label="Remove ' + esc(item.noun) + '">remove</button>' +
-        "</div>" +
-      "</div>" + cells + "</div>";
-    }).join("");
-
-    document.getElementById("grid").innerHTML = head + rows;
-  }
-
-  // ── Correction drawer ───────────────────────────────────────────────
-  let open = null;
-  function openDrawer(chainId, itemId) {
-    const item = list.find((i) => i.id === itemId);
-    const chain = data.chains.find((c) => c.id === chainId);
-    if (!item || !chain) return;
-    open = { chainId, item };
-
-    document.getElementById("drawer-chain").textContent = chain.name + " · correction";
-    document.getElementById("drawer-title").textContent = item.text;
-    document.getElementById("drawer-note").textContent =
-      "Resolution picked the lowest unit price among " + chain.name +
-      "'s products matching every word. Pick the one that actually satisfies the requirement.";
-
-    const current = chosenId(chainId, item);
-    const ids = candidates(chainId, item).slice();
-    if (current && !ids.includes(current)) ids.unshift(current);
-    document.getElementById("drawer-list").innerHTML = ids.map((id) => {
-      const p = products[chainId][id];
-      const offer = offerFor(p);
-      const price = offer && p.offerPriceCents ? p.offerPriceCents : p.shelfPriceCents;
-      return '<button class="alt' + (id === current ? " on" : "") + '" data-pick="' + id + '">' +
-        '<span class="top"><span class="u">' + euro(p.unitPriceCents) +
-          "<span style='font-size:var(--step--1);color:var(--ink-faint)'>" + unitLabel[p.comparisonUnit] + "</span></span>" +
-          '<span class="m">' + euro(price) + "</span></span>" +
-        '<span class="n">' + esc(p.name) + "</span>" +
-        '<span class="m">' + esc(p.packaging || "") + (offer ? (p.packaging ? " · " : "") + esc(offer.wording || "offer") : "") + "</span>" +
-      "</button>";
-    }).join("");
-
-    document.getElementById("scrim").classList.add("on");
-    const d = document.getElementById("drawer");
-    d.classList.add("on");
-    d.setAttribute("aria-hidden", "false");
-  }
-
-  function closeDrawer() {
-    open = null;
-    document.getElementById("scrim").classList.remove("on");
-    const d = document.getElementById("drawer");
-    d.classList.remove("on");
-    d.setAttribute("aria-hidden", "true");
-  }
-
-  // "Done shopping" takes a second click, since it removes things.
-  let armed = false;
-  function renderControls() {
-    const oneOffs = list.filter((i) => !i.staple).length;
-    const done = document.getElementById("done");
-    done.hidden = oneOffs === 0;
-    done.textContent = armed
-      ? "Remove " + oneOffs + " one-off" + (oneOffs > 1 ? "s" : "") + "? Click again"
-      : "Done shopping";
-    const n = list.filter((item) => data.chains.some((c) => correctionKey(c.id, item) in corrections)).length;
-    document.getElementById("corrections").textContent = n ? n + " item" + (n > 1 ? "s" : "") + " corrected" : "";
-    document.getElementById("reset").hidden = n === 0;
-  }
-
-  function renderAll() {
-    renderTotals();
-    renderGrid();
-    renderControls();
-  }
-
-  // ── Events ──────────────────────────────────────────────────────────
-  document.getElementById("add").addEventListener("submit", (e) => {
-    e.preventDefault();
-    const input = document.getElementById("add-text");
-    const hint = document.getElementById("add-hint");
-    const parsed = parse(input.value);
-    if (!parsed) {
-      hint.className = "hint warn";
-      hint.textContent = "Couldn't read that. Try \"500 g rundergehakt\" or \"2 courgettes\".";
-      return;
-    }
-    list.push({ id: newId(), staple: false, ...parsed });
-    hint.className = "hint";
-    hint.textContent = "Added " + parsed.quantity + " " + (parsed.unit === "piece" ? "×" : parsed.unit) + " " + parsed.noun + ".";
-    input.value = "";
-    armed = false;
-    persist();
-    renderAll();
-  });
-
-  document.getElementById("grid").addEventListener("click", (e) => {
-    const staple = e.target.closest("[data-staple]");
-    if (staple) {
-      const item = list.find((i) => i.id === staple.dataset.staple);
-      if (item) item.staple = !item.staple;
-      armed = false;
-      persist(); renderAll();
-      return;
-    }
-    const unit = e.target.closest("[data-unit]");
-    if (unit) {
-      // Cycle kg -> l -> pieces, keeping the number: a guessed unit is
-      // usually wrong in kind, not in amount.
-      const item = list.find((i) => i.id === unit.dataset.unit);
-      if (item) {
-        const order = ["kg", "l", "piece"];
-        item.unit = order[(order.indexOf(item.unit) + 1) % order.length];
-        item.guessed = false;
+      const by = Object.fromEntries(chains.map((c) => [c.id, line(c.id, item)]));
+      const avail = chains.filter((c) => by[c.id]).sort((a, b) => by[a.id].cost - by[b.id].cost);
+      return { item, by, avail, min: avail.length ? by[avail[0].id].cost : null, max: avail.length ? by[avail.at(-1).id].cost : null };
+    });
+    const totals = chains.map((c) => {
+      let cost = 0, filled = 0;
+      for (const r of rows) if (r.by[c.id]) { filled++; cost += r.by[c.id].cost; }
+      return { chain: c, cost, filled, total: rows.length, full: filled === rows.length && rows.length > 0 };
+    }).sort((a, b) => b.full - a.full || a.cost - b.cost);
+    const best = totals.find((t) => t.full) || null;
+    // The best two-chain combination: each item from the cheaper of the pair.
+    let combo = null;
+    for (let i = 0; i < chains.length; i++) for (let j = i + 1; j < chains.length; j++) {
+      const a = chains[i], b = chains[j]; let cost = 0, filled = 0; const from = {};
+      for (const r of rows) {
+        const la = r.by[a.id], lb = r.by[b.id];
+        if (!la && !lb) continue;
+        const pick = !lb || (la && la.cost <= lb.cost) ? a : b;
+        filled++; from[r.item.id] = pick.id; cost += r.by[pick.id].cost;
       }
-      persist(); renderAll();
-      return;
+      const cand = { ids: [a.id, b.id], cost, filled, from };
+      if (!combo || cand.filled > combo.filled || (cand.filled === combo.filled && cand.cost < combo.cost)) combo = cand;
     }
-    const remove = e.target.closest("[data-remove]");
-    if (remove) {
-      list = list.filter((i) => i.id !== remove.dataset.remove);
-      armed = false;
-      persist(); renderAll();
-      return;
+    // Only worth showing when it fills the list, beats one shop, and really uses both.
+    if (combo && (combo.filled < rows.length || (best && combo.cost >= best.cost) || new Set(Object.values(combo.from)).size < 2)) combo = null;
+    return { rows, totals, best, combo };
+  }
+  function currentPlan(s) {
+    if (plan && plan.kind === "combo" && s.combo && s.combo.ids.join() === plan.ids.join()) return plan;
+    if (plan && plan.kind === "single" && chainById(plan.ids[0])) return plan;
+    return { kind: "single", ids: [(s.best || s.totals[0]).chain.id] };
+  }
+  const sourceOf = (r, p, s) => p.kind === "single" ? (r.by[p.ids[0]] ? p.ids[0] : null) : s.combo.from[r.item.id] || null;
+  function planCost(s, p) { return s.rows.reduce((n, r) => { const c = sourceOf(r, p, s); return n + (c ? r.by[c].cost : 0); }, 0); }
+
+  function priceLine(r, mini) {
+    if (!r.avail.length) return "";
+    const span = r.max - r.min, seen = {};
+    return '<div class="pl' + (mini ? " mini" : "") + '" aria-hidden="true">' + r.avail.map((c, i) => {
+      const x = span ? (r.by[c.id].cost - r.min) / span * 100 : 0;
+      const k = Math.round(x); seen[k] = (seen[k] || 0) + 1;
+      return '<span class="dot' + (i === 0 ? " min" : "") + '" style="--c:' + c.color + ";left:calc(" + x + "% + " + (seen[k] - 1) * (mini ? 7 : 12) + 'px)" title="' +
+        esc(c.name) + " " + euro(r.by[c.id].cost) + '"></span>';
+    }).join("") + "</div>";
+  }
+
+  // ── Recipes ───────────────────────────────────────────────────────────
+  // EXAMPLE recipes: invented, written around what Dirk and Jumbo had on offer
+  // in the swept week. Every price, product and offer wording shown comes from
+  // the catalogue. Ingredients name the words a product must carry (each must
+  // end a word of the name) and words that rule one out, because the general
+  // matcher is too crude for short words ("ui" is inside "kaneelsuisse").
+  const PET = ["kattenvoer", "hondenvoer", "kat ", "hond"];
+  const ONION = { noun: "uien", q: 0.5, unit: "kg", find: ["uien"], not: ["gebakken", "crispy", "soep", "rode"] };
+  const MILK = (q) => ({ noun: "halfvolle melk", q, unit: "l", find: ["halfvolle", "melk"], not: ["koffie", "karnemelk", "cups"] });
+  const POTATO = { noun: "kruimige aardappelen", q: 1, unit: "kg", find: ["aardappelen", "kruimig"] };
+  const MINCE = { noun: "rundergehakt", q: 0.5, unit: "kg", find: ["rundergehakt"], not: ["bal", "schnitzel"] };
+  const CHEESE = { noun: "belegen kaas", q: 0.15, unit: "kg", find: ["belegen", "plakken"], not: ["geit", "vegan", "smeer"] };
+  const RECIPES = [
+    { id: "andijvie", name: "Andijviestamppot met rookworst", persons: 4, minutes: 30, ingredients: [
+      POTATO, { noun: "andijvie", q: 0.5, unit: "kg", find: ["andijvie"], not: ["stamppot", "salade"] },
+      { noun: "rookworst", q: 0.275, unit: "kg", find: ["rookworst"], not: ["erwtensoep", "stamppot", "broodje", "vegetarisch", "kip"] },
+      MILK(0.25), ONION],
+      pantry: ["boter", "zout", "peper"], steps: [
+      "Schil de aardappelen, snijd ze in gelijke stukken en kook ze in ongeveer 20 minuten gaar in water met een snuf zout.",
+      "Leg intussen de rookworst 20 minuten in heet water dat net niet meer kookt.",
+      "Snipper de ui en bak hem in een klontje boter in 5 minuten zacht en goudgeel.",
+      "Was de andijvie, laat hem goed uitlekken en snijd hem fijn.",
+      "Giet de aardappelen af en stamp ze fijn met de warme melk en een klontje boter.",
+      "Schep de rauwe andijvie en de gebakken ui erdoor en breng op smaak met zout en peper. Serveer met de rookworst in plakken."] },
+    { id: "wraps", name: "Wraps met gehakt, paprika en avocado", persons: 4, minutes: 25, ingredients: [
+      { noun: "tortilla's", q: 8, unit: "piece", find: ["tortilla"], not: ["chips"] }, MINCE,
+      { noun: "puntpaprika", q: 0.5, unit: "kg", find: ["puntpaprika"] },
+      { noun: "avocado's", q: 2, unit: "piece", find: ["avocado"], not: ["dip", "guacamole", "olie"] }, ONION],
+      pantry: ["olie", "zout", "peper", "paprikapoeder"], steps: [
+      "Snipper de ui en snijd de puntpaprika in reepjes.",
+      "Verhit een scheutje olie in een koekenpan en bak het gehakt rul. Breng op smaak met zout, peper en een theelepel paprikapoeder.",
+      "Bak de ui en de paprika 5 minuten mee tot ze zacht zijn.",
+      "Halveer de avocado's, haal de pit eruit en snijd het vruchtvlees in plakjes.",
+      "Verwarm de tortilla's een halve minuut per stuk in een droge koekenpan.",
+      "Vul de wraps met het gehaktmengsel en de avocado, vouw de onderkant om en rol ze op."] },
+    { id: "pompoen", name: "Romige pompoensoep", persons: 4, minutes: 40, ingredients: [
+      { noun: "pompoen", q: 1, unit: "piece", find: ["pompoen"], not: ["soep", "stamp", "pitten", "verspakket", "spaghetti"] }, ONION,
+      { noun: "wortelen", q: 0.5, unit: "kg", find: ["wortelen"], not: ["doperwt", "erwt", "sap", "salade"] },
+      { noun: "kookroom", q: 0.25, unit: "l", find: ["kookroom"] }],
+      pantry: ["olie", "2 bouillonblokjes", "zout", "peper"], steps: [
+      "Halveer de pompoen, schep de pitten eruit en snijd hem in blokjes. Een oranje pompoen hoef je niet te schillen.",
+      "Snipper de ui en snijd de wortelen in plakjes.",
+      "Fruit de ui 3 minuten in een soeppan met een scheutje olie. Voeg pompoen en wortel toe en bak 5 minuten mee.",
+      "Voeg 1 liter water en de bouillonblokjes toe en laat 25 minuten zachtjes koken.",
+      "Pureer de soep glad met een staafmixer en roer de kookroom erdoor.",
+      "Breng op smaak met zout en peper en warm nog even door."] },
+    { id: "spruitjes", name: "Spruitjes met gehaktbal en puree", persons: 4, minutes: 45, ingredients: [
+      { noun: "spruiten", q: 0.75, unit: "kg", find: ["spruiten"] }, POTATO, MINCE, MILK(0.25)],
+      pantry: ["boter", "zout", "peper", "1 ei", "paneermeel"], steps: [
+      "Meng het gehakt met het ei, 2 eetlepels paneermeel, zout en peper en draai er 4 ballen van.",
+      "Bak de gehaktballen rondom bruin in een flinke klont boter. Zet het vuur laag en laat ze met de deksel op de pan 20 minuten garen.",
+      "Schil de aardappelen en kook ze in ongeveer 20 minuten gaar.",
+      "Maak de spruiten schoon, snijd een kruisje in de steel en kook ze 8 tot 10 minuten.",
+      "Giet de aardappelen af en stamp ze met de warme melk en een klontje boter tot een gladde puree.",
+      "Serveer de puree met de spruiten, de gehaktballen en de jus uit de pan."] },
+    { id: "pesto", name: "Spaghetti pesto met broccoli", persons: 4, minutes: 20, ingredients: [
+      { noun: "spaghetti", q: 0.5, unit: "kg", find: ["spaghetti"], not: ["saus", "pompoen", "kruiden"] },
+      { noun: "pesto", q: 0.185, unit: "kg", find: ["pesto"], not: ["verspakket", "presto", "pasta"] },
+      { noun: "broccoli", q: 0.5, unit: "kg", find: ["broccoli"], not: ["stamppot", "soep", "mix"] }, CHEESE],
+      pantry: ["zout"], steps: [
+      "Breng een grote pan water met een flinke snuf zout aan de kook en kook de spaghetti volgens de verpakking.",
+      "Snijd de broccoli in kleine roosjes en kook ze de laatste 4 minuten mee met de pasta.",
+      "Schep een kopje kookwater apart en giet de pasta en broccoli af.",
+      "Meng de pesto erdoor, met een scheutje kookwater voor een smeuïge saus.",
+      "Snijd de kaas in reepjes en strooi die over de pasta."] },
+    { id: "bloemkool", name: "Bloemkool met kaassaus en aardappelen", persons: 4, minutes: 35, ingredients: [
+      { noun: "bloemkool", q: 1, unit: "piece", find: ["bloemkool"], not: ["rijst", "stamppot", "soep", "roosjes"] }, MILK(0.5), CHEESE, POTATO],
+      pantry: ["30 g boter", "3 el bloem", "zout", "peper", "nootmuskaat"], steps: [
+      "Schil de aardappelen en kook ze in ongeveer 20 minuten gaar.",
+      "Snijd de bloemkool in roosjes en kook ze in 8 minuten beetgaar.",
+      "Smelt de boter in een steelpan, roer de bloem erdoor en laat dit 1 minuut zachtjes garen.",
+      "Voeg al roerend scheutje voor scheutje de melk toe tot je een gladde saus hebt.",
+      "Scheur de kaas erin en laat smelten. Breng op smaak met zout, peper en een snufje nootmuskaat.",
+      "Giet de kaassaus over de bloemkool en serveer met de aardappelen."] },
+  ];
+  const ingText = (g) => qtyText({ quantity: g.q, unit: g.unit }) + " " + g.noun;
+  const ingCache = {};
+  /** The cheapest way to buy one ingredient at one chain, Offers included. */
+  function ingLine(chainId, g) {
+    const key = chainId + "|" + g.noun + "|" + g.q + g.unit;
+    if (key in ingCache) return ingCache[key];
+    const best = Object.values(products[chainId]).filter((p) => {
+      const n = p.name.toLowerCase(), ws = n.split(/[^\p{L}]+/u);
+      return p.comparisonUnit === g.unit && g.find.every((f) => ws.some((w) => w.endsWith(f)))
+        && ![...(g.not || []), ...PET].some((x) => n.includes(x));
+    }).map((p) => {
+      const onOffer = isOffer(p);
+      const price = onOffer && p.offerPriceCents ? p.offerPriceCents : p.shelfPriceCents;
+      const { packs } = packsFor(p, g.q, g.unit);
+      return { p, packs, cost: packs * price, onOffer, offer: onOffer ? p.offerWording || "aanbieding" : null,
+        was: onOffer && p.offerPriceCents && p.offerPriceCents < p.shelfPriceCents ? packs * p.shelfPriceCents : null };
+    }).sort((a, b) => a.cost - b.cost)[0] || null;
+    return (ingCache[key] = best);
+  }
+  function priceRecipe(rc) {
+    const at = chains.map((c) => {
+      const lines = rc.ingredients.map((g) => ingLine(c.id, g)), have = lines.filter(Boolean);
+      return { chain: c, lines, cost: have.reduce((n, l) => n + l.cost, 0), missing: lines.length - have.length,
+        deals: have.filter((l) => l.onOffer).length, saving: have.reduce((n, l) => n + (l.was ? l.was - l.cost : 0), 0) };
+    }).sort((a, b) => a.missing - b.missing || a.cost - b.cost);
+    return { rc, at, best: at[0] };
+  }
+  const rankedRecipes = () => RECIPES.map(priceRecipe).sort((a, b) => b.best.saving - a.best.saving || b.best.deals - a.best.deals);
+  function addRecipe(id) {
+    const rc = RECIPES.find((r) => r.id === id); if (!rc) return;
+    let n = 0;
+    for (const g of rc.ingredients) {
+      if (list.some((i) => i.noun === g.noun && i.unit === g.unit)) continue;
+      list.unshift({ id: newId(), staple: false, text: ingText(g), noun: g.noun, quantity: g.q, unit: g.unit, guessed: false }); n++;
     }
-    const cell = e.target.closest(".cell[data-chain]");
-    if (cell) openDrawer(cell.dataset.chain, cell.dataset.item);
+    added.add(id);
+    hint = n ? rc.name + ": " + n + " ingrediënt" + (n === 1 ? "" : "en") + " op je lijst gezet" : rc.name + ": alles stond al op je lijst";
+  }
+  const ingRow = (g, l, chain) => !l
+    ? '<li class="miss"><span class="l">' + esc(ingText(g)) + '</span><span class="p">—</span><span class="d">niet bij ' + esc(chain.name) + "</span></li>"
+    : '<li><span class="l">' + esc(ingText(g)) + '</span><span class="p">' + euro(l.cost) + '</span><span class="d">' +
+      (l.onOffer ? '<span class="o">' + esc(l.offer) + "</span> " : "") + (l.was ? '<span class="was">' + euro(l.was) + "</span> " : "") +
+      esc((l.packs > 1 ? l.packs + "× " : "") + l.p.name) + "</span></li>";
+
+  // ── Pages ─────────────────────────────────────────────────────────────
+  const PAGES = {
+    recepten: { label: "Recepten", ic: "🍳", render() {
+      const priced = rankedRecipes();
+      const seen = new Map();
+      for (const { at } of priced) for (const x of at) for (const l of x.lines) {
+        if (l && l.onOffer && !seen.has(l.p.id)) seen.set(l.p.id, { c: x.chain, l });
+      }
+      const gain = (l) => l.was ? l.was - l.cost : 0;
+      const deals = [...seen.values()].sort((a, b) => gain(b.l) - gain(a.l)).map(({ c, l }) =>
+        '<div class="deal"><span class="n">' + esc(l.p.name) + "</span><span>" + tag(c) + '</span><span class="v">' + euro(l.cost) +
+        (l.was ? '<span class="was">' + euro(l.was) + "</span>" : "") + '</span><span class="w">' + esc(l.offer) + "</span></div>").join("");
+      const cards = priced.map(({ rc, at, best }) =>
+        '<article class="rc"><div class="hd" data-act="open-recipe" data-id="' + rc.id + '" role="button" tabindex="0" aria-label="Bereiding van ' + esc(rc.name) + '">' +
+        '<span class="ex">voorbeeldrecept</span><h3>' + esc(rc.name) + "</h3>" +
+        '<div class="meta">' + rc.persons + " personen · " + rc.minutes + " min · " + euro(Math.round(best.cost / rc.persons)) + " p.p.</div>" +
+        '<div class="save">' + (best.saving ? "<b>" + euro(best.saving) + " korting</b>" : "") + "<span>" + best.deals + " van " + rc.ingredients.length + " in de aanbieding bij " + esc(best.chain.name) + "</span></div>" +
+        '<span class="more">Bekijk bereiding →</span></div>' +
+        "<ul>" + rc.ingredients.map((g, i) => ingRow(g, best.lines[i], best.chain)).join("") + "</ul>" +
+        '<div class="ft"><div class="chains">' + at.map((x, i) => '<span class="' + (i ? "" : "best") + '">' + tag(x.chain) + " <b>" + euro(x.cost) + "</b>" + (x.missing ? " · " + x.missing + " mist" : "") + "</span>").join("") + "</div>" +
+        '<button class="btn' + (added.has(rc.id) ? " on" : "") + '" data-act="recipe" data-id="' + rc.id + '">' + (added.has(rc.id) ? "✓ Op je lijst" : "Zet op mijn lijst") + "</button></div></article>").join("");
+      return "<h1>Recepten van deze week</h1>" +
+        '<p class="lede">Gekozen rond wat er nu in de aanbieding is, met de meeste korting bovenaan. Tik een recept voor de bereiding.</p>' +
+        '<p class="hint">' + esc(hint) + "</p>" +
+        '<div class="sec"><h2>In de aanbieding</h2><span>waar deze recepten op draaien</span></div><div class="deals">' + deals + "</div>" +
+        '<div class="recipes">' + cards + "</div>" +
+        '<p class="note">De recepten zijn voorbeelden. Prijzen, producten en acties zijn echt, uit de prijzen van ' + esc(chains[0].observedAt) + ".</p>";
+    } },
+
+    lijst: { label: "Lijst", ic: "☰", render(s) {
+      const card = (r) => {
+        const cheapest = r.avail[0];
+        const best = cheapest
+          ? "<span>goedkoopst " + tag(cheapest) + " <b>" + euro(r.min) + "</b></span>" +
+            (r.avail.length > 1 && r.max > r.min ? '<span class="delta">tot +' + euro(r.max - r.min) + " elders</span>"
+              : r.avail.length > 1 ? '<span class="delta zero">overal even duur</span>' : "")
+          : '<span class="none">nergens te koop</span>';
+        return '<div class="it"><div class="nm">' + esc(r.item.noun) +
+          '<button class="q" data-act="unit" data-id="' + r.item.id + '" title="Eenheid wisselen">' + qtyText(r.item) + "</button></div>" +
+          '<div class="ops"><button data-act="staple" data-id="' + r.item.id + '" aria-pressed="' + r.item.staple + '" title="Vaste boodschap">📌</button>' +
+          '<button data-act="remove" data-id="' + r.item.id + '" title="Van de lijst">✕</button></div>' +
+          (r.item.guessed ? '<div class="guess">Eenheid geraden: tik het aantal om te wisselen</div>' : "") +
+          '<div class="best">' + best + "</div>" + priceLine(r, true) + "</div>";
+      };
+      const staples = s.rows.filter((r) => r.item.staple), once = s.rows.filter((r) => !r.item.staple);
+      const p = currentPlan(s), top = rankedRecipes()[0];
+      return "<h1>Boodschappenlijst</h1><p class=\"lede\">Wat er in huis moet komen. Waar het het goedkoopst is, zie je bij Vergelijk.</p>" +
+        (top ? '<div class="banner"><span>Deze week: <b>' + esc(top.rc.name) + "</b>, " + top.best.deals + ' ingrediënten in de aanbieding</span><button class="btn" data-act="go" data-id="recepten">' + RECIPES.length + " recepten bekijken</button></div>" : "") +
+        '<form class="add"><label for="q" hidden>Op de lijst zetten</label><input id="q" name="q" placeholder="500 g rundergehakt, 2 courgettes, melk…" autocomplete="off"><button>Erbij</button></form>' +
+        '<p class="hint' + (hint.startsWith("!") ? " warn" : "") + '">' + esc(hint.replace(/^!/, "")) + "</p>" +
+        '<div class="sec"><h2>Deze keer</h2><span>' + once.length + " · gaan eraf na het winkelen</span></div>" +
+        (once.length ? '<div class="items">' + once.map(card).join("") + "</div>" : '<p class="lede">Niets extra deze keer.</p>') +
+        '<div class="sec"><h2>Vaste boodschappen</h2><span>' + staples.length + " · 📌 blijven op de lijst</span></div>" +
+        (staples.length ? '<div class="items">' + staples.map(card).join("") + "</div>" : '<p class="lede">Pin iets met 📌 om het te bewaren.</p>') +
+        (s.rows.length ? '<div class="foot"><span>' + s.rows.length + " artikelen · " + p.ids.map((id) => esc(chainById(id).name)).join(" + ") + " <b>" + euro(planCost(s, p)) + "</b></span>" +
+          '<span><button class="btn ghost" data-act="go" data-id="vergelijk">Vergelijk winkels</button> <button class="btn" data-act="go" data-id="winkelen">Winkelen</button></span></div>' : "");
+    } },
+
+    vergelijk: { label: "Vergelijk", ic: "⚖", render(s) {
+      if (!s.rows.length) return '<h1>Niets te vergelijken</h1><p class="lede">Zet eerst iets op je lijst.</p>';
+      const p = currentPlan(s), base = s.best ? s.best.cost : null;
+      const bag = (t, i) => {
+        const c = t.chain, on = p.kind === "single" && p.ids[0] === c.id;
+        const diff = base !== null && t.full ? t.cost - base : null;
+        return '<button class="bag bagc" style="--c:' + c.color + '" data-act="plan" data-id="' + c.id + '" aria-pressed="' + on + '">' +
+          '<span class="rank">#' + (i + 1) + '</span><span class="nm">' + esc(c.name) + "</span>" +
+          '<span class="tt">' + (t.full ? "" : "<small>≥</small>") + euro(t.cost) + "</span>" +
+          (diff === null ? '<span class="df">' + (t.total - t.filled) + " ontbreekt</span>" : '<span class="df' + (diff ? "" : " zero") + '">' + (diff ? "+" + euro(diff) : "goedkoopst") + "</span>") +
+          '<span class="cov">' + s.rows.map((r) => '<i class="' + (r.by[c.id] ? "" : "miss") + '"></i>').join("") + "</span>" +
+          '<span class="cv">' + t.filled + " van " + t.total + " te koop" + (t.full ? "" : " · totaal is een ondergrens") + "</span>" +
+          '<span class="pick"><i>' + (on ? "✓" : "") + "</i>" + (on ? "Gekozen" : "Kies deze tas") + "</span></button>";
+      };
+      let combo = "";
+      if (s.combo) {
+        const [a, b] = s.combo.ids.map(chainById), on = p.kind === "combo";
+        const n = (id) => Object.values(s.combo.from).filter((x) => x === id).length;
+        combo = '<button class="bag bagc combo" style="--c:var(--ink);--c1x:' + a.color + ";--c2x:" + b.color + '" data-act="combo" aria-pressed="' + on + '">' +
+          '<span class="nm">' + esc(a.name) + " + " + esc(b.name) + '</span><span class="tt">' + euro(s.combo.cost) + "</span>" +
+          '<span class="df zero">' + euro(base - s.combo.cost) + " minder dan " + esc(s.best.chain.name) + "</span>" +
+          '<span class="cv">Twee winkels: ' + n(a.id) + " bij " + esc(a.name) + ", " + n(b.id) + " bij " + esc(b.name) + "</span>" +
+          '<span class="pick"><i>' + (on ? "✓" : "") + "</i>" + (on ? "Gekozen" : "Kies deze combinatie") + "</span></button>";
+      }
+      const rows = s.rows.slice().sort((a, b) => ((b.max ?? 0) - (b.min ?? 0)) - ((a.max ?? 0) - (a.min ?? 0)));
+      const diffs = rows.map((r) => {
+        const open = openRow === r.item.id, spread = r.avail.length > 1 ? r.max - r.min : 0, missing = chains.length - r.avail.length;
+        return '<div class="df-row"><button data-act="row" data-id="' + r.item.id + '" aria-expanded="' + open + '">' +
+          '<span class="nm">' + esc(r.item.noun) + '<span class="q">' + qtyText(r.item) + (missing ? " · " + missing + " winkel" + (missing > 1 ? "s" : "") + " niet" : "") + "</span></span>" +
+          '<span class="plw">' + priceLine(r) + (r.avail.length ? '<div class="pl-ends"><span class="lo">' + euro(r.min) + " " + esc(r.avail[0].name) + "</span><span>" + (spread ? euro(r.max) : "") + "</span></div>" : "") + "</span>" +
+          '<span class="spread">' + (spread ? "+" + euro(spread) : "—") + "<small>" + (spread ? "verschil" : r.avail.length ? "gelijk" : "nergens") + "</small></span></button>" +
+          (open ? '<div class="open">' + chains.map((c) => {
+            const l = r.by[c.id], fixed = correctionKey(c.id, r.item) in corrections;
+            if (!l) return '<div class="pr">' + tag(c) + '<span class="pn">niet te koop</span><span class="v">—</span><span></span><span></span></div>';
+            return '<div class="pr">' + tag(c) + '<span class="pn" title="' + esc(l.p.name) + '">' + (l.offer ? '<span class="o">' + esc(l.offer) + "</span> " : "") + esc(l.p.name) + "</span>" +
+              '<span class="v">' + euro(l.cost) + "</span>" + (l.cost > r.min ? '<span class="delta">+' + euro(l.cost - r.min) + "</span>" : '<span class="delta zero">laagst</span>') +
+              '<button class="fix" data-act="fix" data-id="' + r.item.id + '" data-chain="' + c.id + '">' + (fixed ? "gecorrigeerd" : "ander product") + "</button></div>";
+          }).join("") + "</div>" : "") + "</div>";
+      }).join("");
+      return "<h1>" + (s.best ? "Alles bij " + esc(s.best.chain.name) + ": " + euro(s.best.cost) : "Geen winkel heeft alles") + "</h1>" +
+        '<p class="lede">Elke winkel is een tas met jouw hele lijst erin, van goedkoop naar duur. Tik een tas om er te gaan winkelen.</p>' +
+        '<div class="rack">' + combo + s.totals.map(bag).join("") + "</div>" +
+        '<div class="sec" style="margin-top:38px"><h2>Waar zit het verschil?</h2><span>grootste verschil bovenaan · tik voor alle prijzen en om een product te corrigeren</span></div>' +
+        '<div class="legend">' + chains.map(tag).join("") + "<span>· omcirkeld = goedkoopst</span></div>" +
+        '<div class="diffs">' + diffs + "</div>" +
+        '<p class="note">Prijzen van ' + chains.map((c) => esc(c.name) + " (" + esc(c.store || "landelijk") + ", " + esc(c.observedAt || "?") + ")").join(" en ") +
+        ". Per winkel kiezen we het product met de laagste kiloprijs onder de namen die elk woord bevatten. Dat gaat soms mis; daarom kun je corrigeren.</p>";
+    } },
+
+    winkelen: { label: "Winkelen", ic: "✓", render(s) {
+      if (!s.rows.length) return '<h1>Winkelen</h1><p class="lede">Je lijst is leeg.</p>';
+      const p = currentPlan(s);
+      const groups = p.ids.map((id) => ({ c: chainById(id), rows: s.rows.filter((r) => sourceOf(r, p, s) === id) })).filter((g) => g.rows.length);
+      const nowhere = s.rows.filter((r) => !sourceOf(r, p, s));
+      let left = 0, ticked = 0, count = 0, total = 0;
+      for (const g of groups) for (const r of g.rows) { const c = r.by[g.c.id].cost; total += c; count++; if (done.has(r.item.id)) ticked++; else left += c; }
+      const shops = groups.map(({ c, rows }) => '<section class="bag shop" style="--c:' + c.color + '"><header><b>' + esc(c.name) + "</b><span>" + rows.length + " · " +
+        euro(rows.reduce((n, r) => n + r.by[c.id].cost, 0)) + '</span></header><div class="chk">' + rows.map((r) => {
+          const l = r.by[c.id], d = done.has(r.item.id);
+          return '<button class="ci' + (d ? " done" : "") + '" data-act="tick" data-id="' + r.item.id + '" aria-pressed="' + d + '"><span class="tick">' + (d ? "✓" : "") + "</span>" +
+            '<span class="nm">' + esc(r.item.noun) + '<span class="q">' + qtyText(r.item) + "</span></span>" +
+            '<span class="g">' + (l.offer ? '<span class="o">' + esc(l.offer) + "</span> " : "") + (l.packs > 1 ? l.packs + "× " : "") + esc(l.p.name) +
+            (l.p.packaging ? " · " + esc(l.p.packaging) : "") + (l.over >= 2 ? ' · <span class="w">pak is ' + Math.round(l.over * 10) / 10 + "× wat je nodig hebt</span>" : "") + "</span>" +
+            '<span class="v">' + euro(l.cost) + "</span></button>";
+        }).join("") + "</div></section>").join("");
+      const pct = count ? Math.round(ticked / count * 100) : 0;
+      return "<h1>Winkelen</h1>" +
+        '<div class="plan"><span>' + (p.kind === "combo" ? "Twee winkels:" : "Alles bij") + " " + p.ids.map((id) => esc(chainById(id).name)).join(" + ") + " · <b>" + euro(total) + "</b></span>" +
+        '<button data-act="go" data-id="vergelijk">andere tas kiezen</button></div>' + shops +
+        (nowhere.length ? '<div class="missing">Hier niet te koop: ' + nowhere.map((r) => esc(r.item.noun)).join(", ") + "</div>" : "") +
+        '<div class="progress"><span><b>' + euro(left) + "</b> nog</span><span class=\"bar\"><i style=\"width:" + pct + '%"></i></span><span>' + ticked + "/" + count + "</span>" +
+        (ticked ? '<button class="btn" data-act="finish">Klaar</button>' : "") + "</div>";
+    } },
+  };
+
+  // ── Sheets ────────────────────────────────────────────────────────────
+  function recipeSheet(id) {
+    const rc = RECIPES.find((r) => r.id === id); if (!rc) return "";
+    const { at, best } = priceRecipe(rc), ticked = stepsDone[rc.id] || new Set();
+    return '<div class="scrim" data-act="close"></div><section class="sheet rd" role="dialog" aria-modal="true" aria-labelledby="sheet-title">' +
+      '<header><div><span class="ex">voorbeeldrecept</span><h2 id="sheet-title">' + esc(rc.name) + "</h2>" +
+      '<div class="meta">' + rc.persons + " personen · " + rc.minutes + " min · " + euro(Math.round(best.cost / rc.persons)) + " p.p." + (best.saving ? " · " + euro(best.saving) + " korting bij " + esc(best.chain.name) : "") + "</div></div>" +
+      '<button class="x" data-act="close" aria-label="Sluiten">✕</button></header>' +
+      '<div class="body"><div class="ing"><h3>Ingrediënten</h3><ul>' + rc.ingredients.map((g, i) => ingRow(g, best.lines[i], best.chain)).join("") + "</ul>" +
+      '<div class="kast"><b>Uit de kast:</b> ' + rc.pantry.map(esc).join(", ") + "</div>" +
+      '<div class="tot chains">' + at.map((x) => tag(x.chain) + " <b>" + euro(x.cost) + "</b>").join(" ") + "</div>" +
+      '<button class="btn' + (added.has(rc.id) ? " on" : "") + '" data-act="recipe" data-id="' + rc.id + '">' + (added.has(rc.id) ? "✓ Op je lijst" : "Zet op mijn lijst") + "</button></div>" +
+      "<div><h3>Bereiding</h3><ol>" + rc.steps.map((t, i) => '<li><button data-act="step" data-id="' + i + '" class="' + (ticked.has(i) ? "done" : "") + '" aria-pressed="' + ticked.has(i) + '">' +
+        '<span class="n">' + (ticked.has(i) ? "✓" : i + 1) + '</span><span class="t">' + esc(t) + "</span></button></li>").join("") +
+      '</ol><p class="tip">Tik een stap aan als hij klaar is.</p></div></div></section>';
+  }
+  function fixSheet(chainId, itemId) {
+    const item = list.find((i) => i.id === itemId), chain = chainById(chainId); if (!item || !chain) return "";
+    const current = chosenId(chainId, item), ids = candidates(chainId, item).slice();
+    if (current && !ids.includes(current)) ids.unshift(current);
+    return '<div class="scrim" data-act="close"></div><section class="sheet narrow cd" role="dialog" aria-modal="true" aria-labelledby="sheet-title">' +
+      '<header><div><span class="ct" style="--c:' + chain.color + '">' + esc(chain.name) + '</span><h2 id="sheet-title">' + esc(qtyText(item) + " " + item.noun) + "</h2>" +
+      '<div class="meta">Gekozen op de laagste kiloprijs. Kies het product dat je echt bedoelt; dat onthouden we voor de volgende keer.</div></div>' +
+      '<button class="x" data-act="close" aria-label="Sluiten">✕</button></header><div class="list">' + ids.map((id) => {
+        const p = products[chainId][id], offer = isOffer(p), price = offer && p.offerPriceCents ? p.offerPriceCents : p.shelfPriceCents;
+        return '<button class="alt' + (id === current ? " on" : "") + '" data-act="pick" data-id="' + id + '"><span class="n">' + esc(p.name) + '</span><span class="v">' + euro(price) + "</span>" +
+          '<span class="m">' + euro(p.unitPriceCents) + ({ kg: "/kg", l: "/l", piece: " per stuk" })[p.comparisonUnit] + (p.packaging ? " · " + esc(p.packaging) : "") +
+          (offer ? ' · <span class="o">' + esc(p.offerWording || "aanbieding") + "</span>" : "") + "</span></button>";
+      }).join("") + "</div>" + (correctionKey(chainId, item) in corrections ? '<button class="btn ghost reset" data-act="unfix">Terug naar automatisch</button>' : "") + "</section>";
+  }
+
+  // ── Wiring ────────────────────────────────────────────────────────────
+  const main = document.getElementById("main");
+  function applyTheme() {
+    if (theme === "system") delete document.documentElement.dataset.theme;
+    else document.documentElement.dataset.theme = theme;
+    document.getElementById("theme").textContent = { system: "◐ Auto", light: "☀ Licht", dark: "☾ Donker" }[theme];
+  }
+  function render() {
+    const s = snapshot();
+    const counts = { recepten: RECIPES.length, lijst: s.rows.length, vergelijk: chains.length, winkelen: s.rows.filter((r) => !done.has(r.item.id)).length };
+    for (const nav of ["tabs-top", "tabs-bottom"]) document.getElementById(nav).innerHTML = PAGE_KEYS.map((k) =>
+      '<button data-act="go" data-id="' + k + '"' + (k === page ? ' aria-current="page"' : "") + '><span class="ic">' + PAGES[k].ic + "</span>" +
+      PAGES[k].label + '<span class="n">' + counts[k] + "</span></button>").join("");
+    const focused = document.activeElement && document.activeElement.name === "q";
+    main.innerHTML = PAGES[page].render(s);
+    if (focused) main.querySelector("input[name=q]")?.focus();
+    document.getElementById("sheet").innerHTML = !sheet ? "" : sheet.kind === "recipe" ? recipeSheet(sheet.id) : fixSheet(sheet.chainId, sheet.itemId);
+    document.body.classList.toggle("locked", !!sheet);
+  }
+
+  document.getElementById("theme").addEventListener("click", () => {
+    theme = { system: "light", light: "dark", dark: "system" }[theme];
+    save("mealdeal.theme.v1", theme); applyTheme();
+  });
+  window.addEventListener("hashchange", () => { const h = location.hash.slice(1); if (PAGE_KEYS.includes(h) && h !== page) { page = h; render(); } });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && sheet) { sheet = null; render(); return; }
+    const card = e.target.closest?.('[data-act="open-recipe"][role="button"]');
+    if (card && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); sheet = { kind: "recipe", id: card.dataset.id }; render(); }
+  });
+  document.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const input = e.target.querySelector("input[name=q]"), parsed = parse(input.value);
+    if (!parsed) { hint = "!Niet gelezen. Probeer “500 g rundergehakt” of “2 courgettes”."; render(); return; }
+    list.unshift({ id: newId(), staple: false, ...parsed });
+    hint = "Toegevoegd: " + qtyText(parsed) + " " + parsed.noun;
+    input.value = "";
+    persist(); render();
+  });
+  document.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-act]"); if (!b) return;
+    const id = b.dataset.id, item = list.find((i) => i.id === id);
+    switch (b.dataset.act) {
+      case "go": page = id; hint = ""; history.replaceState(null, "", "#" + id); window.scrollTo(0, 0); break;
+      case "staple": if (item) item.staple = !item.staple; break;
+      case "remove": list = list.filter((i) => i.id !== id); done.delete(id); break;
+      case "unit": {
+        // Cycle kg -> l -> pieces, keeping the number: a guessed unit is usually wrong in kind, not amount.
+        if (item) { const order = ["kg", "l", "piece"]; item.unit = order[(order.indexOf(item.unit) + 1) % 3]; item.guessed = false; }
+        break;
+      }
+      case "plan": plan = { kind: "single", ids: [id] }; break;
+      case "combo": { const s = snapshot(); if (s.combo) plan = { kind: "combo", ids: s.combo.ids.slice() }; break; }
+      case "row": openRow = openRow === id ? null : id; break;
+      case "fix": sheet = { kind: "fix", chainId: b.dataset.chain, itemId: id }; break;
+      case "pick": { const it = list.find((i) => i.id === sheet.itemId); if (it) corrections[correctionKey(sheet.chainId, it)] = id; sheet = null; break; }
+      case "unfix": { const it = list.find((i) => i.id === sheet.itemId); if (it) delete corrections[correctionKey(sheet.chainId, it)]; sheet = null; break; }
+      case "tick": done.has(id) ? done.delete(id) : done.add(id); break;
+      case "finish": list = list.filter((i) => i.staple || !done.has(i.id)); done.clear(); page = "lijst"; history.replaceState(null, "", "#lijst"); break;
+      case "recipe": addRecipe(id); break;
+      case "open-recipe": sheet = { kind: "recipe", id }; break;
+      case "step": { const set = (stepsDone[sheet.id] ||= new Set()); const n = Number(id); set.has(n) ? set.delete(n) : set.add(n); break; }
+      case "close": sheet = null; break;
+      default: return;
+    }
+    persist(); render();
   });
 
-  document.getElementById("drawer-list").addEventListener("click", (e) => {
-    const alt = e.target.closest("[data-pick]");
-    if (!alt || !open) return;
-    corrections[correctionKey(open.chainId, open.item)] = alt.dataset.pick;
-    persist();
-    closeDrawer();
-    renderAll();
-  });
-  document.getElementById("scrim").addEventListener("click", closeDrawer);
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeDrawer(); });
-
-  document.getElementById("upcoming").addEventListener("click", (e) => {
-    showUpcoming = !showUpcoming;
-    e.currentTarget.setAttribute("aria-pressed", String(showUpcoming));
-    renderAll();
-  });
-  document.getElementById("done").addEventListener("click", () => {
-    if (!armed) { armed = true; renderControls(); return; }
-    armed = false;
-    list = list.filter((i) => i.staple);
-    persist();
-    renderAll();
-  });
-  document.getElementById("reset").addEventListener("click", () => {
-    for (const item of list) for (const c of data.chains) delete corrections[correctionKey(c.id, item)];
-    persist();
-    renderAll();
-  });
-
-  renderProvenance();
-  renderAll();
+  applyTheme();
+  render();
 </script>
