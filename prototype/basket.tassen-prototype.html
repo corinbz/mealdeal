@@ -1,0 +1,528 @@
+<!--
+  PROTOTYPE, throwaway. The "Tassen" direction (variant I) grown into three
+  pages, mobile and desktop, with an overview built to survive many chains.
+
+    Lijst     — the groceries list itself: add, staples vs one-offs, one price hint each
+    Vergelijk — every chain as a ranked bag card (total, +difference, coverage),
+                the best two-shop combination, and a price line per item
+    Winkelen  — a checklist for the chosen plan, grouped by bag
+
+  Question it answers: does this structure hold on a phone, across pages, and
+  at six chains instead of two?
+
+  Dirk and Jumbo are real. The switch at the top adds four EXAMPLE chains with
+  invented names and prices derived from the real ones, marked "voorbeeld"
+  everywhere they appear — they exist only to test scale. In-memory state only.
+  Open from disk after `node scripts/catalogue-from-db.ts`.
+-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>mealdeal · tassen prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&display=swap">
+<style>
+  :root {
+    --paper: #f3e7d6; --paper-2: #ead9c1; --card: #fffaf2; --ink: #2b2118; --ink-2: #6b5a48; --ink-3: #9a8771;
+    --line: #dcc8ab; --good: #2f7a3f; --bad: #b8432f;
+    --r: 16px;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: Nunito, ui-rounded, system-ui, sans-serif; font-size: 16px; line-height: 1.4; }
+  button, input { font: inherit; color: inherit; }
+  [hidden] { display: none !important; }
+
+  /* ── Prototype switch: not part of the design ─────────────────────── */
+  .proto {
+    position: fixed; top: max(8px, env(safe-area-inset-top)); right: 8px; z-index: 60; display: flex; gap: 2px; align-items: center;
+    background: #111; color: #fff; border-radius: 999px; padding: 3px; font: 600 12px/1 ui-sans-serif, system-ui, sans-serif; box-shadow: 0 4px 16px rgba(0,0,0,.3);
+  }
+  .proto span { padding: 0 8px; opacity: .7; }
+  .proto button { border: 0; background: transparent; color: #fff; border-radius: 999px; padding: 7px 10px; cursor: pointer; font-size: 12px; }
+  .proto button[aria-pressed="true"] { background: #fff; color: #111; }
+
+  /* ── Shell ────────────────────────────────────────────────────────── */
+  .top { max-width: 1080px; margin: 0 auto; padding: calc(14px + env(safe-area-inset-top)) 16px 0; display: flex; align-items: center; gap: 18px; }
+  .brand { font-weight: 900; font-size: 24px; letter-spacing: -.02em; }
+  .brand i { font-style: normal; display: inline-block; width: 22px; height: 18px; margin-right: 6px; vertical-align: -2px;
+    background: var(--ink); border-radius: 3px 3px 7px 7px; position: relative; }
+  .brand i::before { content: ""; position: absolute; left: 5px; right: 5px; top: -7px; height: 9px; border: 2.5px solid var(--ink); border-bottom: 0; border-radius: 8px 8px 0 0; }
+  .tabs { display: flex; gap: 4px; background: var(--paper-2); border-radius: 999px; padding: 4px; }
+  .tabs button { border: 0; background: transparent; border-radius: 999px; padding: 8px 16px; font-weight: 800; cursor: pointer; color: var(--ink-2); display: flex; gap: 6px; align-items: center; }
+  .tabs button[aria-current="page"] { background: var(--ink); color: var(--paper); }
+  .tabs .n { font-size: 12px; background: rgba(0,0,0,.12); border-radius: 999px; padding: 1px 7px; }
+  .tabs button[aria-current="page"] .n { background: rgba(255,255,255,.2); }
+  main { max-width: 1080px; margin: 0 auto; padding: 18px 16px 120px; }
+  h1 { font-size: clamp(28px, 6vw, 44px); font-weight: 900; letter-spacing: -.025em; line-height: 1.02; margin: 4px 0 6px; }
+  .lede { color: var(--ink-2); margin: 0 0 18px; font-size: 16px; }
+  @media (max-width: 720px) {
+    .top { padding-top: calc(52px + env(safe-area-inset-top)); }
+    .top .tabs { display: none; }
+    .tabs.bottom {
+      display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; border-radius: 0; padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
+      background: var(--card); box-shadow: 0 -1px 0 var(--line), 0 -8px 24px rgba(60,40,10,.12); justify-content: space-around;
+    }
+    .tabs.bottom button { flex: 1; flex-direction: column; gap: 2px; padding: 6px 4px; font-size: 13px; border-radius: 12px; }
+    .tabs.bottom .ic { font-size: 20px; line-height: 1; }
+  }
+  @media (min-width: 721px) { .tabs.bottom { display: none; } .tabs .ic { display: none; } }
+
+  /* ── Shared bits: chain tag, delta pill, price line, add form ──────── */
+  .ct { display: inline-flex; align-items: center; gap: 6px; font-weight: 800; white-space: nowrap; }
+  .ct::before { content: ""; width: 10px; height: 10px; border-radius: 3px; background: var(--c); flex: none; }
+  .vb { font-size: 11px; font-weight: 800; letter-spacing: .04em; color: var(--ink-3); border: 1.5px dashed var(--ink-3); border-radius: 6px; padding: 0 5px; margin-left: 4px; text-transform: uppercase; }
+  .delta { font-weight: 800; font-size: 14px; border-radius: 999px; padding: 2px 9px; background: #f6dcd4; color: var(--bad); white-space: nowrap; }
+  .delta.zero { background: #d9ecd9; color: var(--good); }
+  .add { display: flex; background: var(--card); border-radius: 999px; padding: 5px; box-shadow: 0 2px 0 var(--line); }
+  .add input { flex: 1; min-width: 0; border: 0; background: transparent; padding: 10px 16px; font-size: 17px; font-weight: 700; outline: none; }
+  .add button { border: 0; background: var(--ink); color: var(--paper); border-radius: 999px; padding: 0 20px; font-weight: 800; cursor: pointer; }
+  .hint { color: var(--ink-3); font-size: 14px; margin: 8px 4px 0; min-height: 1.4em; }
+  .hint.warn { color: var(--bad); font-weight: 700; }
+
+  /* The price line: one dot per chain, placed by what this item costs there. */
+  .pl { position: relative; height: 26px; margin: 0 9px; }
+  .pl::before { content: ""; position: absolute; left: 0; right: 0; top: 12px; height: 3px; border-radius: 3px; background: var(--line); }
+  .pl .dot { position: absolute; top: 6px; width: 15px; height: 15px; margin-left: -7.5px; border-radius: 50%; background: var(--c); box-shadow: 0 0 0 2.5px var(--card); }
+  .pl .dot.min { width: 19px; height: 19px; top: 4px; margin-left: -9.5px; box-shadow: 0 0 0 2.5px var(--card), 0 0 0 4.5px var(--ink); }
+  .pl .dot.sim { background: repeating-linear-gradient(45deg, var(--c) 0 3px, var(--card) 3px 5px); }
+  .pl.mini { height: 14px; margin: 0 6px; }
+  .pl.mini::before { top: 6px; height: 2px; }
+  .pl.mini .dot { top: 3px; width: 9px; height: 9px; margin-left: -4.5px; box-shadow: 0 0 0 1.5px var(--card); }
+  .pl.mini .dot.min { width: 11px; height: 11px; top: 2px; margin-left: -5.5px; box-shadow: 0 0 0 1.5px var(--card), 0 0 0 3px var(--ink); }
+  .pl-ends { display: flex; justify-content: space-between; font-size: 13px; font-weight: 800; color: var(--ink-2); margin-top: -2px; }
+  .pl-ends .lo { color: var(--good); }
+
+  /* ── Lijst ────────────────────────────────────────────────────────── */
+  .sec { display: flex; align-items: baseline; gap: 10px; margin: 26px 0 10px; }
+  .sec h2 { margin: 0; font-size: 20px; font-weight: 900; }
+  .sec span { color: var(--ink-3); font-size: 14px; font-weight: 700; }
+  .items { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; }
+  .it { background: var(--card); border-radius: var(--r); padding: 12px 14px 10px; box-shadow: 0 2px 0 var(--line); display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; }
+  .it .nm { font-weight: 900; font-size: 18px; line-height: 1.15; }
+  .it .nm .q { font-weight: 700; color: var(--ink-3); font-size: 15px; margin-left: 4px; }
+  .it .ops { display: flex; gap: 2px; align-items: start; }
+  .it .ops button { border: 0; background: transparent; border-radius: 10px; width: 34px; height: 34px; cursor: pointer; font-size: 16px; color: var(--ink-3); }
+  .it .ops button:hover { background: var(--paper); color: var(--ink); }
+  .it .ops button[aria-pressed="true"] { color: var(--ink); background: var(--paper-2); }
+  .it .best { grid-column: 1 / -1; font-size: 14px; color: var(--ink-2); font-weight: 600; display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; }
+  .it .best b { color: var(--ink); font-weight: 900; }
+  .it .best .none { color: var(--bad); font-weight: 800; }
+  .it .pl { grid-column: 1 / -1; margin-top: 4px; }
+  .list-foot {
+    margin-top: 22px; background: var(--ink); color: var(--paper); border-radius: var(--r); padding: 14px 16px; display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between;
+  }
+  .list-foot b { font-size: 22px; font-weight: 900; }
+  .list-foot button { border: 0; background: var(--paper); color: var(--ink); border-radius: 999px; padding: 9px 16px; font-weight: 900; cursor: pointer; }
+  .list-foot .ghost { background: transparent; color: var(--paper); box-shadow: inset 0 0 0 2px rgba(255,255,255,.35); }
+
+  /* ── Vergelijk ────────────────────────────────────────────────────── */
+  .rack { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 30px 14px; margin-top: 34px; }
+  .bagc {
+    position: relative; border: 0; text-align: left; cursor: pointer; background: var(--c); color: #fff; border-radius: 10px 10px 22px 22px;
+    padding: 18px 16px 14px; box-shadow: inset 0 -8px 0 rgba(0,0,0,.12), 0 14px 24px -16px rgba(60,30,0,.6); display: grid; gap: 4px;
+  }
+  .bagc::before { content: ""; position: absolute; left: 50%; top: -22px; width: 40%; height: 30px; transform: translateX(-50%); border: 7px solid var(--c); border-bottom: 0; border-radius: 40px 40px 0 0; }
+  .bagc.sim { background: repeating-linear-gradient(-45deg, var(--c) 0 14px, color-mix(in srgb, var(--c) 86%, #fff) 14px 28px); }
+  .bagc .rank { position: absolute; top: 12px; right: 14px; font-weight: 900; font-size: 13px; background: rgba(255,255,255,.22); border-radius: 999px; padding: 2px 9px; }
+  .bagc .nm { font-weight: 900; font-size: 19px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; padding-right: 40px; }
+  .bagc .nm .vb { color: #fff; border-color: rgba(255,255,255,.7); }
+  .bagc .tt { font-weight: 900; font-size: 34px; letter-spacing: -.02em; line-height: 1.05; font-variant-numeric: tabular-nums; }
+  .bagc .tt small { font-size: 18px; opacity: .85; margin-right: 2px; }
+  .bagc .df { justify-self: start; font-weight: 900; font-size: 15px; background: #fff; color: var(--bad); border-radius: 999px; padding: 2px 10px; }
+  .bagc .df.zero { color: var(--good); }
+  .bagc .cov { display: flex; gap: 2px; margin-top: 8px; }
+  .bagc .cov i { flex: 1; height: 6px; border-radius: 2px; background: rgba(255,255,255,.85); }
+  .bagc .cov i.miss { background: rgba(0,0,0,.28); }
+  .bagc .cv { font-size: 13px; font-weight: 700; opacity: .9; }
+  .bagc .pick { margin-top: 6px; display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 14px; }
+  .bagc .pick i { width: 22px; height: 22px; border-radius: 50%; border: 2.5px solid #fff; display: grid; place-items: center; font-style: normal; font-size: 13px; }
+  .bagc[aria-pressed="true"] { outline: 4px solid var(--ink); outline-offset: 4px; }
+  .bagc[aria-pressed="true"] .pick i { background: #fff; color: var(--ink); }
+  .bagc.combo { --c: var(--ink); background: linear-gradient(90deg, var(--c1) 0 50%, var(--c2) 50% 100%); }
+  .bagc.combo::before { border-color: var(--ink); }
+  .bagc.combo .cv { opacity: 1; }
+  @media (max-width: 720px) {
+    .rack { grid-template-columns: 1fr; gap: 26px; }
+    .bagc { grid-template-columns: 1fr auto; align-items: center; padding: 14px 14px 12px; }
+    .bagc .nm { grid-column: 1; } .bagc .tt { grid-column: 2; grid-row: 1 / 3; text-align: right; font-size: 30px; }
+    .bagc .df { grid-column: 1; } .bagc .cov, .bagc .cv, .bagc .pick { grid-column: 1 / -1; }
+    .bagc .rank { position: static; justify-self: start; grid-column: 1; grid-row: 1; display: none; }
+  }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 14px; color: var(--ink-2); margin: 6px 0 12px; }
+  .diffs { display: grid; gap: 8px; }
+  .df-row { background: var(--card); border-radius: var(--r); box-shadow: 0 2px 0 var(--line); }
+  .df-row > button { width: 100%; border: 0; background: transparent; text-align: left; cursor: pointer; padding: 12px 14px 10px; display: grid; grid-template-columns: minmax(130px, 220px) 1fr auto; gap: 4px 16px; align-items: center; }
+  .df-row .nm { font-weight: 900; font-size: 17px; line-height: 1.15; }
+  .df-row .nm .q { display: block; font-weight: 700; color: var(--ink-3); font-size: 14px; }
+  .df-row .spread { font-weight: 900; font-size: 15px; text-align: right; white-space: nowrap; }
+  .df-row .spread small { display: block; font-size: 12px; color: var(--ink-3); font-weight: 700; }
+  .df-row .open { border-top: 1px dashed var(--line); padding: 8px 14px 12px; display: grid; gap: 4px; }
+  .df-row .pr { display: grid; grid-template-columns: auto 1fr auto auto; gap: 10px; align-items: baseline; font-size: 15px; }
+  .df-row .pr .pn { color: var(--ink-2); font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+  .df-row .pr .v { font-weight: 900; font-variant-numeric: tabular-nums; text-align: right; }
+  @media (max-width: 720px) {
+    .df-row > button { grid-template-columns: 1fr auto; }
+    .df-row > button .plw { grid-column: 1 / -1; grid-row: 2; }
+    .df-row .pr { grid-template-columns: auto 1fr auto; } .df-row .pr .pn { grid-column: 1 / -1; grid-row: 2; }
+  }
+
+  /* ── Winkelen ─────────────────────────────────────────────────────── */
+  .plan { background: var(--ink); color: var(--paper); border-radius: var(--r); padding: 14px 16px; display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; justify-content: space-between; }
+  .plan b { font-size: 20px; font-weight: 900; }
+  .plan button { border: 0; background: transparent; color: var(--paper); text-decoration: underline; font-weight: 800; cursor: pointer; padding: 0; }
+  .shop { margin-top: 40px; position: relative; background: var(--c); border-radius: 10px 10px 22px 22px; padding: 16px 12px 12px; box-shadow: inset 0 -8px 0 rgba(0,0,0,.12); }
+  .shop::before { content: ""; position: absolute; left: 50%; top: -24px; width: 34%; max-width: 200px; height: 32px; transform: translateX(-50%); border: 7px solid var(--c); border-bottom: 0; border-radius: 40px 40px 0 0; }
+  .shop.sim { background: repeating-linear-gradient(-45deg, var(--c) 0 14px, color-mix(in srgb, var(--c) 86%, #fff) 14px 28px); }
+  .shop > header { display: flex; justify-content: space-between; align-items: baseline; color: #fff; padding: 0 6px 10px; gap: 10px; }
+  .shop > header b { font-size: 22px; font-weight: 900; }
+  .shop > header .vb { color: #fff; border-color: rgba(255,255,255,.7); }
+  .shop > header span { font-weight: 800; }
+  .chk { display: grid; gap: 6px; }
+  .ci { background: var(--card); border-radius: 12px; display: grid; grid-template-columns: 46px 1fr auto; align-items: center; gap: 0 10px; padding: 10px 12px 10px 6px; cursor: pointer; border: 0; text-align: left; width: 100%; }
+  .ci .tick { width: 30px; height: 30px; border-radius: 50%; border: 3px solid var(--ink); justify-self: center; display: grid; place-items: center; font-weight: 900; }
+  .ci .nm { font-weight: 900; font-size: 17px; line-height: 1.15; }
+  .ci .nm .q { font-weight: 700; color: var(--ink-3); font-size: 15px; margin-left: 4px; }
+  .ci .g { grid-column: 2; font-size: 14px; color: var(--ink-2); font-weight: 600; }
+  .ci .g .o { background: #ffe9a3; color: var(--ink); border-radius: 6px; padding: 0 6px; font-weight: 800; }
+  .ci .g .w { color: #a35a12; font-weight: 800; }
+  .ci .v { grid-column: 3; grid-row: 1 / 3; font-weight: 900; font-size: 18px; font-variant-numeric: tabular-nums; }
+  .ci.done { opacity: .5; }
+  .ci.done .tick { background: var(--ink); color: var(--card); }
+  .ci.done .nm { text-decoration: line-through 2.5px; }
+  .missing { margin-top: 18px; border: 2px dashed var(--bad); color: var(--bad); border-radius: var(--r); padding: 12px 14px; font-weight: 800; }
+  .progress {
+    position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(14px + env(safe-area-inset-bottom)); z-index: 30;
+    width: min(560px, calc(100% - 24px)); background: var(--card); border-radius: 999px; padding: 8px 8px 8px 18px; box-shadow: 0 10px 30px rgba(60,40,10,.25);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .progress .bar { flex: 1; height: 8px; border-radius: 99px; background: var(--paper-2); overflow: hidden; }
+  .progress .bar i { display: block; height: 100%; background: var(--good); }
+  .progress b { font-weight: 900; font-variant-numeric: tabular-nums; }
+  .progress button { border: 0; background: var(--ink); color: var(--paper); border-radius: 999px; padding: 8px 14px; font-weight: 900; cursor: pointer; }
+  @media (max-width: 720px) { .progress { bottom: calc(76px + env(safe-area-inset-bottom)); } }
+</style>
+
+<div class="proto" role="group" aria-label="Prototype">
+  <span>Winkels</span>
+  <button data-chains="2">2 echt</button>
+  <button data-chains="6">6 met voorbeelden</button>
+</div>
+
+<header class="top">
+  <div class="brand"><i></i>mealdeal</div>
+  <nav class="tabs" id="tabs-top"></nav>
+</header>
+<main id="main"></main>
+<nav class="tabs bottom" id="tabs-bottom"></nav>
+
+<script src="catalogue.js"></script>
+<script>
+  if (!window.CATALOGUE) {
+    document.getElementById("main").textContent = "Run node scripts/catalogue-from-db.ts first: catalogue.js is missing.";
+    throw new Error("no catalogue");
+  }
+  const data = window.CATALOGUE;
+
+  // ── Core, as in basket.html ─────────────────────────────────────────
+  const euro = (c) => "€" + (c / 100).toFixed(2).replace(".", ",");
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+  const per = { kg: "/kg", l: "/l", piece: "/st" };
+  function stem(w) { let b; do { b = w; if (w.length > 4) w = w.replace(/(jes|je|en|e|s)$/, ""); } while (w !== b); return w; }
+  const wordsOf = (noun) => noun.toLowerCase().split(/[^\p{L}]+/u).filter((w) => w.length > 1).map(stem);
+  const products = {}, searchable = {};
+  for (const c of data.chains) {
+    products[c.id] = {};
+    searchable[c.id] = data.catalogue[c.id].map((r) => {
+      const id = c.id + "-" + r[0];
+      products[c.id][id] = { id, name: r[1], packaging: r[2], packQuantity: r[3], packUnit: r[4], comparisonUnit: r[5],
+        shelfPriceCents: r[6], offerPriceCents: r[7], unitPriceCents: r[8], offerWording: r[9], offerUpcoming: r[10] === 1 };
+      return { id, unit: r[5], words: r[1].toLowerCase().split(/[^\p{L}]+/u).filter(Boolean).map(stem) };
+    });
+  }
+  const matching = (cid, unit, words) => searchable[cid].filter((p) =>
+    (unit === null || p.unit === unit) && words.every((w) => p.words.some((n) => n.endsWith(w))));
+  const UNITS = { g: ["kg", .001], gr: ["kg", .001], gram: ["kg", .001], kg: ["kg", 1], kilo: ["kg", 1], ml: ["l", .001], cl: ["l", .01],
+    l: ["l", 1], liter: ["l", 1], x: ["piece", 1], "×": ["piece", 1], st: ["piece", 1], stuk: ["piece", 1], stuks: ["piece", 1] };
+  function parse(text) {
+    const t = text.trim().replace(/\s+/g, " "); if (!t) return null;
+    let quantity = null, unit = null, noun = t;
+    const m = t.match(/^(\d+(?:[.,]\d+)?)\s*(.*)$/);
+    if (m) {
+      quantity = Number(m[1].replace(",", ".")); noun = m[2];
+      const [first, ...rest] = noun.split(" "); const u = UNITS[first.toLowerCase().replace(/\.$/, "")];
+      if (u && rest.length) { unit = u[0]; quantity *= u[1]; noun = rest.join(" "); }
+    }
+    if (!noun || UNITS[noun.toLowerCase()] || !(quantity === null || quantity > 0)) return null;
+    if (unit === null) {
+      const tally = { kg: 0, l: 0, piece: 0 };
+      for (const c of data.chains) for (const p of matching(c.id, null, wordsOf(noun))) tally[p.unit]++;
+      if (quantity !== null && tally.piece > 0) unit = "piece";
+      else { unit = Object.keys(tally).sort((a, b) => tally[b] - tally[a])[0]; if (!tally[unit]) unit = "piece"; }
+      if (quantity === null) quantity = 1;
+    }
+    return { noun, quantity: Math.round(quantity * 1000) / 1000, unit };
+  }
+  const resolved = {};
+  function realLine(cid, item) {
+    const key = cid + "|" + item.unit + "|" + item.noun;
+    resolved[key] ??= matching(cid, item.unit, wordsOf(item.noun)).map((s) => products[cid][s.id])
+      .sort((a, b) => a.unitPriceCents - b.unitPriceCents || a.shelfPriceCents - b.shelfPriceCents)[0] || null;
+    const p = resolved[key]; if (!p) return null;
+    const offer = (p.offerPriceCents !== null || p.offerWording) && !p.offerUpcoming ? (p.offerWording || "actie") : null;
+    const price = offer && p.offerPriceCents ? p.offerPriceCents : p.shelfPriceCents;
+    const known = p.packQuantity > 0 && p.packUnit === item.unit;
+    const packs = known ? Math.max(1, Math.ceil(item.quantity / p.packQuantity)) : 1;
+    return { p, offer, packs, cost: packs * price, over: known ? p.packQuantity / item.quantity : 1 };
+  }
+  const qtyText = (i) => i.unit === "piece" ? i.quantity + "×" : (i.unit === "kg" && i.quantity < 1 ? i.quantity * 1000 + " g"
+    : i.unit === "l" && i.quantity < 1 ? i.quantity * 1000 + " ml" : i.quantity + " " + i.unit);
+
+  // ── Chains: the real two, plus four EXAMPLE chains to test scale ─────
+  // Own colours, never a chain's brand colours. Examples get invented names
+  // so nothing real is shown with invented prices.
+  const REAL = data.chains.map((c, i) => ({ ...c, color: ["#2f6b57", "#8a3b5c"][i] || "#555", sim: false }));
+  const EXAMPLES = [
+    { id: "x1", name: "Kade", color: "#3b6aa0", base: 0.94, miss: 0.08 },
+    { id: "x2", name: "Buurtsuper", color: "#c0772b", base: 1.18, miss: 0.2 },
+    { id: "x3", name: "Groothal", color: "#5b4a9e", base: 0.86, miss: 0.14 },
+    { id: "x4", name: "Markt Negen", color: "#2b8a8a", base: 1.04, miss: 0.04 },
+  ].map((c) => ({ ...c, sim: true, store: null, kind: "voorbeeld" }));
+  const hash = (s) => { let h = 2166136261; for (const ch of s) h = Math.imul(h ^ ch.charCodeAt(0), 16777619); return ((h >>> 0) % 10000) / 10000; };
+  function simLine(ch, item, reals) {
+    const base = reals.filter(Boolean).sort((a, b) => a.cost - b.cost)[0];
+    if (!base || hash(ch.id + "|m|" + item.noun) < ch.miss) return null;
+    const f = ch.base * (0.82 + 0.36 * hash(ch.id + "|f|" + item.noun));
+    const offer = hash(ch.id + "|o|" + item.noun) < 0.1 ? "actie (voorbeeld)" : null;
+    return { p: { name: "Voorbeeldproduct " + item.noun, packaging: base.p.packaging, comparisonUnit: base.p.comparisonUnit,
+      unitPriceCents: Math.round(base.p.unitPriceCents * f) }, offer, packs: base.packs, cost: Math.max(19, Math.round(base.cost * f)), over: base.over };
+  }
+
+  // ── State (in memory: this is a prototype) ──────────────────────────
+  let nid = 0;
+  let list = ["1 kg kruimige aardappelen", "250 g champignons", "2 courgettes", "500 g rundergehakt", "400 g broccoli",
+    "1 komkommer", "1 l halfvolle melk", "1 kg uien", "350 g pindakaas", "400 g spinazie", "6 eieren", "500 g wortelen"]
+    .map((t) => ({ id: "i" + nid++, staple: false, ...parse(t) }));
+  for (const n of ["halfvolle melk", "eieren", "pindakaas", "uien"]) list.find((i) => i.noun === n).staple = true;
+  const params = new URLSearchParams(location.search);
+  let page = ["lijst", "vergelijk", "winkelen"].includes(params.get("page")) ? params.get("page") : "lijst";
+  let chainCount = params.get("chains") === "6" ? 6 : 2;
+  let plan = null;          // { kind: "single", ids: [id] } | { kind: "combo", ids: [a, b] }
+  let openRow = null;       // Vergelijk: expanded item
+  const done = new Set();   // Winkelen: ticked
+  let hint = "";
+
+  const active = () => chainCount === 6 ? [...REAL, ...EXAMPLES] : REAL;
+  const chainById = (id) => [...REAL, ...EXAMPLES].find((c) => c.id === id);
+  const tag = (c) => '<span class="ct" style="--c:' + c.color + '">' + esc(c.name) + (c.sim ? '<span class="vb">vb</span>' : "") + "</span>";
+
+  function snapshot() {
+    const chains = active();
+    const rows = list.map((item) => {
+      const reals = REAL.map((c) => realLine(c.id, item));
+      const by = {};
+      REAL.forEach((c, i) => { by[c.id] = reals[i]; });
+      for (const c of chains) if (c.sim) by[c.id] = simLine(c, item, reals);
+      const avail = chains.filter((c) => by[c.id]).sort((a, b) => by[a.id].cost - by[b.id].cost);
+      return { item, by, avail, min: avail.length ? by[avail[0].id].cost : null, max: avail.length ? by[avail[avail.length - 1].id].cost : null };
+    });
+    const totals = chains.map((c) => {
+      let cost = 0, filled = 0;
+      for (const r of rows) if (r.by[c.id]) { filled++; cost += r.by[c.id].cost; }
+      return { chain: c, cost, filled, total: rows.length };
+    }).sort((a, b) => (b.filled === b.total) - (a.filled === a.total) || a.cost - b.cost);
+    const full = totals.filter((t) => t.filled === t.total && t.total);
+    const best = full[0] || null;
+    // Best two-shop combination: each item from the cheaper of the pair.
+    let combo = null;
+    for (let i = 0; i < chains.length; i++) for (let j = i + 1; j < chains.length; j++) {
+      const a = chains[i], b = chains[j];
+      let cost = 0, filled = 0; const from = {};
+      for (const r of rows) {
+        const la = r.by[a.id], lb = r.by[b.id];
+        if (!la && !lb) continue;
+        filled++;
+        const pick = !lb || (la && la.cost <= lb.cost) ? a : b;
+        from[r.item.id] = pick.id; cost += r.by[pick.id].cost;
+      }
+      const cand = { ids: [a.id, b.id], cost, filled, total: rows.length, from };
+      if (!combo || (cand.filled > combo.filled) || (cand.filled === combo.filled && cand.cost < combo.cost)) combo = cand;
+    }
+    if (combo && best && (combo.filled < combo.total || combo.cost >= best.cost)) combo = null;
+    if (combo) { // an item only one of the pair stocks still counts; drop combos that use one shop for nothing
+      const used = new Set(Object.values(combo.from));
+      if (used.size < 2) combo = null;
+    }
+    return { chains, rows, totals, best, combo };
+  }
+
+  function currentPlan(s) {
+    const valid = plan && plan.ids.every((id) => s.chains.some((c) => c.id === id));
+    if (valid && (plan.kind === "single" || (s.combo && s.combo.ids.join() === plan.ids.join()))) return plan;
+    return { kind: "single", ids: [(s.best || s.totals[0]).chain.id] };
+  }
+  /** Which chain an item is bought at under a plan, or null. */
+  function sourceOf(r, p, s) {
+    if (p.kind === "single") return r.by[p.ids[0]] ? p.ids[0] : null;
+    return s.combo.from[r.item.id] || null;
+  }
+
+  // ── Price line ───────────────────────────────────────────────────────
+  function priceLine(r, mini) {
+    if (!r.avail.length) return "";
+    const span = r.max - r.min;
+    const seen = {};
+    return '<div class="pl' + (mini ? " mini" : "") + '" aria-hidden="true">' + r.avail.map((c, i) => {
+      const x = span ? (r.by[c.id].cost - r.min) / span * 100 : 0;
+      const k = Math.round(x); seen[k] = (seen[k] || 0) + 1;
+      const nudge = (seen[k] - 1) * (mini ? 7 : 12);
+      return '<span class="dot' + (i === 0 ? " min" : "") + (c.sim ? " sim" : "") + '" style="--c:' + c.color + ";left:calc(" + x + "% + " + nudge + 'px)" title="' +
+        esc(c.name) + " " + euro(r.by[c.id].cost) + '"></span>';
+    }).join("") + "</div>";
+  }
+
+  // ── Pages ────────────────────────────────────────────────────────────
+  const PAGES = {
+    lijst: { label: "Lijst", ic: "☰", render(s) {
+      const card = (r) => {
+        const cheapest = r.avail[0];
+        const best = cheapest
+          ? "<span>goedkoopst " + tag(cheapest) + " <b>" + euro(r.min) + "</b></span>" +
+            (r.avail.length > 1 && r.max > r.min ? '<span class="delta">tot +' + euro(r.max - r.min) + " elders</span>" : r.avail.length > 1 ? '<span class="delta zero">overal even duur</span>' : "")
+          : '<span class="none">nergens te koop</span>';
+        return '<div class="it"><div class="nm">' + esc(r.item.noun) + '<span class="q">' + qtyText(r.item) + "</span></div>" +
+          '<div class="ops"><button data-act="staple" data-id="' + r.item.id + '" aria-pressed="' + r.item.staple + '" title="Vaste boodschap">📌</button>' +
+          '<button data-act="remove" data-id="' + r.item.id + '" title="Van de lijst">✕</button></div>' +
+          '<div class="best">' + best + "</div>" + priceLine(r, true) + "</div>";
+      };
+      const staples = s.rows.filter((r) => r.item.staple), once = s.rows.filter((r) => !r.item.staple);
+      const p = currentPlan(s);
+      const planCost = s.rows.reduce((n, r) => { const c = sourceOf(r, p, s); return n + (c ? r.by[c].cost : 0); }, 0);
+      return "<h1>Boodschappenlijst</h1><p class=\"lede\">Wat er in huis moet komen. Prijzen vergelijk je op de volgende pagina.</p>" +
+        '<form class="add" data-form="add"><input name="q" placeholder="500 g rundergehakt, 2 courgettes, melk…" autocomplete="off"><button>Erbij</button></form>' +
+        '<p class="hint' + (hint.startsWith("!") ? " warn" : "") + '">' + esc(hint.replace(/^!/, "")) + "</p>" +
+        '<div class="sec"><h2>Deze keer</h2><span>' + once.length + " · gaan eraf na het winkelen</span></div>" +
+        (once.length ? '<div class="items">' + once.map(card).join("") + "</div>" : '<p class="lede">Niets extra deze keer.</p>') +
+        '<div class="sec"><h2>Vaste boodschappen</h2><span>' + staples.length + " · 📌 blijven op de lijst</span></div>" +
+        (staples.length ? '<div class="items">' + staples.map(card).join("") + "</div>" : '<p class="lede">Pin iets met 📌 om het te bewaren.</p>') +
+        '<div class="list-foot"><span>' + s.rows.length + " artikelen · " + p.ids.map((id) => tag({ ...chainById(id), color: "#fff" })).join(" + ") + " <b>" + euro(planCost) + "</b></span>" +
+        '<span><button class="ghost" data-act="go" data-id="vergelijk">Vergelijk winkels</button> <button data-act="go" data-id="winkelen">Winkelen</button></span></div>';
+    } },
+
+    vergelijk: { label: "Vergelijk", ic: "⚖", render(s) {
+      const p = currentPlan(s);
+      const base = s.best ? s.best.cost : null;
+      const bag = (t, i) => {
+        const c = t.chain, full = t.filled === t.total;
+        const on = p.kind === "single" && p.ids[0] === c.id;
+        const diff = base !== null && full ? t.cost - base : null;
+        return '<button class="bagc' + (c.sim ? " sim" : "") + '" style="--c:' + c.color + '" data-act="plan" data-id="' + c.id + '" aria-pressed="' + on + '">' +
+          '<span class="rank">#' + (i + 1) + '</span><span class="nm">' + esc(c.name) + (c.sim ? '<span class="vb">voorbeeld</span>' : "") + "</span>" +
+          '<span class="tt">' + (full ? "" : "<small>≥</small>") + euro(t.cost) + "</span>" +
+          (diff === null ? '<span class="df">' + (t.total - t.filled) + " ontbreekt</span>" : '<span class="df' + (diff ? "" : " zero") + '">' + (diff ? "+" + euro(diff) : "goedkoopst") + "</span>") +
+          '<span class="cov">' + s.rows.map((r) => '<i class="' + (r.by[c.id] ? "" : "miss") + '"></i>').join("") + "</span>" +
+          '<span class="cv">' + t.filled + " van " + t.total + " te koop" + (full ? "" : " · totaal is een ondergrens") + "</span>" +
+          '<span class="pick"><i>' + (on ? "✓" : "") + "</i>" + (on ? "Gekozen" : "Kies deze tas") + "</span></button>";
+      };
+      let comboCard = "";
+      if (s.combo) {
+        const [a, b] = s.combo.ids.map(chainById);
+        const on = p.kind === "combo";
+        const n = (id) => Object.values(s.combo.from).filter((x) => x === id).length;
+        comboCard = '<button class="bagc combo" style="--c1:' + a.color + ";--c2:" + b.color + '" data-act="combo" aria-pressed="' + on + '">' +
+          '<span class="nm">' + esc(a.name) + " + " + esc(b.name) + '</span><span class="tt">' + euro(s.combo.cost) + "</span>" +
+          '<span class="df zero">' + euro(base - s.combo.cost) + " minder dan " + esc(s.best.chain.name) + "</span>" +
+          '<span class="cv">Twee winkels: ' + n(a.id) + " bij " + esc(a.name) + ", " + n(b.id) + " bij " + esc(b.name) + "</span>" +
+          '<span class="pick"><i>' + (on ? "✓" : "") + "</i>" + (on ? "Gekozen" : "Kies deze combinatie") + "</span></button>";
+      }
+      const rows = s.rows.slice().sort((a, b) => ((b.max ?? 0) - (b.min ?? 0)) - ((a.max ?? 0) - (a.min ?? 0)));
+      const diffs = rows.map((r) => {
+        const open = openRow === r.item.id;
+        const spread = r.avail.length > 1 ? r.max - r.min : 0;
+        const missing = s.chains.length - r.avail.length;
+        return '<div class="df-row"><button data-act="row" data-id="' + r.item.id + '" aria-expanded="' + open + '">' +
+          '<span class="nm">' + esc(r.item.noun) + '<span class="q">' + qtyText(r.item) + (missing ? " · " + missing + " winkel" + (missing > 1 ? "s" : "") + " niet" : "") + "</span></span>" +
+          '<span class="plw">' + priceLine(r) + (r.avail.length ? '<div class="pl-ends"><span class="lo">' + euro(r.min) + " " + esc(r.avail[0].name) + "</span><span>" + (spread ? euro(r.max) : "") + "</span></div>" : "") + "</span>" +
+          '<span class="spread">' + (spread ? "+" + euro(spread) : "—") + "<small>" + (spread ? "verschil" : r.avail.length ? "gelijk" : "nergens") + "</small></span></button>" +
+          (open ? '<div class="open">' + r.avail.map((c) => {
+            const l = r.by[c.id];
+            return '<div class="pr">' + tag(c) + '<span class="pn">' + esc(l.p.name) + (l.offer ? " · " + esc(l.offer) : "") + "</span>" +
+              '<span class="v">' + euro(l.cost) + "</span>" + (l.cost > r.min ? '<span class="delta">+' + euro(l.cost - r.min) + "</span>" : '<span class="delta zero">laagst</span>') + "</div>";
+          }).join("") + s.chains.filter((c) => !r.by[c.id]).map((c) => '<div class="pr">' + tag(c) + '<span class="pn">niet te koop</span><span class="v">—</span></div>').join("") + "</div>" : "") + "</div>";
+      }).join("");
+      const head = s.best
+        ? "Alles bij " + esc(s.best.chain.name) + ": " + euro(s.best.cost)
+        : "Geen winkel heeft alles";
+      return "<h1>" + head + '</h1><p class="lede">Elke winkel is een tas met jouw hele lijst erin. Gesorteerd van goedkoop naar duur; tik een tas om er te gaan winkelen.</p>' +
+        '<div class="rack">' + (comboCard ? comboCard : "") + s.totals.map(bag).join("") + "</div>" +
+        '<div class="sec" style="margin-top:38px"><h2>Waar zit het verschil?</h2><span>grootste verschil bovenaan · tik voor alle prijzen</span></div>' +
+        '<div class="legend">' + s.chains.map(tag).join("") + '<span>· omcirkeld = goedkoopst</span></div><div class="diffs">' + diffs + "</div>";
+    } },
+
+    winkelen: { label: "Winkelen", ic: "✓", render(s) {
+      const p = currentPlan(s);
+      const groups = p.ids.map((id) => ({ c: chainById(id), rows: s.rows.filter((r) => sourceOf(r, p, s) === id) }));
+      const nowhere = s.rows.filter((r) => !sourceOf(r, p, s));
+      let left = 0, total = 0, ticked = 0, count = 0;
+      for (const g of groups) for (const r of g.rows) { const c = r.by[g.c.id].cost; total += c; count++; if (done.has(r.item.id)) ticked++; else left += c; }
+      const shops = groups.map(({ c, rows }) => '<section class="shop' + (c.sim ? " sim" : "") + '" style="--c:' + c.color + '"><header><b>' + esc(c.name) + (c.sim ? '<span class="vb">voorbeeld</span>' : "") + "</b>" +
+        "<span>" + rows.length + " · " + euro(rows.reduce((n, r) => n + r.by[c.id].cost, 0)) + '</span></header><div class="chk">' + rows.map((r) => {
+          const l = r.by[c.id], d = done.has(r.item.id);
+          return '<button class="ci' + (d ? " done" : "") + '" data-act="tick" data-id="' + r.item.id + '"><span class="tick">' + (d ? "✓" : "") + "</span>" +
+            '<span class="nm">' + esc(r.item.noun) + '<span class="q">' + qtyText(r.item) + "</span></span>" +
+            '<span class="g">' + (l.offer ? '<span class="o">' + esc(l.offer) + "</span> " : "") + (l.packs > 1 ? l.packs + "× " : "") + esc(l.p.name) +
+            (l.p.packaging ? " · " + esc(l.p.packaging) : "") + (l.over >= 2 ? ' · <span class="w">pak is ' + Math.round(l.over * 10) / 10 + "× wat je nodig hebt</span>" : "") + "</span>" +
+            '<span class="v">' + euro(l.cost) + "</span></button>";
+        }).join("") + "</div></section>").join("");
+      const pct = count ? Math.round(ticked / count * 100) : 0;
+      return "<h1>Winkelen</h1>" +
+        '<div class="plan"><span>' + (p.kind === "combo" ? "Twee winkels" : "Alles bij") + " " + p.ids.map((id) => esc(chainById(id).name)).join(" + ") + " · <b>" + euro(total) + "</b></span>" +
+        '<button data-act="go" data-id="vergelijk">andere tas kiezen</button></div>' + shops +
+        (nowhere.length ? '<div class="missing">Hier niet te koop: ' + nowhere.map((r) => esc(r.item.noun)).join(", ") + "</div>" : "") +
+        '<div class="progress"><span><b>' + euro(left) + "</b> nog</span><span class=\"bar\"><i style=\"width:" + pct + '%"></i></span><span>' + ticked + "/" + count + "</span>" +
+        (ticked ? '<button data-act="finish">Klaar</button>' : "") + "</div>";
+    } },
+  };
+
+  // ── Wiring ───────────────────────────────────────────────────────────
+  const main = document.getElementById("main");
+  function render() {
+    const s = snapshot();
+    const counts = { lijst: s.rows.length, vergelijk: s.chains.length, winkelen: s.rows.length - done.size };
+    for (const nav of ["tabs-top", "tabs-bottom"]) document.getElementById(nav).innerHTML = Object.entries(PAGES).map(([k, v]) =>
+      '<button data-act="go" data-id="' + k + '"' + (k === page ? ' aria-current="page"' : "") + '><span class="ic">' + v.ic + "</span>" + v.label + '<span class="n">' + counts[k] + "</span></button>").join("");
+    for (const b of document.querySelectorAll(".proto button")) b.setAttribute("aria-pressed", String(Number(b.dataset.chains) === chainCount));
+    const focused = document.activeElement && document.activeElement.name === "q";
+    main.innerHTML = PAGES[page].render(s);
+    if (focused) main.querySelector("input[name=q]")?.focus();
+    const u = new URL(location.href); u.searchParams.set("page", page); u.searchParams.set("chains", chainCount);
+    try { history.replaceState(null, "", u); } catch { /* file:// */ }
+  }
+  document.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const input = e.target.querySelector("input[name=q]");
+    const parsed = parse(input.value);
+    if (!parsed) { hint = "!Niet gelezen. Probeer “500 g rundergehakt” of “2 courgettes”."; render(); return; }
+    list.unshift({ id: "i" + nid++, staple: false, ...parsed });
+    hint = "Toegevoegd: " + qtyText(parsed) + " " + parsed.noun;
+    input.value = "";
+    render();
+  });
+  document.addEventListener("click", (e) => {
+    const pr = e.target.closest(".proto button");
+    if (pr) { chainCount = Number(pr.dataset.chains); render(); return; }
+    const b = e.target.closest("[data-act]"); if (!b) return;
+    const id = b.dataset.id;
+    switch (b.dataset.act) {
+      case "go": page = id; window.scrollTo(0, 0); break;
+      case "staple": { const it = list.find((i) => i.id === id); if (it) it.staple = !it.staple; break; }
+      case "remove": list = list.filter((i) => i.id !== id); done.delete(id); break;
+      case "plan": plan = { kind: "single", ids: [id] }; break;
+      case "combo": { const s = snapshot(); if (s.combo) plan = { kind: "combo", ids: s.combo.ids.slice() }; break; }
+      case "row": openRow = openRow === id ? null : id; break;
+      case "tick": done.has(id) ? done.delete(id) : done.add(id); break;
+      case "finish": list = list.filter((i) => i.staple || !done.has(i.id)); done.clear(); page = "lijst"; break;
+    }
+    render();
+  });
+  render();
+</script>
