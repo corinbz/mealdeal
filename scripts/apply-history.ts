@@ -47,7 +47,8 @@ for (const [chainId, rows] of Object.entries(data.catalogue)) {
     shelfPriceCents: r[6] as number,
     offerPriceCents: r[7] as number | null,
     offerWording: r[9] as string | null,
-    offerUpcoming: r[10] === 1,
+    // The row's Offer is the running one; the upcoming one is kept apart.
+    offerUpcoming: false,
   }));
 }
 
