@@ -49,10 +49,18 @@ export interface ResolvedProduct {
   readonly referenceDays: number | null;
 }
 
+/** Whether a running Offer is a real low (#18); see verdict in prototype/resolve.js. */
+export interface Verdict {
+  readonly kind: "lowest" | "not-lower" | "shelf-up" | "shelf-same";
+  readonly lowCents: number;
+  readonly days: number;
+}
+
 export interface Resolver {
   parse(text: string): Requirement | null;
   candidates(chainId: string, item: Requirement): ResolvedProduct[];
   unitPrice(p: ResolvedProduct, item: Requirement): number;
+  verdict(p: ResolvedProduct): Verdict | null;
 }
 
 const context: { MealdealWords?: Words; MealdealResolve?: { createResolver(data: unknown): Resolver; SPREAD_CHECK: number } } = {};
