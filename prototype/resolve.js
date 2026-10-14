@@ -21,7 +21,8 @@
     [/\b(uit (blik|pot)|blik|pot|conserven)\b/g, "conserven"],
   ];
 
-  function createResolver(data) {
+  /** `prices` is window.PRICES (scripts/daily-prices.ts), or nothing when there is no history. */
+  function createResolver(data, prices) {
     const C = Object.fromEntries(data.columns.map((name, i) => [name, i]));
     const at = (r, name) => (C[name] === undefined ? null : r[C[name]] ?? null);
     const vocabulary = new Map((data.vocabulary || []).map((d) => [d.id, d]));
@@ -138,7 +139,29 @@
       ? chainId + "|i|" + item.ingredient + "|" + (item.variant || "")
       : chainId + "|" + item.unit + "|" + item.noun.toLowerCase();
 
-    return { products, vocabulary, parse, candidates, satisfies, packsFor, unitPrice, correctionKey };
+    /**
+     * The Daily Price of a Requirement at one Chain, per day (#16): the lowest
+     * price per unit among the Products that satisfy it, at the Offer price
+     * while a priced Offer ran. A day none of them was observed is null, a
+     * gap, never filled in from its neighbours.
+     */
+    function dailyPrices(chainId, item) {
+      const dates = (prices && prices.dates) || [];
+      const series = (prices && prices.series[chainId]) || {};
+      const days = dates.map(() => null);
+      for (const p of candidates(chainId, item)) {
+        const s = series[p.id.slice(chainId.length + 1)];
+        if (!s) continue;
+        s.forEach((day, i) => {
+          if (day === null) return;
+          const cents = Array.isArray(day) ? day[0] : day;
+          if (days[i] === null || cents < days[i].cents) days[i] = { cents, offer: Array.isArray(day), product: p.name };
+        });
+      }
+      return { dates, days };
+    }
+
+    return { products, vocabulary, parse, candidates, satisfies, packsFor, unitPrice, correctionKey, dailyPrices };
   }
 
   global.MealdealResolve = { createResolver };

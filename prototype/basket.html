@@ -20,7 +20,7 @@
     --good: #2f7a3f; --good-wash: #d9ecd9; --bad: #b8432f; --bad-wash: #f6dcd4;
     --offer: #ffe9a3; --offer-ink: #2b2118; --scrim: rgba(30, 20, 10, .45);
     --bag-shade: rgba(0, 0, 0, .12); --lift: 0 14px 24px -16px rgba(60, 30, 0, .6);
-    --c0: #2f6b57; --c1: #8a3b5c; --c2: #3b6aa0; --c3: #c0772b; --c4: #5b4a9e; --c5: #2b8a8a; --c6: #7a6a2a; --c7: #a8452f;
+    --c0: #12805a; --c1: #c4801a; --c2: #3b6aa0; --c3: #c0772b; --c4: #5b4a9e; --c5: #2b8a8a; --c6: #7a6a2a; --c7: #a8452f;
     --r: 16px;
     --font: Nunito, ui-rounded, "SF Pro Rounded", system-ui, sans-serif;
   }
@@ -32,7 +32,7 @@
       --good: #72c28e; --good-wash: rgba(114, 194, 142, .16); --bad: #f08c75; --bad-wash: rgba(240, 140, 117, .16);
       --offer: rgba(255, 214, 102, .18); --offer-ink: #ffd666; --scrim: rgba(0, 0, 0, .6);
       --bag-shade: rgba(0, 0, 0, .22); --lift: 0 14px 26px -14px rgba(0, 0, 0, .7);
-      --c0: #2e6f58; --c1: #b4557c; --c2: #4f80bd; --c3: #c4853a; --c4: #7b68bd; --c5: #3a9a99; --c6: #a08a3a; --c7: #c0604a;
+      --c0: #239270; --c1: #c38425; --c2: #4f80bd; --c3: #c4853a; --c4: #7b68bd; --c5: #3a9a99; --c6: #a08a3a; --c7: #c0604a;
     }
   }
   :root[data-theme="dark"] {
@@ -42,7 +42,7 @@
     --good: #72c28e; --good-wash: rgba(114, 194, 142, .16); --bad: #f08c75; --bad-wash: rgba(240, 140, 117, .16);
     --offer: rgba(255, 214, 102, .18); --offer-ink: #ffd666; --scrim: rgba(0, 0, 0, .6);
     --bag-shade: rgba(0, 0, 0, .22); --lift: 0 14px 26px -14px rgba(0, 0, 0, .7);
-    --c0: #2e6f58; --c1: #b4557c; --c2: #4f80bd; --c3: #c4853a; --c4: #7b68bd; --c5: #3a9a99; --c6: #a08a3a; --c7: #c0604a;
+    --c0: #239270; --c1: #c38425; --c2: #4f80bd; --c3: #c4853a; --c4: #7b68bd; --c5: #3a9a99; --c6: #a08a3a; --c7: #c0604a;
   }
 
   * { box-sizing: border-box; }
@@ -96,6 +96,28 @@
   .vd { display: inline-block; font-size: 12px; font-weight: 700; border-radius: 6px; padding: 0 6px; margin-left: 4px; color: var(--ink-2); }
   .vd.low { background: var(--good-wash); color: var(--good); }
   .vd.not { background: var(--bad-wash); color: var(--bad); }
+  .hist { grid-column: 1 / -1; display: grid; gap: 2px; width: 100%; border: 0; background: none; padding: 4px 0 0; font: inherit; color: var(--ink-2); text-align: left; cursor: pointer; }
+  .hist svg { width: 100%; height: 28px; display: block; overflow: visible; }
+  .hist .cap { font-size: 13px; font-weight: 700; }
+  .hist:hover .cap, .hist:focus-visible .cap { color: var(--ink); }
+  .chart { position: relative; margin: 8px 0 4px; }
+  .chart svg { display: block; overflow: visible; }
+  .chart .grid { stroke: var(--line); stroke-width: 1; }
+  .chart .tick { fill: var(--ink-3); font-size: 12px; font-variant-numeric: tabular-nums; }
+  .chart .hit { fill: transparent; cursor: crosshair; outline: none; }
+  .chart .hit:focus-visible { stroke: var(--ink-3); stroke-width: 1; }
+  .chart .xh { stroke: var(--ink-3); stroke-width: 1; }
+  .chart .tip { position: absolute; top: 0; pointer-events: none; background: var(--card); color: var(--ink); border-radius: 10px; padding: 8px 10px; box-shadow: 0 6px 24px rgba(0, 0, 0, .18); font-size: 13px; white-space: nowrap; }
+  .chart .tip b { font-size: 15px; font-variant-numeric: tabular-nums; }
+  .chart .tip .k, .legend .k { display: inline-block; width: 14px; height: 0; border-top: 2px solid var(--c); vertical-align: middle; margin-right: 6px; }
+  .legend { display: grid; gap: 6px; margin: 4px 0 12px; font-size: 14px; }
+  .legend .nm { font-weight: 800; }
+  .legend .st { color: var(--ink-2); }
+  .hsheet { padding: 4px 20px 20px; }
+  .hsheet .note { color: var(--ink-2); font-size: 13px; }
+  .hsheet table { border-collapse: collapse; font-size: 13px; margin-top: 8px; font-variant-numeric: tabular-nums; }
+  .hsheet th, .hsheet td { padding: 3px 10px 3px 0; text-align: right; }
+  .hsheet th:first-child, .hsheet td:first-child { text-align: left; }
   .vd.later { background: var(--offer); color: var(--offer-ink); border: 1px dashed var(--offer-ink); }
   .wk { display: inline-flex; background: var(--card); border-radius: 999px; padding: 3px; box-shadow: 0 2px 0 var(--line); margin: 0 0 14px; }
   .wk button { border: 0; background: none; font: inherit; font-weight: 800; color: var(--ink-2); padding: 6px 14px; border-radius: 999px; cursor: pointer; }
@@ -304,6 +326,7 @@
 <div id="sheet"></div>
 
 <script src="catalogue.js"></script>
+<script src="prices.js"></script>
 <script src="words.js"></script>
 <script src="resolve.js"></script>
 <script>
@@ -369,7 +392,8 @@
   // Row: [ref, name, packaging, packQuantity, packUnit, unit, shelf, offerPrice, unitPrice, wording, endsOn,
   //       nextWording, nextStartsOn, referenceLow, referenceDays]
   // ── Products and Resolution: prototype/resolve.js, shared with the digest ─
-  const R = window.MealdealResolve.createResolver(data);
+  // prices.js is each Product's recent price per day (#16); without it there is no history to show.
+  const R = window.MealdealResolve.createResolver(data, window.PRICES);
   const products = R.products;
 
   // ── Reading what was typed ────────────────────────────────────────────
@@ -708,7 +732,7 @@
           '<button data-act="remove" data-id="' + r.item.id + '" title="Van de lijst">✕</button></div>' +
           (r.item.guessed ? '<div class="guess">' + (r.item.ingredient ? "Hoeveelheid geraden: gerekend in " + ({ kg: "kilo", l: "liter", piece: "stuks" })[r.item.unit] : "Eenheid geraden: tik het aantal om te wisselen") + "</div>" : "") +
           (r.item.ingredient ? "" : '<div class="guess">Niet herkend: gezocht op de naam van producten</div>') +
-          '<div class="best">' + best + "</div>" + priceLine(r, true) + offersFor(r.item) + "</div>";
+          '<div class="best">' + best + "</div>" + priceLine(r, true) + sparkline(r.item) + offersFor(r.item) + "</div>";
       };
       const staples = s.rows.filter((r) => r.item.staple), once = s.rows.filter((r) => !r.item.staple);
       const p = currentPlan(s), top = rankedRecipes(week)[0];
@@ -802,6 +826,113 @@
   };
 
   // ── Sheets ────────────────────────────────────────────────────────────
+  // ── Price history (#16) ───────────────────────────────────────────────
+  // An item's Daily Price per Chain per day: the lowest price per unit among
+  // the Products satisfying it (resolve.js). A day nothing was observed is a
+  // gap in the line, never bridged.
+  const UNIT_TEXT = { kg: "per kg", l: "per liter", piece: "per stuk" };
+  const shortDay = (iso) => { const [y, m, d] = iso.split("-").map(Number); return new Date(y, m - 1, d).toLocaleDateString("nl-NL", { day: "numeric", month: "short" }); };
+  function historyOf(item) {
+    return chains.map((c) => ({ chain: c, ...R.dailyPrices(c.id, item) })).filter((h) => h.days.some(Boolean));
+  }
+  /** Runs of consecutive observed days, as [index, cents] pairs: one line each. */
+  function runs(days) {
+    const out = []; let cur = null;
+    days.forEach((d, i) => { if (d) { (cur ??= []).push([i, d.cents]); } else if (cur) { out.push(cur); cur = null; } });
+    if (cur) out.push(cur);
+    return out;
+  }
+  /** The compact line on a list item: a trend, so no axes and no numbers. */
+  function sparkline(item) {
+    const hs = historyOf(item); if (!hs.length) return "";
+    const n = hs[0].dates.length, all = hs.flatMap((h) => h.days.filter(Boolean).map((d) => d.cents));
+    const lo = Math.min(...all), hi = Math.max(...all), y = (v) => hi === lo ? 16 : 28 - ((v - lo) / (hi - lo)) * 24 - 2;
+    const x = (i) => n === 1 ? 150 : (i / (n - 1)) * 300;
+    const lines = hs.map((h) => runs(h.days).map((run) => run.length === 1
+      ? '<line x1="' + (x(run[0][0]) - 4) + '" x2="' + (x(run[0][0]) + 4) + '" y1="' + y(run[0][1]) + '" y2="' + y(run[0][1]) + '" stroke="' + h.chain.color + '" stroke-width="2" stroke-linecap="round" vector-effect="non-scaling-stroke"/>'
+      : '<polyline fill="none" stroke="' + h.chain.color + '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke" points="' + run.map(([i, v]) => x(i) + "," + y(v)).join(" ") + '"/>').join("")).join("");
+    const measured = hs[0].dates.filter((_, i) => hs.some((h) => h.days[i])).length;
+    return '<button class="hist" data-act="history" data-id="' + item.id + '" aria-label="Prijsverloop van ' + esc(item.noun) + '">' +
+      '<svg viewBox="0 0 300 32" preserveAspectRatio="none" aria-hidden="true">' + lines + "</svg>" +
+      '<span class="cap">Prijsverloop · ' + measured + (measured === 1 ? " dag" : " dagen") + " gemeten ›</span></button>";
+  }
+  let chartState = null; // what the open chart's crosshair reads
+  function niceTicks(lo, hi) {
+    const span = hi - lo || hi || 100, step0 = span / 3, mag = Math.pow(10, Math.floor(Math.log10(step0)));
+    const step = [1, 2, 2.5, 5, 10].map((f) => f * mag).find((s) => s >= step0) || mag * 10;
+    const out = []; for (let v = Math.floor(lo / step) * step; v <= hi + step / 2; v += step) out.push(Math.round(v));
+    return out;
+  }
+  function historySheet(itemId) {
+    const item = list.find((i) => i.id === itemId); if (!item) return "";
+    const hs = historyOf(item), dates = hs[0] ? hs[0].dates : [], unit = UNIT_TEXT[item.unit] || "";
+    const head = '<div class="scrim" data-act="close"></div><section class="sheet narrow" role="dialog" aria-modal="true" aria-labelledby="sheet-title">' +
+      '<header><div><h2 id="sheet-title">' + esc(qtyText(item) + " " + item.noun) + '</h2><div class="meta">Laagste prijs ' + unit + " per dag, per winkel</div></div>" +
+      '<button class="x" data-act="close" aria-label="Sluiten">✕</button></header><div class="hsheet">';
+    if (!hs.length) { chartState = null; return head + '<p class="note">Nog geen prijzen gemeten voor dit artikel.</p></div></section>'; }
+    const W = Math.max(260, Math.min(window.innerWidth - 32, 520) - 40), H = 200, m = { l: 48, r: 14, t: 14, b: 26 };
+    const all = hs.flatMap((h) => h.days.filter(Boolean).map((d) => d.cents));
+    const ticks = niceTicks(Math.min(...all) * 0.95, Math.max(...all) * 1.05), lo = ticks[0], hi = ticks.at(-1);
+    const n = dates.length, x = (i) => m.l + (n === 1 ? (W - m.l - m.r) / 2 : (i / (n - 1)) * (W - m.l - m.r));
+    const y = (v) => m.t + (1 - (v - lo) / (hi - lo || 1)) * (H - m.t - m.b);
+    chartState = { hs, dates, x, W, H, m, n, unit };
+    const grid = ticks.map((t) => '<line class="grid" x1="' + m.l + '" x2="' + (W - m.r) + '" y1="' + y(t) + '" y2="' + y(t) + '"/>' +
+      '<text class="tick" x="' + (m.l - 6) + '" y="' + (y(t) + 4) + '" text-anchor="end">' + euro(t) + "</text>").join("");
+    const xl = [0, n - 1].filter((v, i, a) => a.indexOf(v) === i).map((i) => '<text class="tick" x="' + x(i) + '" y="' + (H - 6) + '" text-anchor="' + (n === 1 ? "middle" : i === 0 ? "start" : "end") + '">' + shortDay(dates[i]) + "</text>").join("");
+    const marks = hs.map((h) => {
+      const lines = runs(h.days).map((run) => run.length > 1
+        ? '<polyline fill="none" stroke="' + h.chain.color + '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" points="' + run.map(([i, v]) => x(i) + "," + y(v)).join(" ") + '"/>' : "").join("");
+      // Dots: an Offer day, a day standing alone between gaps, and the latest day.
+      const last = h.days.findLastIndex(Boolean);
+      const dots = h.days.map((d, i) => d && (d.offer || i === last || (!h.days[i - 1] && !h.days[i + 1]))
+        ? '<circle cx="' + x(i) + '" cy="' + y(d.cents) + '" r="4" fill="' + h.chain.color + '" stroke="var(--paper)" stroke-width="2"/>' : "").join("");
+      return lines + dots;
+    }).join("");
+    const legend = '<div class="legend">' + hs.map((h) => {
+      const seen = h.days.filter(Boolean), last = h.days.findLast(Boolean);
+      return '<div><span class="k" style="--c:' + h.chain.color + '"></span><span class="nm">' + esc(h.chain.name) + "</span> " +
+        '<span class="st">laatst ' + euro(last.cents) + (seen.length > 1 ? " · laagste " + euro(Math.min(...seen.map((d) => d.cents))) + " · hoogste " + euro(Math.max(...seen.map((d) => d.cents))) : "") + "</span></div>";
+    }).join("") + "</div>";
+    const table = '<details><summary class="note">Als tabel</summary><table><thead><tr><th>Dag</th>' + hs.map((h) => "<th>" + esc(h.chain.name) + "</th>").join("") + "</tr></thead><tbody>" +
+      dates.map((d, i) => "<tr><td>" + shortDay(d) + "</td>" + hs.map((h) => "<td>" + (h.days[i] ? euro(h.days[i].cents) + (h.days[i].offer ? " *" : "") : "—") + "</td>").join("") + "</tr>").join("") + "</tbody></table></details>";
+    return head + legend +
+      '<div class="chart"><svg width="' + W + '" height="' + H + '" role="img" aria-label="Laagste prijs ' + unit + " per dag voor " + esc(item.noun) + '">' + grid + xl + marks +
+      '<line class="xh" x1="0" x2="0" y1="' + m.t + '" y2="' + (H - m.b) + '" visibility="hidden"/>' +
+      '<rect class="hit" tabindex="0" aria-label="Verschuif met de pijltjes" x="' + m.l + '" y="' + m.t + '" width="' + (W - m.l - m.r) + '" height="' + (H - m.t - m.b) + '"/></svg>' +
+      '<div class="tip" hidden></div></div>' +
+      '<p class="note">' + n + (n === 1 ? " dag" : " dagen") + " sinds de eerste meting. Een gat in een lijn: die dag niet gemeten. Een stip: een aanbieding (* in de tabel). Prijzen gaan niet verder terug dan de eerste dag dat ze zijn vastgelegd.</p>" +
+      table + "</div></section>";
+  }
+  /** The crosshair: snaps to the nearest day and lists every Chain's price on it. */
+  function showDay(chartEl, i) {
+    const st = chartState; if (!st) return;
+    i = Math.max(0, Math.min(st.n - 1, i)); st.at = i;
+    const line = chartEl.querySelector(".xh"), tip = chartEl.querySelector(".tip"), px = st.x(i);
+    line.setAttribute("x1", px); line.setAttribute("x2", px); line.setAttribute("visibility", "visible");
+    tip.textContent = "";
+    const day = document.createElement("div"); day.textContent = shortDay(st.dates[i]); day.className = "note"; tip.append(day);
+    for (const h of st.hs) {
+      const row = document.createElement("div"), key = document.createElement("span"), val = document.createElement("b"), nm = document.createElement("span");
+      key.className = "k"; key.style.setProperty("--c", h.chain.color);
+      val.textContent = h.days[i] ? euro(h.days[i].cents) : "—";
+      nm.textContent = " " + h.chain.name + (h.days[i] ? (h.days[i].offer ? " · aanbieding" : "") : " · niet gemeten");
+      row.append(key, val, nm); tip.append(row);
+    }
+    tip.hidden = false;
+    tip.style.left = Math.min(Math.max(px - tip.offsetWidth / 2, 0), st.W - tip.offsetWidth) + "px";
+    tip.style.top = (st.m.t - tip.offsetHeight - 6 < -40 ? st.m.t : -tip.offsetHeight - 6) + "px";
+  }
+  document.addEventListener("pointermove", (e) => {
+    const hit = e.target.closest && e.target.closest(".chart .hit"); if (!hit || !chartState) return;
+    const r = hit.getBoundingClientRect(), st = chartState;
+    showDay(hit.closest(".chart"), Math.round(((e.clientX - r.left) / r.width) * (st.n - 1)));
+  });
+  document.addEventListener("keydown", (e) => {
+    const hit = e.target.closest && e.target.closest(".chart .hit"); if (!hit || !chartState) return;
+    if (e.key === "ArrowLeft" || e.key === "ArrowRight") { e.preventDefault(); showDay(hit.closest(".chart"), (chartState.at ?? chartState.n - 1) + (e.key === "ArrowLeft" ? -1 : 1)); }
+  });
+  document.addEventListener("focusin", (e) => { if (e.target.closest && e.target.closest(".chart .hit") && chartState) showDay(e.target.closest(".chart"), chartState.at ?? chartState.n - 1); });
+
   function recipeSheet(id) {
     const rc = RECIPES.find((r) => r.id === id); if (!rc) return "";
     const { at, best } = priceRecipe(rc), ticked = stepsDone[rc.id] || new Set();
@@ -848,7 +979,8 @@
     const focused = document.activeElement && document.activeElement.name === "q";
     main.innerHTML = PAGES[page].render(s);
     if (focused) main.querySelector("input[name=q]")?.focus();
-    document.getElementById("sheet").innerHTML = !sheet ? "" : sheet.kind === "recipe" ? recipeSheet(sheet.id) : fixSheet(sheet.chainId, sheet.itemId);
+    document.getElementById("sheet").innerHTML = !sheet ? "" : sheet.kind === "recipe" ? recipeSheet(sheet.id)
+      : sheet.kind === "history" ? historySheet(sheet.itemId) : fixSheet(sheet.chainId, sheet.itemId);
     document.body.classList.toggle("locked", !!sheet);
   }
 
@@ -895,6 +1027,7 @@
       case "finish": list = list.filter((i) => i.staple || !done.has(i.id)); done.clear(); page = "lijst"; history.replaceState(null, "", "#lijst"); break;
       case "recipe": addRecipe(id); break;
       case "open-recipe": sheet = { kind: "recipe", id }; break;
+      case "history": sheet = { kind: "history", itemId: id }; break;
       case "step": { const set = (stepsDone[sheet.id] ||= new Set()); const n = Number(id); set.has(n) ? set.delete(n) : set.add(n); break; }
       case "close": sheet = null; break;
       default: return;

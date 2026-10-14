@@ -18,3 +18,7 @@ prototype/fixture.json
 # scripts/catalogue-from-db.ts for the basket page. Megabytes, rebuilt after
 # each ingest, so not tracked.
 prototype/catalogue.js
+
+# Each mapped Product's recent price per day, from scripts/daily-prices.ts.
+# Rebuilt by every refresh, so not tracked.
+prototype/prices.js

@@ -1,0 +1,98 @@
+# Rebuilds the price history from the archive, day by day (#16, #18).
+#
+# catalogue/history.json is derived: every price in it was built from an
+# archived day by the morning refresh. If it is lost, or if the Ingredient
+# mapping or a parser changes how past days should read, this replays every
+# archived day since `from` in order, exactly as the refresh would have, and
+# publishes the result. The next refresh builds the page's price history
+# (prices.js) from it.
+#
+#   gh workflow run history-rebuild.yml -f from=2026-10-13
+name: Rebuild the price history
+
+on:
+  workflow_dispatch:
+    inputs:
+      from:
+        description: First archived day to replay (YYYY-MM-DD). Days older than the history keeps are dropped anyway.
+        type: string
+        required: true
+
+# Shares the refresh's group: the two must never publish over each other.
+concurrency:
+  group: catalogue
+  cancel-in-progress: false
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: mealdeal
+          POSTGRES_PASSWORD: mealdeal
+          POSTGRES_DB: mealdeal
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U mealdeal"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgres://mealdeal:mealdeal@localhost:5432/mealdeal
+      R2: s3://${{ secrets.R2_BUCKET }}
+      AWS_ENDPOINT_URL: https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com
+      AWS_REQUEST_CHECKSUM_CALCULATION: when_required
+      AWS_RESPONSE_CHECKSUM_VALIDATION: when_required
+      AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: auto
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+
+      - run: npm ci
+
+      - name: Replay every archived day in order
+        run: |
+          from="${{ inputs.from }}"
+          [[ "$from" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]] || { echo "::error::Not a date: $from"; exit 1; }
+          days=$(aws s3 ls "$R2/" | awk '{print $2}' | tr -d / | grep -E '^[0-9]{4}-[0-9]{2}-[0-9]{2}$' | sort | awk -v f="$from" '$0 >= f')
+          [ -n "$days" ] || { echo "::error::No archived days from $from"; exit 1; }
+          rm -f history.json
+          for day in $days; do
+            echo "::group::$day"
+            aws s3 sync "$R2/$day/" "archive/$day/" --only-show-errors
+            # A fresh database per day, as the refresh has: otherwise a Product
+            # last seen on Monday would carry Monday's price into Tuesday, and a
+            # gap would be filled.
+            psql "$DATABASE_URL" -q -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
+            if npm run --silent ingest -- --migrate --chain all --date "$day"; then
+              node scripts/catalogue-from-db.ts
+              args="--date $day --catalogue prototype/catalogue.js --out-history history.next.json"
+              [ -f history.json ] && args="$args --history history.json"
+              node scripts/apply-history.ts $args && mv history.next.json history.json
+            else
+              echo "::warning::$day did not ingest cleanly and is a gap in the history"
+            fi
+            rm -rf "archive/$day"
+            echo "::endgroup::"
+          done
+          node -e 'const h=require("./history.json"); console.log(`rebuilt: ${h.dates.length} day(s), ${h.dates[0]} to ${h.dates.at(-1)}`)'
+
+      - name: Check the bucket stays inside R2's free tier
+        run: |
+          aws s3api list-objects-v2 --bucket "${{ secrets.R2_BUCKET }}" --output json > bucket-listing.json
+          npm run --silent archive:usage -- bucket-listing.json
+
+      - name: Publish
+        run: aws s3 cp history.json "$R2/catalogue/history.json" --content-type application/json --only-show-errors
