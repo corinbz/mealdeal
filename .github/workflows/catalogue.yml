@@ -129,6 +129,16 @@ jobs:
       - name: Build the price history for the page
         run: node scripts/daily-prices.ts --catalogue prototype/catalogue.js --history history.json --out prices.js
 
+      # Ingredients most Chains sell but one does not, a sharp fall in a
+      # Chain's mapped Products, and EAN twins mapped two ways (#35). Only a
+      # report: a gap is something to look at, not a reason to hold back
+      # today's prices.
+      - name: Report Ingredient coverage
+        run: |
+          args="--built prototype/catalogue.js"
+          [ -n "${published:-}" ] && args="$args --published $published"
+          node scripts/check-coverage.ts $args >> "$GITHUB_STEP_SUMMARY"
+
       - name: Check it may replace the published one
         run: |
           args="--date ${{ steps.day.outputs.date }} --built prototype/catalogue.js"

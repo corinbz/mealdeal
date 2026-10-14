@@ -67,7 +67,7 @@ function compile(vocabulary: readonly IngredientDef[]): Compiled[] {
     aisles: new Set(def.aisles),
     stems: def.words.filter((w) => !w.includes(" ") && !w.startsWith("=")).map((w) => reading.nameWords(w).join("")).filter(Boolean),
     exact: def.words.filter((w) => w.startsWith("=")).map((w) => w.slice(1)),
-    phrases: def.words.filter((w) => w.includes(" ")).map((w) => w.toLowerCase()),
+    phrases: def.words.filter((w) => w.includes(" ")).map((w) => w.toLowerCase().replace(JOINERS, " ")),
   }));
 }
 
@@ -88,8 +88,13 @@ const BRAND_NOT_FOOD = /^gouda's glorie\b/;
 
 const ELSEWHERE: ReadonlySet<Aisle> = new Set(["readymeal", "baby", "pet", "nonfood"]);
 
+/** Words after which a name goes on about something else: "X met Y". */
+const JOINER = /\s(?:met|with|in|op|zonder|minder)\s/;
+const JOINERS = new RegExp(JOINER.source, "g");
+
 export function createMapper(vocabulary: readonly IngredientDef[] = VOCABULARY) {
   const compiled = compile(vocabulary);
+  const joined = vocabulary.flatMap((d) => d.words).map((w) => w.toLowerCase()).filter((w) => JOINER.test(w));
 
   /**
    * Which Ingredients each word of a name belongs to, across the whole
@@ -133,7 +138,11 @@ export function createMapper(vocabulary: readonly IngredientDef[] = VOCABULARY) 
     // "Zalm gerookt minder zout": what something is without, or with less
     // of, does not name it either.
     // A brand that names a food it is not: Gouda's Glorie makes margarine.
-    const head = lower.replace(BRAND_NOT_FOOD, "").trim().split(/\s(?:met|with|in|op|zonder|minder)\s/)[0]!;
+    // A vocabulary phrase spanning one of those words ("doperwtjes met
+    // worteltjes") names one thing, so the name is not cut inside it.
+    let text = lower.replace(BRAND_NOT_FOOD, "").trim();
+    for (const p of joined) text = text.replaceAll(p, p.replace(JOINERS, " "));
+    const head = text.split(JOINER)[0]!;
     const written = head.split(/\s+/);
     // "Avocado's" is avocados: the apostrophe of a Dutch plural is not a
     // break between two words, or the word would never end with "avocado".

@@ -147,7 +147,7 @@ ing("sperziebonen", "kg", VEG, ["sperziebonen", "sperzieboon", "haricots verts"]
 ing("snijbonen", "kg", VEG, ["snijbonen"], {});
 ing("peultjes", "kg", VEG, ["peultje", "peulen", "sugar snaps", "sugarsnaps"], { also: ["sugar snaps"] });
 ing("doperwten", "kg", ["frozen", "conserves"], ["doperwt", "erwt", "erwtjes"], { not: ["soep", "spliterwt", "kikkererwt", "wortel"] });
-ing("doperwten en wortelen", "kg", ["frozen", "conserves"], ["doperwten en wortel", "erwten en wortel", "erwtjes en wortel", "doperwten wortel", "doperwtjes & worteltjes", "erwten & wortel", "tuinerwten wortel"], { not: ["soep"], mix: true });
+ing("doperwten en wortelen", "kg", ["frozen", "conserves"], ["doperwten en wortel", "erwten en wortel", "erwtjes en wortel", "doperwten wortel", "doperwtjes & worteltjes", "doperwtjes met worteltjes", "doperwtjes worteltjes", "erwten & wortel", "tuinerwten wortel"], { not: ["soep"], mix: true });
 ing("mais", "kg", ["frozen", "conserves", "produce"], ["mais", "maïs", "maiskolf", "=maïskolven", "=maiskolven"], { not: ["chips", "zetmeel", "maizena", "olie", "wafel", "meel", "pop"] });
 ing("champignons", "kg", VEG, ["champignon", "champignons"], {
   not: ["soep", "saus", "roomsaus"],
@@ -425,7 +425,7 @@ ing("linzen", "kg", TINNED, ["linze", "linzen"], { not: ["soep", "salade"] });
 ing("augurken", "kg", TINNED, ["augurk", "augurken", "cornichon", "cornichons"], {});
 ing("olijven", "kg", ["conserves", "deli", "pantry"], ["olijf", "olijven"], { not: ["olie", "tapenade"] });
 ing("pinda's", "kg", ["snacks", "pantry"], ["pinda", "pindas", "borrelnoot", "borrelnoten"], { not: ["kaas", "saus", "koek", "olie", "snoep", "chocolade", "rijst"], also: ["pindas"] });
-ing("noten", "kg", ["snacks", "pantry", "produce"], ["noot", "noten", "cashew", "cashewnoten", "walnoot", "walnoten", "amandel", "amandelen", "hazelnoot", "hazelnoten", "pecan", "pistache", "notenmix", "studentenhaver"], { not: ["d'or", "pudding", "pasta", "melk", "drink", "chocolade", "koek", "reep", "olie", "kokos", "spread", "pinda", "borrelnoot", "muskaat"] });
+ing("noten", "kg", ["snacks", "pantry", "produce"], ["noot", "noten", "cashew", "cashewnoten", "walnoot", "walnoten", "amandel", "amandelen", "hazelnoot", "hazelnoten", "pecan", "pistache", "notenmix", "studentenhaver"], { not: ["d'or", "penotti", "pudding", "pasta", "melk", "drink", "chocolade", "koek", "reep", "olie", "kokos", "spread", "pinda", "borrelnoot", "muskaat"] });
 ing("kerrie", "kg", PANTRY, ["kerrie", "kerriepoeder", "currypoeder"], {});
 ing("paprikapoeder", "kg", PANTRY, ["paprikapoeder"], {});
 ing("kaneel", "kg", PANTRY, ["kaneel"], { not: ["thee", "koek", "brood", "bol", "rol", "suiker", "bakmix", "cake"] });
