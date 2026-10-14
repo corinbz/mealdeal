@@ -352,6 +352,18 @@ in `src/catalogue/known-gaps.ts` with the reason, and is not reported again.
 If the Chain later sells that Ingredient after all, the report says the entry
 can go. `scripts/check-coverage.ts` writes the report.
 
+The same report then lists every **difference over 70%** between Chains that
+nobody has checked yet (#36): an Ingredient whose cheapest Chain is that far
+below the middle one, or a priced Offer that far below every other Chain.
+Each such difference examined so far was a wrong match, a frozen or tinned
+form, or a unit the Chain itself got wrong, not a bargain. So Bladeren holds
+them back at the foot of the page under "Nog niet gecontroleerd". One found
+real goes in `src/catalogue/checked-spreads.ts`, naming the cheapest Product
+rather than the Ingredient, so a different Product undercutting later is
+checked afresh. The catalogue carries the list as `checked`. Both the page and
+the report read it through `spreads()` in `prototype/resolve.js`, and the
+threshold is `SPREAD_CHECK` there.
+
 It also judges every Offer against its Product's **Reference Price**, the
 lowest price of the 30 days before the reduction began (#18). The refresh's
 database holds only one day, so `catalogue/history.json` carries each

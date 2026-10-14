@@ -1,8 +1,9 @@
 /**
  * Reports Ingredient coverage after the morning refresh (#35): Ingredients
  * most Chains sell but one does not, a sharp fall in a Chain's mapped
- * Products since yesterday, and EAN twins mapped to different Ingredients.
- * See src/catalogue/coverage.ts.
+ * Products since yesterday, EAN twins mapped to different Ingredients, and
+ * differences between Chains too large to show unchecked. See
+ * src/catalogue/coverage.ts and src/catalogue/spreads.ts.
  *
  *   node scripts/check-coverage.ts --built prototype/catalogue.js [--published published.js]
  *
@@ -15,6 +16,8 @@ import { readFile } from "node:fs/promises";
 import { assessCoverage, coverageMarkdown, type CoverageCatalogue } from "../src/catalogue/coverage.ts";
 import { parseCatalogueScript } from "../src/catalogue/assess.ts";
 import { KNOWN_GAPS } from "../src/catalogue/known-gaps.ts";
+import { CHECKED_SPREADS } from "../src/catalogue/checked-spreads.ts";
+import { assessSpreads, spreadsMarkdown } from "../src/catalogue/spreads.ts";
 
 function usage(): never {
   console.error("Usage: node scripts/check-coverage.ts --built <file> [--published <file>]");
@@ -43,3 +46,5 @@ for (const d of coverage.drops) {
   console.error(`::warning::${d.chain} has ${d.mapped} Products mapped to an Ingredient, down from ${d.was} yesterday`);
 }
 console.log(coverageMarkdown(coverage, today, before));
+const chainName = (id: string) => today.chains.find((c) => c.id === id)?.name ?? id;
+console.log(spreadsMarkdown(assessSpreads(today, CHECKED_SPREADS), chainName));

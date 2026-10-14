@@ -55,10 +55,12 @@ export interface Resolver {
   unitPrice(p: ResolvedProduct, item: Requirement): number;
 }
 
-const context: { MealdealWords?: Words; MealdealResolve?: { createResolver(data: unknown): Resolver } } = {};
+const context: { MealdealWords?: Words; MealdealResolve?: { createResolver(data: unknown): Resolver; SPREAD_CHECK: number } } = {};
 for (const file of ["words.js", "resolve.js"]) {
   runInNewContext(readFileSync(new URL(`../prototype/${file}`, import.meta.url), "utf8"), context);
 }
 export const words: Words = context.MealdealWords!;
 /** The page's own Resolution (prototype/resolve.js), over a catalogue as the page loads it. */
 export const createResolver = (catalogue: unknown): Resolver => context.MealdealResolve!.createResolver(catalogue);
+/** A difference between Chains larger than this is checked before Bladeren shows it as a bargain (#36). */
+export const SPREAD_CHECK: number = context.MealdealResolve!.SPREAD_CHECK;
