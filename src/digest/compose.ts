@@ -51,7 +51,7 @@ const PER_STAPLE = 3;
 const DISH = /\s(met|&)\s/i;
 
 /** The deals the real-discount check supports, per staple, in the order given. */
-export function realDeals(data: DigestCatalogue, staples: readonly string[]): { staple: string; deals: Deal[] }[] {
+export function realDeals(data: DigestCatalogue, staples: readonly string[]): { staple: string; suggestion: string | null; deals: Deal[] }[] {
   const resolver = createResolver(data);
   const chainName = new Map(data.chains.map((c) => [c.id, c.name]));
   return staples.flatMap((text) => {
@@ -67,7 +67,7 @@ export function realDeals(data: DigestCatalogue, staples: readonly string[]): { 
         chain: chainName.get(p.chainId)!, name: p.name, wording: p.offerWording, offerPriceCents: p.offerPriceCents!,
         shelfPriceCents: p.shelfPriceCents, referenceLowCents: p.referenceLowCents!, referenceDays: p.referenceDays!,
       }));
-    return [{ staple: item.noun, deals }];
+    return [{ staple: item.noun, suggestion: item.suggestion ?? null, deals }];
   });
 }
 
@@ -91,12 +91,16 @@ export function composeDigest(data: DigestCatalogue, staples: readonly string[],
     (d.wording ? ` (${d.wording})` : "") +
     `. Laagste prijs in ${days(d.referenceDays)}; daarvoor minstens ${euro(d.referenceLowCents)}.`;
   const withDeals = found.filter((s) => s.deals.length), without = found.filter((s) => !s.deals.length);
+  // A staple that reads as a typo is said so, with the likely name, since a
+  // misspelt staple is resolved by name only and may quietly match nothing.
+  const typos = found.filter((s) => s.suggestion).map((s) => `"${s.staple}" niet herkend; bedoel je "${s.suggestion}"? Pas je vaste boodschappen aan.`);
 
   const text = [
     subject + (newest ? `, prijzen van ${dayText(newest)}.` : "."),
     "",
     ...withDeals.flatMap((s) => [s.staple, ...s.deals.map((d) => "  " + line(d)), ""]),
     ...(without.length ? [`Geen echte korting deze week op: ${without.map((s) => s.staple).join(", ")}.`, ""] : []),
+    ...(typos.length ? [...typos, ""] : []),
     "Alleen aanbiedingen onder de laagste prijs van de dagen ervoor staan hierin. Een actie zonder eigen prijs, zoals 1+1 gratis, of zonder prijsgeschiedenis, telt niet mee.",
     "",
     `Recepten van deze week: ${site}#recepten`,
@@ -113,6 +117,7 @@ ${withDeals.map((s) => `<h2 style="font-size:16px;margin:18px 0 6px">${esc(s.sta
   (d.wording ? ` <span style="background:#ffe9a3;border-radius:4px;padding:0 4px">${esc(d.wording)}</span>` : "") +
   `<br><span style="color:#2f7a3f;font-size:13px">laagste prijs in ${days(d.referenceDays)}; daarvoor minstens ${euro(d.referenceLowCents)}</span></li>`).join("")}</ul>`).join("\n")}
 ${without.length ? `<p style="color:#6b5b4b">Geen echte korting deze week op: ${esc(without.map((s) => s.staple).join(", "))}.</p>` : ""}
+${typos.map((t) => `<p style="color:#b8432f">${esc(t)}</p>`).join("\n")}
 <p style="font-size:13px;color:#6b5b4b">Alleen aanbiedingen onder de laagste prijs van de dagen ervoor staan hierin. Een actie zonder eigen prijs, zoals 1+1 gratis, of zonder prijsgeschiedenis, telt niet mee.</p>
 <p><a href="${esc(site)}#recepten">Recepten van deze week</a> · <a href="${esc(site)}#lijst">Je lijst</a></p>
 <p style="font-size:12px;color:#8a7a6a">Afmelden: zet de wekelijkse mail uit met één klik op <a href="${esc(disableUrl)}">Disable workflow</a>.</p>

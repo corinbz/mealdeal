@@ -31,6 +31,8 @@ export interface Requirement extends Parsed {
   readonly ingredient: string | null;
   readonly variant: string | null;
   readonly preferences: Readonly<Record<string, boolean>>;
+  /** For an unrecognised item, the Ingredient name it is probably a typo of. */
+  readonly suggestion?: string | null;
 }
 
 /** A Product as prototype/resolve.js unpacks a catalogue row. */
