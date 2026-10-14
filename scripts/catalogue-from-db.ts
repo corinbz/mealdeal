@@ -264,11 +264,13 @@ const data = {
   /**
    * What the page reads a typed item against. `fresh`: the Ingredient is sold
    * fresh, so frozen, tinned and jarred count only when a Preference allows.
+   * `aisle`: where it is mainly sold, whose sticker stands in for its own.
    */
   vocabulary: VOCABULARY.map((d) => ({
     id: d.id, name: d.name, unit: d.unit, also: d.also, equals: d.equals,
     variants: d.variants.map((v) => ({ id: v.id, name: v.name })),
     fresh: d.aisles.some((a) => formOf(a) === "vers"),
+    aisle: d.aisles[0],
   })),
   catalogue,
   exact,
