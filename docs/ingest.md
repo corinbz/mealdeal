@@ -202,6 +202,27 @@ Deka's keuken, Altijd handig), Dirk's 1 de Beste, and the Superunie lines it
 shares with Vomar and Hoogvliet. 9,872 Products on 2026-10-14, 95 without a
 Unit Price (packs counted "Per pakket", "3-pack"), 138 Offers.
 
+**Aldi** (#31, `readers/aldi.ts`) reads the Algolia records whole: national
+prices, no EAN, the pack as `salesUnit` ("500 g", "2x120 g", "Per kg"). The
+price now is `currentPrice`; under an Offer its strike price is the Shelf
+Price and the price shown the Offer price. Aldi's own Unit Price is stored
+when it is per kilo or litre, and otherwise one is derived from the pack.
+Three prices shown are not for one pack a Store sells today, and are not
+recorded: a multibuy ("2 VOOR 6,00", for two; the deal stays in the Offer's
+wording, ADR-0002), a price from ("VANAF 1,39", "TOT -24%": one record for
+several articles, priced at the cheapest), and an article not yet in Stores
+("v.a. wo. 21.10."), which is recorded as an upcoming Offer only. Records
+marked unavailable (260) are skipped too. Every `promotionPrices` entry that
+advertises something is an Offer of its one Product, keyed by Product and
+first day, recorded weeks ahead and passed over once ended; dates are Unix
+seconds, and the year 2099 means no end. Categories arrive one list per
+depth; the deepest paths are kept, and the brand, season and prize shelves
+("ALDI merken", "Speciaal assortiment", "Winnaarsproducten") only where
+nothing else is. Own brands are Aldi's many labels (Milsani, Cucina,
+Choceur, Golden Seafood, ...). 3,040 of 3,794 records on 2026-10-14, 284
+without a Unit Price ("Per set", multipacks), 507 Offers, 266 of them in
+later weeks.
+
 Two things in Vomar's data that look like they help and do not:
 
 - **A measure in a piece-counted name is each piece's size, not the pack's.**

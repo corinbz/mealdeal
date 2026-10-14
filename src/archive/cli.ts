@@ -17,6 +17,7 @@
 
 import { createClient, EdgeDenied } from "./http.ts";
 import { createSink } from "./sink.ts";
+import { aldi } from "./chains/aldi.ts";
 import { dekamarkt } from "./chains/dekamarkt.ts";
 import { dirk } from "./chains/dirk.ts";
 import { jumbo } from "./chains/jumbo.ts";
@@ -26,7 +27,7 @@ import { plus } from "./chains/plus.ts";
 import { vomar } from "./chains/vomar.ts";
 import type { Chain } from "./chains/types.ts";
 
-const CHAINS: Record<string, Chain> = { dekamarkt, dirk, hoogvliet, jumbo, lidl, plus, vomar };
+const CHAINS: Record<string, Chain> = { aldi, dekamarkt, dirk, hoogvliet, jumbo, lidl, plus, vomar };
 
 interface Options {
   chains: Chain[];
