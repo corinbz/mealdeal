@@ -153,9 +153,10 @@ without a Unit Price, all of them non-food: socks, laces, gloves.
 
 **Lidl** (#28) prices food online only on its offers page, so its Products
 are the hundred-odd that page lists that week, not its assortment. A reduced
-product's Shelf Price is the price it was. A product reduced only with the
-Lidl Plus app is recorded at the price everyone pays, and its Offer is
-wording only. An Offer not yet in store keeps today's price, and a product
+product's Shelf Price is the price it was. A Lidl Plus price counts as the
+Offer price wherever it is the lower one, as if the shopper had the app: the
+owner's choice for every Chain's card and app prices, which the page and the
+digest state (`card` in the catalogue). An Offer not yet in store keeps today's price, and a product
 arriving later with no price today has none recorded, only its Offer. First
 and last days come as Unix times of Amsterdam midnights. 139 of 142 products
 recorded on 2026-10-14; 51 without a Unit Price, because Lidl states no pack

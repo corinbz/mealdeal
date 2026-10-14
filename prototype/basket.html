@@ -67,6 +67,7 @@
   h1 { font-size: clamp(28px, 6vw, 44px); font-weight: 900; letter-spacing: -.025em; line-height: 1.02; margin: 4px 0 6px; }
   .lede { color: var(--ink-2); margin: 0 0 18px; }
   .note { color: var(--ink-3); font-size: 13px; margin: 22px 0 0; }
+  .note.card { margin: 6px 0 14px; }
   /* How old the prices are. Out of date is loud on purpose: a comparison on
      stale prices is a claim we cannot stand behind. */
   .fresh { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; font-size: 14px; color: var(--ink-2); margin: -8px 0 16px; }
@@ -390,6 +391,14 @@
    * there. Their Offers still compete item by item, and in two-shop plans.
    */
   const bagChains = chains.filter((c) => !c.offersOnly), offersOnly = chains.filter((c) => c.offersOnly);
+  /**
+   * Prices that need a Chain's card or app (Lidl Plus) count as paid, as if
+   * you held every one: said beside the prices wherever they are totted up.
+   */
+  const carded = chains.filter((c) => c.card);
+  const cardNote = () => carded.length ? '<p class="note card">Gerekend alsof je ' +
+    andList(carded.map((c) => "<b>" + esc(c.card) + "</b>")) + " hebt: aanbiedingen die alleen met " + (carded.length > 1 ? "een klantenkaart of app" : "de app") +
+    " gelden, tellen mee als je prijs. Zonder betaal je daar de gewone prijs.</p>" : "";
   const tag = (c) => '<span class="ct" style="--c:' + c.color + '">' + esc(c.name) + "</span>";
 
   // ── Freshness: which day each Chain's prices are from ─────────────────
@@ -803,7 +812,7 @@
         (next
           ? '<p class="lede">Gekozen rond de aanbiedingen die vanaf ' + esc(nextFrom()) + " ingaan, met de meeste aanbiedingen bovenaan. Een actie die nog niet loopt heeft nog geen prijs, dus dit zijn de normale prijzen van vandaag.</p>"
           : '<p class="lede">Gekozen rond wat er nu in de aanbieding is, met de meeste korting bovenaan. Tik een recept voor de bereiding.</p>') +
-        freshness("Aanbiedingen en prijzen van") +
+        freshness("Aanbiedingen en prijzen van") + cardNote() +
         '<p class="hint">' + esc(hint) + "</p>" +
         '<div class="sec"><h2>' + (next ? "Volgende week in de aanbieding" : "In de aanbieding") + "</h2><span>waar deze recepten op draaien</span></div><div class='deals'>" + deals + "</div>" +
         '<div class="recipes">' + cards + "</div>" +
@@ -838,7 +847,7 @@
       const offer = exactOffer && list.some((i) => i.id === exactOffer.itemId && !i.exact) ? exactOffer : null;
       const p = currentPlan(s), top = rankedRecipes(week)[0];
       return "<h1>Boodschappenlijst</h1><p class=\"lede\">Wat er in huis moet komen. Waar het het goedkoopst is, zie je bij Vergelijk.</p>" +
-        freshness("Prijzen van") + weekSwitch() +
+        freshness("Prijzen van") + cardNote() + weekSwitch() +
         (top ? '<div class="banner"><span>' + (week === "volgende" ? "Volgende week" : "Deze week") + ': <b>' + esc(top.rc.name) + "</b>, " + top.best.deals + " ingrediënt" + (top.best.deals === 1 ? "" : "en") + ' in de aanbieding</span><button class="btn" data-act="go" data-id="recepten">' + RECIPES.length + " recepten bekijken</button></div>" : "") +
         '<form class="add"><label for="q" hidden>Op de lijst zetten</label><input id="q" name="q" placeholder="500 g rundergehakt, 2 courgettes, melk…" autocomplete="off"><button>Erbij</button></form>' +
         '<p class="hint' + (hint.startsWith("!") ? " warn" : "") + '">' + esc(hint.replace(/^!/, "")) + "</p>" +
@@ -902,7 +911,7 @@
       }).join("");
       return "<h1>" + (s.best ? "Alles bij " + esc(s.best.chain.name) + ": " + euro(s.best.cost) : "Geen winkel heeft alles") + "</h1>" +
         '<p class="lede">Elke winkel is een tas met jouw hele lijst erin, van goedkoop naar duur. Tik een tas om er te gaan winkelen.</p>' +
-        freshness("Prijzen van") +
+        freshness("Prijzen van") + cardNote() +
         '<div class="rack">' + combo + s.totals.map(bag).join("") + "</div>" +
         '<div class="sec" style="margin-top:38px"><h2>Waar zit het verschil?</h2><span>grootste verschil bovenaan · tik voor alle prijzen en om een product te corrigeren</span></div>' +
         '<div class="legend">' + chains.map(tag).join("") + "<span>· omcirkeld = goedkoopst</span></div>" +
@@ -944,7 +953,7 @@
             '<span class="v">' + euro(l.cost) + "</span></button>";
         }).join("") + "</div></section>").join("");
       const pct = count ? Math.round(ticked / count * 100) : 0;
-      return "<h1>Winkelen</h1>" + freshness("Prijzen van") +
+      return "<h1>Winkelen</h1>" + freshness("Prijzen van") + cardNote() +
         '<div class="plan"><span>' + (p.kind === "combo" ? "Twee winkels:" : "Alles bij") + " " + p.ids.map((id) => esc(chainById(id).name)).join(" + ") + " · <b>" + euro(total) + "</b></span>" +
         '<button data-act="go" data-id="vergelijk">andere tas kiezen</button></div>' + shops +
         exactShop + (nowhere.length ? '<div class="missing">Hier niet te koop: ' + nowhere.map((r) => esc(r.item.noun)).join(", ") + "</div>" : "") +

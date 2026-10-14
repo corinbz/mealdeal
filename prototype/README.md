@@ -101,7 +101,12 @@ week, so it gets no bag: one would only ever say what is missing, and an item
 it does not list is not "not for sale" there. Its Offers compete item by item
 on every page, can make up half of a two-shop plan, and appear among the
 recipes' deals; Vergelijk names Lidl "niet in de aanbieding" where it lists
-nothing. Coverage happens to be 12 of 12 at all four today; the UI still
+nothing.
+
+**Card and app prices count as paid**, as if you held every card (the
+owner's choice): today that is Lidl Plus. Each Chain whose Offers today need
+one names it in the catalogue (`card`), and every page that adds up prices,
+and the digest, says "Gerekend alsof je Lidl Plus hebt" under the dates. Coverage happens to be 12 of 12 at all four today; the UI still
 shows it beside every total, because a Basket a Chain cannot fill is the normal
 case.
 

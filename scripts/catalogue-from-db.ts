@@ -35,6 +35,13 @@ const OUT = new URL("../prototype/catalogue.js", import.meta.url);
 const OFFERS_ONLY = new Set(["lidl"]);
 
 /**
+ * The card or app a Chain's Offers may require, as its wording names it.
+ * Every such price counts as paid, as if the shopper held the card (owner's
+ * decision, 2026-10-14), and the page says which cards it assumed.
+ */
+const CARDS: Readonly<Record<string, string>> = { lidl: "Lidl Plus" };
+
+/**
  * One Product, as a positional row: 24,000 objects with repeated keys would
  * roughly double the file. The page reads them by these indices.
  */
@@ -250,6 +257,8 @@ const data = {
     eans: withEans.has(c.id),
     /** True for a Chain whose only prices online are its Offers (Lidl): never a bag of its own. */
     offersOnly: OFFERS_ONLY.has(c.id),
+    /** The card counted as held, when any Offer today needs it; null otherwise. */
+    card: CARDS[c.id] && catalogue[c.id]!.some((r) => [r[9], r[11]].some((w) => typeof w === "string" && w.includes(CARDS[c.id]!))) ? CARDS[c.id] : null,
   })),
   columns: [...COLUMNS],
   /**

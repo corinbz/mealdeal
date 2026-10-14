@@ -97,3 +97,12 @@ test("a staple that reads as a typo is named, with the likely name", () => {
   const digest = composeDigest(DATA, ["500 g rundergehak"], "https://e/", "https://g/");
   assert.match(digest.text, /"rundergehak" niet herkend; bedoel je "rundergehakt"\?/);
 });
+
+test("says which card prices it counted, and only when one applies", () => {
+  const plain = composeDigest(DATA, ["rundergehakt"], "https://e/", "https://g/");
+  assert.doesNotMatch(plain.text, /Gerekend alsof/);
+  const withCard = { ...DATA, chains: DATA.chains.map((c) => (c.id === "jumbo" ? { ...c, card: "Lidl Plus" } : c)) };
+  const digest = composeDigest(withCard, ["rundergehakt"], "https://e/", "https://g/");
+  assert.match(digest.text, /Gerekend alsof je Lidl Plus hebt/);
+  assert.match(digest.html, /Gerekend alsof je Lidl Plus hebt/);
+});
