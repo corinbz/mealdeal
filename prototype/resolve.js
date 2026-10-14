@@ -1,7 +1,8 @@
 // Resolution: reading a typed item as a Requirement, and choosing which of a
-// Chain's Products satisfy it (#14). Shared by the basket page and the weekly
-// digest (scripts/digest.ts), so a staple resolves the same way in both. A
-// plain script, not a module, so the page still works opened from disk.
+// Chain's Products satisfy it (#14); and Basket pricing, what those Products
+// cost. Shared by the basket page and the weekly digest (scripts/digest.ts),
+// so a staple resolves and prices the same way in both. A plain script, not a
+// module, so the page still works opened from disk.
 //
 // A typed item names an Ingredient from the catalogue's vocabulary, perhaps a
 // Variant ("halfvolle melk"), and perhaps Preferences ("bio", "huismerk",
@@ -302,8 +303,182 @@
       return { ingredients, worth: [...best.values()].sort((a, b) => b.share - a.share) };
     }
 
+    // ── Basket pricing ───────────────────────────────────────────────────
+    // What a Basket Item, a Recipe or a whole list costs at each Chain, this
+    // week or next: whole packs, priced Offers paid, Corrections honoured.
+    // The basket page renders it and the digest reads it; neither prices
+    // anything itself.
+
+    /** Whether an Offer runs on the day swept. An upcoming one is never in this slot. */
+    const isOnOffer = (p) => p.offerPriceCents !== null || !!p.offerWording;
+
+    // Chains announce next week's Offers before they start (#8). Next week,
+    // per Chain, begins on the first day its announced Offers do.
+    const nextStarts = {};
+    for (const c of data.chains) for (const p of Object.values(products[c.id])) {
+      if (p.nextStartsOn && (!nextStarts[c.id] || p.nextStartsOn < nextStarts[c.id])) nextStarts[c.id] = p.nextStartsOn;
+    }
+
+    /**
+     * The Offer a Product has in a week, "nu" or "volgende", or null. Next
+     * week's counts if it starts then, or if this week's still runs then. One
+     * that has not started has no price yet, and none is derived from its
+     * wording (ADR-0002), so it is paid at the Shelf Price.
+     */
+    function offerFor(p, week = "nu") {
+      if (week === "volgende") {
+        if (p.nextWording !== null) return { wording: p.nextWording || "aanbieding", priceCents: null, startsOn: p.nextStartsOn };
+        const from = nextStarts[p.chainId];
+        if (!isOnOffer(p) || !from || (p.offerEndsOn && p.offerEndsOn < from)) return null;
+        return { wording: p.offerWording || "aanbieding", priceCents: p.offerPriceCents, startsOn: null, continues: true };
+      }
+      return isOnOffer(p) ? { wording: p.offerWording || "aanbieding", priceCents: p.offerPriceCents, startsOn: null } : null;
+    }
+
+    /** What one pack costs under an Offer from offerFor, or without one. */
+    const packCents = (p, o) => (o && o.priceCents ? o.priceCents : p.shelfPriceCents);
+
+    /**
+     * Whether a running Offer is a real low (#18): judged per Product against
+     * the lowest price paid in the days recorded before it began. null when
+     * there is no Offer or no such history. An Offer with no price of its own
+     * ("1+1 gratis") is not converted into one (ADR-0002): its Shelf Price is
+     * judged instead, which is where an inflated "was" price would show.
+     *   lowest      the Offer price is below every recorded price
+     *   not-lower   it is not
+     *   shelf-up    no Offer price, and the Shelf Price is above the recorded low
+     *   shelf-same  no Offer price, and the Shelf Price was not raised
+     */
+    function verdict(p) {
+      const lowCents = p.referenceLowCents, days = p.referenceDays;
+      if (!isOnOffer(p) || lowCents === null) return null;
+      const kind = p.offerPriceCents === null
+        ? (p.shelfPriceCents > lowCents ? "shelf-up" : "shelf-same")
+        : (p.offerPriceCents < lowCents ? "lowest" : "not-lower");
+      return { kind, lowCents, days };
+    }
+
+    /** The Product a Correction chose for a Requirement at a Chain, if it is still sold there. */
+    function correctedProduct(chainId, item, corrections) {
+      const id = corrections && corrections[correctionKey(chainId, item)];
+      return (id && products[chainId][id]) || null;
+    }
+
+    /** One Product bought for a Requirement: whole packs, because you cannot buy 0.4 of one. */
+    function buy(p, item, week) {
+      const o = offerFor(p, week), price = packCents(p, o);
+      const { known, packs, pack } = packsFor(p, item);
+      return {
+        p, o, offer: o ? o.wording : null, onOffer: !!o, packs, cost: packs * price,
+        // How many times the pack is what was asked for: "pak is 2× wat je nodig hebt".
+        over: known ? pack / item.quantity : 1,
+        // The packs at the Shelf Price, where the Offer price is below it.
+        was: o && o.priceCents && o.priceCents < p.shelfPriceCents ? packs * p.shelfPriceCents : null,
+      };
+    }
+
+    const lines = new Map();
+    /**
+     * A Requirement at one Chain, or null where it has no candidate. A
+     * Correction wins. Otherwise `choose` says which candidate:
+     *   "unit"  the Resolution, the cheapest per unit (the list)
+     *   "pack"  the cheapest for the quantity asked, in whole packs (recipes)
+     */
+    function line(chainId, item, { week = "nu", corrections = null, choose = "unit" } = {}) {
+      const fixed = correctedProduct(chainId, item, corrections);
+      const key = [chainId, week, choose, fixed ? fixed.id : "", correctionKey(chainId, item), item.unit, item.quantity, JSON.stringify(item.preferences || {})].join("|");
+      if (lines.has(key)) return lines.get(key);
+      let out = null;
+      if (fixed) out = buy(fixed, item, week);
+      else if (choose === "pack") out = candidates(chainId, item).map((p) => buy(p, item, week)).sort((a, b) => a.cost - b.cost)[0] || null;
+      else { const p = candidates(chainId, item)[0]; out = p ? buy(p, item, week) : null; }
+      lines.set(key, out);
+      return out;
+    }
+
+    /**
+     * An item naming one Exact Product (#15), bought as `item.quantity` packs
+     * at the Chain's own one of it, or with `likely`, at a Chain publishing no
+     * EANs, the Product only likely the same. Always this week's prices.
+     */
+    function exactLine(chainId, item, likely = false) {
+      const p = likely ? likelyProduct(chainId, item.exact) : exactProduct(chainId, item.exact);
+      if (!p) return null;
+      const o = offerFor(p, "nu");
+      return { p, o, offer: o ? o.wording : null, onOffer: !!o, packs: item.quantity, cost: item.quantity * packCents(p, o) };
+    }
+
+    /**
+     * A whole list compared across Chains. Each Chain that is more than its
+     * Offers is a bag: its total, and how many items it sells (Coverage). An
+     * Exact Product is compared apart and never in a bag (ADR-0006).
+     *   rows    per item: each Chain's line, the Chains selling it cheapest first, min and max
+     *   totals  per bag, the full ones cheapest first
+     *   best    the cheapest full bag, or null
+     *   combo   the best two Chains together, only where it fills the list,
+     *           beats one shop and really uses both: { ids, cost, filled, from }
+     *   exact   { rows, totals } for the Exact Products, at Chains with EANs
+     */
+    function compare(items, { week = "nu", corrections = null } = {}) {
+      const chains = data.chains, bagChains = chains.filter((c) => !c.offersOnly);
+      const rows = items.filter((i) => !i.exact).map((item) => {
+        const by = Object.fromEntries(chains.map((c) => [c.id, line(c.id, item, { week, corrections })]));
+        const avail = chains.filter((c) => by[c.id]).sort((a, b) => by[a.id].cost - by[b.id].cost);
+        return { item, by, avail, min: avail.length ? by[avail[0].id].cost : null, max: avail.length ? by[avail.at(-1).id].cost : null };
+      });
+      const totals = bagTotals(rows, bagChains);
+      const best = totals.find((t) => t.full) || null;
+      let combo = null;
+      for (let i = 0; i < chains.length; i++) for (let j = i + 1; j < chains.length; j++) {
+        const a = chains[i], b = chains[j]; let cost = 0, filled = 0; const from = {};
+        if (a.offersOnly && b.offersOnly) continue;
+        for (const r of rows) {
+          const la = r.by[a.id], lb = r.by[b.id];
+          if (!la && !lb) continue;
+          const pick = !lb || (la && la.cost <= lb.cost) ? a : b;
+          filled++; from[r.item.id] = pick.id; cost += r.by[pick.id].cost;
+        }
+        const cand = { ids: [a.id, b.id], cost, filled, from };
+        if (!combo || cand.filled > combo.filled || (cand.filled === combo.filled && cand.cost < combo.cost)) combo = cand;
+      }
+      if (combo && (combo.filled < rows.length || (best && combo.cost >= best.cost) || new Set(Object.values(combo.from)).size < 2)) combo = null;
+
+      const eanChains = chains.filter((c) => c.eans !== false), noEanChains = chains.filter((c) => c.eans === false);
+      const exactRows = items.filter((i) => i.exact).map((item) => {
+        const by = Object.fromEntries(eanChains.map((c) => [c.id, exactLine(c.id, item)]));
+        const likely = Object.fromEntries(noEanChains.map((c) => [c.id, exactLine(c.id, item, true)]));
+        const avail = eanChains.filter((c) => by[c.id]).sort((a, b) => by[a.id].cost - by[b.id].cost);
+        return { item, by, likely, avail, min: avail.length ? by[avail[0].id].cost : null };
+      });
+      return { rows, totals, best, combo, exact: { rows: exactRows, totals: bagTotals(exactRows, eanChains) } };
+    }
+    function bagTotals(rows, chains) {
+      return chains.map((c) => {
+        let cost = 0, filled = 0;
+        for (const r of rows) if (r.by[c.id]) { filled++; cost += r.by[c.id].cost; }
+        return { chain: c, cost, filled, total: rows.length, full: filled === rows.length && rows.length > 0 };
+      }).sort((a, b) => b.full - a.full || a.cost - b.cost);
+    }
+
+    /**
+     * A Recipe's ingredients priced at each Chain that is a bag, each bought
+     * the cheapest way for the quantity it needs. The Chains missing least,
+     * then cheapest, first; complete where one sells every ingredient. One
+     * that does not is never ranked as if the missing part were free.
+     *   at  per Chain: lines, cost, missing, deals (ingredients on Offer), saving
+     */
+    function priceRecipe(requirements, { week = "nu", corrections = null } = {}) {
+      const at = data.chains.filter((c) => !c.offersOnly).map((c) => {
+        const ls = requirements.map((g) => line(c.id, g, { week, corrections, choose: "pack" })), have = ls.filter(Boolean);
+        return { chain: c, lines: ls, cost: have.reduce((n, l) => n + l.cost, 0), missing: ls.length - have.length,
+          deals: have.filter((l) => l.onOffer).length, saving: have.reduce((n, l) => n + (l.was ? l.was - l.cost : 0), 0) };
+      }).sort((a, b) => a.missing - b.missing || a.cost - b.cost);
+      return { at, best: at[0], complete: !!at[0] && at[0].missing === 0 };
+    }
+
     return { products, vocabulary, parse, suggest, candidates, satisfies, packsFor, unitPrice, correctionKey, dailyPrices, priceDropAt,
-      exact, exactIdOf, exactProduct, likelyProduct, exactMatches, spreads };
+      exact, exactIdOf, exactProduct, likelyProduct, exactMatches, spreads,
+      isOnOffer, nextStarts, offerFor, packCents, verdict, correctedProduct, line, compare, priceRecipe };
   }
 
   /**

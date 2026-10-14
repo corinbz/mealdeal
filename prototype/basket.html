@@ -409,7 +409,9 @@
   // position, Plus arriving between Jumbo and Vomar would have repainted
   // Vomar. Every pair was checked for colour-blind readers (README).
   const COLOUR_SLOT = { dirk: 0, jumbo: 1, vomar: 2, plus: 3, lidl: 4, hoogvliet: 5, dekamarkt: 6, aldi: 7 };
-  const chains = data.chains.map((c, i) => ({ ...c, color: "var(--c" + (COLOUR_SLOT[c.id] ?? 4 + (i % 4)) + ")" }));
+  // Painted on the catalogue's own Chains, which Basket pricing (resolve.js) hands back in its rows.
+  data.chains.forEach((c, i) => { c.color = "var(--c" + (COLOUR_SLOT[c.id] ?? 4 + (i % 4)) + ")"; });
+  const chains = data.chains;
   const chainById = (id) => chains.find((c) => c.id === id);
   /** "Dirk, Jumbo en Vomar". */
   const andList = (xs) => xs.length < 2 ? xs.join("") : xs.slice(0, -1).join(", ") + " en " + xs[xs.length - 1];
@@ -523,57 +525,31 @@
     return resolved[key];
   }
   function chosenId(chainId, item) {
-    const fixed = corrections[correctionKey(chainId, item)];
-    if (fixed && products[chainId][fixed]) return fixed;
-    return candidates(chainId, item)[0] || null;
+    const fixed = R.correctedProduct(chainId, item, corrections);
+    return fixed ? fixed.id : candidates(chainId, item)[0] || null;
   }
-  /** Whether an Offer is running on the day swept. Upcoming ones are never in this slot. */
-  const isOffer = (p) => p.offerPriceCents !== null || !!p.offerWording;
 
-  // ── This week or next (#8) ────────────────────────────────────────────
-  // Chains announce next week's Offers before they start. Next week, per
-  // Chain, begins on the first day its announced Offers do. An Offer counts
-  // for it if it starts then, or if this week's is still running then. One
-  // that has not started has no price yet, and none is derived from its
-  // wording (ADR-0002), so next week is priced at today's Shelf Prices.
-  // Vergelijk and Winkelen always show this week: that is where you shop.
-  const nextStart = {};
-  for (const c of chains) for (const p of Object.values(products[c.id])) {
-    if (p.nextStartsOn && (!nextStart[c.id] || p.nextStartsOn < nextStart[c.id])) nextStart[c.id] = p.nextStartsOn;
-  }
-  const hasNextWeek = Object.keys(nextStart).length > 0;
+  // ── Basket pricing: prototype/resolve.js, shared with the digest ──────
+  // What an item costs at each Chain, this week or next (#8), whole packs,
+  // Offers paid. Vergelijk and Winkelen always show this week: that is where
+  // you shop.
+  const isOffer = R.isOnOffer, offerFor = R.offerFor;
+  const hasNextWeek = Object.keys(R.nextStarts).length > 0;
   if (!hasNextWeek) week = "nu"; // a remembered choice outlives the catalogue that offered it
-  function offerFor(p, w) {
-    if (w === "volgende") {
-      if (p.nextWording !== null) return { wording: p.nextWording || "aanbieding", priceCents: null, startsOn: p.nextStartsOn };
-      const from = nextStart[p.chainId];
-      if (!isOffer(p) || !from || (p.offerEndsOn && p.offerEndsOn < from)) return null;
-      return { wording: p.offerWording || "aanbieding", priceCents: p.offerPriceCents, startsOn: null, continues: true };
-    }
-    return isOffer(p) ? { wording: p.offerWording || "aanbieding", priceCents: p.offerPriceCents, startsOn: null } : null;
-  }
   const dayText = (iso) => { const [y, m, d] = iso.split("-").map(Number); return new Date(y, m - 1, d).toLocaleDateString("nl-NL", { weekday: "short", day: "numeric", month: "short" }); };
-  const nextFrom = () => { const days = Object.values(nextStart).sort(); return days.length ? dayText(days[0]) : ""; };
+  const nextFrom = () => { const days = Object.values(R.nextStarts).sort(); return days.length ? dayText(days[0]) : ""; };
 
-  // ── Is an Offer a real low? (#18) ─────────────────────────────────────
-  // Judged per Product against the lowest price paid in the 30 days before
-  // the reduction began, from recorded history only (src/catalogue/history.ts),
-  // the reference EU price-reduction rules use. With less history the period
-  // is stated; with none, nothing is claimed. An Offer with no price of its
-  // own ("1+1 gratis") is not converted into one (ADR-0002): only its normal
-  // price is judged, which is where an inflated "was" price would show.
+  /** Whether an Offer is a real low (#18), as resolve.js judges it; with no history, nothing is claimed. */
   function verdict(p) {
-    const low = p.referenceLowCents;
-    if (!isOffer(p) || low === null) return "";
-    const days = p.referenceDays === 1 ? "1 dag" : p.referenceDays + " dagen";
-    if (p.offerPriceCents === null) {
-      return p.shelfPriceCents > low
-        ? '<span class="vd not">normale prijs hoger dan recent: ' + euro(low) + " in " + days + "</span>"
-        : '<span class="vd">normale prijs niet verhoogd in ' + days + "</span>";
-    }
-    return p.offerPriceCents < low
-      ? '<span class="vd low">laagste prijs in ' + days + "</span>"
-      : '<span class="vd not">niet lager dan recent: ' + euro(low) + " in " + days + "</span>";
+    const v = R.verdict(p);
+    if (!v) return "";
+    const days = v.days === 1 ? "1 dag" : v.days + " dagen";
+    return {
+      "shelf-up": '<span class="vd not">normale prijs hoger dan recent: ' + euro(v.lowCents) + " in " + days + "</span>",
+      "shelf-same": '<span class="vd">normale prijs niet verhoogd in ' + days + "</span>",
+      lowest: '<span class="vd low">laagste prijs in ' + days + "</span>",
+      "not-lower": '<span class="vd not">niet lager dan recent: ' + euro(v.lowCents) + " in " + days + "</span>",
+    }[v.kind];
   }
   /** An Offer's wording, then when it starts if it has not, or else whether it is a real low. */
   function offerChip(p, o) {
@@ -584,16 +560,8 @@
   const weekSwitch = () => '<div class="wk" role="group" aria-label="Aanbiedingen van">' +
     '<button data-act="week" data-id="nu" aria-pressed="' + (week === "nu") + '">Deze week</button>' +
     '<button data-act="week" data-id="volgende" aria-pressed="' + (week === "volgende") + '"' + (hasNextWeek ? "" : " disabled") + ">Volgende week</button></div>";
-  /** Whole packs, because you cannot buy 0.4 of one. */
-  function line(chainId, item, w = "nu") {
-    const id = chosenId(chainId, item);
-    if (!id) return null;
-    const p = products[chainId][id];
-    const o = offerFor(p, w), offer = o ? o.wording : null;
-    const price = o && o.priceCents ? o.priceCents : p.shelfPriceCents;
-    const { known, packs, pack } = R.packsFor(p, item);
-    return { p, o, offer, packs, cost: packs * price, over: known ? pack / item.quantity : 1 };
-  }
+  /** An item at one Chain: the Resolution, or the Correction, in whole packs. */
+  const line = (chainId, item, w = "nu") => R.line(chainId, item, { week: w, corrections });
 
   // ── Exact Products (#15) ────────────────────────────────────────────
   // An item may name one Exact Product: Calvé Pindakaas Regular 350 g, the
@@ -603,26 +571,6 @@
   // no EANs (Dirk) is not comparable; a Product there that is likely the
   // same is shown, labelled, and counted nowhere.
   const eanChains = chains.filter((c) => c.eans !== false), noEanChains = chains.filter((c) => c.eans === false);
-  function exactLine(chainId, item, likely) {
-    const p = likely ? R.likelyProduct(chainId, item.exact) : R.exactProduct(chainId, item.exact);
-    if (!p) return null;
-    const o = offerFor(p, "nu"), price = o && o.priceCents ? o.priceCents : p.shelfPriceCents;
-    return { p, o, offer: o ? o.wording : null, packs: item.quantity, cost: item.quantity * price };
-  }
-  function exactSnapshot() {
-    const rows = list.filter((i) => i.exact).map((item) => {
-      const by = Object.fromEntries(eanChains.map((c) => [c.id, exactLine(c.id, item, false)]));
-      const likely = Object.fromEntries(noEanChains.map((c) => [c.id, exactLine(c.id, item, true)]));
-      const avail = eanChains.filter((c) => by[c.id]).sort((a, b) => by[a.id].cost - by[b.id].cost);
-      return { item, by, likely, avail, min: avail.length ? by[avail[0].id].cost : null };
-    });
-    const totals = eanChains.map((c) => {
-      let cost = 0, filled = 0;
-      for (const r of rows) if (r.by[c.id]) { filled++; cost += r.by[c.id].cost; }
-      return { chain: c, cost, filled, total: rows.length, full: filled === rows.length && rows.length > 0 };
-    }).sort((a, b) => b.full - a.full || a.cost - b.cost);
-    return { rows, totals };
-  }
   /** Turns a list item into one Exact Product, keeping a piece count typed as the number of packs. */
   function makeExact(itemId, exactId) {
     const it = list.find((i) => i.id === itemId), g = R.exact.get(exactId);
@@ -656,36 +604,8 @@
     "Het wordt apart vergeleken en telt niet mee in de tassen, die per soort product vergelijken en vaak een huismerk kiezen." +
     (noEanChains.length ? " " + andList(noEanChains.map((c) => esc(c.name))) + " publiceert geen EAN's: wat daar waarschijnlijk hetzelfde is, op merk, naam en verpakking, tonen we wel, maar telt nergens mee." : "") + "</p>";
 
-  function snapshot() {
-    const rows = list.filter((i) => !i.exact).map((item) => {
-      const by = Object.fromEntries(chains.map((c) => [c.id, line(c.id, item)]));
-      const avail = chains.filter((c) => by[c.id]).sort((a, b) => by[a.id].cost - by[b.id].cost);
-      return { item, by, avail, min: avail.length ? by[avail[0].id].cost : null, max: avail.length ? by[avail.at(-1).id].cost : null };
-    });
-    const totals = bagChains.map((c) => {
-      let cost = 0, filled = 0;
-      for (const r of rows) if (r.by[c.id]) { filled++; cost += r.by[c.id].cost; }
-      return { chain: c, cost, filled, total: rows.length, full: filled === rows.length && rows.length > 0 };
-    }).sort((a, b) => b.full - a.full || a.cost - b.cost);
-    const best = totals.find((t) => t.full) || null;
-    // The best two-chain combination: each item from the cheaper of the pair.
-    let combo = null;
-    for (let i = 0; i < chains.length; i++) for (let j = i + 1; j < chains.length; j++) {
-      const a = chains[i], b = chains[j]; let cost = 0, filled = 0; const from = {};
-      if (a.offersOnly && b.offersOnly) continue;
-      for (const r of rows) {
-        const la = r.by[a.id], lb = r.by[b.id];
-        if (!la && !lb) continue;
-        const pick = !lb || (la && la.cost <= lb.cost) ? a : b;
-        filled++; from[r.item.id] = pick.id; cost += r.by[pick.id].cost;
-      }
-      const cand = { ids: [a.id, b.id], cost, filled, from };
-      if (!combo || cand.filled > combo.filled || (cand.filled === combo.filled && cand.cost < combo.cost)) combo = cand;
-    }
-    // Only worth showing when it fills the list, beats one shop, and really uses both.
-    if (combo && (combo.filled < rows.length || (best && combo.cost >= best.cost) || new Set(Object.values(combo.from)).size < 2)) combo = null;
-    return { rows, totals, best, combo, exact: exactSnapshot() };
-  }
+  /** The list compared across Chains, this week: bags, the best two-shop plan, Exact Products apart (resolve.js). */
+  const snapshot = () => R.compare(list, { corrections });
   function currentPlan(s) {
     if (plan && plan.kind === "combo" && s.combo && s.combo.ids.join() === plan.ids.join()) return plan;
     if (plan && plan.kind === "single" && chainById(plan.ids[0])) return plan;
@@ -718,33 +638,10 @@
   const credit = (rc) => rc.source === "own" ? "" : '<p class="credit">Bewerkt naar <a href="' + esc(rc.source.url) + '" target="_blank" rel="noopener"><i>' +
     esc(rc.source.title) + '</i></a> op Wikibooks, <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.nl" target="_blank" rel="noopener">CC BY-SA 4.0</a></p>';
   const ingText = (g) => qtyText(g) + " " + g.noun;
-  const ingCache = {};
-  /** The cheapest way to buy one ingredient at one chain, Offers included. */
-  function ingLine(chainId, g, w) {
-    const key = w + "|" + chainId + "|" + g.text;
-    if (key in ingCache) return ingCache[key];
-    // A Correction for this Ingredient at this Chain holds here too.
-    const fixed = corrections[correctionKey(chainId, g)];
-    const pool = fixed && products[chainId][fixed] ? [products[chainId][fixed]] : R.candidates(chainId, g);
-    const best = pool.map((p) => {
-      const o = offerFor(p, w), onOffer = !!o;
-      const price = o && o.priceCents ? o.priceCents : p.shelfPriceCents;
-      const { packs } = R.packsFor(p, g);
-      return { p, o, packs, cost: packs * price, onOffer, offer: o ? o.wording : null,
-        was: o && o.priceCents && o.priceCents < p.shelfPriceCents ? packs * p.shelfPriceCents : null };
-    }).sort((a, b) => a.cost - b.cost)[0] || null;
-    return (ingCache[key] = best);
-  }
-  function priceRecipe(rc, w = week) {
-    const at = bagChains.map((c) => {
-      const lines = rc.ingredients.map((g) => ingLine(c.id, g, w)), have = lines.filter(Boolean);
-      return { chain: c, lines, cost: have.reduce((n, l) => n + l.cost, 0), missing: lines.length - have.length,
-        deals: have.filter((l) => l.onOffer).length, saving: have.reduce((n, l) => n + (l.was ? l.was - l.cost : 0), 0) };
-    }).sort((a, b) => a.missing - b.missing || a.cost - b.cost);
-    // Complete where at least one Chain sells every ingredient. One that is
-    // not is never ranked as if the missing part were free (ADR-0007).
-    return { rc, at, best: at[0], complete: !!at[0] && at[0].missing === 0 };
-  }
+  /** The cheapest way to buy one ingredient at one chain, Offers included; a Correction holds here too. */
+  const ingLine = (chainId, g, w) => R.line(chainId, g, { week: w, corrections, choose: "pack" });
+  /** Complete where at least one Chain sells every ingredient (resolve.js priceRecipe). */
+  const priceRecipe = (rc, w = week) => ({ rc, ...R.priceRecipe(rc.ingredients, { week: w, corrections }) });
   // This week, the most saved first. Next week no Offer that has yet to start
   // has a price, so ranking on savings would only reward the few Offers that
   // run on: recipes rank on how many ingredients are on Offer then.
@@ -792,7 +689,7 @@
     const same = [];
     for (const g of R.exact.values()) {
       const at = eanChains.map((c) => ({ c, p: R.exactProduct(c.id, g.id) })).filter((x) => x.p)
-        .map((x) => ({ ...x, cost: x.p.offerPriceCents ?? x.p.shelfPriceCents })).sort((a, b) => a.cost - b.cost);
+        .map((x) => ({ ...x, cost: R.packCents(x.p, offerFor(x.p, "nu")) })).sort((a, b) => a.cost - b.cost);
       // An Offer with no price ("1+1 gratis") may well make the dearer one the
       // cheaper (ADR-0002): its difference would be a claim we cannot make.
       if (at.length < 2 || at.at(-1).cost === at[0].cost || at.slice(1).some((x) => isOffer(x.p) && x.p.offerPriceCents === null)) continue;
@@ -1210,7 +1107,7 @@
       '<header><div><span class="ct" style="--c:' + chain.color + '">' + esc(chain.name) + '</span><h2 id="sheet-title">' + esc(qtyText(item) + " " + item.noun) + "</h2>" +
       '<div class="meta">Gekozen op de laagste kiloprijs. Kies het product dat je echt bedoelt; dat onthouden we voor de volgende keer.</div></div>' +
       '<button class="x" data-act="close" aria-label="Sluiten">✕</button></header><div class="list">' + ids.map((id) => {
-        const p = products[chainId][id], o = offerFor(p, "nu"), price = o && o.priceCents ? o.priceCents : p.shelfPriceCents;
+        const p = products[chainId][id], o = offerFor(p, "nu"), price = R.packCents(p, o);
         return '<button class="alt' + (id === current ? " on" : "") + '" data-act="pick" data-id="' + id + '"><span class="n">' + esc(p.name) + '</span><span class="v">' + euro(price) + "</span>" +
           '<span class="m">' + euro(R.unitPrice(p, item)) + ({ kg: "/kg", l: "/l", piece: " per stuk" })[item.ingredient ? item.unit : p.comparisonUnit] + (p.packaging ? " · " + esc(p.packaging) : "") +
           (o ? " · " + offerChip(p, o) : "") + "</span></button>" +
@@ -1279,8 +1176,8 @@
       case "combo": { const s = snapshot(); if (s.combo) plan = { kind: "combo", ids: s.combo.ids.slice() }; break; }
       case "row": openRow = openRow === id ? null : id; break;
       case "fix": sheet = { kind: "fix", chainId: b.dataset.chain, itemId: id }; break;
-      case "pick": { const it = list.find((i) => i.id === sheet.itemId); if (it) corrections[correctionKey(sheet.chainId, it)] = id; for (const k in ingCache) delete ingCache[k]; sheet = null; break; }
-      case "unfix": { const it = list.find((i) => i.id === sheet.itemId); if (it) delete corrections[correctionKey(sheet.chainId, it)]; for (const k in ingCache) delete ingCache[k]; sheet = null; break; }
+      case "pick": { const it = list.find((i) => i.id === sheet.itemId); if (it) corrections[correctionKey(sheet.chainId, it)] = id; sheet = null; break; }
+      case "unfix": { const it = list.find((i) => i.id === sheet.itemId); if (it) delete corrections[correctionKey(sheet.chainId, it)]; sheet = null; break; }
       case "make-exact": makeExact(b.dataset.item, id); exactOffer = null; sheet = null; break;
       case "packs": if (item && item.exact) item.quantity = item.quantity % 9 + 1; break;
       case "tick": done.has(id) ? done.delete(id) : done.add(id); break;
