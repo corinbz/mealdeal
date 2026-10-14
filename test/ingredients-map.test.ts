@@ -222,6 +222,10 @@ const GAP: Record<string, Omit<MappableProduct, "name">> = {
   "Cote D'or Hazelnoot": product("vomar", "Cote D'or", ["Voorraadkast > Chocolade & Snoep > Chocolade"]),
   "Orinoko Boterhampasta met Cacao en Melk 350 g": product("jumbo", null, ["Ontbijt, broodbeleg en bakproducten > Zoet broodbeleg > Hazelnoot-, Chocoladepasta"]),
   "Knorr Wg Lasagnette": product("vomar", "Knorr", ["Voorraadkast > Pasta, rijst & wereldmarkt > Maaltijdpakketten"]),
+  // EAN twins the coverage report (#35) found mapped two ways.
+  "Duo Penotti Hazelnoot & Vanille 400 g": product("jumbo", null, ["Ontbijt, broodbeleg en bakproducten > Zoet broodbeleg > Hazelnoot-, Chocoladepasta"]),
+  "Hak Doperwtjes Worteltjes": product("vomar", "Hak", ["Voorraadkast > Soepen, conserven, sauzen & smaakmakers > Groenteconserven"]),
+  "Hak Doperwtjes met Worteltjes 350 g": product("jumbo", null, ["Conserven, soepen, sauzen, oliën > Groenteconserven > Doperwten en wortels"]),
 };
 const gap = (name: string) => map({ name, ...GAP[name]! });
 
@@ -265,4 +269,10 @@ test("does not read chocolate as nuts, a sandwich spread as pasta, or a meal kit
   assert.notEqual(gap("Cote D'or Hazelnoot")?.ingredient, "noten");
   assert.notEqual(gap("Orinoko Boterhampasta met Cacao en Melk 350 g")?.ingredient, "pasta");
   assert.notEqual(gap("Knorr Wg Lasagnette")?.ingredient, "pastasaus");
+  assert.notEqual(gap("Duo Penotti Hazelnoot & Vanille 400 g")?.ingredient, "noten");
+});
+
+test("reads peas with carrots as the mix, however the Chain joins them", () => {
+  assert.equal(gap("Hak Doperwtjes Worteltjes")?.ingredient, "doperwten en wortelen");
+  assert.equal(gap("Hak Doperwtjes met Worteltjes 350 g")?.ingredient, "doperwten en wortelen");
 });

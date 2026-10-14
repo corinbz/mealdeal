@@ -340,6 +340,18 @@ It publishes nothing unless all of these hold, and goes red otherwise:
   throwaway database: there, every run is a Chain's first.
   `scripts/check-catalogue.ts` does this check and the two above.
 
+Before that check it writes an **Ingredient coverage** report to the run's job
+summary, holding back nothing (#35). The report lists three things. The first
+is each Ingredient, or variant, that every Chain but one or two sells
+comparably. A missing one is either a real gap in that Chain's range or a
+Product the mapper misses there. The second is any Chain whose mapped Products
+fell below 90% of yesterday's, which also raises a warning annotation. The
+third is EAN twins that their Chains map to different Ingredients (#34). Lidl
+lists only its Offers and is left out of the gaps. A gap found to be real goes
+in `src/catalogue/known-gaps.ts` with the reason, and is not reported again.
+If the Chain later sells that Ingredient after all, the report says the entry
+can go. `scripts/check-coverage.ts` writes the report.
+
 It also judges every Offer against its Product's **Reference Price**, the
 lowest price of the 30 days before the reduction began (#18). The refresh's
 database holds only one day, so `catalogue/history.json` carries each
