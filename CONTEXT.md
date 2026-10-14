@@ -50,6 +50,13 @@ A price reduction a Chain advertises on a Product for a bounded period, often
 conditional on buying a given quantity. Known Offers may start in the future.
 _Avoid_: Discount, deal, promotion, bonus, aanbieding
 
+**Reference Price**:
+The lowest price a Product was sold for in the 30 days before an Offer on it
+began, from recorded Observations only. An Offer is a real low only when it
+is below this. It is per Product, never per Ingredient, and when less than 30
+days are recorded it states how many it covers.
+_Avoid_: Was price, original price, previous price, van-prijs
+
 **Unit Price**:
 A Product's price normalised to a comparable quantity, such as per kilogram or
 per litre. The figure all comparison is done on.

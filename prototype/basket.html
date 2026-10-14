@@ -93,6 +93,9 @@
   .delta { font-weight: 800; font-size: 14px; border-radius: 999px; padding: 2px 9px; background: var(--bad-wash); color: var(--bad); white-space: nowrap; }
   .delta.zero { background: var(--good-wash); color: var(--good); }
   .o { background: var(--offer); color: var(--offer-ink); border-radius: 6px; padding: 0 6px; font-weight: 800; }
+  .vd { display: inline-block; font-size: 12px; font-weight: 700; border-radius: 6px; padding: 0 6px; margin-left: 4px; color: var(--ink-2); }
+  .vd.low { background: var(--good-wash); color: var(--good); }
+  .vd.not { background: var(--bad-wash); color: var(--bad); }
   .add { display: flex; background: var(--card); border-radius: 999px; padding: 5px; box-shadow: 0 2px 0 var(--line); }
   .add input { flex: 1; min-width: 0; border: 0; background: transparent; padding: 10px 16px; font-size: 17px; font-weight: 700; outline: none; }
   .add button { border: 0; background: var(--ink); color: var(--on-ink); border-radius: 999px; padding: 0 20px; font-weight: 800; cursor: pointer; }
@@ -349,7 +352,8 @@
   const bagAge = (c) => '<span class="age' + (isStale(c) ? " stale" : "") + '">prijzen ' + esc(ageText(c)) + (isStale(c) ? " · verouderd" : "") + "</span>";
 
   // ── Catalogue: positional rows, unpacked once ─────────────────────────
-  // Row: [ref, name, packaging, packQuantity, packUnit, unit, shelf, offerPrice, unitPrice, wording, upcoming]
+  // Row: [ref, name, packaging, packQuantity, packUnit, unit, shelf, offerPrice, unitPrice, wording, upcoming,
+  //       referenceLow, referenceDays]
   function stem(w) {
     // Repeated, so singular and plural meet: courgettes -> courgette -> courgett.
     let before;
@@ -364,6 +368,8 @@
       products[c.id][id] = {
         id, name: r[1], packaging: r[2], packQuantity: r[3], packUnit: r[4], comparisonUnit: r[5],
         shelfPriceCents: r[6], offerPriceCents: r[7], unitPriceCents: r[8], offerWording: r[9], offerUpcoming: r[10] === 1,
+        // Absent from a catalogue built without history (scripts/apply-history.ts).
+        referenceLowCents: r[11] ?? null, referenceDays: r[12] ?? null,
       };
       return { id, unit: r[5], words: r[1].toLowerCase().split(/[^\p{L}]+/u).filter(Boolean).map(stem) };
     });
@@ -459,6 +465,28 @@
     return candidates(chainId, item)[0] || null;
   }
   const isOffer = (p) => (p.offerPriceCents !== null || !!p.offerWording) && !p.offerUpcoming;
+
+  // ── Is an Offer a real low? (#18) ─────────────────────────────────────
+  // Judged per Product against the lowest price paid in the 30 days before
+  // the reduction began, from recorded history only (src/catalogue/history.ts),
+  // the reference EU price-reduction rules use. With less history the period
+  // is stated; with none, nothing is claimed. An Offer with no price of its
+  // own ("1+1 gratis") is not converted into one (ADR-0002): only its normal
+  // price is judged, which is where an inflated "was" price would show.
+  function verdict(p) {
+    const low = p.referenceLowCents;
+    if (!isOffer(p) || low === null) return "";
+    const days = p.referenceDays === 1 ? "1 dag" : p.referenceDays + " dagen";
+    if (p.offerPriceCents === null) {
+      return p.shelfPriceCents > low
+        ? '<span class="vd not">normale prijs hoger dan recent: ' + euro(low) + " in " + days + "</span>"
+        : '<span class="vd">normale prijs niet verhoogd in ' + days + "</span>";
+    }
+    return p.offerPriceCents < low
+      ? '<span class="vd low">laagste prijs in ' + days + "</span>"
+      : '<span class="vd not">niet lager dan recent: ' + euro(low) + " in " + days + "</span>";
+  }
+  const offerChip = (p, wording) => '<span class="o">' + esc(wording) + "</span>" + verdict(p);
   /** Whole packs, because you cannot buy 0.4 of one. */
   function packsFor(p, quantity, unit) {
     // A pack size in another unit than the item (3 soup sachets, for a
@@ -640,7 +668,7 @@
   const ingRow = (g, l, chain) => !l
     ? '<li class="miss"><span class="l">' + esc(ingText(g)) + '</span><span class="p">—</span><span class="d">niet bij ' + esc(chain.name) + "</span></li>"
     : '<li><span class="l">' + esc(ingText(g)) + '</span><span class="p">' + euro(l.cost) + '</span><span class="d">' +
-      (l.onOffer ? '<span class="o">' + esc(l.offer) + "</span> " : "") + (l.was ? '<span class="was">' + euro(l.was) + "</span> " : "") +
+      (l.onOffer ? offerChip(l.p, l.offer) + " " : "") + (l.was ? '<span class="was">' + euro(l.was) + "</span> " : "") +
       esc((l.packs > 1 ? l.packs + "× " : "") + l.p.name) + "</span></li>";
 
   // ── Pages ─────────────────────────────────────────────────────────────
@@ -654,7 +682,7 @@
       const gain = (l) => l.was ? l.was - l.cost : 0;
       const deals = [...seen.values()].sort((a, b) => gain(b.l) - gain(a.l)).map(({ c, l }) =>
         '<div class="deal"><span class="n">' + esc(l.p.name) + "</span><span>" + tag(c) + '</span><span class="v">' + euro(l.cost) +
-        (l.was ? '<span class="was">' + euro(l.was) + "</span>" : "") + '</span><span class="w">' + esc(l.offer) + "</span></div>").join("");
+        (l.was ? '<span class="was">' + euro(l.was) + "</span>" : "") + '</span><span class="w">' + esc(l.offer) + verdict(l.p) + "</span></div>").join("");
       const cards = priced.map(({ rc, at, best }) =>
         '<article class="rc"><div class="hd" data-act="open-recipe" data-id="' + rc.id + '" role="button" tabindex="0" aria-label="Bereiding van ' + esc(rc.name) + '">' +
         '<span class="ex">voorbeeldrecept</span><h3>' + esc(rc.name) + "</h3>" +
@@ -737,7 +765,7 @@
           (open ? '<div class="open">' + chains.map((c) => {
             const l = r.by[c.id], fixed = correctionKey(c.id, r.item) in corrections;
             if (!l) return '<div class="pr">' + tag(c) + '<span class="pn">niet te koop</span><span class="v">—</span><span></span><span></span></div>';
-            return '<div class="pr">' + tag(c) + '<span class="pn" title="' + esc(l.p.name) + '">' + (l.offer ? '<span class="o">' + esc(l.offer) + "</span> " : "") + esc(l.p.name) + "</span>" +
+            return '<div class="pr">' + tag(c) + '<span class="pn" title="' + esc(l.p.name) + '">' + (l.offer ? offerChip(l.p, l.offer) + " " : "") + esc(l.p.name) + "</span>" +
               '<span class="v">' + euro(l.cost) + "</span>" + (l.cost > r.min ? '<span class="delta">+' + euro(l.cost - r.min) + "</span>" : '<span class="delta zero">laagst</span>') +
               '<button class="fix" data-act="fix" data-id="' + r.item.id + '" data-chain="' + c.id + '">' + (fixed ? "gecorrigeerd" : "ander product") + "</button></div>";
           }).join("") + "</div>" : "") + "</div>";
@@ -765,7 +793,7 @@
           const l = r.by[c.id], d = done.has(r.item.id);
           return '<button class="ci' + (d ? " done" : "") + '" data-act="tick" data-id="' + r.item.id + '" aria-pressed="' + d + '"><span class="tick">' + (d ? "✓" : "") + "</span>" +
             '<span class="nm">' + esc(r.item.noun) + '<span class="q">' + qtyText(r.item) + "</span></span>" +
-            '<span class="g">' + (l.offer ? '<span class="o">' + esc(l.offer) + "</span> " : "") + (l.packs > 1 ? l.packs + "× " : "") + esc(l.p.name) +
+            '<span class="g">' + (l.offer ? offerChip(l.p, l.offer) + " " : "") + (l.packs > 1 ? l.packs + "× " : "") + esc(l.p.name) +
             (l.p.packaging ? " · " + esc(l.p.packaging) : "") + (l.over >= 2 ? ' · <span class="w">pak is ' + Math.round(l.over * 10) / 10 + "× wat je nodig hebt</span>" : "") + "</span>" +
             '<span class="v">' + euro(l.cost) + "</span></button>";
         }).join("") + "</div></section>").join("");
@@ -806,7 +834,7 @@
         const p = products[chainId][id], offer = isOffer(p), price = offer && p.offerPriceCents ? p.offerPriceCents : p.shelfPriceCents;
         return '<button class="alt' + (id === current ? " on" : "") + '" data-act="pick" data-id="' + id + '"><span class="n">' + esc(p.name) + '</span><span class="v">' + euro(price) + "</span>" +
           '<span class="m">' + euro(p.unitPriceCents) + ({ kg: "/kg", l: "/l", piece: " per stuk" })[p.comparisonUnit] + (p.packaging ? " · " + esc(p.packaging) : "") +
-          (offer ? ' · <span class="o">' + esc(p.offerWording || "aanbieding") + "</span>" : "") + "</span></button>";
+          (offer ? " · " + offerChip(p, p.offerWording || "aanbieding") : "") + "</span></button>";
       }).join("") + "</div>" + (correctionKey(chainId, item) in corrections ? '<button class="btn ghost reset" data-act="unfix">Terug naar automatisch</button>' : "") + "</section>";
   }
 
