@@ -187,7 +187,74 @@
       return { dates, days };
     }
 
-    return { products, vocabulary, parse, suggest, candidates, satisfies, packsFor, unitPrice, correctionKey, dailyPrices };
+    // ── Exact Products (#15) ─────────────────────────────────────────────
+    // One branded item at one Pack Size, proven at each Chain by a shared EAN
+    // (src/catalogue/exact.ts). A Chain publishing no EANs (Dirk) may have a
+    // Product that is only likely the same: shown, never counted as exact.
+    const fold = (t) => t.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
+    const exact = new Map(), exactOf = {};
+    for (const g of data.exact || []) {
+      const member = (c, ref) => products[c] && products[c][c + "-" + ref];
+      const members = Object.entries(g.members).map(([c, ref]) => member(c, ref)).filter(Boolean);
+      if (members.length < 2) continue;
+      const pack = members.find((p) => p.packUnit && p.packQuantity) || null;
+      exact.set(g.id, { ...g, pack, words: members.map((p) => W.nameWords(fold(p.name))) });
+      for (const p of members) (exactOf[p.chainId] ??= {})[p.id] = g.id;
+    }
+    /** The Exact Product a Product is, or null. */
+    const exactIdOf = (p) => (exactOf[p.chainId] && exactOf[p.chainId][p.id]) || null;
+    /** A Chain's own Product of an Exact Product, proven by EAN; null when it does not sell it. */
+    function exactProduct(chainId, id) {
+      const g = exact.get(id), ref = g && g.members[chainId];
+      return (ref && products[chainId][chainId + "-" + ref]) || null;
+    }
+    /** A Product only likely the same, at a Chain publishing no EANs; null when none is. */
+    function likelyProduct(chainId, id) {
+      const g = exact.get(id), ref = g && g.likely[chainId];
+      return (ref && products[chainId][chainId + "-" + ref]) || null;
+    }
+    /**
+     * Exact Products a typed item may mean: "calvé pindakaas 350 g". At least
+     * two words, a brand and what it is, each a word of some member's name
+     * (or its start), and a stated weight or volume within 10% of the pack.
+     * The closest names first.
+     */
+    const MEASURE = /(\d+(?:[.,]\d+)?)\s*(g|gr|gram|kg|kilo|ml|cl|l|liter)\b/;
+    const TO_BASE = { g: ["kg", 0.001], gr: ["kg", 0.001], gram: ["kg", 0.001], kg: ["kg", 1], kilo: ["kg", 1],
+      ml: ["l", 0.001], cl: ["l", 0.01], l: ["l", 1], liter: ["l", 1] };
+    function exactMatches(text, limit = 4) {
+      // The pack is often typed after the name ("pindakaas 350 g"), which
+      // the list's own reading takes for part of the noun: read it anywhere.
+      let rest = " " + fold(text) + " ", stated = null;
+      const m = rest.match(MEASURE);
+      if (m) {
+        const [unit, x] = TO_BASE[m[2]];
+        stated = { unit, quantity: Number(m[1].replace(",", ".")) * x };
+        rest = rest.replace(m[0], " ");
+      }
+      const item = W.parse(rest, tally);
+      const typed = item ? W.wordsOf(item.noun) : [];
+      if (typed.length < 2) return [];
+      if (!stated && !item.guessed && item.unit !== "piece") stated = item;
+      const out = [];
+      for (const g of exact.values()) {
+        let extra = Infinity;
+        for (const ws of g.words) {
+          if (!typed.every((t) => ws.some((w) => w === t || (t.length >= 4 && w.startsWith(t))))) continue;
+          extra = Math.min(extra, ws.length - typed.length);
+        }
+        if (extra === Infinity) continue;
+        if (stated && g.pack && g.pack.packUnit === stated.unit) {
+          const ratio = stated.quantity / g.pack.packQuantity;
+          if (ratio < 1 / 1.1 || ratio > 1.1) continue;
+        }
+        out.push({ id: g.id, name: g.name, extra });
+      }
+      return out.sort((a, b) => a.extra - b.extra || a.name.localeCompare(b.name)).slice(0, limit);
+    }
+
+    return { products, vocabulary, parse, suggest, candidates, satisfies, packsFor, unitPrice, correctionKey, dailyPrices,
+      exact, exactIdOf, exactProduct, likelyProduct, exactMatches };
   }
 
   /** Edits between two strings, a swap of neighbours counting as one ("kpi" for "kip"). */

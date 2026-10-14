@@ -151,6 +151,23 @@ Two things in Vomar's data that look like they help and do not:
   loose apples carry `2221230000000`. It is stored as sent, but it identifies
   nothing outside Vomar and must never join Products across Chains (#15).
 
+Stored EANs feed the Exact Products the catalogue build groups (#15,
+`src/catalogue/exact.ts`). Ingest itself still asserts no identity across
+Chains: the grouping happens over the catalogue, where its rules can change
+without re-ingesting anything. They are:
+
+- **In-store codes never join.** An EAN starting with 2 (or written as UPC,
+  02 or 04) is from GS1's restricted range.
+- **Own brands never join**, though Jumbo's own Kropsla carries the supplier's
+  EAN that Vomar's plain one does (ADR-0006).
+- **One EAN on two packs does not join them.** Vomar keeps old EANs, and one
+  Crodino EAN is a 6 x 175 ml pack at Jumbo and a 105 ml bottle at Vomar, so
+  packs in one unit must agree within 10%. Of 2,584 Jumbo-Vomar EAN matches,
+  473 state their packs differently, nearly all the same pack written another
+  way ("4 x 16,8 g" against "68 gram"). Those still join.
+- **A Chain with two Products on one group drops out of it**: that is no proof
+  of which one is the item.
+
 ## A run that records nothing must not look like success
 
 `ingest_run` counts products seen, products recorded, prices, offers, products

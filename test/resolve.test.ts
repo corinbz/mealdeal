@@ -111,3 +111,44 @@ test("a typo of a known Ingredient gets a suggestion; an unknown word gets none"
   assert.equal(resolver.parse("1 kg kattenvoer").suggestion, null);
   assert.equal(resolver.parse("400 g spinazie").suggestion, undefined, "a recognised item needs none");
 });
+
+/** Exact Products (#15), as scripts/catalogue-from-db.ts writes them. */
+const exactResolver = context.MealdealResolve.createResolver({
+  chains: [{ id: "dirk", name: "Dirk" }, { id: "jumbo", name: "Jumbo" }, { id: "vomar", name: "Vomar" }],
+  columns: COLUMNS,
+  vocabulary: [{ id: "pindakaas", name: "pindakaas", unit: "kg", also: [], equals: {}, fresh: false, variants: [] }],
+  catalogue: {
+    dirk: [["d1", "Calvé Pindakaas", "kg", 299, 854, 0.35, "kg", "pindakaas", null, null, 0, 854, 0.35]],
+    jumbo: [
+      ["j1", "Calvé Pindakaas Regular 350 g", "kg", 349, 997, 0.35, "kg", "pindakaas", null, null, 0, 997, 0.35],
+      ["j2", "Calvé Pindakaas Regular 650 g", "kg", 549, 845, 0.65, "kg", "pindakaas", null, null, 0, 845, 0.65],
+    ],
+    vomar: [
+      ["v1", "Calve Pindakaas", "kg", 299, 854, 0.35, "kg", "pindakaas", null, null, 0, 854, 0.35],
+      ["v2", "Calve Pindakaas", "kg", 435, 669, 0.65, "kg", "pindakaas", null, null, 0, 669, 0.65],
+    ],
+  },
+  exact: [
+    { id: "8711200428953", name: "Calvé Pindakaas Regular 350 g", members: { jumbo: "j1", vomar: "v1" }, likely: { dirk: "d1" } },
+    { id: "8711200431632", name: "Calvé Pindakaas Regular 650 g", members: { jumbo: "j2", vomar: "v2" }, likely: {} },
+  ],
+});
+
+test("a typed brand and product offers its Exact Products, narrowed by the pack typed", () => {
+  const names = (text: string) => [...exactResolver.exactMatches(text).map((m: { name: string }) => m.name)];
+  assert.deepEqual(names("calve pindakaas"), ["Calvé Pindakaas Regular 350 g", "Calvé Pindakaas Regular 650 g"]);
+  // Typed after the name, as people do, or before it.
+  assert.deepEqual(names("Calvé pindakaas 650 g"), ["Calvé Pindakaas Regular 650 g"]);
+  assert.deepEqual(names("350 g calve pindakaas"), ["Calvé Pindakaas Regular 350 g"]);
+  // One word names a kind of food, not a branded item.
+  assert.deepEqual(names("pindakaas"), []);
+});
+
+test("an Exact Product resolves to each Chain's own one, and only likely where no EAN proves it", () => {
+  const id = "8711200428953";
+  assert.equal(exactResolver.exactProduct("jumbo", id)?.name, "Calvé Pindakaas Regular 350 g");
+  assert.equal(exactResolver.exactProduct("vomar", id)?.name, "Calve Pindakaas");
+  assert.equal(exactResolver.exactProduct("dirk", id), null);
+  assert.equal(exactResolver.likelyProduct("dirk", id)?.name, "Calvé Pindakaas");
+  assert.equal(exactResolver.exactIdOf(exactResolver.products.vomar["vomar-v2"]), "8711200431632");
+});

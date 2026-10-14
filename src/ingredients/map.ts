@@ -32,6 +32,11 @@ const OWN_BRAND: Readonly<Record<string, RegExp>> = {
   vomar: /^(vomar|g'woon|melkan|daily chef)\b|^bio\+/i,
 };
 
+/** Whether a Product is its Chain's own brand, mapped to an Ingredient or not. */
+export function isOwnBrand(chainId: string, brand: string | null, name: string): boolean {
+  return OWN_BRAND[chainId]?.test(brand ?? name) ?? false;
+}
+
 interface Compiled {
   readonly def: IngredientDef;
   readonly aisles: ReadonlySet<Aisle>;
@@ -146,7 +151,7 @@ export function createMapper(vocabulary: readonly IngredientDef[] = VOCABULARY) 
       variant: variant?.id ?? null,
       form: formOf(aisle),
       biologisch: /\bbio(logisch|logische)?\b/.test(lower) || product.categories.some((c) => /biologisch/i.test(c)),
-      huismerk: OWN_BRAND[product.chainId]?.test(product.brand ?? product.name) ?? false,
+      huismerk: isOwnBrand(product.chainId, product.brand, product.name),
     };
   };
 }
