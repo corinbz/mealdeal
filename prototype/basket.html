@@ -309,6 +309,28 @@
   .btn.on { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 2px var(--ink); }
   @media (max-width: 720px) { .recipes { grid-template-columns: 1fr; } }
 
+  /* ── Bladeren ─────────────────────────────────────────────────────── */
+  .aisles { display: flex; gap: 6px; overflow-x: auto; padding: 2px 2px 10px; margin: 0 -2px 4px; }
+  .aisles button { flex: none; border: 0; background: var(--card); color: var(--ink-2); border-radius: 999px; padding: 6px 12px; font: inherit; font-size: 14px; font-weight: 800; cursor: pointer; box-shadow: 0 2px 0 var(--line); }
+  .aisles button[aria-pressed="true"] { background: var(--ink); color: var(--on-ink); }
+  .aisles .n { opacity: .6; margin-left: 4px; font-weight: 700; }
+  .views { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+  .sort { font-size: 14px; color: var(--ink-2); margin-left: auto; }
+  .sort button { border: 0; background: none; padding: 0 0 0 8px; font: inherit; font-weight: 800; color: var(--ink-3); cursor: pointer; }
+  .sort button[aria-pressed="true"] { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+  .br-row .spread b { display: block; color: var(--good); }
+  .br-row .add-i { border: 0; background: var(--paper-2); color: var(--ink); border-radius: 999px; padding: 4px 12px; font: inherit; font-size: 13px; font-weight: 800; cursor: pointer; }
+  .br-row .add-i.on { background: transparent; box-shadow: inset 0 0 0 2px var(--ink-3); color: var(--ink-2); }
+  .br-row .open .pr { grid-template-columns: auto 1fr auto auto; }
+  .br-row .open .foot-i { display: flex; justify-content: flex-end; }
+  .worth { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; }
+  .worth .it .nm { font-size: 17px; }
+  .worth .it .v { font-weight: 900; font-size: 18px; font-variant-numeric: tabular-nums; text-align: right; }
+  .worth .it .v small { display: block; font-size: 12px; color: var(--ink-3); font-weight: 700; }
+  .worth .it .why { grid-column: 1 / -1; font-size: 14px; color: var(--ink-2); display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; }
+  .more-br { display: block; margin: 14px auto 0; }
+  @media (max-width: 720px) { .sort { margin-left: 0; } }
+
   /* ── Sheets: recipe method and corrections. A panel on a desktop, full screen on a phone. ── */
   .scrim { position: fixed; inset: 0; z-index: 70; background: var(--scrim); }
   .sheet { position: fixed; z-index: 71; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(920px, calc(100% - 32px)); max-height: calc(100% - 48px); overflow-y: auto; background: var(--paper); color: var(--ink); border-radius: 22px; box-shadow: 0 30px 80px rgba(0, 0, 0, .35); }
@@ -475,16 +497,20 @@
   const done = new Set(load("mealdeal.done.v1", []));       // ticked while shopping
   let theme = load("mealdeal.theme.v1", "system");          // "system" | "light" | "dark"
   let week = load("mealdeal.week.v1", "nu");                // "nu" | "volgende": whose Offers Recepten and Lijst show
-  const PAGE_KEYS = ["recepten", "lijst", "vergelijk", "winkelen"];
+  const PAGE_KEYS = ["recepten", "bladeren", "lijst", "vergelijk", "winkelen"];
   let page = PAGE_KEYS.includes(location.hash.slice(1)) ? location.hash.slice(1) : "lijst";
   let exactOffer = null;                                    // { itemId, matches }: Exact Products the item just typed may mean
   let hint = "", openRow = null, sheet = null;              // sheet: { kind: "recipe", id } | { kind: "fix", chainId, itemId }
   const added = new Set(), stepsDone = {};
   const RECIPES_SHOWN = 8; let showAllRecipes = false;
+  // Bladeren (#36): which view, aisle and order, remembered; which rows are open and how many shown, not.
+  let browse = { view: "verschil", aisle: "alle", sort: "verschil", ...load("mealdeal.browse.v1", {}) };
+  let browseOpen = null, browseShown = 0;
 
   function persist() {
     save("mealdeal.list.v1", list); save("mealdeal.corrections.v1", corrections);
     save("mealdeal.plan.v1", plan); save("mealdeal.done.v1", [...done]); save("mealdeal.week.v1", week);
+    save("mealdeal.browse.v1", browse);
   }
 
   // ── Resolution ────────────────────────────────────────────────────────
@@ -674,7 +700,8 @@
     return '<div class="pl' + (mini ? " mini" : "") + '" aria-hidden="true">' + r.avail.map((c, i) => {
       const x = span ? (r.by[c.id].cost - r.min) / span * 100 : 0;
       const k = Math.round(x); seen[k] = (seen[k] || 0) + 1;
-      return '<span class="dot' + (i === 0 ? " min" : "") + '" style="--c:' + c.color + ";left:calc(" + x + "% + " + (seen[k] - 1) * (mini ? 7 : 12) + 'px)" title="' +
+      const nudge = (seen[k] - 1) * (mini ? 7 : 12) * (x > 50 ? -1 : 1);
+      return '<span class="dot' + (i === 0 ? " min" : "") + '" style="--c:' + c.color + ";left:calc(" + x + "% + " + nudge + 'px)" title="' +
         esc(c.name) + " " + euro(r.by[c.id].cost) + '"></span>';
     }).join("") + "</div>";
   }
@@ -742,6 +769,68 @@
       (l.onOffer ? offerChip(l.p, l.o) + " " : "") + (l.was ? '<span class="was">' + euro(l.was) + "</span> " : "") +
       esc((l.packs > 1 ? l.packs + "× " : "") + l.p.name) + "</span></li>";
 
+  // ── Bladeren: what is cheap where, with no list (#36) ─────────────────
+  // Per Ingredient, each Chain's cheapest Product of it per kg, liter or
+  // piece today, chosen as a list item naming only the Ingredient would be
+  // (fresh where it is sold fresh). Priced Offers are in that price already.
+  // An Ingredient sits in its main aisle; a catalogue built before it said
+  // which (vocabulary[].aisle) shows them all as one.
+  const AISLES = [["produce", "Groente & fruit"], ["meat", "Vlees"], ["fish", "Vis"], ["vega", "Vegetarisch"], ["dairy", "Zuivel & eieren"],
+    ["cheese", "Kaas"], ["deli", "Vleeswaren & beleg"], ["bakery", "Brood"], ["pantry", "Voorraadkast"], ["conserves", "Conserven"],
+    ["frozen", "Diepvries"], ["readymeal", "Kant-en-klaar"], ["snacks", "Snacks & noten"], ["drinks", "Dranken"]];
+  let browseData = null;
+  function browseIndex() {
+    if (browseData) return browseData;
+    const ingredients = data.vocabulary.map((d) => {
+      const item = { ingredient: d.id, variant: null, preferences: {} };
+      const by = {};
+      for (const c of chains) { const p = R.candidates(c.id, item)[0]; if (p) by[c.id] = { p, cost: p.ingredientUnitPriceCents }; }
+      const avail = chains.filter((c) => by[c.id]).sort((a, b) => by[a.id].cost - by[b.id].cost);
+      const min = avail.length ? by[avail[0].id].cost : null, max = avail.length ? by[avail.at(-1).id].cost : null;
+      // Against the middle Chain, not the dearest: one odd Product at one
+      // Chain (bouillon powder against cubes) would otherwise top the list.
+      // An offers-only Chain is in the line but not the middle, which it would only pull down.
+      const mids = avail.filter((c) => !c.offersOnly).map((c) => by[c.id].cost), n = mids.length;
+      const mid = n ? (n % 2 ? mids[n >> 1] : Math.round((mids[n / 2 - 1] + mids[n / 2]) / 2)) : null;
+      return { d, aisle: d.aisle || null, by, avail, min, max, mid, share: n > 1 && mid ? Math.max(0, (mid - min) / mid) : 0 };
+    });
+    const byId = new Map(ingredients.map((g) => [g.d.id, g]));
+    // An Offer worth it is priced and beats every other Chain's cheapest of
+    // its Ingredient today: a Chain's own "was" price says little about that.
+    // One with no price of its own ("1+1 gratis") cannot be ranked (ADR-0002).
+    const worth = [];
+    for (const c of chains) for (const p of Object.values(products[c.id])) {
+      if (!p.ingredient || p.offerPriceCents === null || !R.satisfies(p, { ingredient: p.ingredient, variant: null, preferences: {} })) continue;
+      const g = byId.get(p.ingredient); if (!g) continue;
+      const rival = g.avail.find((x) => x.id !== c.id);
+      if (!rival || p.ingredientUnitPriceCents >= g.by[rival.id].cost) continue;
+      worth.push({ p, c, g, rival, rivalCost: g.by[rival.id].cost, share: 1 - p.ingredientUnitPriceCents / g.by[rival.id].cost });
+    }
+    // The cheapest per Chain and Ingredient: six Jumbo pumpkins on Offer are one find.
+    const firsts = new Map();
+    for (const w of worth) { const k = w.c.id + "|" + w.g.d.id; if (!firsts.has(k) || w.share > firsts.get(k).share) firsts.set(k, w); }
+    worth.length = 0; worth.push(...firsts.values());
+    worth.sort((a, b) => b.share - a.share);
+    // Exact Products (#15) proven by EAN at two Chains or more, the largest
+    // difference in what one pack costs first.
+    const same = [];
+    for (const g of R.exact.values()) {
+      const at = eanChains.map((c) => ({ c, p: R.exactProduct(c.id, g.id) })).filter((x) => x.p)
+        .map((x) => ({ ...x, cost: x.p.offerPriceCents ?? x.p.shelfPriceCents })).sort((a, b) => a.cost - b.cost);
+      // An Offer with no price ("1+1 gratis") may well make the dearer one the
+      // cheaper (ADR-0002): its difference would be a claim we cannot make.
+      if (at.length < 2 || at.at(-1).cost === at[0].cost || at.slice(1).some((x) => isOffer(x.p) && x.p.offerPriceCents === null)) continue;
+      same.push({ g, at, diff: at.at(-1).cost - at[0].cost });
+    }
+    same.sort((a, b) => b.diff - a.diff);
+    return (browseData = { ingredients, worth, same, aisles: AISLES.filter(([a]) => ingredients.some((g) => g.aisle === a)) });
+  }
+  const BROWSE_PAGE = 40;
+  const pct = (share) => Math.round(share * 100) + "%";
+  /** "1 kg aardappelen": an Ingredient as a list item, in the unit it compares by. */
+  const ingredientItem = (d) => parse((d.unit === "piece" ? "1 " : "1 " + d.unit + " ") + d.name);
+  const onList = (d) => list.some((i) => i.ingredient === d.id);
+
   // ── Pages ─────────────────────────────────────────────────────────────
   const PAGES = {
     recepten: { label: "Recepten", ic: "🍳", render() {
@@ -780,6 +869,73 @@
         '<div class="sec"><h2>' + (next ? "Volgende week in de aanbieding" : "In de aanbieding") + "</h2><span>waar deze recepten op draaien</span></div><div class='deals'>" + deals + "</div>" +
         '<div class="recipes">' + cards + "</div>" +
         '<p class="note">Recepten van mealdeal, en enkele bewerkt naar het Wikibooks Kookboek. Prijzen, producten en acties komen uit de prijzen van ' + esc(chains[0].observedAt) + ". Wat uit de kast komt, zoals zout en olie, is niet meegerekend.</p>";
+    } },
+
+    bladeren: { label: "Bladeren", ic: "▦", render() {
+      const B = browseIndex(), unit = (d) => ({ kg: "/kg", l: "/l", piece: "/stuk" })[d.unit];
+      // An aisle remembered from a catalogue that had it, in one that does not.
+      if (!B.aisles.some(([a]) => a === browse.aisle)) browse.aisle = "alle";
+      const aisleOk = (g) => browse.aisle === "alle" || g.aisle === browse.aisle;
+      const limit = BROWSE_PAGE + browseShown;
+      const more = (n) => n > limit ? '<button class="btn ghost more-br" data-act="browse-more">Nog ' + Math.min(BROWSE_PAGE, n - limit) + " tonen</button>" : "";
+      const viewBtn = (id, label) => '<button data-act="browse-view" data-id="' + id + '" aria-pressed="' + (browse.view === id) + '">' + label + "</button>";
+      const head = "<h1>Bladeren</h1>" +
+        '<p class="lede">Wat waar goedkoop is, zonder lijst. Per ingrediënt de goedkoopste prijs per kilo, liter of stuk bij elke winkel vandaag.</p>' +
+        freshness("Prijzen van") + cardNote() + '<p class="hint">' + esc(hint) + "</p>" +
+        '<div class="views"><div class="wk" role="group" aria-label="Weergave">' + viewBtn("verschil", "Verschil per winkel") +
+        viewBtn("aanbiedingen", "Aanbiedingen die lonen") + viewBtn("zelfde", "Zelfde product") + "</div>" +
+        (browse.view === "verschil" ? '<span class="sort">Volgorde <button data-act="browse-sort" data-id="verschil" aria-pressed="' + (browse.sort === "verschil") + '">grootste verschil</button>' +
+          '<button data-act="browse-sort" data-id="az" aria-pressed="' + (browse.sort === "az") + '">A–Z</button></span>' : "") + "</div>" +
+        (browse.view !== "zelfde" && B.aisles.length ? '<div class="aisles" role="group" aria-label="Afdeling">' +
+          [["alle", "Alles"], ...B.aisles].map(([id, label]) => '<button data-act="browse-aisle" data-id="' + id + '" aria-pressed="' + (browse.aisle === id) + '">' + label + "</button>").join("") + "</div>" : "");
+
+      if (browse.view === "aanbiedingen") {
+        const rows = B.worth.filter((w) => aisleOk(w.g));
+        return head + '<div class="sec"><h2>Aanbiedingen die lonen</h2><span>' + rows.length + " · goedkoper dan elke andere winkel, grootste verschil bovenaan</span></div>" +
+          (rows.length ? '<div class="worth">' + rows.slice(0, limit).map(({ p, c, g, rival, rivalCost, share }) =>
+            '<div class="it"><div class="nm">' + esc(p.name) + '</div><div class="v">' + euro(p.offerPriceCents) + "<small>" + euro(p.ingredientUnitPriceCents) + unit(g.d) + "</small></div>" +
+            '<div class="why">' + tag(c) + " " + offerChip(p, offerFor(p, "nu")) + '<span class="delta zero">' + pct(share) + " goedkoper</span></div>" +
+            '<div class="why">' + esc(g.d.name) + " elders vanaf " + tag(rival) + " " + euro(rivalCost) + unit(g.d) + "</div>" +
+            '<div class="why"><button class="add-i' + (onList(g.d) ? " on" : "") + '" data-act="browse-add" data-id="' + esc(g.d.id) + '">' + (onList(g.d) ? "✓ Op je lijst" : "+ " + esc(g.d.name) + " op je lijst") + "</button></div></div>").join("") + "</div>" + more(rows.length)
+            : '<p class="lede">Hier is nu geen aanbieding goedkoper dan elders.</p>') +
+          '<p class="note">Alleen aanbiedingen met een eigen prijs: een actie als “1+1 gratis” of “2e halve prijs” heeft er geen, en die rekenen we niet om. ' +
+          "Vergeleken met de goedkoopste prijs per eenheid van hetzelfde ingrediënt bij de andere winkels vandaag, niet met wat de winkel zelf als oude prijs noemt.</p>";
+      }
+
+      if (browse.view === "zelfde") {
+        return head + '<div class="sec"><h2>Zelfde product, andere prijs</h2><span>' + B.same.length + " · hetzelfde merkartikel, herkend aan de EAN, grootste verschil bovenaan</span></div>" +
+          '<div class="worth">' + B.same.slice(0, limit).map(({ g, at, diff }) =>
+            '<div class="it"><div class="nm">' + esc(g.name) + '</div><div class="v">+' + euro(diff) + "<small>verschil</small></div>" +
+            '<div class="xs">' + at.map(({ c, p, cost }, i) => "<span>" + tag(c) + " <b>" + euro(cost) + "</b>" + (isOffer(p) ? " " + offerChip(p, offerFor(p, "nu")) : "") +
+              (i === 0 ? ' <span class="delta zero">laagst</span>' : ' <span class="delta">+' + euro(cost - at[0].cost) + "</span>") + "</span>").join("") + "</div>" +
+            '<div class="why"><button class="add-i' + (list.some((i) => i.exact === g.id) ? " on" : "") + '" data-act="make-exact-new" data-id="' + esc(g.id) + '">' + (list.some((i) => i.exact === g.id) ? "✓ Op je lijst" : "+ Op je lijst") + "</button></div></div>").join("") + "</div>" + more(B.same.length) +
+          exactNote();
+      }
+
+      const rows = B.ingredients.filter((g) => g.avail.length && aisleOk(g))
+        .sort(browse.sort === "az" ? (a, b) => a.d.name.localeCompare(b.d.name, "nl") : (a, b) => b.share - a.share || a.d.name.localeCompare(b.d.name, "nl"));
+      const line = (g) => {
+        const open = browseOpen === g.d.id, lo = g.avail[0], hi = g.avail.at(-1), r = { avail: g.avail, by: g.by, min: g.min, max: g.max };
+        return '<div class="df-row br-row"><button data-act="browse-row" data-id="' + esc(g.d.id) + '" aria-expanded="' + open + '">' +
+          '<span class="nm">' + esc(g.d.name) + '<span class="q">' + g.avail.length + " van " + chains.length + " winkels</span></span>" +
+          '<span class="plw">' + priceLine(r) + '<div class="pl-ends"><span class="lo">' + euro(g.min) + unit(g.d) + " " + esc(lo.name) + "</span><span>" +
+          (g.avail.length > 1 ? euro(g.max) + unit(g.d) + " " + esc(hi.name) : "") + "</span></div></span>" +
+          '<span class="spread">' + (g.avail.length < 2 ? "—<small>één winkel</small>" : g.share ? "<b>−" + pct(g.share) + "</b><small>" + esc(lo.name) + " vs. midden</small>" : g.max > g.min ? "—<small>niet onder het midden</small>" : "gelijk<small>overal</small>") + "</span></button>" +
+          (open ? '<div class="open">' + g.avail.map((c) => {
+            const { p, cost } = g.by[c.id], o = offerFor(p, "nu");
+            return '<div class="pr">' + tag(c) + '<span class="pn" title="' + esc(p.name) + '">' + (o ? offerChip(p, o) + " " : "") + esc(p.name) + (p.packaging ? " · " + esc(p.packaging) : "") + "</span>" +
+              '<span class="v">' + euro(cost) + unit(g.d) + "</span>" + (cost > g.min ? '<span class="delta">+' + pct((cost - g.min) / g.min) + "</span>" : '<span class="delta zero">laagst</span>') + "</div>";
+          }).join("") + '<div class="foot-i"><button class="add-i' + (onList(g.d) ? " on" : "") + '" data-act="browse-add" data-id="' + esc(g.d.id) + '">' +
+            (onList(g.d) ? "✓ Op je lijst" : "+ Op je lijst") + "</button></div></div>" : "") + "</div>";
+      };
+      return head + '<div class="sec"><h2>' + (browse.aisle === "alle" ? "Alle ingrediënten" : esc(AISLES.find(([a]) => a === browse.aisle)?.[1] || "")) + "</h2><span>" + rows.length +
+        (browse.sort === "az" ? " · op naam" : " · waar de winkel het meest uitmaakt bovenaan") + " · tik voor de producten</span></div>" +
+        '<div class="legend">' + chains.map(tag).join("") + "<span>· omcirkeld = goedkoopst</span></div>" +
+        '<div class="diffs">' + rows.slice(0, limit).map(line).join("") + "</div>" + more(rows.length) +
+        '<p class="note">Per winkel het goedkoopste product van dat ingrediënt per kilo, liter of stuk, vers waar het vers verkocht wordt, aanbiedingen met een prijs meegerekend. ' +
+        "Het percentage is hoeveel goedkoper de goedkoopste winkel is dan de middelste: wat je bespaart door de goede winkel te kiezen in plaats van een gewone. " +
+        "Kruiden, bouillon en brood worden in heel verschillende vormen verkocht; tik zo'n ingrediënt aan om te zien welke producten vergeleken worden. Alleen producten die we aan een ingrediënt koppelen staan hier" +
+        (offersOnly.length ? "; " + andList(offersOnly.map((c) => esc(c.name))) + " alleen met " + (offersOnly.length > 1 ? "hun" : "zijn") + " aanbiedingen" : "") + ".</p>";
     } },
 
     lijst: { label: "Lijst", ic: "☰", render(s) {
@@ -1089,7 +1245,7 @@
     const counts = { recepten: RECIPES.length, lijst: s.rows.length + s.exact.rows.length, vergelijk: bagChains.length, winkelen: s.rows.filter((r) => !done.has(r.item.id)).length };
     for (const nav of ["tabs-top", "tabs-bottom"]) document.getElementById(nav).innerHTML = PAGE_KEYS.map((k) =>
       '<button data-act="go" data-id="' + k + '"' + (k === page ? ' aria-current="page"' : "") + '><span class="ic">' + PAGES[k].ic + "</span>" +
-      PAGES[k].label + '<span class="n">' + counts[k] + "</span></button>").join("");
+      PAGES[k].label + (k in counts ? '<span class="n">' + counts[k] + "</span>" : "") + "</button>").join("");
     const focused = document.activeElement && document.activeElement.name === "q";
     main.innerHTML = PAGES[page].render(s);
     if (focused) main.querySelector("input[name=q]")?.focus();
@@ -1156,6 +1312,24 @@
         break;
       }
       case "step": { const set = (stepsDone[sheet.id] ||= new Set()); const n = Number(id); set.has(n) ? set.delete(n) : set.add(n); break; }
+      case "browse-view": browse.view = id; browseOpen = null; browseShown = 0; break;
+      case "browse-sort": browse.sort = id; browseShown = 0; break;
+      case "browse-aisle": browse.aisle = id; browseOpen = null; browseShown = 0; break;
+      case "browse-row": browseOpen = browseOpen === id ? null : id; break;
+      case "browse-more": browseShown += BROWSE_PAGE; break;
+      case "browse-add": {
+        const d = R.vocabulary.get(id), parsed = d && ingredientItem(d);
+        if (!parsed || onList(d)) break;
+        list.unshift({ id: newId(), staple: false, ...parsed }); hint = "Op je lijst: " + qtyText(parsed) + " " + parsed.noun;
+        break;
+      }
+      case "make-exact-new": {
+        const g = R.exact.get(id); if (!g) break;
+        if (!list.some((i) => i.exact === g.id)) list.unshift({ id: newId(), staple: false, exact: g.id, text: g.name, noun: g.name, quantity: 1, unit: "piece",
+          guessed: false, ingredient: null, variant: null, preferences: {} });
+        hint = "Op je lijst, als exact product: " + g.name;
+        break;
+      }
       case "close": sheet = null; break;
       default: return;
     }
