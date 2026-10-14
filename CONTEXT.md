@@ -24,6 +24,12 @@ _Avoid_: Big chain, major chain
 A Chain whose Stores cluster in part of the country, such as Dirk or Vomar.
 _Avoid_: Local chain, small chain
 
+**Offers-only Chain**:
+A Chain that prices online only what it has on Offer that week, such as
+Lidl. Its Products compete item by item, but it is never a Basket's whole
+shop, because what it does not list may well be on its shelves.
+_Avoid_: Partial chain, folder chain
+
 ### Products and prices
 
 **Product**:

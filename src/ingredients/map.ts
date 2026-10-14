@@ -33,6 +33,8 @@ const OWN_BRAND: Readonly<Record<string, RegExp>> = {
   // PLUS and its own lines (PLUS Boerentrots, Biologisch PLUS, "Uit de
   // keuken van PLUS"), and the Superunie lines it shares with Vomar.
   plus: /^(biologisch )?plus\b|^uit de keuken van\b|^melkan\b|^bio\+/i,
+  // Lidl sells mostly its own lines, each under a name of its own.
+  lidl: /^(lidl|milbona|combino|kania|lupilu|cien|w5|deluxe|bellarom|sondey|belbake|chef select|floralys|trattoria alfredo|pilos|solevita|freeway|vitasia|crownfield|snack day|alesto|fin carr[ée]|saskia|maribel|favorina|dulano|golden seafood|ocean sea|nixe|baresa|italiamo|eridanous|mcennedy|perlenbacher|envia|formil|ryneczek lidla|maître jean.pierre|maitre jean.pierre)\b/i,
 };
 
 /** Whether a Product is its Chain's own brand, mapped to an Ingredient or not. */

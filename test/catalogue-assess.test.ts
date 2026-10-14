@@ -34,6 +34,18 @@ test("a Chain that shrank below half of the published count is refused", () => {
   assert.match(problems[0]!, /jumbo has 76 comparable Products, under 50% of the 17104 published/);
 });
 
+test("a Chain whose only prices are its Offers may shrink, but never to nothing", () => {
+  // Lidl lists a new set of Offers each week, some weeks far fewer.
+  const offersOnly = (counts: Record<string, number>, observedAt?: string): Catalogue => {
+    const c = catalogue(counts, observedAt);
+    return { ...c, chains: c.chains.map((x) => (x.id === "lidl" ? { ...x, offersOnly: true } : x)) };
+  };
+  const expect = { ...EXPECT, chains: ["dirk", "lidl"] };
+  const published = offersOnly({ dirk: 7359, lidl: 88 }, "2026-10-13");
+  assert.deepEqual(assessCatalogue(offersOnly({ dirk: 7359, lidl: 30 }), published, expect), []);
+  assert.deepEqual(assessCatalogue(offersOnly({ dirk: 7359, lidl: 0 }), published, expect), ["lidl has no comparable Products"]);
+});
+
 test("a missing or empty Chain is refused, even on the first publish", () => {
   const problems = assessCatalogue(catalogue({ dirk: 7359, jumbo: 0 }), null, { ...EXPECT, chains: ["dirk", "jumbo", "spar"] });
   assert.deepEqual(problems, ["jumbo has no comparable Products", "spar is missing from the catalogue"]);

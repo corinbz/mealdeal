@@ -1,7 +1,7 @@
 /**
  * Which part of the shop a Chain's category is, whatever the Chain calls it.
  *
- * Dirk, Jumbo, Vomar and Plus each have their own category tree, a few
+ * Dirk, Jumbo, Vomar, Plus and Lidl each have their own category tree, a few
  * hundred leaves between them. An Ingredient says which aisles it is sold in, rather than
  * listing every Chain's categories, and the aisle also gives a Product its
  * form: carrots in Groente are fresh, in Groenteconserven jarred, and in
@@ -24,6 +24,24 @@ export type Form = "vers" | "diepvries" | "conserven";
  * ("Aardappelen, groente & fruit > Groenteconserven").
  */
 const RULES: [RegExp, Aisle][] = [
+  // Lidl, first: its food sits under one department ("Eten en dichtbij
+  // voedsel"), and the general rules below would read "Kaas, zuivelproducten
+  // & eieren > Kaas" as eggs.
+  [/^eten en dichtbij voedsel > (dierbenodigdheden|baby & kind|drogisterij|huishouding|bloemen)|^(keuken & huishouden|baby, kind|wonen|bouwmarkt)/i, "nonfood"],
+  [/^eten en dichtbij voedsel > groenten & fruit/i, "produce"],
+  [/^eten en dichtbij voedsel > vlees & gevogelte > worst & vleeswaren/i, "deli"],
+  [/^eten en dichtbij voedsel > vlees & gevogelte/i, "meat"],
+  [/^eten en dichtbij voedsel > diepvries[^>]*> diepvriesmaaltijden/i, "readymeal"],
+  [/^eten en dichtbij voedsel > diepvries/i, "frozen"],
+  [/^eten en dichtbij voedsel > kaas, zuivelproducten & eieren > kaas/i, "cheese"],
+  [/^eten en dichtbij voedsel > kaas, zuivelproducten/i, "dairy"],
+  [/^eten en dichtbij voedsel > bakkerij > toast/i, "pantry"],
+  [/^eten en dichtbij voedsel > bakkerij/i, "bakery"],
+  [/^eten en dichtbij voedsel > snoep & snacks/i, "snacks"],
+  [/^eten en dichtbij voedsel > dranken|^wijn, bier/i, "drinks"],
+  [/^eten en dichtbij voedsel > voedselvoorraad > (groente- en fruitconserven|conserven|ingemaakte)/i, "conserves"],
+  [/^eten en dichtbij voedsel > kant-en-klaar/i, "readymeal"],
+  [/^eten en dichtbij voedsel > (voedselvoorraad|muesli|koffie|oliën)/i, "pantry"],
   [/huisdier|dierenvoeding/i, "pet"],
   [/babyvoeding|peutervoeding|flesvoeding|kindervoeding|^baby (en|&) kind/i, "baby"],
   [/drogisterij|^huishoud|^non.?food|& non food|^bloemen/i, "nonfood"],

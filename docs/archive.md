@@ -280,6 +280,51 @@ Both are stored as sent, and no price is derived from wording (ADR-0002).
 "Gratis bezorging BIJ 10.00 EURO" appears as a promotion on Products and is a
 delivery term, not an Offer; ingest drops it, as for Jumbo.
 
+### Lidl — Offers only, verified live, honest agent accepted
+
+Added on 2026-10-14 (#28). **Lidl publishes no regular prices online.** Its
+product sitemap (`/p/export/NL/nl/product_sitemap.xml.gz`) lists 13,255 pages,
+food included, and each says `"availability": "InStoreOnly"` with no price.
+The one place Lidl prices food is its offers page, which is what is archived:
+
+- `GET /c/aanbiedingen/a10008785` (`/aanbiedingen` redirects there): one
+  server-rendered page, step `offers`. Every product tile carries a
+  `data-grid-data` attribute holding JSON: title, Lidl's article numbers
+  (`erpNumber`, `ians`), category path, pack, the price, the price it was,
+  discount, first and last day in store, and a separate Lidl Plus price.
+
+A day is **one request, about 90 KB stored**: 142 products on 2026-10-14, 134
+of them food. The page loads nothing more in a browser and has no paging.
+Prices are national: all six of Lidl's regions name one price list.
+
+**Access and terms.** `robots.txt` allows the page; it disallows
+`/user-api/`, `?offset=`, `?id=` and search. Lidl's general terms are
+webshop sales terms, with nothing on reuse or automated access.
+
+**Three kinds of product on the page**, read in `src/ingest/readers/lidl.ts`:
+
+- Reduced: the price it was is the Shelf Price, the price the Offer price.
+- At its price, nothing struck through (a week's bakery, a themed range): a
+  Shelf Price, and no Offer.
+- **Reduced only with the Lidl Plus app** (48 of 142): no price for everyone,
+  a Lidl Plus price and the price it was. The Shelf Price is the price it
+  was; the Offer is wording only ("-35% · 1.29 met Lidl Plus"), because
+  without the app nobody pays it.
+
+An Offer not yet in store (from Thursday or Friday) keeps today's price, and
+its own price only in its wording. About a third of the products state no
+pack anywhere, on this page or their product page (fresh produce, soups),
+so they have no Unit Price. Lidl's key facts list the pack as a bullet of its
+own ("355 g"); only such a bullet is read, never the rest of the text
+(ADR-0003). Image URLs are on every tile, archived verbatim and never read.
+
+**Regular prices from a third party, not archived.** boodschaapje.nl indexes
+about 21,700 Lidl products with prices, and checkjebon.nl republishes them.
+Its names are till-receipt style ("Halfvolle melk houd.") and its prices match
+Lidl's regular price, some out of date, so they appear to come from receipts.
+They are not what Lidl said. **Decision, 2026-10-14:** the owner wants Lidl's
+own source, so only the offers page is archived.
+
 ### Spar — assessed, not archived
 
 Assessed on 2026-10-14 (#11) and dropped by the owner the same day: Spar is

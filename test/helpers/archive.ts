@@ -32,12 +32,13 @@ export async function writeFixtureArchive(
 
   for (const [chain, steps] of Object.entries(fixtures)) {
     for (const [step, files] of Object.entries(steps)) {
-      const bodies: unknown[] = [];
+      // A JSON fixture is an array of response bodies; an HTML one (Lidl)
+      // is one page, stored as the Chain sent it.
+      const bodies: string[] = [];
       for (const file of files) {
-        const parsed = JSON.parse(
-          await readFile(join("test/fixtures", file), "utf8"),
-        ) as unknown[];
-        bodies.push(...parsed);
+        const content = await readFile(join("test/fixtures", file), "utf8");
+        if (file.endsWith(".html")) bodies.push(content);
+        else bodies.push(...(JSON.parse(content) as unknown[]).map((body) => JSON.stringify(body)));
       }
 
       const records = bodies.map((body, seq) => ({
@@ -46,7 +47,7 @@ export async function writeFixtureArchive(
         label: step,
         variables: undefined,
         status: 200,
-        body: JSON.stringify(body),
+        body,
       }));
 
       const path = join(root, date, chain, `${step}.ndjson.gz`);

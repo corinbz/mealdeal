@@ -28,6 +28,13 @@ import { VOCABULARY, type ComparisonUnit } from "../src/ingredients/vocabulary.t
 const OUT = new URL("../prototype/catalogue.js", import.meta.url);
 
 /**
+ * Chains that put only their Offers online (Lidl, #28). A Product of theirs
+ * is current only while their offers page lists it, so only their latest
+ * run counts: last week's Offer must not linger as this week's price.
+ */
+const OFFERS_ONLY = new Set(["lidl"]);
+
+/**
  * One Product, as a positional row: 24,000 objects with repeated keys would
  * roughly double the file. The page reads them by these indices.
  */
@@ -103,14 +110,14 @@ const db = connect();
 
 const { rows: chains } = await db.query<{
   id: string; name: string; kind: string; archive_date: string | null; products_recorded: number | null;
-  offers_recorded: number | null;
+  offers_recorded: number | null; run_id: string | null;
 }>(
   // archive_date as text: read as a Date, it is local midnight in Amsterdam,
   // which toISOString() reports as the previous day.
-  `SELECT c.id, c.name, c.kind, r.archive_date::text AS archive_date, r.products_recorded, r.offers_recorded
+  `SELECT c.id, c.name, c.kind, r.archive_date::text AS archive_date, r.products_recorded, r.offers_recorded, r.id AS run_id
      FROM chain c
      LEFT JOIN LATERAL (
-       SELECT archive_date, products_recorded, offers_recorded FROM ingest_run
+       SELECT id, archive_date, products_recorded, offers_recorded FROM ingest_run
         WHERE chain_id = c.id AND outcome = 'complete'
         ORDER BY id DESC LIMIT 1
      ) r ON true
@@ -170,8 +177,9 @@ for (const chain of chains) {
           LIMIT 1
        ) nxt ON true
       WHERE l.unit_price_cents IS NOT NULL AND l.comparison_unit IS NOT NULL
+        AND ($2::bigint IS NULL OR l.run_id = $2)
       ORDER BY l.unit_price_cents`,
-    [chain.id],
+    [chain.id, OFFERS_ONLY.has(chain.id) ? chain.run_id : null],
   );
 
   const counts = (mappedCount[chain.id] = { mapped: 0, comparable: 0, total: rows.length });
@@ -240,6 +248,8 @@ const data = {
     offers: Number(c.offers_recorded ?? 0) > 0,
     /** False for a Chain that publishes no EANs (Dirk): it is never in an exact comparison. */
     eans: withEans.has(c.id),
+    /** True for a Chain whose only prices online are its Offers (Lidl): never a bag of its own. */
+    offersOnly: OFFERS_ONLY.has(c.id),
   })),
   columns: [...COLUMNS],
   /**

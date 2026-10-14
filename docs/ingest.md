@@ -151,6 +151,18 @@ and days are recorded as one Offer. Every Unit Price is derived from the pack
 the kilo. No EANs: see docs/archive.md. 17,249 Products on 2026-10-14, 94
 without a Unit Price, all of them non-food: socks, laces, gloves.
 
+**Lidl** (#28) prices food online only on its offers page, so its Products
+are the hundred-odd that page lists that week, not its assortment. A reduced
+product's Shelf Price is the price it was. A product reduced only with the
+Lidl Plus app is recorded at the price everyone pays, and its Offer is
+wording only. An Offer not yet in store keeps today's price, and a product
+arriving later with no price today has none recorded, only its Offer. First
+and last days come as Unix times of Amsterdam midnights. 139 of 142 products
+recorded on 2026-10-14; 51 without a Unit Price, because Lidl states no pack
+for them (loose fruit, soups, flowers). The catalogue keeps only Lidl's latest
+run, so last week's Offers never linger, and no fall in its count holds back
+a publish: the set changes every week.
+
 Two things in Vomar's data that look like they help and do not:
 
 - **A measure in a piece-counted name is each piece's size, not the pack's.**
@@ -231,10 +243,11 @@ Ingredient's own unit.
   0.3 kg, so a per-kg price compares per piece.
 
 On 2026-10-14 about 1,700 of Dirk's, 3,650 of Jumbo's, 1,450 of Vomar's and
-2,980 of Plus's food Products mapped. Vomar's huismerk is its own label and the Superunie
+2,980 of Plus's food Products mapped, and 24 of Lidl's 88 comparable ones. Vomar's huismerk is its own label and the Superunie
 lines it sells as its own: G'woon, Melkan, Bio+ and Daily Chef. Plus's is
 PLUS with its own lines (PLUS Boerentrots, Biologisch PLUS, "Uit de keuken
-van PLUS"), and Melkan and Bio+. Most of the rest are processed, seasoned or mixed. The vocabulary
+van PLUS"), and Melkan and Bio+. Lidl's is its many own lines (Milbona,
+Combino, Kania, Chef Select, Lupilu, and so on). Most of the rest are processed, seasoned or mixed. The vocabulary
 (`src/ingredients/vocabulary.ts`, about 230 Ingredients) grows by adding
 words, and Corrections cover what it misses in the meantime. To see what it
 does with a real day without the R2 keys, export one with

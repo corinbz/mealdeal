@@ -11,7 +11,7 @@
 
 /** The parts of scripts/catalogue-from-db.ts's output this reads. */
 export interface Catalogue {
-  readonly chains: readonly { readonly id: string; readonly observedAt: string | null }[];
+  readonly chains: readonly { readonly id: string; readonly observedAt: string | null; readonly offersOnly?: boolean }[];
   readonly catalogue: Readonly<Record<string, readonly unknown[]>>;
 }
 
@@ -41,7 +41,9 @@ export function assessCatalogue(built: Catalogue, published: Catalogue | null, e
       problems.push(`the published ${id} prices are from ${before.observedAt}, newer than ${expect.date}`);
     }
     const previous = published!.catalogue[id]?.length ?? 0;
-    if (count < previous * expect.minRatio) {
+    // A Chain whose only prices are its Offers (Lidl) lists a new set each
+    // week, and fewer in some weeks than others: no fall in count is an alarm.
+    if (!chain.offersOnly && count < previous * expect.minRatio) {
       problems.push(
         `${id} has ${count} comparable Products, under ${expect.minRatio * 100}% of the ${previous} published — ` +
           `a Chain changing its API shape looks exactly like this`,
