@@ -191,6 +191,17 @@ Catch weight 2 marks a Product packed by weight. 8,282 Products on
 2026-10-14, 45 without a Unit Price (rolls and multipacks), 1,087 Offers,
 924 of them in later weeks.
 
+**DekaMarkt** (#30) is read by Dirk's reader (`readers/detailresult.ts`):
+the same gateway, the same rows, the same sentinels (an offer price of 0, an
+end date in 2049) and the same pack wording, with no EAN and no Unit Price.
+It differs in one thing: its prices are national, read at Store 283 (the
+site's "Volledig assortiment", which is no shop), so neither its prices nor
+its Offers name a Store. Its categories are Dirk's department and web group,
+so Dirk's aisles serve it. Own brands are DekaMarkt's labels (DekaVers,
+Deka's keuken, Altijd handig), Dirk's 1 de Beste, and the Superunie lines it
+shares with Vomar and Hoogvliet. 9,872 Products on 2026-10-14, 95 without a
+Unit Price (packs counted "Per pakket", "3-pack"), 138 Offers.
+
 Two things in Vomar's data that look like they help and do not:
 
 - **A measure in a piece-counted name is each piece's size, not the pack's.**

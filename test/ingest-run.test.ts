@@ -2,7 +2,7 @@ import { test, before, after, beforeEach } from "node:test";
 import assert from "node:assert/strict";
 import { truncateAll, type Db } from "../src/ingest/db.ts";
 import { record, DEFAULT_OPTIONS } from "../src/ingest/record.ts";
-import { dirkReader } from "../src/ingest/readers/dirk.ts";
+import { dirkReader } from "../src/ingest/readers/detailresult.ts";
 import { jumboReader } from "../src/ingest/readers/jumbo.ts";
 import type { ChainReading } from "../src/ingest/readers/types.ts";
 import { testDb } from "./helpers/db.ts";

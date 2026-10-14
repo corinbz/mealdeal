@@ -2,7 +2,7 @@ import { test, before, after, beforeEach } from "node:test";
 import assert from "node:assert/strict";
 import { truncateAll, type Db } from "../src/ingest/db.ts";
 import { record } from "../src/ingest/record.ts";
-import { dirkReader } from "../src/ingest/readers/dirk.ts";
+import { dirkReader } from "../src/ingest/readers/detailresult.ts";
 import { testDb } from "./helpers/db.ts";
 import { writeFixtureArchive, FIXTURE_DATE } from "./helpers/archive.ts";
 

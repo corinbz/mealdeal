@@ -54,6 +54,7 @@ const R: Record<string, Omit<MappableProduct, "name">> = {
   "Rundergehakt": product("hoogvliet", "Hoogvliet", ["Vlees, vis, vegetarisch > Rund- en varkensvlees > Gehakt"]),
   "kaas jong belegen komijn plakken": product("hoogvliet", "Koggelandse", ["Kaas, vleeswaren, tapas > Plakken kaas > Koggelandse"]),
   "Appel perzik 4+ mnd": product("hoogvliet", "Bonbébé", ["Baby, kind > Babyvoeding > Fruithapjes"]),
+  "DekaVers Kipfilet": product("dekamarkt", "DekaVers", ["Vlees & vis > Kip & kalkoen"]),
 };
 const mapped = (name: string) => map({ name, ...R[name]! });
 const ingredient = (name: string) => mapped(name)?.ingredient ?? null;
@@ -178,4 +179,9 @@ test("reads Hoogvliet's category tree, and its own brands", () => {
   assert.equal(aisleOf("Baby, kind > Babyvoeding > Fruithapjes"), "baby");
   assert.equal(ingredient("Appel perzik 4+ mnd"), null);
   assert.deepEqual([mapped("Rundergehakt")?.huismerk, mapped("kaas jong belegen komijn plakken")?.huismerk], [true, false]);
+});
+
+test("knows DekaMarkt's own labels, on Dirk's categories", () => {
+  assert.equal(ingredient("DekaVers Kipfilet"), "kipfilet");
+  assert.equal(mapped("DekaVers Kipfilet")?.huismerk, true);
 });
