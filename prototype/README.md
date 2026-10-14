@@ -91,12 +91,17 @@ Chain resolves to, and a pack far larger than the requirement is flagged
 
 ## Where the data comes from
 
-**All four Chains are real.** The fixture is resolved against the ingested
+**All five Chains are real.** The fixture is resolved against the ingested
 database, so every name, Pack Size, Shelf Price and Offer wording came from a
 Sweep: 7,359 Dirk products from Store 66, and 17,104 Jumbo, 17,249 Plus and
 6,268 Vomar products, priced nationally. Vomar publishes no Offers
 online, so its bag is always at Shelf Prices, and the note under Vergelijk
-says so. Coverage happens to be 12 of 12 at all four today; the UI still
+says so. **Lidl** puts only its Offers online, about 90 comparable products a
+week, so it gets no bag: one would only ever say what is missing, and an item
+it does not list is not "not for sale" there. Its Offers compete item by item
+on every page, can make up half of a two-shop plan, and appear among the
+recipes' deals; Vergelijk names Lidl "niet in de aanbieding" where it lists
+nothing. Coverage happens to be 12 of 12 at all four today; the UI still
 shows it beside every total, because a Basket a Chain cannot fill is the normal
 case.
 
@@ -136,7 +141,9 @@ blue first in the palette: for tritanopes that blue sat beside Dirk's green
 (ΔE 12). The purple stays at least ΔE 33 from both others under every type
 simulated, and carries white text at 4.5:1 or better in both themes. Plus,
 the fourth, is indigo (light `#4a3ad0`, dark `#7050f8`), at least ΔE 28 from
-every other Chain under every type, and white text at 5:1 or better. Each
+every other Chain under every type, and white text at 5:1 or better. Lidl,
+the fifth, is red (light `#901000`, dark `#c00038`), at least ΔE 26 from
+every other Chain under every type, and white text at 6:1 or better. Each
 Chain's colour is fixed by its id, not its place in the list, so a Chain
 added later never repaints another.
 

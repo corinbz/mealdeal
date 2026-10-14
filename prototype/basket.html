@@ -20,7 +20,7 @@
     --good: #2f7a3f; --good-wash: #d9ecd9; --bad: #b8432f; --bad-wash: #f6dcd4;
     --offer: #ffe9a3; --offer-ink: #2b2118; --scrim: rgba(30, 20, 10, .45);
     --bag-shade: rgba(0, 0, 0, .12); --lift: 0 14px 24px -16px rgba(60, 30, 0, .6);
-    --c0: #12805a; --c1: #c4801a; --c2: #7a3fa0; --c3: #4a3ad0; --c4: #5b4a9e; --c5: #2b8a8a; --c6: #7a6a2a; --c7: #a8452f;
+    --c0: #12805a; --c1: #c4801a; --c2: #7a3fa0; --c3: #4a3ad0; --c4: #901000; --c5: #2b8a8a; --c6: #7a6a2a; --c7: #a8452f;
     --r: 16px;
     --font: Nunito, ui-rounded, "SF Pro Rounded", system-ui, sans-serif;
   }
@@ -32,7 +32,7 @@
       --good: #72c28e; --good-wash: rgba(114, 194, 142, .16); --bad: #f08c75; --bad-wash: rgba(240, 140, 117, .16);
       --offer: rgba(255, 214, 102, .18); --offer-ink: #ffd666; --scrim: rgba(0, 0, 0, .6);
       --bag-shade: rgba(0, 0, 0, .22); --lift: 0 14px 26px -14px rgba(0, 0, 0, .7);
-      --c0: #239270; --c1: #c38425; --c2: #9358b8; --c3: #7050f8; --c4: #7b68bd; --c5: #3a9a99; --c6: #a08a3a; --c7: #c0604a;
+      --c0: #239270; --c1: #c38425; --c2: #9358b8; --c3: #7050f8; --c4: #c00038; --c5: #3a9a99; --c6: #a08a3a; --c7: #c0604a;
     }
   }
   :root[data-theme="dark"] {
@@ -42,7 +42,7 @@
     --good: #72c28e; --good-wash: rgba(114, 194, 142, .16); --bad: #f08c75; --bad-wash: rgba(240, 140, 117, .16);
     --offer: rgba(255, 214, 102, .18); --offer-ink: #ffd666; --scrim: rgba(0, 0, 0, .6);
     --bag-shade: rgba(0, 0, 0, .22); --lift: 0 14px 26px -14px rgba(0, 0, 0, .7);
-    --c0: #239270; --c1: #c38425; --c2: #9358b8; --c3: #7050f8; --c4: #7b68bd; --c5: #3a9a99; --c6: #a08a3a; --c7: #c0604a;
+    --c0: #239270; --c1: #c38425; --c2: #9358b8; --c3: #7050f8; --c4: #c00038; --c5: #3a9a99; --c6: #a08a3a; --c7: #c0604a;
   }
 
   * { box-sizing: border-box; }
@@ -376,13 +376,20 @@
   // Each Chain keeps its colour whichever Chains a catalogue holds: by
   // position, Plus arriving between Jumbo and Vomar would have repainted
   // Vomar. Every pair was checked for colour-blind readers (README).
-  const COLOUR_SLOT = { dirk: 0, jumbo: 1, vomar: 2, plus: 3 };
+  const COLOUR_SLOT = { dirk: 0, jumbo: 1, vomar: 2, plus: 3, lidl: 4 };
   const chains = data.chains.map((c, i) => ({ ...c, color: "var(--c" + (COLOUR_SLOT[c.id] ?? 4 + (i % 4)) + ")" }));
   const chainById = (id) => chains.find((c) => c.id === id);
   /** "Dirk, Jumbo en Vomar". */
   const andList = (xs) => xs.length < 2 ? xs.join("") : xs.slice(0, -1).join(", ") + " en " + xs[xs.length - 1];
   /** Chains whose Offers are not online, so their prices are Shelf Prices (Vomar). Older catalogues lack the field. */
   const noOffers = chains.filter((c) => c.offers === false);
+  /**
+   * Chains that put only their Offers online (Lidl): a hundred-odd Products,
+   * not an assortment. Never a bag of their own, which would only ever say
+   * what is missing, and an item they do not list is not "not for sale"
+   * there. Their Offers still compete item by item, and in two-shop plans.
+   */
+  const bagChains = chains.filter((c) => !c.offersOnly), offersOnly = chains.filter((c) => c.offersOnly);
   const tag = (c) => '<span class="ct" style="--c:' + c.color + '">' + esc(c.name) + "</span>";
 
   // ── Freshness: which day each Chain's prices are from ─────────────────
@@ -610,7 +617,7 @@
       const avail = chains.filter((c) => by[c.id]).sort((a, b) => by[a.id].cost - by[b.id].cost);
       return { item, by, avail, min: avail.length ? by[avail[0].id].cost : null, max: avail.length ? by[avail.at(-1).id].cost : null };
     });
-    const totals = chains.map((c) => {
+    const totals = bagChains.map((c) => {
       let cost = 0, filled = 0;
       for (const r of rows) if (r.by[c.id]) { filled++; cost += r.by[c.id].cost; }
       return { chain: c, cost, filled, total: rows.length, full: filled === rows.length && rows.length > 0 };
@@ -620,6 +627,7 @@
     let combo = null;
     for (let i = 0; i < chains.length; i++) for (let j = i + 1; j < chains.length; j++) {
       const a = chains[i], b = chains[j]; let cost = 0, filled = 0; const from = {};
+      if (a.offersOnly && b.offersOnly) continue;
       for (const r of rows) {
         const la = r.by[a.id], lb = r.by[b.id];
         if (!la && !lb) continue;
@@ -735,7 +743,7 @@
     return (ingCache[key] = best);
   }
   function priceRecipe(rc, w = week) {
-    const at = chains.map((c) => {
+    const at = bagChains.map((c) => {
       const lines = rc.ingredients.map((g) => ingLine(c.id, g, w)), have = lines.filter(Boolean);
       return { chain: c, lines, cost: have.reduce((n, l) => n + l.cost, 0), missing: lines.length - have.length,
         deals: have.filter((l) => l.onOffer).length, saving: have.reduce((n, l) => n + (l.was ? l.was - l.cost : 0), 0) };
@@ -771,6 +779,11 @@
       const seen = new Map();
       for (const { at } of priced) for (const x of at) for (const l of x.lines) {
         if (l && l.onOffer && !seen.has(l.p.id)) seen.set(l.p.id, { c: x.chain, l });
+      }
+      // An offers-only Chain prices no whole recipe, but its Offers are deals all the same.
+      for (const { rc } of priced) for (const c of offersOnly) for (const g of rc.ingredients) {
+        const l = ingLine(c.id, g, week);
+        if (l && l.onOffer && !seen.has(l.p.id)) seen.set(l.p.id, { c, l });
       }
       const gain = (l) => l.was ? l.was - l.cost : 0;
       const deals = [...seen.values()].sort((a, b) => gain(b.l) - gain(a.l)).map(({ c, l }) =>
@@ -874,14 +887,14 @@
       }
       const rows = s.rows.slice().sort((a, b) => ((b.max ?? 0) - (b.min ?? 0)) - ((a.max ?? 0) - (a.min ?? 0)));
       const diffs = rows.map((r) => {
-        const open = openRow === r.item.id, spread = r.avail.length > 1 ? r.max - r.min : 0, missing = chains.length - r.avail.length;
+        const open = openRow === r.item.id, spread = r.avail.length > 1 ? r.max - r.min : 0, missing = bagChains.filter((c) => !r.by[c.id]).length;
         return '<div class="df-row"><button data-act="row" data-id="' + r.item.id + '" aria-expanded="' + open + '">' +
           '<span class="nm">' + esc(r.item.noun) + '<span class="q">' + qtyText(r.item) + (missing ? " · " + missing + " winkel" + (missing > 1 ? "s" : "") + " niet" : "") + "</span></span>" +
           '<span class="plw">' + priceLine(r) + (r.avail.length ? '<div class="pl-ends"><span class="lo">' + euro(r.min) + " " + esc(r.avail[0].name) + "</span><span>" + (spread ? euro(r.max) : "") + "</span></div>" : "") + "</span>" +
           '<span class="spread">' + (spread ? "+" + euro(spread) : "—") + "<small>" + (spread ? "verschil" : r.avail.length ? "gelijk" : "nergens") + "</small></span></button>" +
           (open ? '<div class="open">' + chains.map((c) => {
             const l = r.by[c.id], fixed = correctionKey(c.id, r.item) in corrections;
-            if (!l) return '<div class="pr">' + tag(c) + '<span class="pn">niet te koop</span><span class="v">—</span><span></span><span></span></div>';
+            if (!l) return '<div class="pr">' + tag(c) + '<span class="pn">' + (c.offersOnly ? "niet in de aanbieding" : "niet te koop") + '</span><span class="v">—</span><span></span><span></span></div>';
             return '<div class="pr">' + tag(c) + '<span class="pn" title="' + esc(l.p.name) + '">' + (l.offer ? offerChip(l.p, l.o) + " " : "") + esc(l.p.name) + "</span>" +
               '<span class="v">' + euro(l.cost) + "</span>" + (l.cost > r.min ? '<span class="delta">+' + euro(l.cost - r.min) + "</span>" : '<span class="delta zero">laagst</span>') +
               '<button class="fix" data-act="fix" data-id="' + r.item.id + '" data-chain="' + c.id + '">' + (fixed ? "gecorrigeerd" : "ander product") + "</button></div>";
@@ -896,7 +909,9 @@
         '<div class="diffs">' + diffs + "</div>" + exactSection +
         '<p class="note">Prijzen van ' + andList(chains.map((c) => esc(c.name) + " (" + esc(c.store || "landelijk") + ", " + esc(c.observedAt || "?") + ")")) +
         ". " + (noOffers.length ? andList(noOffers.map((c) => esc(c.name))) + (noOffers.length > 1 ? " zetten hun" : " zet zijn") +
-        " aanbiedingen alleen in een folder, niet als prijzen online; daar telt de gewone prijs. " : "") + "Per winkel kiezen we het product met de laagste kiloprijs onder de namen die elk woord bevatten. Dat gaat soms mis; daarom kun je corrigeren.</p>";
+        " aanbiedingen alleen in een folder, niet als prijzen online; daar telt de gewone prijs. " : "") +
+        (offersOnly.length ? andList(offersOnly.map((c) => esc(c.name))) + " zet alleen " + (offersOnly.length > 1 ? "hun" : "zijn") +
+          " aanbiedingen online, geen gewone prijzen: daar vergelijken we alleen wat in de aanbieding is, en " + (offersOnly.length > 1 ? "zij krijgen" : "krijgt") + " geen eigen tas. " : "") + "Per winkel kiezen we het product met de laagste kiloprijs onder de namen die elk woord bevatten. Dat gaat soms mis; daarom kun je corrigeren.</p>";
     } },
 
     winkelen: { label: "Winkelen", ic: "✓", render(s) {
@@ -1086,7 +1101,7 @@
   }
   function render() {
     const s = snapshot();
-    const counts = { recepten: RECIPES.length, lijst: s.rows.length + s.exact.rows.length, vergelijk: chains.length, winkelen: s.rows.filter((r) => !done.has(r.item.id)).length };
+    const counts = { recepten: RECIPES.length, lijst: s.rows.length + s.exact.rows.length, vergelijk: bagChains.length, winkelen: s.rows.filter((r) => !done.has(r.item.id)).length };
     for (const nav of ["tabs-top", "tabs-bottom"]) document.getElementById(nav).innerHTML = PAGE_KEYS.map((k) =>
       '<button data-act="go" data-id="' + k + '"' + (k === page ? ' aria-current="page"' : "") + '><span class="ic">' + PAGES[k].ic + "</span>" +
       PAGES[k].label + '<span class="n">' + counts[k] + "</span></button>").join("");

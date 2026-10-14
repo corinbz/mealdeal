@@ -46,6 +46,11 @@ const R: Record<string, Omit<MappableProduct, "name">> = {
   "PLUS Spaghetti": product("plus", "PLUS", ["Pasta, rijst, internationale keuken > Pasta > Spaghetti, linguine, tagliatelle"]),
   "PLUS Houdbare Halfvolle Melk": product("plus", "PLUS", ["Zuivel, eieren, boter > Houdbare zuivel > Houdbare melk"]),
   "Uit de keuken van PLUS Verse Loempia": product("plus", "Uit de keuken van", ["Verse kant-en-klaarmaaltijden > Oosterse maaltijden"]),
+  "MILBONA Jong belegen plakken Goudse 48+ kaas": product("lidl", "MILBONA", ["Eten en dichtbij voedsel > Kaas, zuivelproducten & eieren > Kaas"]),
+  "COMBINO Spaghetti": product("lidl", "COMBINO", ["Eten en dichtbij voedsel > Voedselvoorraad > Rijst, pasta & peulvruchten"]),
+  "Extra mager rundergehakt": product("lidl", null, ["Eten en dichtbij voedsel > Vlees & gevogelte > rundvlees"]),
+  "Iglo roerbaksensatie kip-spinazie": product("lidl", null, ["Eten en dichtbij voedsel > Diepvriesvoeding (Diepvriesvoeding) > Diepvriesmaaltijden"]),
+  "Hondenvoer kuipje senior kip": product("lidl", null, ["Eten en dichtbij voedsel > Dierbenodigdheden > Hondenvoer"]),
 };
 const mapped = (name: string) => map({ name, ...R[name]! });
 const ingredient = (name: string) => mapped(name)?.ingredient ?? null;
@@ -143,4 +148,16 @@ test("reads Plus's category tree, and its own brands", () => {
   assert.equal(mapped("PLUS Spaghetti")?.huismerk, true);
   // A ready meal, not an Ingredient; but its brand is Plus's own line.
   assert.equal(ingredient("Uit de keuken van PLUS Verse Loempia"), null);
+});
+
+test("reads Lidl's category tree, and its own brands", () => {
+  // "Kaas, zuivelproducten & eieren > Kaas" is cheese, not eggs.
+  assert.equal(ingredient("MILBONA Jong belegen plakken Goudse 48+ kaas"), "kaas");
+  assert.equal(ingredient("COMBINO Spaghetti"), "pasta");
+  assert.equal(ingredient("Extra mager rundergehakt"), "gehakt");
+  assert.deepEqual([mapped("MILBONA Jong belegen plakken Goudse 48+ kaas")?.huismerk, mapped("COMBINO Spaghetti")?.huismerk], [true, true]);
+  assert.equal(mapped("Extra mager rundergehakt")?.huismerk, false);
+  // A frozen stir-fry meal is not spinach; dog food with chicken is not chicken.
+  assert.equal(ingredient("Iglo roerbaksensatie kip-spinazie"), null);
+  assert.equal(ingredient("Hondenvoer kuipje senior kip"), null);
 });
