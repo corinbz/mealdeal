@@ -1,0 +1,43 @@
+# Attaches one archived day to the run as a private artifact, so a machine
+# without the R2 keys can work on real data (developing ingest or the
+# Ingredient vocabulary):
+#
+#   gh workflow run archive-export.yml -f date=2026-10-14
+#   gh run download <run id> -D archive/
+#
+# Read only: it lists and downloads, and never writes to the bucket.
+name: Export an archived day
+
+on:
+  workflow_dispatch:
+    inputs:
+      date:
+        description: Day to export (YYYY-MM-DD)
+        type: string
+        required: true
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      AWS_ENDPOINT_URL: https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com
+      AWS_REQUEST_CHECKSUM_CALCULATION: when_required
+      AWS_RESPONSE_CHECKSUM_VALIDATION: when_required
+      AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: auto
+    steps:
+      - name: Download the day
+        run: |
+          date="${{ inputs.date }}"
+          [[ "$date" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]] || { echo "::error::Not a date: $date"; exit 1; }
+          aws s3 sync "s3://${{ secrets.R2_BUCKET }}/$date/" "$date/" --only-show-errors
+          echo "$(find "$date" -type f | wc -l) files"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: archive-${{ inputs.date }}
+          path: ${{ inputs.date }}/
+          retention-days: 7
+          if-no-files-found: error
