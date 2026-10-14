@@ -14,8 +14,8 @@
  */
 
 import { readFile } from "node:fs/promises";
-import { assessCoverage, coverageMarkdown, type CoverageCatalogue } from "../src/catalogue/coverage.ts";
-import { parseCatalogueScript } from "../src/catalogue/assess.ts";
+import { assessCoverage, coverageMarkdown } from "../src/catalogue/coverage.ts";
+import { parseCatalogueScript } from "../src/catalogue/format.ts";
 import { KNOWN_GAPS } from "../src/catalogue/known-gaps.ts";
 import { KNOWN_SLIPS } from "../src/catalogue/known-slips.ts";
 import { assessSelfChecks, selfChecksMarkdown } from "../src/catalogue/self-checks.ts";
@@ -40,7 +40,7 @@ for (let i = 0; i < argv.length; i++) {
 }
 if (!built) usage();
 
-const read = async (path: string) => parseCatalogueScript(await readFile(path, "utf8")) as unknown as CoverageCatalogue;
+const read = async (path: string) => parseCatalogueScript(await readFile(path, "utf8"));
 const today = await read(built);
 const before = published ? await read(published) : null;
 const coverage = assessCoverage(today, before, KNOWN_GAPS);

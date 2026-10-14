@@ -1,6 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { assessCatalogue, parseCatalogueScript, type Catalogue } from "../src/catalogue/assess.ts";
+import { assessCatalogue, type Catalogue } from "../src/catalogue/assess.ts";
+import { parseCatalogueScript } from "../src/catalogue/format.ts";
 
 /**
  * The guard between the morning refresh and the catalogue the basket page

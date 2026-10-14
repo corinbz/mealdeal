@@ -16,6 +16,7 @@
  */
 
 import type { CoverageCatalogue } from "./coverage.ts";
+import { productsOf, type CatalogueProduct } from "./format.ts";
 import { followsFromPack, looksDrained } from "../ingest/unit-price.ts";
 
 export type SelfCheck = "jump" | "split" | "unit";
@@ -62,12 +63,6 @@ export interface SelfChecks {
   readonly stale: readonly KnownSlip[];
 }
 
-type Row = readonly unknown[];
-
-function reader(c: CoverageCatalogue) {
-  const i = Object.fromEntries(c.columns.map((n, k) => [n, k]));
-  return <T>(r: Row, name: string): T => (i[name] === undefined ? null : r[i[name]!] ?? null) as T;
-}
 
 /** Foods sold in liquid, whose unit price may be per drained kilo even when not filed as conserven. */
 const IN_LIQUID = /olijf|olijv|mozzarella|burrata|feta|haring|augurk|zilveruit|kappertje|jalapeno|peper(oni|s)? in|op (siroop|sap|water)|in (water|olie|pekel|saus|tomatensaus|eigen sap)|\b(blik|pot)\b/i;
@@ -76,24 +71,22 @@ const fold = (s: string) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,
 const packOf = (q: number | null, u: string | null) => (q === null || u === null ? "" : `${q} ${u}`);
 
 export function assessSelfChecks(built: CoverageCatalogue, published: CoverageCatalogue | null, known: readonly KnownSlip[], limits = SELF_CHECK_LIMITS): SelfChecks {
-  const at = reader(built);
-  const onOffer = (get: ReturnType<typeof reader>, r: Row) => get(r, "offerPriceCents") !== null || get(r, "offerWording") !== null;
+  const onOffer = (p: CatalogueProduct) => p.offerPriceCents !== null || p.offerWording !== null;
   // Mapped Products first: their slips reach a price someone compares.
   const mappedFirst = <T extends { ingredient: string | null }>(a: T, b: T) => Number(a.ingredient === null) - Number(b.ingredient === null);
 
   const jumps: Jump[] = [];
   if (published) {
-    const was = reader(published);
     for (const ch of built.chains) {
-      const before = new Map((published.catalogue[ch.id] ?? []).map((r) => [String(was(r, "ref")), r]));
-      for (const r of built.catalogue[ch.id] ?? []) {
-        const ref = String(at(r, "ref")), b = before.get(ref);
-        if (!b || onOffer(at, r) || onOffer(was, b)) continue;
-        const now = at<number>(r, "shelfPriceCents"), then = was<number>(b, "shelfPriceCents");
+      const before = new Map(productsOf(published, ch.id).map((p) => [String(p.ref), p]));
+      for (const p of productsOf(built, ch.id)) {
+        const ref = String(p.ref), b = before.get(ref);
+        if (!b || onOffer(p) || onOffer(b)) continue;
+        const now = p.shelfPriceCents, then = b.shelfPriceCents;
         if (!now || !then) continue;
         const ratio = now / then;
         if (ratio >= 1 + limits.jump || ratio <= 1 / (1 + limits.jump)) {
-          jumps.push({ chain: ch.id, ref, name: at(r, "name"), ingredient: at(r, "ingredient"), was: then, now });
+          jumps.push({ chain: ch.id, ref, name: p.name, ingredient: p.ingredient, was: then, now });
         }
       }
     }
@@ -101,12 +94,12 @@ export function assessSelfChecks(built: CoverageCatalogue, published: CoverageCa
   jumps.sort((a, b) => mappedFirst(a, b) || Math.abs(Math.log(b.now / b.was)) - Math.abs(Math.log(a.now / a.was)));
 
   const groups = new Map<string, { name: string; pack: string; members: { chain: string; ref: string; ingredient: string | null }[] }>();
-  for (const ch of built.chains) for (const r of built.catalogue[ch.id] ?? []) {
-    const name = at<string>(r, "name"), pack = packOf(at(r, "packQuantity"), at(r, "packUnit"));
+  for (const ch of built.chains) for (const p of productsOf(built, ch.id)) {
+    const pack = packOf(p.packQuantity, p.packUnit);
     if (!pack) continue;
-    const key = fold(name) + "|" + pack;
-    if (!groups.has(key)) groups.set(key, { name, pack, members: [] });
-    groups.get(key)!.members.push({ chain: ch.id, ref: String(at(r, "ref")), ingredient: at(r, "ingredient") });
+    const key = fold(p.name) + "|" + pack;
+    if (!groups.has(key)) groups.set(key, { name: p.name, pack, members: [] });
+    groups.get(key)!.members.push({ chain: ch.id, ref: String(p.ref), ingredient: p.ingredient });
   }
   const splits = [...groups.values()].filter((g) => new Set(g.members.map((m) => m.chain)).size > 1 && new Set(g.members.map((m) => m.ingredient)).size > 1);
   // Two Ingredients is surely wrong; mapped at one and not another may be a form the vocabulary leaves out.
@@ -114,15 +107,15 @@ export function assessSelfChecks(built: CoverageCatalogue, published: CoverageCa
   splits.sort((a, b) => Number(both(b)) - Number(both(a)) || a.name.localeCompare(b.name));
 
   const units: UnitSlip[] = [];
-  for (const ch of built.chains) for (const r of built.catalogue[ch.id] ?? []) {
-    const q = at<number | null>(r, "packQuantity"), unit = at<number | null>(r, "unitPriceCents");
-    if (!q || unit === null || at(r, "packUnit") !== at(r, "comparisonUnit")) continue;
-    const prices = [at<number | null>(r, "shelfPriceCents"), at<number | null>(r, "offerPriceCents")].filter((p): p is number => p !== null);
+  for (const ch of built.chains) for (const p of productsOf(built, ch.id)) {
+    const q = p.packQuantity, unit = p.unitPriceCents as number | null;
+    if (!q || unit === null || p.packUnit !== p.comparisonUnit) continue;
+    const prices = [p.shelfPriceCents as number | null, p.offerPriceCents].filter((c): c is number => c !== null);
     if (!prices.length) continue;
-    if (prices.some((p) => followsFromPack(unit, p, q))) continue;
-    units.push({ chain: ch.id, ref: String(at(r, "ref")), name: at(r, "name"), ingredient: at(r, "ingredient"), pack: packOf(q, at(r, "packUnit")),
+    if (prices.some((c) => followsFromPack(unit, c, q))) continue;
+    units.push({ chain: ch.id, ref: String(p.ref), name: p.name, ingredient: p.ingredient, pack: packOf(q, p.packUnit),
       priceCents: prices.at(-1)!, unitPriceCents: unit, derivedCents: Math.round(prices.at(-1)! / q),
-      kind: (at(r, "form") === "conserven" || IN_LIQUID.test(at<string>(r, "name"))) && prices.some((p) => looksDrained(unit, p, q)) ? "drained" : "other" });
+      kind: (p.form === "conserven" || IN_LIQUID.test(p.name)) && prices.some((c) => looksDrained(unit, c, q)) ? "drained" : "other" });
   }
   units.sort((a, b) => mappedFirst(a, b) || a.chain.localeCompare(b.chain) || a.name.localeCompare(b.name));
 

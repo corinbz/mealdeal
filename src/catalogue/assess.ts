@@ -53,12 +53,3 @@ export function assessCatalogue(built: Catalogue, published: Catalogue | null, e
   return problems;
 }
 
-/** Reads the `window.CATALOGUE = {...};` script the basket page loads. */
-export function parseCatalogueScript(text: string): Catalogue {
-  const start = text.indexOf("{");
-  const end = text.lastIndexOf("}");
-  if (!text.includes("window.CATALOGUE =") || start < 0 || end < start) {
-    throw new Error("not a catalogue script: no window.CATALOGUE assignment");
-  }
-  return JSON.parse(text.slice(start, end + 1)) as Catalogue;
-}

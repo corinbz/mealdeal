@@ -3,15 +3,15 @@ import assert from "node:assert/strict";
 import { assessCoverage, coverageMarkdown, type CoverageCatalogue } from "../src/catalogue/coverage.ts";
 import { KNOWN_GAPS } from "../src/catalogue/known-gaps.ts";
 import { VOCABULARY } from "../src/ingredients/vocabulary.ts";
+import { COLUMNS, toRow } from "../src/catalogue/format.ts";
 
 /**
  * The morning report of Ingredients most Chains sell but one does not (#35):
  * how mapping regressions and new gaps show up the day they happen.
  */
 
-const COLUMNS = ["ref", "ingredient", "variant", "ingredientUnitPriceCents"];
 type R = [ref: string, ingredient: string | null, variant?: string | null, price?: number | null];
-const row = ([ref, ingredient, variant = null, price = 100]: R) => [ref, ingredient, variant, price];
+const row = ([ref, ingredient, variant = null, price = 100]: R) => toRow({ ref, ingredient, variant, ingredientUnitPriceCents: price });
 
 function catalogue(rows: Record<string, R[]>, extra: Partial<CoverageCatalogue> = {}): CoverageCatalogue {
   return {

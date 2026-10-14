@@ -1,6 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { assessSpreads, type CheckedSpread } from "../src/catalogue/spreads.ts";
+import { COLUMNS, toRow } from "../src/catalogue/format.ts";
 
 /**
  * Differences between Chains over 70% are held back until checked (#36):
@@ -9,10 +10,11 @@ import { assessSpreads, type CheckedSpread } from "../src/catalogue/spreads.ts";
  * both read them from the page's own Resolution.
  */
 
-const COLUMNS = ["ref", "name", "comparisonUnit", "shelfPriceCents", "offerPriceCents", "unitPriceCents", "packQuantity", "packUnit",
-  "ingredient", "variant", "form", "flags", "ingredientUnitPriceCents", "ingredientPack"];
 type Row = [ref: string, name: string, shelf: number, offer: number | null];
-const row = ([ref, name, shelf, offer]: Row) => [ref, name, "kg", shelf, offer, offer ?? shelf, 1, "kg", "kaas", null, null, 0, offer ?? shelf, 1];
+const row = ([ref, name, shelf, offer]: Row) => toRow({
+  ref, name, comparisonUnit: "kg", shelfPriceCents: shelf, offerPriceCents: offer, unitPriceCents: offer ?? shelf, packQuantity: 1, packUnit: "kg",
+  ingredient: "kaas", flags: 0, ingredientUnitPriceCents: offer ?? shelf, ingredientPack: 1,
+});
 
 function catalogue(rows: Record<string, Row[]>) {
   return {
