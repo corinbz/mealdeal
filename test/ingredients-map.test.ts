@@ -218,6 +218,10 @@ const GAP: Record<string, Omit<MappableProduct, "name">> = {
   "Calvé Pindakaas 100% Fijngemalen Pinda's 350 g": product("jumbo", null, ["Ontbijt, broodbeleg en bakkerij > Pindakaas en notenpasta > Pindakaas"]),
   "Pindakaas 100% Grof Gemalen Pinda's": product("hoogvliet", null, ["Ontbijt, broodbeleg > Zoet beleg > Pindakaas"]),
   "Jumbo Roerbak Mie 300 g": product("jumbo", null, ["Wereldkeukens, kruiden, pasta en rijst > Aziatische keuken > Noedels en mie"]),
+  // Wrong at the source, and lent to EAN twins until fixed (#34).
+  "Cote D'or Hazelnoot": product("vomar", "Cote D'or", ["Voorraadkast > Chocolade & Snoep > Chocolade"]),
+  "Orinoko Boterhampasta met Cacao en Melk 350 g": product("jumbo", null, ["Ontbijt, broodbeleg en bakproducten > Zoet broodbeleg > Hazelnoot-, Chocoladepasta"]),
+  "Knorr Wg Lasagnette": product("vomar", "Knorr", ["Voorraadkast > Pasta, rijst & wereldmarkt > Maaltijdpakketten"]),
 };
 const gap = (name: string) => map({ name, ...GAP[name]! });
 
@@ -255,4 +259,10 @@ test("keeps a brand's apostrophe, a peanut butter's peanuts and wok noodles as t
   assert.equal(gap("Calvé Pindakaas 100% Fijngemalen Pinda's 350 g")?.ingredient, "pindakaas");
   assert.equal(gap("Pindakaas 100% Grof Gemalen Pinda's")?.ingredient, "pindakaas");
   assert.equal(gap("Jumbo Roerbak Mie 300 g")?.ingredient, "mie");
+});
+
+test("does not read chocolate as nuts, a sandwich spread as pasta, or a meal kit as sauce", () => {
+  assert.notEqual(gap("Cote D'or Hazelnoot")?.ingredient, "noten");
+  assert.notEqual(gap("Orinoko Boterhampasta met Cacao en Melk 350 g")?.ingredient, "pasta");
+  assert.notEqual(gap("Knorr Wg Lasagnette")?.ingredient, "pastasaus");
 });
