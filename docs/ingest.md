@@ -198,6 +198,34 @@ It runs on GitHub's runners, at roughly 5 minutes a day against the private
 repository's 2,000 free a month (see "Which machine runs it" in
 `docs/archive.md`).
 
+## Weekly digest
+
+`.github/workflows/digest.yml` emails the owner this week's real discounts on
+their staples (#22). It sends once per week, after the first good refresh from
+Wednesday on, when most Offer weeks begin. For one owner until there are
+accounts (#21): staples are the `DIGEST_STAPLES` repository variable, one per
+line, written as on the basket page.
+
+It only names a discount the real-discount check supports: an Offer with a
+price of its own, below the Product's Reference Price. An Offer with no price
+(`1+1 gratis`), or with no recorded days before it, is never claimed. A staple
+with nothing real is named as such. The email says which day each Chain's
+prices are from, and links to the site's recipes. Staples match Products with
+the page's own code (`prototype/words.js`), so the email and the list agree.
+
+It is off until opted into:
+
+```sh
+./scripts/setup-digest.sh    # Resend key, your address, your staples
+```
+
+Resend's shared sender delivers only to the address its account was made
+with, which is all one owner needs, and no domain has to be set up.
+Unsubscribing is one click: *Disable workflow* on the digest's Actions page,
+which every email links to. A dry run by hand (the default) writes the digest
+into the run summary instead of sending it, and works before opting in:
+`gh workflow run digest.yml -f staples="500 g rundergehakt,6 eieren"`.
+
 ## Testing
 
 One seam, at the archive directory. Each test drives a full run — read,

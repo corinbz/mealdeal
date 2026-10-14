@@ -1,0 +1,108 @@
+# Emails the owner this week's real discounts on their staples (#22), once a
+# week, after the first good catalogue refresh from Wednesday on, when most
+# Offer weeks begin.
+#
+# For one owner until there are accounts (#21), and off until it is opted
+# into: scripts/setup-digest.sh sets DIGEST_TO, DIGEST_STAPLES and the
+# RESEND_API_KEY secret. Unsubscribing is one click: "Disable workflow" on
+# this workflow's page, which every digest links to.
+name: Weekly digest
+
+on:
+  workflow_run:
+    workflows: ["Refresh the catalogue"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Write the digest into the run summary instead of sending it
+        type: boolean
+        default: true
+      staples:
+        description: Staples for this run only, separated by commas (to preview before opting in)
+        type: string
+        default: ""
+
+concurrency:
+  group: digest
+  cancel-in-progress: false
+
+jobs:
+  digest:
+    # A dry run by hand works before opting in, to preview it; sending never does.
+    if: >-
+      (github.event_name == 'workflow_dispatch' && (inputs.dry_run || vars.DIGEST_TO != '')) ||
+      (github.event_name == 'workflow_run' && vars.DIGEST_TO != '' && github.event.workflow_run.conclusion == 'success')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    env:
+      R2: s3://${{ secrets.R2_BUCKET }}
+      AWS_ENDPOINT_URL: https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com
+      AWS_REQUEST_CHECKSUM_CALCULATION: when_required
+      AWS_RESPONSE_CHECKSUM_VALIDATION: when_required
+      AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: auto
+
+    steps:
+      # Once per ISO week, Amsterdam time, marked in R2 when sent: a refresh
+      # can run more than once a day, and a missed Wednesday sends on Thursday.
+      - name: Decide whether this week's digest is due
+        id: due
+        run: |
+          week=$(TZ=Europe/Amsterdam date +%G-W%V)
+          weekday=$(TZ=Europe/Amsterdam date +%u)
+          echo "marker=$R2/digest/sent/$week" >> "$GITHUB_OUTPUT"
+          if [ "${{ github.event_name }}" = workflow_dispatch ]; then
+            echo "due=true" >> "$GITHUB_OUTPUT"; echo "Run by hand"
+          elif [ "$weekday" -lt 3 ]; then
+            echo "due=false" >> "$GITHUB_OUTPUT"; echo "Not yet: the digest goes out from Wednesday"
+          elif aws s3 ls "$R2/digest/sent/$week" >/dev/null 2>&1; then
+            echo "due=false" >> "$GITHUB_OUTPUT"; echo "Already sent for $week"
+          else
+            echo "due=true" >> "$GITHUB_OUTPUT"; echo "Due for $week"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.due.outputs.due == 'true'
+
+      - uses: actions/setup-node@v4
+        if: steps.due.outputs.due == 'true'
+        with:
+          node-version: "24"
+
+      - name: Write the digest
+        if: steps.due.outputs.due == 'true'
+        env:
+          DIGEST_STAPLES: ${{ vars.DIGEST_STAPLES }}
+          STAPLES_INPUT: ${{ inputs.staples }}
+        run: |
+          [ -n "$STAPLES_INPUT" ] && export DIGEST_STAPLES="$(tr ',' '\n' <<<"$STAPLES_INPUT")"
+          aws s3 cp "$R2/catalogue/latest.js" catalogue.js --only-show-errors
+          node scripts/digest.ts --catalogue catalogue.js \
+            --site "https://${{ vars.PAGES_PROJECT }}.pages.dev/" \
+            --disable-url "https://github.com/${{ github.repository }}/actions/workflows/digest.yml" \
+            --out digest.json
+
+      - name: Show it instead of sending (dry run)
+        if: steps.due.outputs.due == 'true' && inputs.dry_run
+        run: |
+          { echo "### $(jq -r .subject digest.json)"; echo; echo '```'; jq -r .text digest.json; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+
+      # Resend's shared sender delivers only to the address the Resend account
+      # was made with, which for one owner is exactly right: no domain to set up.
+      - name: Send
+        if: steps.due.outputs.due == 'true' && !inputs.dry_run
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          DIGEST_TO: ${{ vars.DIGEST_TO }}
+        run: |
+          jq -n --slurpfile d digest.json --arg to "$DIGEST_TO" \
+            '{from: "mealdeal <onboarding@resend.dev>", to: [$to], subject: $d[0].subject, html: $d[0].html, text: $d[0].text}' > payload.json
+          curl -fsS https://api.resend.com/emails \
+            -H "Authorization: Bearer $RESEND_API_KEY" -H "Content-Type: application/json" \
+            --data @payload.json
+          echo
+          echo "sent $(date -u +%FT%TZ)" | aws s3 cp - "${{ steps.due.outputs.marker }}" --only-show-errors

@@ -304,6 +304,7 @@
 <div id="sheet"></div>
 
 <script src="catalogue.js"></script>
+<script src="words.js"></script>
 <script>
   if (!window.CATALOGUE) {
     document.getElementById("main").innerHTML =
@@ -360,12 +361,7 @@
   // ── Catalogue: positional rows, unpacked once ─────────────────────────
   // Row: [ref, name, packaging, packQuantity, packUnit, unit, shelf, offerPrice, unitPrice, wording, endsOn,
   //       nextWording, nextStartsOn, referenceLow, referenceDays]
-  function stem(w) {
-    // Repeated, so singular and plural meet: courgettes -> courgette -> courgett.
-    let before;
-    do { before = w; if (w.length > 4) w = w.replace(/(jes|je|en|e|s)$/, ""); } while (w !== before);
-    return w;
-  }
+  const { wordsOf, nameWords, matches } = window.MealdealWords;
   const products = {}, searchable = {};
   for (const c of chains) {
     products[c.id] = {};
@@ -379,55 +375,21 @@
         // Absent from a catalogue built without history (scripts/apply-history.ts).
         referenceLowCents: r[13] ?? null, referenceDays: r[14] ?? null,
       };
-      return { id, unit: r[5], words: r[1].toLowerCase().split(/[^\p{L}]+/u).filter(Boolean).map(stem) };
+      return { id, unit: r[5], words: nameWords(r[1]) };
     });
   }
 
   // ── Reading what was typed ────────────────────────────────────────────
-  const UNITS = {
-    g: ["kg", 0.001], gr: ["kg", 0.001], gram: ["kg", 0.001], kg: ["kg", 1], kilo: ["kg", 1],
-    ml: ["l", 0.001], cl: ["l", 0.01], l: ["l", 1], liter: ["l", 1], litre: ["l", 1],
-    x: ["piece", 1], "×": ["piece", 1], st: ["piece", 1], stuk: ["piece", 1], stuks: ["piece", 1],
-  };
-  const wordsOf = (noun) => noun.toLowerCase().split(/[^\p{L}]+/u).filter((w) => w.length > 1).map(stem);
-
-  /**
-   * Every typed word must END some word of the name. A Dutch compound names
-   * its kind last: koffiemelk is milk, melkbiscuits are biscuits. Still
-   * crude ("appel" ends "aardappel"); that is what Corrections are for.
-   */
   const matching = (chainId, unit, words) => searchable[chainId].filter((p) =>
-    (unit === null || p.unit === unit) && words.every((w) => p.words.some((n) => n.endsWith(w))));
+    (unit === null || p.unit === unit) && matches(words, p.words));
 
-  /** "500 g rundergehakt" -> { quantity: 0.5, unit: "kg", noun: "rundergehakt" }. */
+  /** "500 g rundergehakt" -> { quantity: 0.5, unit: "kg", noun: "rundergehakt" }; see words.js. */
   function parse(text) {
-    const t = text.trim().replace(/\s+/g, " ");
-    if (!t) return null;
-    let quantity = null, unit = null, noun = t;
-    const m = t.match(/^(\d+(?:[.,]\d+)?)\s*(.*)$/);
-    if (m) {
-      quantity = Number(m[1].replace(",", "."));
-      noun = m[2];
-      const [first, ...rest] = noun.split(" ");
-      const u = UNITS[first.toLowerCase().replace(/\.$/, "")];
-      if (u && rest.length) { unit = u[0]; quantity *= u[1]; noun = rest.join(" "); }
-    }
-    if (!noun || UNITS[noun.toLowerCase()] || !(quantity === null || quantity > 0)) return null;
-    let guessed = false;
-    if (unit === null) {
-      // No unit written. A count ("2 courgettes") means pieces when the chains
-      // sell it by the piece; otherwise the unit most matching products use.
+    return window.MealdealWords.parse(text, (words) => {
       const tally = { kg: 0, l: 0, piece: 0 };
-      for (const c of chains) for (const p of matching(c.id, null, wordsOf(noun))) tally[p.unit]++;
-      if (quantity !== null && tally.piece > 0) unit = "piece";
-      else {
-        unit = Object.keys(tally).sort((a, b) => tally[b] - tally[a])[0];
-        if (tally[unit] === 0) unit = "piece";
-        guessed = true;
-      }
-      if (quantity === null) { quantity = 1; guessed = true; }
-    }
-    return { text: t, noun, quantity: Math.round(quantity * 1000) / 1000, unit, guessed };
+      for (const c of chains) for (const p of matching(c.id, null, words)) tally[p.unit]++;
+      return tally;
+    });
   }
   const qtyText = (i) => i.unit === "piece" ? i.quantity + "×"
     : i.unit === "kg" && i.quantity < 1 ? Math.round(i.quantity * 1000) + " g"
