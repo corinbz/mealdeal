@@ -227,6 +227,30 @@ answered `[]`; the `discountDeal` flag the page code checks marks everyday low
 prices and was absent from every Product. So Vomar's prices are always Shelf
 Prices.
 
+### Spar — assessed, not archived
+
+Assessed on 2026-10-14 (#11) and dropped by the owner the same day: Spar is
+among the most expensive Chains, and its prices differ per Store, so it adds
+little to a comparison meant to find where to shop cheaply. What was found,
+so it need not be found again:
+
+- `robots.txt` allows `/` and explicitly `/remote/store/select/*`; it disallows
+  the rest of `/remote/*`, `/betalen/*`, `/build/*` and search (`*?term`).
+- Category pages (`/boodschappen/<category>/?p=N`, cumulative, 36 per page)
+  carry every Product's price, brand, name, pack and category path in each
+  tile's `data-ga-product-data` JSON. About 9,000 Products in 16 categories,
+  so a day would be roughly 30 requests.
+- **EANs are only on product pages** (schema.org `gtin13`), one page per
+  Product, about 60 KB each: 8,829 in the product sitemap.
+- **Prices are per Store.** The listing with no Store chosen is the full range
+  at Spar's standard prices. Selecting a Store (`GET /remote/store/select/<id>/`,
+  a cookie) narrows the range to what it stocks (184 to 488 dairy Products in
+  a sample of eight) and changes some prices: up to 18 of 247 dairy Products,
+  halfvolle melk EUR 0.83 by default against EUR 1.09 in Heelsum.
+- **No Offers are readable.** Product pages say Offers "are not shown with
+  the products but are applied in the basket", and the Offers page lists
+  nothing, with or without a Store.
+
 ## Politeness
 
 One request at a time, no concurrency option, with a configurable gap
