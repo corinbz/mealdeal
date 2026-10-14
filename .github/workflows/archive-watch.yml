@@ -1,0 +1,60 @@
+# Goes red when a morning's archive is missing or incomplete in R2.
+#
+# The archive run cannot report its own absence. GitHub skipped its first
+# scheduled run outright (2026-10-14), and once it runs on the owner's Pi
+# (#24), a Pi that is off leaves the job queued with no runner, silently,
+# until GitHub drops it. Either way a day of prices is lost for good unless
+# someone notices the same day, while the Chains still serve those prices.
+# This runs on GitHub's own runners, so it does not depend on the Pi, and a
+# failed scheduled run emails the owner.
+name: Check this morning's archive
+
+on:
+  schedule:
+    # 08:00 UTC: the archive starts at 04:30 and takes up to about an hour
+    # and a half when one runner sweeps the Chains in turn, and GitHub may
+    # start it late. This still leaves the rest of the day to capture by hand:
+    # gh workflow run archive.yml -f chain=all
+    - cron: "0 8 * * *"
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    env:
+      AWS_REQUEST_CHECKSUM_CALCULATION: when_required
+      AWS_RESPONSE_CHECKSUM_VALIDATION: when_required
+      AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: auto
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      # The Chains here must match the archive workflow's scheduled matrix.
+      - name: Check today's manifest for each Chain
+        run: |
+          date=$(date -u +%F)
+          status=0
+          for chain in dirk jumbo; do
+            if ! aws s3 cp \
+                "s3://${{ secrets.R2_BUCKET }}/$date/$chain/manifest.json" \
+                "manifest-$chain.json" \
+                --endpoint-url "https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com" \
+                --only-show-errors; then
+              echo "::error::No $chain archive for $date in R2. Capture it today with: gh workflow run archive.yml -f chain=$chain"
+              status=1
+              continue
+            fi
+            if ! npm run --silent archive:check -- --manifest "manifest-$chain.json"; then
+              echo "::error::The $chain archive for $date is incomplete. Re-running resumes it: gh workflow run archive.yml -f chain=$chain"
+              status=1
+            fi
+          done
+          exit $status

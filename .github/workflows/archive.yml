@@ -39,7 +39,12 @@ jobs:
       matrix:
         chain: ${{ fromJSON((!inputs.chain || inputs.chain == 'all') && '["dirk","jumbo"]' || format('["{0}"]', inputs.chain)) }}
 
-    runs-on: ubuntu-latest
+    # GitHub's own runners, unless the repository variable ARCHIVE_RUNNER names
+    # others, such as ["self-hosted","pi"] for the owner's Raspberry Pi. A full
+    # day is about 100 runner minutes and a private repository gets 2,000 free a
+    # month, so the hosted runner cannot carry the schedule all month (#24).
+    # scripts/setup-pi-runner.sh sets the variable; deleting it switches back.
+    runs-on: ${{ fromJSON(vars.ARCHIVE_RUNNER || '"ubuntu-latest"') }}
     timeout-minutes: 90
 
     env:
@@ -49,8 +54,8 @@ jobs:
       # schedule too. See "Jumbo" in docs/archive.md. Dirk accepts the honest
       # default and is never sent this.
       JUMBO_USER_AGENT: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
-      # R2 is S3-compatible, so the AWS CLI already on the runner can talk to
-      # it. These two settings are not optional: recent AWS CLI versions send
+      # R2 is S3-compatible, so the AWS CLI can talk to it: it comes with
+      # GitHub's runners, and scripts/setup-pi-runner.sh installs it on the Pi. These two settings are not optional: recent AWS CLI versions send
       # integrity checksum headers that R2 rejects outright.
       AWS_REQUEST_CHECKSUM_CALCULATION: when_required
       AWS_RESPONSE_CHECKSUM_VALIDATION: when_required
