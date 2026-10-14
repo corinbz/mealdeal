@@ -48,6 +48,11 @@ CREATE TABLE IF NOT EXISTS product (
 -- gets the column here, filled in by the next ingest of each day.
 ALTER TABLE product ADD COLUMN IF NOT EXISTS pack_unit text CHECK (pack_unit IN ('kg', 'l', 'piece'));
 
+-- Where the Chain files the Product in its own category tree, as paths of
+-- names. Added for the Ingredient mapping (issue #14); the next ingest of a
+-- day fills it in for a database created before it.
+ALTER TABLE product ADD COLUMN IF NOT EXISTS categories text[] NOT NULL DEFAULT '{}';
+
 CREATE TABLE IF NOT EXISTS product_ean (
   chain_id          text NOT NULL,
   chain_product_ref text NOT NULL,

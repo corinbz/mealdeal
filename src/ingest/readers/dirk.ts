@@ -34,7 +34,15 @@ interface AssortmentRow {
     subText?: unknown;
     packaging?: unknown;
     isWeightProduct?: unknown;
+    department?: unknown;
+    webgroup?: unknown;
   } | null;
+}
+
+/** Dirk names the department and web group on the Product itself. */
+function categoryOf(info: NonNullable<AssortmentRow["productInformation"]>): string[] {
+  const department = text(info.department), webgroup = text(info.webgroup);
+  return department && webgroup ? [`${department} > ${webgroup}`] : [];
 }
 
 interface OfferRow {
@@ -148,6 +156,7 @@ export const dirkReader: ChainReader = {
           pack,
           isWeightProduct: info.isWeightProduct === true,
           eans: [], // Dirk's schema has no EAN field at all.
+          categories: categoryOf(info),
           storeRef,
           observedAt: parseInstant(row.priceDate) ?? new Date(`${date}T00:00:00Z`),
           shelfPriceCents: shelf,

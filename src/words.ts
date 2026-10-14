@@ -1,6 +1,7 @@
 /**
  * The basket page's own reading of typed items, prototype/words.js, loaded
- * here so a staple matches the same Products in the digest as on the page.
+ * here so that the Ingredient mapping and the digest read words exactly as the
+ * page does.
  * It is a plain browser script, not a module, because the page must still work
  * opened straight from disk, so it is evaluated rather than imported.
  */
@@ -25,7 +26,7 @@ export interface Words {
   parse(text: string, tally: (words: string[]) => Record<ComparisonUnit, number>): Parsed | null;
 }
 
-const source = readFileSync(new URL("../../prototype/words.js", import.meta.url), "utf8");
+const source = readFileSync(new URL("../prototype/words.js", import.meta.url), "utf8");
 const context: { MealdealWords?: Words } = {};
 runInNewContext(source, context);
 export const words: Words = context.MealdealWords!;

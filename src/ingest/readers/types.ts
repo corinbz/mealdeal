@@ -10,6 +10,13 @@ export interface PriceReading {
   readonly pack: PackSize | null;
   readonly isWeightProduct: boolean;
   readonly eans: readonly string[];
+  /**
+   * Where the Chain files this Product in its own category tree, as paths
+   * such as "Aardappelen, groente & fruit > Groente". Several when the Chain
+   * files it in several places. What an Ingredient mapping reads to tell
+   * fresh carrots from carrots in a jar or in baby food.
+   */
+  readonly categories: readonly string[];
   /** NULL means the price applies across the Chain, not that it is unknown. */
   readonly storeRef: string | null;
   readonly observedAt: Date;
