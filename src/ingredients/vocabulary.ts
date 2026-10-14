@@ -193,7 +193,7 @@ for (const [id, words] of [
   ["peterselie", ["peterselie"]], ["koriander", ["koriander"]], ["basilicum", ["basilicum"]], ["bieslook", ["bieslook"]],
   ["dille", ["dille"]], ["munt", ["munt", "muntblad"]], ["tijm", ["tijm"]], ["rozemarijn", ["rozemarijn"]],
 ] as [string, string[]][]) {
-  ing(id, "kg", ["produce", "frozen"], words, { not: ["thee", "pesto", "olie", "gedroogd", "saus", "kauwgom", "snoep", "pastille", "drop"] });
+  ing(id, "kg", ["produce", "frozen"], words, { not: ["thee", "pesto", "olie", "gedroogd", "saus", "kauwgom", "snoep", "pastille", "drop", "aardappel", "potatoes", "kriel"] });
 }
 
 // ── Fruit ───────────────────────────────────────────────────────────────
