@@ -76,6 +76,19 @@ export function createRecorder(client: Client) {
       });
       return response.json;
     },
+    /** A JSON POST, archived with the body sent in place of variables. */
+    async post(label: string, path: string, body: Record<string, unknown>): Promise<unknown> {
+      const response = await client.post(path, body);
+      records.push({
+        seq: records.length,
+        at: new Date().toISOString(),
+        label,
+        variables: { path, ...body },
+        status: response.status,
+        body: response.raw,
+      });
+      return response.json;
+    },
     records,
     errors,
   };

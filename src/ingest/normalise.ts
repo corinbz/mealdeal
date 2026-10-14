@@ -61,6 +61,9 @@ export function parsePackSize(text: string | null | undefined): PackSize | null 
   }
 
   if (/^per\s+stuk$/.test(cleaned)) return { quantity: 1, unit: "piece" };
+  // Plus prices meat by the kilo with no number: "Per kilo".
+  if (/^per\s+(kilo|kg)$/.test(cleaned)) return { quantity: 1, unit: "kg" };
+  if (/^per\s+(liter|l)$/.test(cleaned)) return { quantity: 1, unit: "l" };
   const pieces = cleaned.match(/(\d+)\s*(?:stuks?|st\.?)\b/);
   if (pieces) return { quantity: Number(pieces[1]), unit: "piece" };
 

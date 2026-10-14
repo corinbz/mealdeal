@@ -46,6 +46,13 @@ test("ignores a parenthetical aside", () => {
   assert.deepEqual(parsePackSize("1 kg (ca. 2 stuks)"), { quantity: 1, unit: "kg" });
 });
 
+test("reads a unit with no number as one of it", () => {
+  // Plus prices meat by the kilo: "Per kilo" is a stated quantity, unlike
+  // "Per schaal".
+  assert.deepEqual(parsePackSize("Per kilo"), { quantity: 1, unit: "kg" });
+  assert.deepEqual(parsePackSize("Per liter"), { quantity: 1, unit: "l" });
+});
+
 test("gives up rather than guessing when no quantity is stated", () => {
   // A container with no quantity. Such a Product is simply not a comparison
   // candidate; assuming "one of something" would invent a Unit Price.

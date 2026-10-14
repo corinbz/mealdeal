@@ -141,6 +141,16 @@ goods are marked: `pieceWeight` 2 is loose produce priced per kg, 1 a weighed
 pre-packed item such as cheese. Vomar publishes **no Offers** in a readable
 form, so its prices are always Shelf Prices, and the basket page says so.
 
+**Plus** (#27) prices nationally and publishes Offers in the same list as
+its prices: the wording verbatim, Plus's own Offer price where it states one
+("25 % KORTING" comes as `0.8925` and is stored as 89 cents; "1+1 GRATIS"
+has none), and start and end as bare dates, which are read as whole
+Amsterdam days. The list carries no promotion id, so Products sharing wording
+and days are recorded as one Offer. Every Unit Price is derived from the pack
+("Per 500 g", "Per 4 st", "Per kilo"). Packaging "Kg" marks a Product sold by
+the kilo. No EANs: see docs/archive.md. 17,249 Products on 2026-10-14, 94
+without a Unit Price, all of them non-food: socks, laces, gloves.
+
 Two things in Vomar's data that look like they help and do not:
 
 - **A measure in a piece-counted name is each piece's size, not the pack's.**
@@ -220,9 +230,11 @@ Ingredient's own unit.
 - **Units convert where the vocabulary says how**: a courgette is about
   0.3 kg, so a per-kg price compares per piece.
 
-On 2026-10-14 about 1,700 of Dirk's, 3,650 of Jumbo's and 1,450 of Vomar's
-food Products mapped. Vomar's huismerk is its own label and the Superunie
-lines it sells as its own: G'woon, Melkan, Bio+ and Daily Chef. Most of the rest are processed, seasoned or mixed. The vocabulary
+On 2026-10-14 about 1,700 of Dirk's, 3,650 of Jumbo's, 1,450 of Vomar's and
+2,980 of Plus's food Products mapped. Vomar's huismerk is its own label and the Superunie
+lines it sells as its own: G'woon, Melkan, Bio+ and Daily Chef. Plus's is
+PLUS with its own lines (PLUS Boerentrots, Biologisch PLUS, "Uit de keuken
+van PLUS"), and Melkan and Bio+. Most of the rest are processed, seasoned or mixed. The vocabulary
 (`src/ingredients/vocabulary.ts`, about 230 Ingredients) grows by adding
 words, and Corrections cover what it misses in the meantime. To see what it
 does with a real day without the R2 keys, export one with
