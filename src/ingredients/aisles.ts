@@ -25,6 +25,14 @@ export type Form = "vers" | "diepvries" | "conserven";
  * ("Aardappelen, groente & fruit > Groenteconserven").
  */
 const RULES: [RegExp, Aisle][] = [
+  // Plus, first: its coffee shelf is "Koffie, koffiemelk, suiker", which the
+  // dairy rule's /koffiemelk/ would claim whole, coffee and sugar with it
+  // (#37). And its bagged salads sit with dressings under "Slaschotels,
+  // salades", which the ready-meal rule's /salades/ would claim.
+  [/^frisdrank, sappen, koffie, thee > koffie, koffiemelk, suiker > koffiemelk/i, "dairy"],
+  [/^frisdrank, sappen, koffie, thee > koffie, koffiemelk, suiker > (suiker|zoetstof|cacaopoeder)/i, "pantry"],
+  [/^frisdrank, sappen, koffie, thee > koffie, koffiemelk, suiker/i, "drinks"],
+  [/^aardappelen, groente, fruit > groente > slaschotels/i, "produce"],
   // Hoogvliet, first: its meat department is called "Vlees, vis,
   // vegetarisch", which the vega rule below would claim whole, and its baby
   // department shares Lidl's name for a non-food one.

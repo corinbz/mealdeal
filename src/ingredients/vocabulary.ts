@@ -390,7 +390,7 @@ ing("pannenkoekmix", "kg", PANTRY, ["pannenkoekmix", "pannenkoekenmix", "pannenk
 ing("maizena", "kg", PANTRY, ["maizena", "maiszetmeel", "binder"], {});
 ing("paneermeel", "kg", PANTRY, ["paneermeel", "panko"], {});
 ing("suiker", "kg", PANTRY, ["suiker", "kristalsuiker", "basterdsuiker", "poedersuiker", "rietsuiker"], {
-  not: ["vanille", "zoetje", "klontjes", "spek", "wafel", "brood", "vrij", "kaneel", "parels"],
+  not: ["vanille", "zoetje", "klontjes", "spek", "wafel", "brood", "vrij", "kaneel", "parels", "siroop", "stroop"],
   variants: [["kristal", "kristalsuiker", ["kristal"], true], ["basterd", "basterdsuiker", ["basterd", "bruine"]], ["poeder", "poedersuiker", ["poeder"]], ["riet", "rietsuiker", ["riet"]]],
 });
 ing("vanillesuiker", "kg", PANTRY, ["vanillesuiker"], {});
