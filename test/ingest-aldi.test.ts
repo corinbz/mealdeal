@@ -51,17 +51,24 @@ test("records the price a Store charges for one pack today, at no Store", async 
 });
 
 test("works out the Unit Price from the pack where Aldi's cannot be right", async () => {
-  // RECORDED 2026-10-14: Aldi's Unit Price equal to the pack's price, and one a hundred times it.
+  // RECORDED 2026-10-14: Aldi's Unit Price equal to the pack's price, one a hundred times it, and
+  // two more than 10% off a stated weight (#37). A weighed pack ("ca. 600 g") keeps Aldi's figure.
   const root = await writeFixtureArchive({ aldi: { "products/page-0": ["aldi-unit-slips.json"] } }, DATE);
   await record(db, "aldi", DATE, await aldiReader.read(root, DATE));
   const { rows } = await db.query(
     `SELECT chain_product_ref, shelf_price_cents, unit_price_cents, unit_price_source FROM price_observation ORDER BY chain_product_ref`,
   );
   assert.deepEqual(rows, [
+    // Nederlandse aardbeien, 400 g at 2,99, "11,96 per kg", as if 250 g.
+    { chain_product_ref: "1219201", shelf_price_cents: 299, unit_price_cents: 748, unit_price_source: "derived" },
     // Varkenshaas, ca. 500 g at 6,00, "6,00 per kg".
     { chain_product_ref: "1224343", shelf_price_cents: 600, unit_price_cents: 1200, unit_price_source: "derived" },
+    // 3-pack crackers, 3x75 g at 1,39, "18,53 per kg": one pack of the three.
+    { chain_product_ref: "1225177", shelf_price_cents: 139, unit_price_cents: 618, unit_price_source: "derived" },
     // Melkchocolade, 200 g at 1,95, "1950,00 per kg".
     { chain_product_ref: "1225372", shelf_price_cents: 195, unit_price_cents: 975, unit_price_source: "derived" },
+    // Verse spareribs, ca. 600 g at 4,99, "9,98 per kg": weighed, so Aldi's stands.
+    { chain_product_ref: "1226434", shelf_price_cents: 499, unit_price_cents: 998, unit_price_source: "chain" },
   ]);
 });
 

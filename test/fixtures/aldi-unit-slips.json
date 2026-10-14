@@ -1,6 +1,6 @@
 [
   {
-    "nbHits": 2,
+    "nbHits": 5,
     "page": 0,
     "nbPages": 1,
     "hitsPerPage": 1000,
@@ -117,6 +117,146 @@
           ]
         },
         "objectID": "1224343"
+      },
+      {
+        "isAvailable": true,
+        "categoryIDs": [
+          "fruit"
+        ],
+        "salesUnit": "400 g",
+        "productReferences": [
+          {
+            "type": "KVArticleNumber",
+            "value": "0002838"
+          }
+        ],
+        "name": "Nederlandse aardbeien",
+        "currentPrice": {
+          "priceValue": 2.99,
+          "basePrice": [
+            {
+              "basePriceValue": 11.96,
+              "basePriceScale": "kg"
+            }
+          ],
+          "priceTagLabels": {
+            "promoText1": "-20%"
+          },
+          "validFrom": 1791756000,
+          "validUntil": 1792101599
+        },
+        "shortDescription": "Verse Nederlandse aardbeien 400 g bij ALDI. Zoete, sappige Nederlandse aardbeien van topkwaliteit. Koop nu bij je favoriete ALDI winkel!",
+        "mainCategoryID": "fruit",
+        "hierarchicalCategories": {
+          "lvl0": [
+            "Aardappels, groente en fruit"
+          ],
+          "lvl1": [
+            "Aardappels, groente en fruit > Fruit"
+          ]
+        },
+        "promotionPrices": [
+          {
+            "validFrom": 1792101600,
+            "validUntil": 1792360799,
+            "priceValue": 2.49,
+            "strikePrice": {
+              "strikePriceValue": 2.99
+            },
+            "basePrice": [
+              {
+                "basePriceValue": 9.96,
+                "basePriceScale": "kg"
+              }
+            ],
+            "priceTagLabels": {
+              "promoText1": "-16%"
+            },
+            "validFromLocalDate": "2026-10-16",
+            "validUntilLocalDate": "2026-10-18"
+          }
+        ],
+        "objectID": "1219201"
+      },
+      {
+        "isAvailable": true,
+        "brandName": "SUN SNACKS",
+        "categoryIDs": [
+          "beschuit-toast-crackers",
+          "sun-snacks"
+        ],
+        "salesUnit": "3x75 g",
+        "productReferences": [
+          {
+            "type": "KVArticleNumber",
+            "value": "2101185"
+          }
+        ],
+        "name": "3-pack crackers",
+        "currentPrice": {
+          "priceValue": 1.39,
+          "basePrice": [
+            {
+              "basePriceValue": 18.53,
+              "basePriceScale": "kg"
+            }
+          ],
+          "validFrom": 1791324000,
+          "validUntil": 1793228399
+        },
+        "shortDescription": "Sun Snacks Crackers bij ALDI. Classic & Paprika smaak 75 g verpakking.  Bezoek je ALDI winkel.",
+        "mainCategoryID": "beschuit-toast-crackers",
+        "hierarchicalCategories": {
+          "lvl0": [
+            "Brood, bakkerij en bakken",
+            "ALDI merken"
+          ],
+          "lvl1": [
+            "Brood, bakkerij en bakken > Beschuit, toast en crackers",
+            "ALDI merken > Sun snacks"
+          ]
+        },
+        "objectID": "1225177"
+      },
+      {
+        "isAvailable": true,
+        "brandName": "BBQ",
+        "categoryIDs": [
+          "zomerassortiment",
+          "bbq-vlees"
+        ],
+        "salesUnit": "Ca. 600 g",
+        "productReferences": [
+          {
+            "type": "KVArticleNumber",
+            "value": "0002694"
+          }
+        ],
+        "name": "Verse spareribs",
+        "currentPrice": {
+          "priceValue": 4.99,
+          "basePrice": [
+            {
+              "basePriceValue": 9.98,
+              "basePriceScale": "kg"
+            }
+          ],
+          "validFrom": 1777240800,
+          "validUntil": 4070991599
+        },
+        "shortDescription": "BBQ Verse Spareribs bij ALDI - gemarineerde varkensspareribs van ca. 500 g. Perfect voor thuis bereiden. Ontdek in jouw ALDI winkel!",
+        "mainCategoryID": "zomerassortiment",
+        "hierarchicalCategories": {
+          "lvl0": [
+            "Vlees, vis en vega",
+            "Speciaal assortiment"
+          ],
+          "lvl1": [
+            "Vlees, vis en vega > BBQ vlees",
+            "Speciaal assortiment > Zomerassortiment"
+          ]
+        },
+        "objectID": "1226434"
       }
     ]
   }

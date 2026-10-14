@@ -215,7 +215,7 @@ ing("citroenen", "piece", ["produce"], ["citroen", "citroenen"], { equals: { kg:
 ing("limoenen", "piece", ["produce"], ["limoen", "limoenen", "limes"], { equals: { kg: 0.07 }, not: ["sap", "limonade", "drank", "frisdrank"], also: ["limoen"] });
 ing("grapefruit", "piece", ["produce"], ["grapefruit"], { equals: { kg: 0.4 }, not: ["sap", "drank", "frisdrank"] });
 ing("druiven", "kg", FRUIT, ["druif", "druiven"], { not: ["sap", "suiker", "rozijn"] });
-ing("aardbeien", "kg", FRUIT, ["aardbei", "aardbeien"], { not: ["jam", "yoghurt", "kwark", "taart", "smoothie", "snoep", "limonade", "drink", "siroop", "chocolade"] });
+ing("aardbeien", "kg", FRUIT, ["aardbei", "aardbeien"], { not: ["jam", "yoghurt", "kwark", "taart", "smoothie", "snoep", "limonade", "drink", "siroop", "chocolade", "cornet", "cornets", "ijs", "sorbet"] });
 ing("blauwe bessen", "kg", FRUIT, ["blauwe bes", "bosbes", "bosbessen", "blueberries"], { also: ["blauwe bessen", "bosbessen"], not: ["jam", "yoghurt", "muffin", "smoothie"] });
 ing("frambozen", "kg", FRUIT, ["framboos", "frambozen"], { not: ["jam", "yoghurt", "siroop", "limonade", "smoothie", "azijn"] });
 ing("kersen", "kg", FRUIT, ["kers", "kersen"], { not: ["tomaat", "tomaten", "bonbon", "likeur", "jam", "bier", "limonade", "siroop"] });
@@ -403,7 +403,7 @@ ing("azijn", "l", PANTRY, ["azijn", "balsamico"], { not: ["schoonmaak", "chips",
 ing("mayonaise", "l", PANTRY, ["mayonaise", "fritessaus", "frietsaus"], { equals: { kg: 1 } });
 ing("ketchup", "l", PANTRY, ["ketchup", "tomatenketchup"], { equals: { kg: 1 } });
 ing("mosterd", "kg", PANTRY, ["mosterd"], { equals: { l: 1 }, not: ["soep", "saus", "dressing"] });
-ing("sojasaus", "l", PANTRY, ["sojasaus", "ketjap", "ketjap manis", "kecap manis", "tamari"], { also: ["ketjap"] });
+ing("sojasaus", "l", PANTRY, ["sojasaus", "ketjap", "ketjap manis", "kecap manis", "tamari"], { not: ["mix", "babi", "kruidenmix"], also: ["ketjap"] });
 ing("pindasaus", "kg", PANTRY, ["pindasaus", "satésaus", "satesaus"], { equals: { l: 1 } });
 ing("pesto", "kg", ["pantry", "deli", "readymeal"], ["pesto"], { not: ["pasta", "verspakket", "crackers", "chips", "presto"] });
 ing("pastasaus", "kg", ["pantry", "readymeal"], ["pastasaus", "tomatensaus", "bolognese", "arrabiata", "napoletana", "carbonara"], { equals: { l: 1 }, not: ["lasagnette", "wereldgerecht", "mix", "kruiden", "maaltijd"] });

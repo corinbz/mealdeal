@@ -128,7 +128,7 @@ export function drained(chainCents: number, chainUnit: ComparisonUnit | null, pa
  * Chain (#37), so a figure 1.05 to 3 times the pack's gives way to the pack's.
  * Below that is rounding; above it, more likely a slip of another kind.
  */
-function unitPriceFor(
+export function unitPriceFor(
   chainCents: number | null,
   chainUnit: ComparisonUnit | null,
   pack: PackSize | null,
@@ -140,6 +140,11 @@ function unitPriceFor(
   }
   if (pack && byMeasure(pack.unit)) {
     return { unitPriceCents: deriveUnitPrice(paidCents, pack), comparisonUnit: pack.unit, unitPriceSource: "derived" };
+  }
+  // "Jumbo Biologisch Paprika Duo 2 Stuks" at €2.99, "€2.99 per piece": the
+  // pack's price given as each piece's (#37), so each piece is the pack's share.
+  if (chainCents === paidCents && chainUnit === "piece" && pack?.unit === "piece" && pack.quantity > 1) {
+    return { unitPriceCents: deriveUnitPrice(paidCents, pack), comparisonUnit: "piece", unitPriceSource: "derived" };
   }
   if (chainCents !== null) {
     // A figure whose unit Jumbo left out stays unmapped: guessing "piece"
