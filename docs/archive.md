@@ -328,6 +328,51 @@ Lidl's regular price, some out of date, so they appear to come from receipts.
 They are not what Lidl said. **Decision, 2026-10-14:** the owner wants Lidl's
 own source, so only the offers page is archived.
 
+### Hoogvliet — working, verified live, honest agent accepted
+
+Added on 2026-10-14 (#29). hoogvliet.com now redirects to **hoogvliet.nl**, a
+Next.js storefront over Magento, served by Vercel. Its category listings come
+from a search service (Tweakwise) rendered into each page, and the pages then
+ask Magento's GraphQL, proxied at `/api/graphql`, for those Products by sku.
+That GraphQL answers only a sku filter (a search, a category or an empty
+filter returns `products: null`), so the Sweep lists every sku first:
+
+- `GET /sitemap-catalog.xml`, step `sitemap`: every category page and
+  product page; a product page's URL ends in its nine-digit sku. 9,490 skus
+  on 2026-10-14.
+- `POST /api/graphql`, steps `products/from-<first sku>`: `GetProducts`
+  filtered by `sku: { in: [...] }`, a hundred skus at a time.
+
+A day is **96 requests, about 2.5 minutes at the default pace, 1.5 MB
+stored**. Prices are national: no request names a Store.
+
+**Only the fields we use are asked for.** Every per-Product fact sits in a
+`metadata` blob that also holds ingredients, nutrients and supplier text.
+`metafield(key: "...")` returns one of them by key, so the query names
+twelve (EAN, brand, pack, Hoogvliet's own Unit Price, online only, ...) and
+never the blob; the guard refuses `metadata`, `voedingswaardetabel`,
+`supplier_info` and Magento's image fields (ADR-0003).
+
+**Two kinds of row.** A SimpleProduct is a Product (8,283). A GroupedProduct
+is a tile in the weekly folder (1,206): sku 202642031 is 2026, week 42, tile
+31, with its headline ("Hak"), wording, price and dates, from last week to
+seven weeks ahead. A Product on Offer names its tile in `promotion_id`; the
+tile lists no Products, so a tile for a later week is an Offer with none
+until its week begins. Offer days are Wednesday to Tuesday.
+
+**Access and terms.** `robots.txt` disallows `/INTERSHOP/` and
+`/intershop*` (the old storefront), `/search` and sorted listings, and
+blocks a list of named crawlers; neither path used here is disallowed.
+Hoogvliet's *Algemene voorwaarden*, Article 9, forbid reproducing,
+publishing or adapting the websites' information without permission, except
+for personal use: the same general copyright clause as Plus's, not Jumbo's
+Database Directive one. **Decision, 2026-10-14:** the project owner, shown
+it, chose to archive Hoogvliet.
+
+**Online only.** One Product (a sunscreen) is marked
+`productkenmerken_online_only`, and ingest passes it over. `webshop` 0 or 2
+means not orderable online, and those Products are in Stores.
+
 ### Spar — assessed, not archived
 
 Assessed on 2026-10-14 (#11) and dropped by the owner the same day: Spar is

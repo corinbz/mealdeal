@@ -33,6 +33,13 @@ const BANNED_FIELDS = [
   "allergens",
   "allergenInfo",
   "supplierDescription",
+  // Hoogvliet (Magento): the blob holding every metafield, ingredients and
+  // nutrients among them, its parts by name, and Magento's image fields.
+  "metadata",
+  "voedingswaardetabel",
+  "supplier_info",
+  "small_image",
+  "media_gallery",
 ];
 
 export class BannedFieldError extends Error {

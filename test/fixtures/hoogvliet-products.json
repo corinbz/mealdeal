@@ -1,0 +1,908 @@
+[
+ {
+  "_why": "RECORDED LIVE from hoogvliet.nl/api/graphql on 2026-10-14: eleven of 9,489 rows, verbatim, each picked for a case the catalogue contains. Only the envelope is shared.",
+  "data": {
+   "products": {
+    "items": [
+     {
+      "_case": "A Product at its Shelf Price, sold by the kilo, with Hoogvliet's own Unit Price.",
+      "__typename": "SimpleProduct",
+      "sku": "718988000",
+      "name": "Kreukelfriet",
+      "stock_status": "IN_STOCK",
+      "url_key": "g-apos-woon-kreukelfriet-718988000",
+      "is_promotion": false,
+      "catch_weight_item_code": "0",
+      "categories": [
+       {
+        "name": "Diepvries",
+        "level": 2,
+        "url_path": "diepvries"
+       },
+       {
+        "name": "Aardappelproducten",
+        "level": 3,
+        "url_path": "diepvries/aardappelproducten"
+       },
+       {
+        "name": "Patat",
+        "level": 4,
+        "url_path": "diepvries/aardappelproducten/patat"
+       }
+      ],
+      "promotion_meta_data": {
+       "korting_label": null,
+       "raw_discount_label": null,
+       "valid_from": null,
+       "valid_to": null,
+       "promotion_id": null,
+       "prijs": null,
+       "promotie_prijs": null
+      },
+      "ean": {
+       "value": "8718989000660"
+      },
+      "merk": {
+       "value": "G'woon"
+      },
+      "catplan": {
+       "value": "Diepvries - DV Aardappelen"
+      },
+      "eenheid": {
+       "value": "Kilo"
+      },
+      "inhoud_ce": {
+       "value": "1"
+      },
+      "verpakking": {
+       "value": "Zak"
+      },
+      "volume_eenheid": {
+       "value": "Prijs per kilo"
+      },
+      "prijs_per_volume_eenheid": {
+       "value": "2.2900"
+      },
+      "webshop": {
+       "value": "1"
+      },
+      "productkenmerken_online_only": {
+       "value": "0"
+      },
+      "productkenmerken_biologisch": {
+       "value": "0"
+      },
+      "productkenmerken_diepvries": {
+       "value": "1"
+      },
+      "price_range": {
+       "minimum_price": {
+        "regular_price": {
+         "value": 2.29
+        },
+        "final_price": {
+         "value": 2.29
+        },
+        "discount": {
+         "percent_off": 0
+        }
+       }
+      }
+     },
+     {
+      "_case": "Reduced to a price of its own ('per stuk 1,89'): the final price is the Offer price.",
+      "__typename": "SimpleProduct",
+      "sku": "000016000",
+      "name": "Ristorante pizza tonno",
+      "stock_status": "IN_STOCK",
+      "url_key": "dr-oetker-ristorante-pizza-tonno-000016000",
+      "is_promotion": true,
+      "catch_weight_item_code": "0",
+      "categories": [
+       {
+        "name": "Diepvries",
+        "level": 2,
+        "url_path": "diepvries"
+       },
+       {
+        "name": "Pizza",
+        "level": 3,
+        "url_path": "diepvries/pizza"
+       },
+       {
+        "name": "Italiaanse pizza's",
+        "level": 4,
+        "url_path": "diepvries/pizza/italiaanse-pizzas"
+       }
+      ],
+      "promotion_meta_data": {
+       "korting_label": "per stuk 1,89",
+       "raw_discount_label": {
+        "text": "per stuk",
+        "price": 1.89,
+        "full_label": "per stuk 1,89"
+       },
+       "valid_from": "2026-10-13T20:00:00+00:00",
+       "valid_to": "2026-10-20T19:59:00+00:00",
+       "promotion_id": "202642139",
+       "prijs": null,
+       "promotie_prijs": null
+      },
+      "ean": {
+       "value": "4001724038993"
+      },
+      "merk": {
+       "value": "Dr. Oetker"
+      },
+      "catplan": {
+       "value": "Diepvries - DV Maaltijden"
+      },
+      "eenheid": {
+       "value": "Stuk"
+      },
+      "inhoud_ce": {
+       "value": "1"
+      },
+      "verpakking": {
+       "value": "Stuks"
+      },
+      "volume_eenheid": {
+       "value": "Prijs per Stuk"
+      },
+      "prijs_per_volume_eenheid": {
+       "value": "3.1300"
+      },
+      "webshop": {
+       "value": "1"
+      },
+      "productkenmerken_online_only": {
+       "value": "0"
+      },
+      "productkenmerken_biologisch": {
+       "value": "0"
+      },
+      "productkenmerken_diepvries": {
+       "value": "1"
+      },
+      "price_range": {
+       "minimum_price": {
+        "regular_price": {
+         "value": 3.13
+        },
+        "final_price": {
+         "value": 1.89
+        },
+        "discount": {
+         "percent_off": 39.62
+        }
+       }
+      }
+     },
+     {
+      "_case": "'1 + 1 Gratis': no price of its own, so the final price is the Shelf Price. Its tile is below.",
+      "__typename": "SimpleProduct",
+      "sku": "026125000",
+      "name": "Boerenkool",
+      "stock_status": "IN_STOCK",
+      "url_key": "hak-boerenkool-026125000",
+      "is_promotion": true,
+      "catch_weight_item_code": "0",
+      "categories": [
+       {
+        "name": "Aardappelen, Groente, Fruit",
+        "level": 2,
+        "url_path": "aardappelen-groente-fruit"
+       },
+       {
+        "name": "Groente",
+        "level": 3,
+        "url_path": "aardappelen-groente-fruit/groente"
+       },
+       {
+        "name": "Koolgroenten",
+        "level": 4,
+        "url_path": "aardappelen-groente-fruit/groente/koolgroenten"
+       }
+      ],
+      "promotion_meta_data": {
+       "korting_label": "1 + 1 Gratis",
+       "raw_discount_label": {
+        "text": "1 + 1 Gratis",
+        "price": null,
+        "full_label": "1 + 1 Gratis"
+       },
+       "valid_from": "2026-10-13T20:00:00+00:00",
+       "valid_to": "2026-10-20T19:59:00+00:00",
+       "promotion_id": "202642031",
+       "prijs": null,
+       "promotie_prijs": null
+      },
+      "ean": {
+       "value": "8720600609824"
+      },
+      "merk": {
+       "value": "Hak"
+      },
+      "catplan": {
+       "value": "Conserven en soep - Groenteconserven"
+      },
+      "eenheid": {
+       "value": "Gram"
+      },
+      "inhoud_ce": {
+       "value": "680"
+      },
+      "verpakking": {
+       "value": "Pot"
+      },
+      "volume_eenheid": {
+       "value": "Prijs per kilo"
+      },
+      "prijs_per_volume_eenheid": {
+       "value": "4.5300"
+      },
+      "webshop": {
+       "value": "1"
+      },
+      "productkenmerken_online_only": {
+       "value": "0"
+      },
+      "productkenmerken_biologisch": {
+       "value": "0"
+      },
+      "productkenmerken_diepvries": {
+       "value": "0"
+      },
+      "price_range": {
+       "minimum_price": {
+        "regular_price": {
+         "value": 3.08
+        },
+        "final_price": {
+         "value": 3.08
+        },
+        "discount": {
+         "percent_off": 0
+        }
+       }
+      }
+     },
+     {
+      "_case": "'2 voor 6,00', running all year, and named by no tile.",
+      "__typename": "SimpleProduct",
+      "sku": "083531000",
+      "name": "Slagers rookworst",
+      "stock_status": "IN_STOCK",
+      "url_key": "hoogvliet-slagers-rookworst-083531000",
+      "is_promotion": true,
+      "catch_weight_item_code": "1",
+      "categories": [
+       {
+        "name": "Vlees, vis, vegetarisch",
+        "level": 2,
+        "url_path": "vlees-vis-vegetarisch"
+       },
+       {
+        "name": "Rund- en varkensvlees",
+        "level": 3,
+        "url_path": "vlees-vis-vegetarisch/rund-en-varkensvlees"
+       },
+       {
+        "name": "Worst",
+        "level": 4,
+        "url_path": "vlees-vis-vegetarisch/rund-en-varkensvlees/worst"
+       }
+      ],
+      "promotion_meta_data": {
+       "korting_label": "2 voor 6,00",
+       "raw_discount_label": {
+        "text": "2 voor",
+        "price": 6,
+        "full_label": "2 voor 6,00"
+       },
+       "valid_from": "2025-12-31T23:00:00+00:00",
+       "valid_to": "2026-12-30T23:00:00+00:00",
+       "promotion_id": "260028",
+       "prijs": null,
+       "promotie_prijs": null
+      },
+      "ean": {
+       "value": "8712076938461"
+      },
+      "merk": {
+       "value": "Hoogvliet"
+      },
+      "catplan": {
+       "value": "Slagerij - Slagerij - GEMALEN"
+      },
+      "eenheid": {
+       "value": "Gram"
+      },
+      "inhoud_ce": {
+       "value": "250"
+      },
+      "verpakking": {
+       "value": "Pak"
+      },
+      "volume_eenheid": {
+       "value": "Prijs per kilo"
+      },
+      "prijs_per_volume_eenheid": {
+       "value": "14.3600"
+      },
+      "webshop": {
+       "value": "1"
+      },
+      "productkenmerken_online_only": {
+       "value": "0"
+      },
+      "productkenmerken_biologisch": {
+       "value": "0"
+      },
+      "productkenmerken_diepvries": {
+       "value": "0"
+      },
+      "price_range": {
+       "minimum_price": {
+        "regular_price": {
+         "value": 3.59
+        },
+        "final_price": {
+         "value": 3.59
+        },
+        "discount": {
+         "percent_off": 0
+        }
+       }
+      }
+     },
+     {
+      "_case": "'50% korting': Hoogvliet states the reduced price itself.",
+      "__typename": "SimpleProduct",
+      "sku": "003026000",
+      "name": "English zwarte thee voor pot",
+      "stock_status": "IN_STOCK",
+      "url_key": "pickwick-english-zwarte-thee-voor-pot-003026000",
+      "is_promotion": true,
+      "catch_weight_item_code": "0",
+      "categories": [
+       {
+        "name": "Koffie, thee",
+        "level": 2,
+        "url_path": "koffie-thee"
+       },
+       {
+        "name": "Thee",
+        "level": 3,
+        "url_path": "koffie-thee/thee"
+       },
+       {
+        "name": "Zwarte thee",
+        "level": 4,
+        "url_path": "koffie-thee/thee/zwarte-thee"
+       }
+      ],
+      "promotion_meta_data": {
+       "korting_label": "50% korting",
+       "raw_discount_label": {
+        "text": "50% korting",
+        "price": null,
+        "full_label": "50% korting"
+       },
+       "valid_from": "2026-10-13T20:00:00+00:00",
+       "valid_to": "2026-10-20T19:59:00+00:00",
+       "promotion_id": "202642181",
+       "prijs": null,
+       "promotie_prijs": null
+      },
+      "ean": {
+       "value": "8711000008041"
+      },
+      "merk": {
+       "value": "Pickwick"
+      },
+      "catplan": {
+       "value": "Koffie, thee en koffiemelk - Thee"
+      },
+      "eenheid": {
+       "value": "Stuks"
+      },
+      "inhoud_ce": {
+       "value": "20"
+      },
+      "verpakking": {
+       "value": "Pak"
+      },
+      "volume_eenheid": {
+       "value": "Prijs per Stuk"
+      },
+      "prijs_per_volume_eenheid": {
+       "value": ".0900"
+      },
+      "webshop": {
+       "value": "0"
+      },
+      "productkenmerken_online_only": {
+       "value": "0"
+      },
+      "productkenmerken_biologisch": {
+       "value": "0"
+      },
+      "productkenmerken_diepvries": {
+       "value": "0"
+      },
+      "price_range": {
+       "minimum_price": {
+        "regular_price": {
+         "value": 1.75
+        },
+        "final_price": {
+         "value": 0.88
+        },
+        "discount": {
+         "percent_off": 49.71
+        }
+       }
+      }
+     },
+     {
+      "_case": "Marked online only: not sold in Stores, so not read.",
+      "__typename": "SimpleProduct",
+      "sku": "065004000",
+      "name": "Sun protect & hydrate spf30",
+      "stock_status": "IN_STOCK",
+      "url_key": "nivea-sun-protect-amp-hydrate-spf30-065004000",
+      "is_promotion": false,
+      "catch_weight_item_code": "0",
+      "categories": [
+       {
+        "name": "Gezondheid, drogisterij",
+        "level": 2,
+        "url_path": "gezondheid-drogisterij"
+       },
+       {
+        "name": "Huid- en gezichtsverzorging",
+        "level": 3,
+        "url_path": "gezondheid-drogisterij/huid-en-gezichtsverzorging"
+       },
+       {
+        "name": "zonbescherming",
+        "level": 4,
+        "url_path": "gezondheid-drogisterij/huid-en-gezichtsverzorging/zonbescherming"
+       }
+      ],
+      "promotion_meta_data": {
+       "korting_label": null,
+       "raw_discount_label": null,
+       "valid_from": null,
+       "valid_to": null,
+       "promotion_id": null,
+       "prijs": null,
+       "promotie_prijs": null
+      },
+      "ean": {
+       "value": "4005900363848"
+      },
+      "merk": {
+       "value": "Nivea"
+      },
+      "catplan": {
+       "value": "Verdeling & Non Food - Non Food"
+      },
+      "eenheid": {
+       "value": "Milliliter"
+      },
+      "inhoud_ce": {
+       "value": "200"
+      },
+      "verpakking": {
+       "value": "Fles"
+      },
+      "volume_eenheid": {
+       "value": "Prijs per liter"
+      },
+      "prijs_per_volume_eenheid": {
+       "value": "120.0000"
+      },
+      "webshop": {
+       "value": "1"
+      },
+      "productkenmerken_online_only": {
+       "value": "1"
+      },
+      "productkenmerken_biologisch": {
+       "value": "0"
+      },
+      "productkenmerken_diepvries": {
+       "value": "0"
+      },
+      "price_range": {
+       "minimum_price": {
+        "regular_price": {
+         "value": 24
+        },
+        "final_price": {
+         "value": 24
+        },
+        "discount": {
+         "percent_off": 0
+        }
+       }
+      }
+     },
+     {
+      "_case": "Filed on a seasonal shelf as well as its own.",
+      "__typename": "SimpleProduct",
+      "sku": "000043000",
+      "name": "Decafe filterkoffie",
+      "stock_status": "IN_STOCK",
+      "url_key": "douwe-egberts-decafe-filterkoffie-000043000",
+      "is_promotion": false,
+      "catch_weight_item_code": "0",
+      "categories": [
+       {
+        "name": "Feestdagen - Kerst en pasen",
+        "level": 2,
+        "url_path": "feestdagen-kerst-en-pasen"
+       },
+       {
+        "name": "1. Ontbijt, lunch, brunch",
+        "level": 3,
+        "url_path": "feestdagen-kerst-en-pasen/1-ontbijt-lunch-brunch"
+       },
+       {
+        "name": "Koffie, thee, verse sappen",
+        "level": 4,
+        "url_path": "feestdagen-kerst-en-pasen/1-ontbijt-lunch-brunch/koffie-thee-verse-sappen"
+       },
+       {
+        "name": "Koffie, thee",
+        "level": 2,
+        "url_path": "koffie-thee"
+       },
+       {
+        "name": "Koffie",
+        "level": 3,
+        "url_path": "koffie-thee/koffie"
+       },
+       {
+        "name": "Filterkoffie",
+        "level": 4,
+        "url_path": "koffie-thee/koffie/filterkoffie"
+       }
+      ],
+      "promotion_meta_data": {
+       "korting_label": null,
+       "raw_discount_label": null,
+       "valid_from": null,
+       "valid_to": null,
+       "promotion_id": null,
+       "prijs": null,
+       "promotie_prijs": null
+      },
+      "ean": {
+       "value": "8711000003107"
+      },
+      "merk": {
+       "value": "Douwe Egberts"
+      },
+      "catplan": {
+       "value": "Koffie, thee en koffiemelk - Koffie"
+      },
+      "eenheid": {
+       "value": "Gram"
+      },
+      "inhoud_ce": {
+       "value": "500"
+      },
+      "verpakking": {
+       "value": "Zak"
+      },
+      "volume_eenheid": {
+       "value": "Prijs per kilo"
+      },
+      "prijs_per_volume_eenheid": {
+       "value": "20.9000"
+      },
+      "webshop": {
+       "value": "1"
+      },
+      "productkenmerken_online_only": {
+       "value": "0"
+      },
+      "productkenmerken_biologisch": {
+       "value": "0"
+      },
+      "productkenmerken_diepvries": {
+       "value": "0"
+      },
+      "price_range": {
+       "minimum_price": {
+        "regular_price": {
+         "value": 10.45
+        },
+        "final_price": {
+         "value": 10.45
+        },
+        "discount": {
+         "percent_off": 0
+        }
+       }
+      }
+     },
+     {
+      "_case": "Packed in rolls: Hoogvliet's Unit Price is per roll, which compares with nothing.",
+      "__typename": "SimpleProduct",
+      "sku": "058439000",
+      "name": "wc papier - Megarol toiletpapier - extra velletjes",
+      "stock_status": "IN_STOCK",
+      "url_key": "popla-wc-papier-megarol-toiletpapier-extra-velletjes-058439000",
+      "is_promotion": false,
+      "catch_weight_item_code": "0",
+      "categories": [
+       {
+        "name": "Huishouden, non food",
+        "level": 2,
+        "url_path": "huishouden-non-food"
+       },
+       {
+        "name": "Toiletpapier, keukenpapier, luchtverfrissers",
+        "level": 3,
+        "url_path": "huishouden-non-food/toiletpapier-keukenpapier-luchtverfrissers"
+       },
+       {
+        "name": "Toiletpapier",
+        "level": 4,
+        "url_path": "huishouden-non-food/toiletpapier-keukenpapier-luchtverfrissers/toiletpapier"
+       }
+      ],
+      "promotion_meta_data": {
+       "korting_label": null,
+       "raw_discount_label": null,
+       "valid_from": null,
+       "valid_to": null,
+       "promotion_id": null,
+       "prijs": null,
+       "promotie_prijs": null
+      },
+      "ean": {
+       "value": "8710300495001"
+      },
+      "merk": {
+       "value": "Popla"
+      },
+      "catplan": {
+       "value": "Papier en periodeverzorging - Toilet & Keuken"
+      },
+      "eenheid": {
+       "value": "Rol"
+      },
+      "inhoud_ce": {
+       "value": "4"
+      },
+      "verpakking": {
+       "value": "Pak"
+      },
+      "volume_eenheid": {
+       "value": "Prijs per Rol"
+      },
+      "prijs_per_volume_eenheid": {
+       "value": "1.1000"
+      },
+      "webshop": {
+       "value": "1"
+      },
+      "productkenmerken_online_only": {
+       "value": "0"
+      },
+      "productkenmerken_biologisch": {
+       "value": "0"
+      },
+      "productkenmerken_diepvries": {
+       "value": "0"
+      },
+      "price_range": {
+       "minimum_price": {
+        "regular_price": {
+         "value": 4.4
+        },
+        "final_price": {
+         "value": 4.4
+        },
+        "discount": {
+         "percent_off": 0
+        }
+       }
+      }
+     },
+     {
+      "_case": "A folder tile running now, named by Boerenkool's promotion_id.",
+      "__typename": "GroupedProduct",
+      "sku": "202642031",
+      "name": "Hak",
+      "stock_status": "IN_STOCK",
+      "url_key": "hak-202642031",
+      "is_promotion": true,
+      "catch_weight_item_code": null,
+      "categories": [
+       {
+        "name": "Aanbiedingen",
+        "level": 2,
+        "url_path": "aanbiedingen"
+       },
+       {
+        "name": "Soepen, conserven, sauzen, kruiden",
+        "level": 3,
+        "url_path": "aanbiedingen/soepen-conserven-sauzen-kruiden"
+       }
+      ],
+      "promotion_meta_data": {
+       "korting_label": "1 + 1 Gratis",
+       "raw_discount_label": {
+        "text": "1 + 1 Gratis",
+        "price": null,
+        "full_label": "1 + 1 Gratis"
+       },
+       "valid_from": "2026-10-14 00:00:00.000",
+       "valid_to": "2026-10-20 23:59:00.000",
+       "promotion_id": null,
+       "prijs": "2.58 - 9.78",
+       "promotie_prijs": "1.29 - 4.89"
+      },
+      "ean": null,
+      "merk": null,
+      "catplan": null,
+      "eenheid": null,
+      "inhoud_ce": null,
+      "verpakking": null,
+      "volume_eenheid": null,
+      "prijs_per_volume_eenheid": null,
+      "webshop": {
+       "value": "1"
+      },
+      "productkenmerken_online_only": null,
+      "productkenmerken_biologisch": null,
+      "productkenmerken_diepvries": null,
+      "price_range": {
+       "minimum_price": {
+        "regular_price": {
+         "value": 9.78
+        },
+        "final_price": {
+         "value": 4.89
+        },
+        "discount": {
+         "percent_off": 50
+        }
+       }
+      }
+     },
+     {
+      "_case": "A folder tile for a week ahead.",
+      "__typename": "GroupedProduct",
+      "sku": "202643001",
+      "name": "Favoritos reserva, Mas a tierra of Puglia rosso",
+      "stock_status": "IN_STOCK",
+      "url_key": "favoritos-reserva-mas-a-tierra-of-puglia-rosso-202643001",
+      "is_promotion": false,
+      "catch_weight_item_code": null,
+      "categories": [
+       {
+        "name": "Aanbiedingen",
+        "level": 2,
+        "url_path": "aanbiedingen"
+       },
+       {
+        "name": "Bier, wijn",
+        "level": 3,
+        "url_path": "aanbiedingen/bier-wijn"
+       }
+      ],
+      "promotion_meta_data": {
+       "korting_label": "per fles",
+       "raw_discount_label": {
+        "text": "per fles",
+        "price": 4.99,
+        "full_label": "per fles"
+       },
+       "valid_from": "2026-10-21 00:00:00.000",
+       "valid_to": "2026-10-27 23:59:00.000",
+       "promotion_id": null,
+       "prijs": "5.99",
+       "promotie_prijs": "4.99"
+      },
+      "ean": null,
+      "merk": null,
+      "catplan": null,
+      "eenheid": null,
+      "inhoud_ce": null,
+      "verpakking": null,
+      "volume_eenheid": null,
+      "prijs_per_volume_eenheid": null,
+      "webshop": {
+       "value": "1"
+      },
+      "productkenmerken_online_only": null,
+      "productkenmerken_biologisch": null,
+      "productkenmerken_diepvries": null,
+      "price_range": {
+       "minimum_price": {
+        "regular_price": {
+         "value": 5.99
+        },
+        "final_price": {
+         "value": 4.99
+        },
+        "discount": {
+         "percent_off": 16.69
+        }
+       }
+      }
+     },
+     {
+      "_case": "A folder tile for last week, still listed.",
+      "__typename": "GroupedProduct",
+      "sku": "202641002",
+      "name": "Park Villa",
+      "stock_status": "IN_STOCK",
+      "url_key": "park-villa-202641002",
+      "is_promotion": false,
+      "catch_weight_item_code": null,
+      "categories": [
+       {
+        "name": "Aanbiedingen",
+        "level": 2,
+        "url_path": "aanbiedingen"
+       },
+       {
+        "name": "Bier, wijn",
+        "level": 3,
+        "url_path": "aanbiedingen/bier-wijn"
+       }
+      ],
+      "promotion_meta_data": {
+       "korting_label": "per fles",
+       "raw_discount_label": {
+        "text": "per fles",
+        "price": 3.29,
+        "full_label": "per fles"
+       },
+       "valid_from": "2026-10-07 00:00:00.000",
+       "valid_to": "2026-10-13 23:59:00.000",
+       "promotion_id": null,
+       "prijs": "4.29",
+       "promotie_prijs": "3.29"
+      },
+      "ean": null,
+      "merk": null,
+      "catplan": null,
+      "eenheid": null,
+      "inhoud_ce": null,
+      "verpakking": null,
+      "volume_eenheid": null,
+      "prijs_per_volume_eenheid": null,
+      "webshop": {
+       "value": "1"
+      },
+      "productkenmerken_online_only": null,
+      "productkenmerken_biologisch": null,
+      "productkenmerken_diepvries": null,
+      "price_range": {
+       "minimum_price": {
+        "regular_price": {
+         "value": 4.29
+        },
+        "final_price": {
+         "value": 3.29
+        },
+        "discount": {
+         "percent_off": 23.31
+        }
+       }
+      }
+     }
+    ]
+   }
+  }
+ }
+]

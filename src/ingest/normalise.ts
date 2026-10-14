@@ -16,7 +16,9 @@ export interface PackSize {
 }
 
 const TO_KG: Record<string, number> = { g: 0.001, gr: 0.001, gram: 0.001, kg: 1, kilo: 1 };
-const TO_L: Record<string, number> = { ml: 0.001, cl: 0.01, dl: 0.1, l: 1, liter: 1, litre: 1 };
+const TO_L: Record<string, number> = {
+  ml: 0.001, milliliter: 0.001, cl: 0.01, centiliter: 0.01, dl: 0.1, l: 1, liter: 1, litre: 1,
+};
 
 function scale(amount: number, unit: string): PackSize | null {
   const key = unit.toLowerCase();
@@ -54,7 +56,7 @@ export function parsePackSize(text: string | null | undefined): PackSize | null 
     }
   }
 
-  const simple = cleaned.match(/(\d+(?:\.\d+)?)\s*(kg|kilo|gram|gr|g|liter|litre|l|ml|cl|dl)\b/);
+  const simple = cleaned.match(/(\d+(?:\.\d+)?)\s*(kg|kilo|gram|gr|g|milliliter|centiliter|liter|litre|l|ml|cl|dl)\b/);
   if (simple) {
     const sized = scale(Number(simple[1]), simple[2]!);
     if (sized) return { quantity: tidy(sized.quantity), unit: sized.unit };
