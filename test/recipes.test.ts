@@ -21,7 +21,7 @@ const RECIPES: any[] = context.RECIPES;
 const vocabulary = VOCABULARY.map((d) => ({
   id: d.id, name: d.name, unit: d.unit, also: d.also, equals: d.equals,
   variants: d.variants.map((v) => ({ id: v.id, name: v.name })),
-  fresh: d.aisles.some((a) => formOf(a) === "vers"),
+  fresh: !d.anyForm && d.aisles.some((a) => formOf(a) === "vers"),
 }));
 const resolver = context.MealdealResolve.createResolver({ chains: [], columns: ["ref"], vocabulary, catalogue: {} });
 
