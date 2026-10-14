@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { runInNewContext } from "node:vm";
+import { COLUMNS as BUILT, HISTORY_COLUMNS, toRow } from "../src/catalogue/format.ts";
 
 /**
  * Basket pricing (prototype/resolve.js): what a list, a Recipe or one item
@@ -13,9 +14,7 @@ import { runInNewContext } from "node:vm";
 const context: Record<string, any> = {};
 for (const f of ["words.js", "resolve.js"]) runInNewContext(readFileSync(`prototype/${f}`, "utf8"), context);
 
-const COLUMNS = ["ref", "name", "comparisonUnit", "shelfPriceCents", "offerPriceCents", "unitPriceCents", "offerWording", "offerEndsOn",
-  "nextWording", "nextStartsOn", "packQuantity", "packUnit", "ingredient", "variant", "form", "flags", "ingredientUnitPriceCents",
-  "ingredientPack", "referenceLowCents", "referenceDays"];
+const COLUMNS = [...BUILT, ...HISTORY_COLUMNS];
 
 interface P {
   ref: string; name: string; shelf: number; pack: number; ingredient: string; offer?: number | null; wording?: string | null;
@@ -24,14 +23,13 @@ interface P {
 /** A row as scripts/catalogue-from-db.ts writes one, priced per unit at what is paid today. */
 function row(p: P): unknown[] {
   const paid = p.offer ?? p.shelf;
-  const values: Record<string, unknown> = {
+  return toRow({
     ref: p.ref, name: p.name, comparisonUnit: "kg", shelfPriceCents: p.shelf, offerPriceCents: p.offer ?? null,
     unitPriceCents: Math.round(paid / p.pack), offerWording: p.wording ?? null, offerEndsOn: p.endsOn ?? null,
     nextWording: p.next ?? null, nextStartsOn: p.nextOn ?? null, packQuantity: p.pack, packUnit: "kg", ingredient: p.ingredient,
     variant: null, form: "vers", flags: 0, ingredientUnitPriceCents: Math.round(paid / p.pack), ingredientPack: p.pack,
     referenceLowCents: p.low ?? null, referenceDays: p.days ?? null,
-  };
-  return COLUMNS.map((c) => values[c]);
+  }, COLUMNS);
 }
 
 const vocabulary = ["kaas", "gehakt", "uien", "saffraan"].map((id) => ({ id, name: id, unit: "kg", also: [], equals: {}, fresh: false, variants: [] }));

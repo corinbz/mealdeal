@@ -11,11 +11,12 @@
  * the built catalogue and the one published yesterday.
  */
 
-export interface CoverageCatalogue {
+import { productsOf, type Catalogue } from "./format.ts";
+
+/** The parts of the catalogue (format.ts) the morning reports read. */
+export interface CoverageCatalogue extends Pick<Catalogue, "columns" | "catalogue"> {
   readonly chains: readonly { readonly id: string; readonly name?: string; readonly offersOnly?: boolean }[];
-  readonly columns: readonly string[];
   readonly vocabulary: readonly { readonly id: string; readonly variants: readonly { readonly id: string }[] }[];
-  readonly catalogue: Readonly<Record<string, readonly (readonly unknown[])[]>>;
   readonly exact?: readonly { readonly id: string; readonly name: string; readonly members: Readonly<Record<string, string>> }[];
 }
 
@@ -65,32 +66,21 @@ export interface CoverageOptions {
 
 export const DEFAULTS: CoverageOptions = { maxMissing: 2, minRatio: 0.9 };
 
-function column(c: CoverageCatalogue, name: string): number {
-  const i = c.columns.indexOf(name);
-  if (i < 0) throw new Error(`the catalogue has no ${name} column`);
-  return i;
-}
-
 function mappedCounts(c: CoverageCatalogue): Record<string, number> {
-  const ing = column(c, "ingredient");
-  return Object.fromEntries(c.chains.map((ch) => [ch.id, (c.catalogue[ch.id] ?? []).filter((r) => r[ing] !== null).length]));
+  return Object.fromEntries(c.chains.map((ch) => [ch.id, productsOf(c, ch.id).filter((p) => p.ingredient !== null).length]));
 }
 
 export function assessCoverage(built: CoverageCatalogue, published: CoverageCatalogue | null, known: readonly KnownGap[], options: CoverageOptions = DEFAULTS): Coverage {
-  const ing = column(built, "ingredient");
-  const variant = column(built, "variant");
-  const price = column(built, "ingredientUnitPriceCents");
-
   // A Chain listing only its Offers (Lidl) lacks most things any given week.
   const chains = built.chains.filter((c) => !c.offersOnly).map((c) => c.id);
   // What each Chain sells comparably, as Ingredient ids and ingredient/variant.
   const sells = new Map<string, Set<string>>();
   for (const id of chains) {
     const s = new Set<string>();
-    for (const r of built.catalogue[id] ?? []) {
-      if (r[ing] === null || r[price] === null) continue;
-      s.add(r[ing] as string);
-      if (r[variant] !== null) s.add(`${r[ing]}/${r[variant]}`);
+    for (const p of productsOf(built, id)) {
+      if (p.ingredient === null || p.ingredientUnitPriceCents === null) continue;
+      s.add(p.ingredient);
+      if (p.variant !== null) s.add(`${p.ingredient}/${p.variant}`);
     }
     sells.set(id, s);
   }
@@ -119,8 +109,7 @@ export function assessCoverage(built: CoverageCatalogue, published: CoverageCata
 
   // EAN twins mapped to different Ingredients (#34): one of them is wrong.
   // Nothing is lent between them, so each row still says its own mapping.
-  const ref = column(built, "ref");
-  const byRef = new Map(Object.entries(built.catalogue).map(([id, rows]) => [id, new Map(rows.map((r) => [r[ref] as string, r[ing] as string | null]))]));
+  const byRef = new Map(Object.keys(built.catalogue).map((id) => [id, new Map(productsOf(built, id).map((p) => [p.ref, p.ingredient]))]));
   const conflicts: Conflict[] = [];
   for (const g of built.exact ?? []) {
     const ingredients = Object.fromEntries(Object.entries(g.members).map(([c, r]) => [c, byRef.get(c)?.get(r) ?? null]));

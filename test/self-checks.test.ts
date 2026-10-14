@@ -2,16 +2,17 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { assessSelfChecks, selfChecksMarkdown, type KnownSlip } from "../src/catalogue/self-checks.ts";
 import type { CoverageCatalogue } from "../src/catalogue/coverage.ts";
+import { COLUMNS, toRow } from "../src/catalogue/format.ts";
 
 /**
  * The morning self-checks (#37): overnight jumps, the same Product mapped two
  * ways, and unit prices that do not follow from the pack.
  */
 
-const COLUMNS = ["ref", "name", "packQuantity", "packUnit", "comparisonUnit", "shelfPriceCents", "offerPriceCents", "unitPriceCents", "offerWording", "ingredient", "form"];
 type R = { ref: string; name?: string; q?: number; unit?: string; shelf?: number; offer?: number | null; per?: number; ingredient?: string | null; form?: string | null };
 const row = ({ ref, name = "Jonge kaas 500 g", q = 0.5, unit = "kg", shelf = 500, offer = null, per, ingredient = "kaas", form = null }: R) =>
-  [ref, name, q, unit, unit, shelf, offer, per ?? Math.round((offer ?? shelf) / q), offer === null ? null : "actie", ingredient, form];
+  toRow({ ref, name, packQuantity: q, packUnit: unit, comparisonUnit: unit as "kg", shelfPriceCents: shelf, offerPriceCents: offer,
+    unitPriceCents: per ?? Math.round((offer ?? shelf) / q), offerWording: offer === null ? null : "actie", ingredient, form });
 
 function catalogue(rows: Record<string, R[]>): CoverageCatalogue {
   return {
