@@ -84,6 +84,8 @@ function excludes(term: string, lower: string, raw: readonly string[]): boolean 
   });
 }
 
+const BRAND_NOT_FOOD = /^gouda's glorie\b/;
+
 const ELSEWHERE: ReadonlySet<Aisle> = new Set(["readymeal", "baby", "pet", "nonfood"]);
 
 export function createMapper(vocabulary: readonly IngredientDef[] = VOCABULARY) {
@@ -130,9 +132,12 @@ export function createMapper(vocabulary: readonly IngredientDef[] = VOCABULARY) 
     // name the Product. A dish named after X is not X.
     // "Zalm gerookt minder zout": what something is without, or with less
     // of, does not name it either.
-    const head = lower.split(/\s(?:met|with|in|op|zonder|minder)\s/)[0]!;
+    // A brand that names a food it is not: Gouda's Glorie makes margarine.
+    const head = lower.replace(BRAND_NOT_FOOD, "").trim().split(/\s(?:met|with|in|op|zonder|minder)\s/)[0]!;
     const written = head.split(/\s+/);
-    const names = written.map((w) => reading.nameWords(w).join(""));
+    // "Avocado's" is avocados: the apostrophe of a Dutch plural is not a
+    // break between two words, or the word would never end with "avocado".
+    const names = written.map((w) => reading.nameWords(w.replace(/['’]/g, "")).join(""));
     const raw = lower.split(/[^\p{L}0-9%']+/u).filter(Boolean);
 
     const owned = owners(head, names, written);

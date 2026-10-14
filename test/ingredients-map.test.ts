@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createMapper, type MappableProduct } from "../src/ingredients/map.ts";
 import { aisleOf } from "../src/ingredients/aisles.ts";
-import { checkVocabulary } from "../src/ingredients/vocabulary.ts";
+import { checkVocabulary, VOCABULARY } from "../src/ingredients/vocabulary.ts";
 
 /**
  * Which Ingredient a Product is (#14). Every Product here is a real one, its
@@ -195,4 +195,64 @@ test("knows Aldi's own labels and its shelves", () => {
   assert.deepEqual([ingredient("Pitloze witte druiven"), mapped("Pitloze witte druiven")?.form], ["druiven", "vers"]);
   assert.equal(mapped("Pitloze witte druiven")?.huismerk, false);
   assert.equal(ingredient("Jong belegen kaas plakken"), "kaas");
+});
+
+// Gaps the recipes turned up (#33): Products every shopper would count, that
+// no Ingredient claimed. Each is a real Product from the 2026-10-14 archive.
+const GAP: Record<string, Omit<MappableProduct, "name">> = {
+  "Eetrijpe avocado's": product("aldi", null, ["Aardappels, groente en fruit > Fruit"]),
+  "Zoete puntpaprika's": product("aldi", null, ["Aardappels, groente en fruit > Groenten"]),
+  "Unox Gelderse rookworst": product("dirk", "Unox", ["Vlees & vis > Vleesconserven"]),
+  "Jumbo Geraspte Kaas Belegen 48+ 175 g": product("jumbo", null, ["Vleeswaren, kaas en tapas > Kaas voor de maaltijd > Geraspte kaas"]),
+  "Galbani Grana Padano Kaas 150 g": product("jumbo", "Galbani", ["Vleeswaren, kaas en tapas > Kaas voor de maaltijd > Parmezaanse kaas"]),
+  "G'woon Gezeefde Tomaten": product("vomar", "G'woon", ["Voorraadkast > Pasta, rijst & wereldmarkt > Tomatenproducten"]),
+  "Passata gezeefde tomaten": product("hoogvliet", null, ["Pasta, rijst, oliën, wereldkeuken > Italiaanse keuken > Tomatenbasis"]),
+  "Risotto": product("aldi", null, ["Pasta, rijst en wereldkeuken > Rijst"]),
+  "Fijne roerbak": product("hoogvliet", null, ["Aardappelen, Groente, Fruit > Groente > Groentemixen"]),
+  "PLUS Zelfrijzend Bakmeel": product("plus", "PLUS", ["Brood, gebak, bakproducten > Bakproducten > Basismeel"]),
+  "Witte bonen in tomatensaus": product("aldi", null, ["Soepen, sauzen, kruiden en conserven > Groenteconserven"]),
+  // Kept right while closing them: an apostrophe that is a brand's, peanut
+  // butter that names its peanuts, and noodles for the wok.
+  "Gouda's Glorie Volle pond": product("dirk", "Gouda's Glorie", ["Zuivel & kaas > Boter & margarine"]),
+  "Gouda's Glorie Mayonaise vol & romig": product("dekamarkt", null, ["Voorraadkast > Sauzen"]),
+  "Calvé Pindakaas 100% Fijngemalen Pinda's 350 g": product("jumbo", null, ["Ontbijt, broodbeleg en bakkerij > Pindakaas en notenpasta > Pindakaas"]),
+  "Pindakaas 100% Grof Gemalen Pinda's": product("hoogvliet", null, ["Ontbijt, broodbeleg > Zoet beleg > Pindakaas"]),
+  "Jumbo Roerbak Mie 300 g": product("jumbo", null, ["Wereldkeukens, kruiden, pasta en rijst > Aziatische keuken > Noedels en mie"]),
+};
+const gap = (name: string) => map({ name, ...GAP[name]! });
+
+test("names a plural with an apostrophe as the singular Ingredient", () => {
+  assert.equal(gap("Eetrijpe avocado's")?.ingredient, "avocado");
+  assert.equal(gap("Zoete puntpaprika's")?.ingredient, "puntpaprika");
+});
+
+test("counts rookworst from the tins as rookworst, in whatever form", () => {
+  assert.deepEqual([gap("Unox Gelderse rookworst")?.ingredient, gap("Unox Gelderse rookworst")?.form], ["rookworst", "conserven"]);
+  // Not assumed fresh, so a recipe's "275 g rookworst" accepts it (catalogue `fresh`).
+  assert.equal(VOCABULARY.find((d) => d.id === "rookworst")?.anyForm, true);
+});
+
+test("reads Jumbo's cooking cheese and Plus's baking shelf as what they are", () => {
+  assert.equal(aisleOf("Vleeswaren, kaas en tapas > Kaas voor de maaltijd > Geraspte kaas"), "cheese");
+  assert.equal(gap("Jumbo Geraspte Kaas Belegen 48+ 175 g")?.ingredient, "geraspte kaas");
+  assert.equal(gap("Galbani Grana Padano Kaas 150 g")?.ingredient, "parmezaanse kaas");
+  assert.equal(aisleOf("Brood, gebak, bakproducten > Bakproducten > Basismeel"), "pantry");
+  assert.equal(gap("PLUS Zelfrijzend Bakmeel")?.ingredient, "zelfrijzend bakmeel");
+});
+
+test("knows passata by its Dutch name, risotto rice by its short one, and a roerbak", () => {
+  assert.equal(gap("G'woon Gezeefde Tomaten")?.ingredient, "passata");
+  assert.equal(gap("Passata gezeefde tomaten")?.ingredient, "passata");
+  assert.deepEqual([gap("Risotto")?.ingredient, gap("Risotto")?.variant], ["rijst", "risotto"]);
+  assert.equal(gap("Fijne roerbak")?.ingredient, "roerbakgroente");
+  // Still not white beans: they are in tomato sauce.
+  assert.equal(gap("Witte bonen in tomatensaus"), null);
+});
+
+test("keeps a brand's apostrophe, a peanut butter's peanuts and wok noodles as they were", () => {
+  assert.notEqual(gap("Gouda's Glorie Volle pond")?.ingredient, "kaas");
+  assert.equal(gap("Gouda's Glorie Mayonaise vol & romig")?.ingredient, "mayonaise");
+  assert.equal(gap("Calvé Pindakaas 100% Fijngemalen Pinda's 350 g")?.ingredient, "pindakaas");
+  assert.equal(gap("Pindakaas 100% Grof Gemalen Pinda's")?.ingredient, "pindakaas");
+  assert.equal(gap("Jumbo Roerbak Mie 300 g")?.ingredient, "mie");
 });
