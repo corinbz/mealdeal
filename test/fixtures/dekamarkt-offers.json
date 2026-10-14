@@ -1,0 +1,37 @@
+[
+  {
+    "data": {
+      "listOffers": {
+        "key": 1,
+        "importId": null,
+        "currentOffers": [
+          {
+            "offerId": 137635,
+            "key": null,
+            "storeId": 283,
+            "headerText": "Stamppot Aardappelen",
+            "subText": "Zak 1,5 kilo.",
+            "packaging": "",
+            "promotionText": null,
+            "normalPrice": 0,
+            "offerPrice": 0.99,
+            "priceDate": "2026-10-14 18:39:04",
+            "startDate": "2026-10-13T00:00:00.000Z",
+            "endDate": "2026-10-20T00:00:00.000Z",
+            "embargoDate": "0001-01-01T00:00:00.000Z",
+            "disclaimerStartDate": "2026-10-13T00:00:00.000Z",
+            "disclaimerEndDate": "2026-10-19T00:00:00.000Z",
+            "type": "SingleProductOffer",
+            "textPriceSign": "50% KORTING",
+            "textPriceSign1": "50%",
+            "textPriceSign2": "KORTING",
+            "productIds": [
+              12910
+            ]
+          }
+        ],
+        "upcomingOffers": []
+      }
+    }
+  }
+]

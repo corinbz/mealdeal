@@ -4,7 +4,7 @@ import type { ArchivedResponse, Sink } from "../sink.ts";
 export interface RunContext {
   readonly client: Client;
   readonly sink: Sink;
-  /** Dirk prices are per-Store, so every Chain run takes the Stores to cover. */
+  /** The Stores to cover, for a Chain that prices per Store; else empty. */
   readonly storeIds: readonly number[];
   /** Cap on product steps, for smoke-testing without walking a catalogue. */
   readonly maxProductSteps: number | undefined;
@@ -15,6 +15,8 @@ export interface Chain {
   readonly name: string;
   readonly endpoint: string;
   readonly headers: Readonly<Record<string, string>>;
+  /** The Stores asked for when the run names none, for a Chain that needs one. */
+  readonly defaultStoreIds?: readonly number[];
   run(context: RunContext): Promise<void>;
 }
 

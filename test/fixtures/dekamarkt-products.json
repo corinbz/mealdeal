@@ -1,0 +1,65 @@
+[
+  {
+    "data": {
+      "productsAssortment": [
+        null,
+        {
+          "productId": 12910,
+          "productNumber": null,
+          "storeId": 283,
+          "normalPrice": 1.99,
+          "offerPrice": 0.99,
+          "priceDate": "2026-10-14T18:29:48.991+02:00",
+          "startDate": "2026-10-12T00:00:00.000+02:00",
+          "endDate": "2026-10-19T23:59:59.000+02:00",
+          "isSingleUsePlastic": false,
+          "productInformation": {
+            "productId": 12910,
+            "productNumber": "221111",
+            "brand": "Poldergoud",
+            "headerText": "Poldergoud Stamppotaardappelen zeer kruimig",
+            "subText": "",
+            "packaging": "1,5 kg",
+            "isWeightProduct": false,
+            "maxAmount": null,
+            "department": "Aardappelen, groente & fruit",
+            "webgroup": "Aardappelen"
+          },
+          "productOffer": {
+            "productOfferId": 594588,
+            "productId": 12910,
+            "startDate": "2026-10-13T00:00:00.000+02:00",
+            "endDate": "2026-10-20T00:00:00.000+02:00",
+            "disclaimerStartDate": "2026-10-13T00:00:00.000+02:00",
+            "disclaimerEndDate": "2026-10-19T00:00:00.000+02:00",
+            "textPriceSign": "50% KORTING"
+          }
+        },
+        {
+          "productId": 74498,
+          "productNumber": null,
+          "storeId": 283,
+          "normalPrice": 2.2,
+          "offerPrice": 0.0,
+          "priceDate": "2026-10-14T18:30:19.016+02:00",
+          "startDate": "2026-10-13T00:00:00.000+02:00",
+          "endDate": "2049-12-31T23:59:59.000+01:00",
+          "isSingleUsePlastic": false,
+          "productInformation": {
+            "productId": 74498,
+            "productNumber": "430844",
+            "brand": "DekaVers",
+            "headerText": "DekaVers Gehaktschnitzel naturel 2 stuks",
+            "subText": "",
+            "packaging": "200 g",
+            "isWeightProduct": false,
+            "maxAmount": null,
+            "department": "Vlees & vis",
+            "webgroup": "Gehakt & worst"
+          },
+          "productOffer": null
+        }
+      ]
+    }
+  }
+]

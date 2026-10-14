@@ -91,10 +91,10 @@ Chain resolves to, and a pack far larger than the requirement is flagged
 
 ## Where the data comes from
 
-**All six Chains are real.** The fixture is resolved against the ingested
+**All seven Chains are real.** The fixture is resolved against the ingested
 database, so every name, Pack Size, Shelf Price and Offer wording came from a
 Sweep: 7,359 Dirk products from Store 66, and 17,104 Jumbo, 17,249 Plus,
-8,282 Hoogvliet and 6,268 Vomar products, priced nationally. Vomar publishes no Offers
+9,872 DekaMarkt, 8,282 Hoogvliet and 6,268 Vomar products, priced nationally. Vomar publishes no Offers
 online, so its bag is always at Shelf Prices, and the note under Vergelijk
 says so. **Lidl** puts only its Offers online, about 90 comparable products a
 week, so it gets no bag: one would only ever say what is missing, and an item
@@ -152,7 +152,10 @@ every other Chain under every type, and white text at 6:1 or better.
 Hoogvliet, the sixth, is plum (light `#782860`, dark `#984080`), at least
 ΔE 21 from every other Chain under every type, and white text at 6:1 or
 better; the teal first in the palette for that slot sat ΔE 7 from Dirk's
-green. Each Chain's colour is fixed by its id, not its place in the list, so a Chain
+green. DekaMarkt, the seventh, is burnt orange (`#a84000` in both
+themes), at least ΔE 12 from every other Chain for normal vision and ΔE 6
+under every type simulated, the most seven hues allow beside a Chain's name;
+white text at 6:1. Each Chain's colour is fixed by its id, not its place in the list, so a Chain
 added later never repaints another.
 
 A **Correction** is kept per Chain and Ingredient (and Variant), so correcting

@@ -36,6 +36,9 @@ const OWN_BRAND: Readonly<Record<string, RegExp>> = {
   // Hoogvliet's own label, and the Superunie lines it sells as its own, as
   // Vomar does (Bonbébé is Superunie's baby food).
   hoogvliet: /^(hoogvliet|g'woon|melkan|daily chef|bonb[ée]b[ée])\b|^bio\+/i,
+  // DekaMarkt's own labels (DekaVers, Deka's keuken, Altijd handig), Dirk's
+  // 1 de Beste from the same group, and the Superunie lines, as at Hoogvliet.
+  dekamarkt: /^(dekamarkt|dekavers|deka's keuken|1 de beste|altijd handig|g'woon|melkan|daily chef|bonb[ée]b[ée])\b|^bio\+/i,
   // Lidl sells mostly its own lines, each under a name of its own.
   lidl: /^(lidl|milbona|combino|kania|lupilu|cien|w5|deluxe|bellarom|sondey|belbake|chef select|floralys|trattoria alfredo|pilos|solevita|freeway|vitasia|crownfield|snack day|alesto|fin carr[ée]|saskia|maribel|favorina|dulano|golden seafood|ocean sea|nixe|baresa|italiamo|eridanous|mcennedy|perlenbacher|envia|formil|ryneczek lidla|maître jean.pierre|maitre jean.pierre)\b/i,
 };

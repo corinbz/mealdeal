@@ -17,6 +17,7 @@
 
 import { createClient, EdgeDenied } from "./http.ts";
 import { createSink } from "./sink.ts";
+import { dekamarkt } from "./chains/dekamarkt.ts";
 import { dirk } from "./chains/dirk.ts";
 import { jumbo } from "./chains/jumbo.ts";
 import { hoogvliet } from "./chains/hoogvliet.ts";
@@ -25,10 +26,7 @@ import { plus } from "./chains/plus.ts";
 import { vomar } from "./chains/vomar.ts";
 import type { Chain } from "./chains/types.ts";
 
-const CHAINS: Record<string, Chain> = { dirk, hoogvliet, jumbo, lidl, plus, vomar };
-
-/** Dirk prices are per-Store. Store 66 is the one the research verified. */
-const DEFAULT_STORE_IDS = [66];
+const CHAINS: Record<string, Chain> = { dekamarkt, dirk, hoogvliet, jumbo, lidl, plus, vomar };
 
 interface Options {
   chains: Chain[];
@@ -49,7 +47,8 @@ function usage(): never {
   --chain <name>             Chain to archive, or "all". Repeatable. Required.
   --out <dir>                Archive root. Default: ./archive
   --date <YYYY-MM-DD>        Archive under this date. Default: today.
-  --store <id>               Dirk Store id. Repeatable. Default: ${DEFAULT_STORE_IDS.join(",")}
+  --store <id>               Store id for Dirk or DekaMarkt. Repeatable.
+                             Default: Dirk 66, DekaMarkt 283.
   --min-interval-ms <n>      Minimum gap between requests. Default: 1500
   --max-retries <n>          Retries per request. Default: 3
   --timeout-ms <n>           Per-request timeout. Default: 20000
@@ -118,7 +117,7 @@ function parseArgs(argv: readonly string[]): Options {
     chains,
     out,
     date,
-    storeIds: storeIds.length ? storeIds : DEFAULT_STORE_IDS,
+    storeIds,
     minIntervalMs,
     maxRetries,
     timeoutMs,
@@ -146,7 +145,7 @@ async function archiveChain(chain: Chain, options: Options): Promise<boolean> {
     await chain.run({
       client,
       sink,
-      storeIds: options.storeIds,
+      storeIds: options.storeIds.length ? options.storeIds : (chain.defaultStoreIds ?? []),
       maxProductSteps: options.maxProductSteps,
       log: (message) => console.log(message),
     });

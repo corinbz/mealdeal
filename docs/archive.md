@@ -373,6 +373,43 @@ it, chose to archive Hoogvliet.
 `productkenmerken_online_only`, and ingest passes it over. `webshop` 0 or 2
 means not orderable online, and those Products are in Stores.
 
+### DekaMarkt — working, verified live, honest agent accepted
+
+Added on 2026-10-14 (#30). DekaMarkt belongs to Detailresult Groep, as Dirk
+does, and its Nuxt site asks the same gateway software at
+`https://web-deka-gateway.dekamarkt.nl/graphql`. The Sweep is Dirk's, from
+the shared `src/archive/chains/detailresult.ts`: departments, then each web
+group's Product ids priced at one Store, then each department's Offers.
+Introspection is off here; the fields were read from the site's scripts and
+each was tried. Dirk's `singleUsePlasticValue` does not exist on this
+gateway and is not asked for.
+
+**Store 283 is no shop.** It is the site's default, "Volledig assortiment",
+shown before a visitor picks a Store: every Product any DekaMarkt stocks.
+**Prices are national.** Six real Stores (1, 117, 118, 119, 120, 200)
+priced every Product they stock as 283 does, and listed the same 138 Offers.
+So the Sweep asks for 283 only, and ingest records no Store.
+
+**The two gateways share one catalogue**: the same departments, web groups
+and Product ids. Prices are DekaMarkt's own. Of 188 Products sold at both
+(a sample from 12 web groups, mostly fresh produce, 2026-10-14), 54 cost
+the same, 119 less at Dirk and 15 less at DekaMarkt. Del Monte bananas cost
+EUR 1.15 a kilo at Dirk and EUR 1.99 at DekaMarkt.
+
+Web groups list about 122,000 Product ids between them, about one in nine
+stocked; the rest come back `null` and are kept, as at Dirk. The gateway
+prices a thousand ids in about 50 ms, so a request asks for a thousand:
+about 330 requests a day, where Dirk's hundred would be 1,400.
+
+**Access and terms.** `robots.txt` blocks a list of named crawlers,
+disallows four `/misc/` pages and allows the rest; the gateway is on
+another host. DekaMarkt's *Algemene voorwaarden* cover its WiFi, self-scan
+and gift cards and say nothing of the website. Its disclaimer
+(`/meer/over-ons/disclaimer`) says only that the intellectual property in
+the site's materials rests with DekaMarkt and its licensors; no clause
+addresses automated access or reuse. **Decision, 2026-10-14:** the project
+owner, shown it, chose to archive DekaMarkt.
+
 ### Spar — assessed, not archived
 
 Assessed on 2026-10-14 (#11) and dropped by the owner the same day: Spar is
