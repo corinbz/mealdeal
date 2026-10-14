@@ -103,13 +103,26 @@ jobs:
       - name: Build the catalogue
         run: node scripts/catalogue-from-db.ts
 
-      - name: Fetch the published catalogue
+      - name: Fetch the published catalogue and price history
         run: |
           if aws s3 cp "$R2/catalogue/latest.js" published.js --only-show-errors 2>/dev/null; then
             echo "published=published.js" >> "$GITHUB_ENV"
           else
             echo "Nothing published yet, so this is the first catalogue"
           fi
+          if aws s3 cp "$R2/catalogue/history.json" published-history.json --only-show-errors 2>/dev/null; then
+            echo "history=published-history.json" >> "$GITHUB_ENV"
+          else
+            echo "No price history yet, so it starts today and no Offer is judged"
+          fi
+
+      # Judges each Offer against its Product's lowest price of the 30 days
+      # before the reduction began (#18). See src/catalogue/history.ts.
+      - name: Add the day to the price history
+        run: |
+          args="--date ${{ steps.day.outputs.date }} --catalogue prototype/catalogue.js --out-history history.json"
+          [ -n "${history:-}" ] && args="$args --history $history"
+          node scripts/apply-history.ts $args
 
       - name: Check it may replace the published one
         run: |
@@ -128,3 +141,5 @@ jobs:
           aws s3 cp prototype/catalogue.js "$R2/catalogue/latest.js" \
             --content-type "text/javascript; charset=utf-8" --only-show-errors
           echo "Published $(du -h prototype/catalogue.js | cut -f1) to catalogue/latest.js"
+          aws s3 cp history.json "$R2/catalogue/history.json" --content-type application/json --only-show-errors
+          echo "Published $(du -h history.json | cut -f1) to catalogue/history.json"

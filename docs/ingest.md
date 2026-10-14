@@ -180,6 +180,20 @@ It publishes nothing unless all of these hold, and goes red otherwise:
   throwaway database: there, every run is a Chain's first.
   `scripts/check-catalogue.ts` does this check and the two above.
 
+It also judges every Offer against its Product's **Reference Price**, the
+lowest price of the 30 days before the reduction began (#18). The refresh's
+database holds only one day, so `catalogue/history.json` carries each
+Product's price per day, for 45 days, from one morning to the next.
+`scripts/apply-history.ts` adds the day and appends the reference to each
+catalogue row. Days already on the same Offer at the same price are not the
+Offer's own reference, or an Offer in its second week would look like no Offer
+at all. A Product with no recorded days before the Offer gets no verdict. An
+Offer with no price of its own (`1+1 gratis`) is not turned into one
+(ADR-0002): only its normal price is judged, which is where an inflated "was"
+price shows. The history is derived from catalogues and holds nothing the
+archive does not. If it is lost, verdicts start over the next morning.
+Nothing rebuilds it from the archive yet.
+
 It runs on GitHub's runners, at roughly 5 minutes a day against the private
 repository's 2,000 free a month (see "Which machine runs it" in
 `docs/archive.md`).
