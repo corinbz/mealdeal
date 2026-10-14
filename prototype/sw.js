@@ -10,11 +10,11 @@
 // Only registered when the page is served over HTTP(S); opened from disk it
 // works as before, without this.
 
-const CACHE = "mealdeal-v4";
+const CACHE = "mealdeal-v5";
 const NETWORK_TIMEOUT_MS = 3000;
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(["./", "catalogue.js", "prices.js", "words.js", "resolve.js"])));
+  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(["./", "catalogue.js", "prices.js", "words.js", "resolve.js", "images.js"])));
   self.skipWaiting();
 });
 
