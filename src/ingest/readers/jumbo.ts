@@ -98,12 +98,20 @@ function comparisonUnit(unit: unknown): ComparisonUnit | null {
   return null;
 }
 
+/** Whether Jumbo's figure looks per drained kilo of a pack whose whole weight the title states. */
+export function drained(chainCents: number, chainUnit: ComparisonUnit | null, pack: PackSize | null, paidCents: number): boolean {
+  if (!pack || pack.unit !== chainUnit) return false;
+  const times = chainCents / (paidCents / pack.quantity);
+  return times >= 1.05 && times <= 3;
+}
+
 /**
  * Which Unit Price a Jumbo Product is compared on: by weight or volume
  * whenever one is known, by the piece only when none is (the owner's rule,
  * issue #3). In order:
  *
- *   1. Jumbo's own figure, when it is per kg or per litre.
+ *   1. Jumbo's own figure, when it is per kg or per litre, unless it is
+ *      per drained kilo (below).
  *   2. One derived from the pack, when the title states a weight or volume.
  *      Jumbo prices "Tortilla Wraps 8 Stuks 320 g" per piece; by weight it
  *      compares with every other wrap sold by the gram.
@@ -112,6 +120,13 @@ function comparisonUnit(unit: unknown): ComparisonUnit | null {
  *
  * Derived figures use the price paid, the Offer price when there is one, as
  * Jumbo's own do, and are marked as ours.
+ *
+ * Jumbo prices a tin or jar of something in liquid per drained kilo
+ * (uitlekgewicht): "Jumbo Doperwten 680 g" at €0.93 is €2.04 a kilo, not
+ * €1.37. Other Chains price the whole pack, so on Jumbo's figure its tins look
+ * half as dear again as they are. The owner chose the whole pack for every
+ * Chain (#37), so a figure 1.05 to 3 times the pack's gives way to the pack's.
+ * Below that is rounding; above it, more likely a slip of another kind.
  */
 function unitPriceFor(
   chainCents: number | null,
@@ -120,7 +135,7 @@ function unitPriceFor(
   paidCents: number,
 ): Pick<PriceReading, "unitPriceCents" | "comparisonUnit" | "unitPriceSource"> {
   const byMeasure = (u: ComparisonUnit | null | undefined) => u === "kg" || u === "l";
-  if (chainCents !== null && byMeasure(chainUnit)) {
+  if (chainCents !== null && byMeasure(chainUnit) && !drained(chainCents, chainUnit, pack, paidCents)) {
     return { unitPriceCents: chainCents, comparisonUnit: chainUnit, unitPriceSource: "chain" };
   }
   if (pack && byMeasure(pack.unit)) {

@@ -1,10 +1,11 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { wholeCase } from "../src/ingest/readers/jumbo.ts";
+import { drained, wholeCase } from "../src/ingest/readers/jumbo.ts";
 
 /**
- * Jumbo sells some cases under one unit's title (#37). Each figure below is a
- * real row from the Jumbo sweep of 2026-10-14: title, price, pricePerUnit.
+ * Jumbo sells some cases under one unit's title, and prices tins per drained
+ * kilo (#37). Each figure below is a real row from the Jumbo sweep of
+ * 2026-10-14: title, price, pricePerUnit.
  */
 
 test("a box priced whole but titled as one unit is that many units", () => {
@@ -26,4 +27,13 @@ test("a jar priced per drained kilo is left as titled", () => {
 
 test("a unit price in another unit than the pack's says nothing about the pack", () => {
   assert.deepEqual(wholeCase({ quantity: 0.32, unit: "kg" }, 25, "piece", 199), { quantity: 0.32, unit: "kg" });
+});
+
+test("a figure per drained kilo gives way to the whole pack's, as the owner chose", () => {
+  // 302282POT "Jumbo Doperwten 680 g": €0.93 at €2.04 a kilo drained.
+  assert.equal(drained(204, "kg", { quantity: 0.68, unit: "kg" }, 93), true);
+  // 747038KGR "Jumbo West Country Farmhouse Cheddar Kaas ca. 125 g": weighed, so below the title's; Jumbo's stands.
+  assert.equal(drained(2654, "kg", { quantity: 0.125, unit: "kg" }, 398), false);
+  // 751918PAK "Halfvolle Melk 1 L": as titled.
+  assert.equal(drained(85, "l", { quantity: 1, unit: "l" }, 85), false);
 });

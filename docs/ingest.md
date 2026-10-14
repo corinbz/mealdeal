@@ -389,6 +389,12 @@ title: sku 47868DSL, "Arla Bio Halfvolle Melk 1 L", is a box of six at
 Jumbo's own unit price gives (`wholeCase`), which cut Jumbo's unit slips from
 652 to 455.
 
+Jumbo also prices a tin or jar of something in liquid per drained kilo, where
+the other Chains price the whole pack, so its tins looked half as dear again
+as they were. The owner chose the whole pack for every Chain, so the Jumbo
+reader takes the pack's figure over Jumbo's when Jumbo's is 1.05 to 3 times
+it (`drained`). That took 171 mapped Products off the list.
+
 It also judges every Offer against its Product's **Reference Price**, the
 lowest price of the 30 days before the reduction began (#18). The refresh's
 database holds only one day, so `catalogue/history.json` carries each
