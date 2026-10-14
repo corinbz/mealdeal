@@ -78,7 +78,7 @@ const sleep = (ms: number) =>
 
 /**
  * A client that makes one request at a time, paced: GraphQL POSTs for Dirk
- * and Jumbo, plain GETs for Vomar.
+ * and Jumbo, plain GETs for Vomar, JSON POSTs to Plus's own services.
  *
  * Every Chain's endpoint is unauthenticated and none asked us for a key,
  * which is precisely why the traffic should stay modest and attributable: the
@@ -138,7 +138,11 @@ export function createClient(options: ClientOptions) {
           throw new RequestFailed(status, raw);
         }
         if (response.ok) {
-          return { raw, json: JSON.parse(raw) as unknown, status };
+          // Not every answer is JSON: Plus's version codes are read out of
+          // its scripts. A body that is not JSON comes back with json null.
+          let json: unknown = null;
+          try { json = JSON.parse(raw) as unknown; } catch { /* not JSON */ }
+          return { raw, json, status };
         }
       } catch (error) {
         // An edge denial and a definite 4xx are both final. Everything else
@@ -184,6 +188,19 @@ export function createClient(options: ClientOptions) {
       const url = new URL(path, options.endpoint);
       for (const [key, value] of Object.entries(params)) url.searchParams.set(key, String(value));
       return enqueue(() => attempt(url.href, { method: "GET", headers: options.headers }));
+    },
+    /**
+     * A JSON body POSTed to a path under the endpoint, for a Chain whose
+     * pages call their own services that way (Plus). Like a GET, there is no
+     * selection set to guard: the service decides which fields come back.
+     */
+    post(path: string, body: unknown): Promise<Response> {
+      const url = new URL(path, options.endpoint);
+      return enqueue(() => attempt(url.href, {
+        method: "POST",
+        headers: { ...options.headers, "content-type": "application/json; charset=UTF-8" },
+        body: JSON.stringify(body),
+      }));
     },
     stats(): Stats {
       return { ...stats };

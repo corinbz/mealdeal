@@ -1,0 +1,754 @@
+[
+ {
+  "versionInfo": {
+   "hasModuleVersionChanged": false,
+   "hasApiVersionChanged": false
+  },
+  "data": {
+   "TotalPages": 2,
+   "TotalNumberItems": 10,
+   "ProductList": {
+    "List": [
+     {
+      "PLP_Str": {
+       "SKU": "113834",
+       "Brand": "PLUS",
+       "Name": "PLUS Conference Peren los",
+       "Product_Subtitle": "Per 1000 gram",
+       "Slug": "plus-conference-peren-los-kg-1000-g-113834",
+       "ImageURL": "https://images.ctfassets.net/s0lodsnpsezb/113834_M/672970432fdfd90af889660e265f4c07/113834.png",
+       "ImageLabel": "",
+       "MetaTitle": "PLUS Conference Peren los 1000 Gram - PLUS",
+       "MetaDescription": "Bestel PLUS Conference Peren los 1000 Gram online op plus.nl. Laat je boodschappen makkelijk en snel thuis bezorgen of haal het op bij jouw PLUS.",
+       "OriginalPrice": "1.99",
+       "NewPrice": "1.49",
+       "Quantity": 0,
+       "LineItemId": "",
+       "IsProductOverMajorityAge": false,
+       "Logos": {
+        "PLPInUpperLeft": {
+         "List": [],
+         "EmptyListItem": {
+          "Name": "",
+          "LongDescription": "",
+          "URL": "",
+          "Order": 0
+         }
+        },
+        "PLPAboveTitle": {
+         "List": [],
+         "EmptyListItem": {
+          "Name": "",
+          "LongDescription": "",
+          "URL": "",
+          "Order": 0
+         }
+        },
+        "PLPBehindSizeUnit": {
+         "List": [],
+         "EmptyListItem": {
+          "Name": "",
+          "LongDescription": "",
+          "URL": "",
+          "Order": 0
+         }
+        }
+       },
+       "EAN": "",
+       "Packging": "Kg",
+       "Categories": {
+        "List": [
+         {
+          "Name": "Aardappelen, groente, fruit"
+         },
+         {
+          "Name": "Fruit"
+         },
+         {
+          "Name": "Appels, peren, overig hardfruit"
+         }
+        ]
+       },
+       "IsAvailable": true,
+       "PromotionLabel": "1.69 PER KILO",
+       "PromotionBasedLabel": "",
+       "PromotionStartDate": "2026-10-14",
+       "PromotionEndDate": "2026-10-20",
+       "IsFreeDeliveryOffer": false,
+       "IsOfflineSaleOnly": false,
+       "MaxOrderLimit": 199,
+       "CitrusAdId": "",
+       "IsLocalItem": false
+      },
+      "BadgeQuantity": 0
+     },
+     {
+      "PLP_Str": {
+       "SKU": "957806",
+       "Brand": "PLUS",
+       "Name": "PLUS Houdbare Halfvolle Melk",
+       "Product_Subtitle": "Per 1000 ml",
+       "Slug": "plus-houdbare-halfvolle-melk-pak-1000-ml-957806",
+       "ImageURL": "https://images.ctfassets.net/s0lodsnpsezb/957806_M/6dedf92950766562376a789b7d863d07/957806.png",
+       "ImageLabel": "",
+       "MetaTitle": "PLUS Houdbare Halfvolle Melk 1000 Milliliter - PLUS",
+       "MetaDescription": "Bestel PLUS Houdbare Halfvolle Melk 1000 Milliliter online op plus.nl. Laat je boodschappen makkelijk en snel thuis bezorgen of haal het op bij jouw PLUS.",
+       "OriginalPrice": "0.89",
+       "NewPrice": "0",
+       "Quantity": 0,
+       "LineItemId": "",
+       "IsProductOverMajorityAge": false,
+       "Logos": {
+        "PLPInUpperLeft": {
+         "List": [
+          {
+           "Name": "Laagblijver",
+           "LongDescription": "Laagblijver",
+           "URL": "//images.ctfassets.net/s0lodsnpsezb/L_QUxHX0xBQUdCTElKVkVS_M/39a96d0793059539802b2a576b581b0b/L_ALG_LAAGBLIJVER.png",
+           "Order": 129
+          }
+         ]
+        },
+        "PLPAboveTitle": {
+         "List": [],
+         "EmptyListItem": {
+          "Name": "",
+          "LongDescription": "",
+          "URL": "",
+          "Order": 0
+         }
+        },
+        "PLPBehindSizeUnit": {
+         "List": [],
+         "EmptyListItem": {
+          "Name": "",
+          "LongDescription": "",
+          "URL": "",
+          "Order": 0
+         }
+        }
+       },
+       "EAN": "",
+       "Packging": "Pak",
+       "Categories": {
+        "List": [
+         {
+          "Name": "Zuivel, eieren, boter"
+         },
+         {
+          "Name": "Houdbare zuivel"
+         },
+         {
+          "Name": "Houdbare melk"
+         }
+        ]
+       },
+       "IsAvailable": true,
+       "PromotionLabel": "",
+       "PromotionBasedLabel": "",
+       "PromotionStartDate": "1900-01-01",
+       "PromotionEndDate": "1900-01-01",
+       "IsFreeDeliveryOffer": false,
+       "IsOfflineSaleOnly": false,
+       "MaxOrderLimit": 199,
+       "CitrusAdId": "",
+       "IsLocalItem": false
+      },
+      "BadgeQuantity": 0
+     },
+     {
+      "PLP_Str": {
+       "SKU": "326534",
+       "Brand": "Duca",
+       "Name": "Duca Vietnamese oven loempia",
+       "Product_Subtitle": "Per 282 g",
+       "Slug": "duca-vietnamese-oven-loempia-doos-282-g-326534",
+       "ImageURL": "https://images.ctfassets.net/s0lodsnpsezb/326534_M/5d3216dbadac811d9d8b4810f0875fef/326534.png",
+       "ImageLabel": "",
+       "MetaTitle": "Duca Vietnamese oven loempia 282 Gram - PLUS",
+       "MetaDescription": "Bestel Duca Vietnamese oven loempia 282 Gram online op plus.nl. Laat je boodschappen makkelijk en snel thuis bezorgen of haal het op bij jouw PLUS.",
+       "OriginalPrice": "2.39",
+       "NewPrice": "0.0",
+       "Quantity": 0,
+       "LineItemId": "",
+       "IsProductOverMajorityAge": false,
+       "Logos": {
+        "PLPInUpperLeft": {
+         "List": [],
+         "EmptyListItem": {
+          "Name": "",
+          "LongDescription": "",
+          "URL": "",
+          "Order": 0
+         }
+        },
+        "PLPAboveTitle": {
+         "List": [],
+         "EmptyListItem": {
+          "Name": "",
+          "LongDescription": "",
+          "URL": "",
+          "Order": 0
+         }
+        },
+        "PLPBehindSizeUnit": {
+         "List": [],
+         "EmptyListItem": {
+          "Name": "",
+          "LongDescription": "",
+          "URL": "",
+          "Order": 0
+         }
+        }
+       },
+       "EAN": "",
+       "Packging": "Doos",
+       "Categories": {
+        "List": [
+         {
+          "Name": "Diepvries"
+         },
+         {
+          "Name": "Diepvries snacks"
+         }
+        ]
+       },
+       "IsAvailable": true,
+       "PromotionLabel": "1+1 GRATIS",
+       "PromotionBasedLabel": "",
+       "PromotionStartDate": "2026-10-14",
+       "PromotionEndDate": "2026-10-20",
+       "IsFreeDeliveryOffer": false,
+       "IsOfflineSaleOnly": false,
+       "MaxOrderLimit": 199,
+       "CitrusAdId": "",
+       "IsLocalItem": false
+      },
+      "BadgeQuantity": 0
+     },
+     {
+      "PLP_Str": {
+       "SKU": "470941",
+       "Brand": "BIO+",
+       "Name": "BIO+ Sperziebonen gebroken",
+       "Product_Subtitle": "Per 450 g",
+       "Slug": "bio-sperziebonen-gebroken-zak-450-g-470941",
+       "ImageURL": "",
+       "ImageLabel": "",
+       "MetaTitle": "BIO+ Sperziebonen gebroken 450 Gram - PLUS",
+       "MetaDescription": "Bestel BIO+ Sperziebonen gebroken 450 Gram online op plus.nl. Laat je boodschappen makkelijk en snel thuis bezorgen of haal het op bij jouw PLUS.",
+       "OriginalPrice": "1.19",
+       "NewPrice": "0.8925",
+       "Quantity": 0,
+       "LineItemId": "",
+       "IsProductOverMajorityAge": false,
+       "Logos": {
+        "PLPInUpperLeft": {
+         "List": [],
+         "EmptyListItem": {
+          "Name": "",
+          "LongDescription": "",
+          "URL": "",
+          "Order": 0
+         }
+        },
+        "PLPAboveTitle": {
+         "List": [],
+         "EmptyListItem": {
+          "Name": "",
+          "LongDescription": "",
+          "URL": "",
+          "Order": 0
+         }
+        },
+        "PLPBehindSizeUnit": {
+         "List": [],
+         "EmptyListItem": {
+          "Name": "",
+          "LongDescription": "",
+          "URL": "",
+          "Order": 0
+         }
+        }
+       },
+       "EAN": "",
+       "Packging": "Zak",
+       "Categories": {
+        "List": [
+         {
+          "Name": "Diepvries"
+         },
+         {
+          "Name": "Diepvries groente"
+         }
+        ]
+       },
+       "IsAvailable": true,
+       "PromotionLabel": "25 % KORTING",
+       "PromotionBasedLabel": "",
+       "PromotionStartDate": "2026-10-14",
+       "PromotionEndDate": "2026-10-20",
+       "IsFreeDeliveryOffer": false,
+       "IsOfflineSaleOnly": false,
+       "MaxOrderLimit": 199,
+       "CitrusAdId": "",
+       "IsLocalItem": false
+      },
+      "BadgeQuantity": 0
+     },
+     {
+      "PLP_Str": {
+       "SKU": "368320",
+       "Brand": "Biologisch PLUS",
+       "Name": "Biologisch PLUS Handperen",
+       "Product_Subtitle": "Per 4 st",
+       "Slug": "biologisch-plus-handperen-schaal-4-st-368320",
+       "ImageURL": "https://images.ctfassets.net/s0lodsnpsezb/368320_M/0d4a58e8b1e612aa990875203ea37982/368320.png",
+       "ImageLabel": "",
+       "MetaTitle": "Biologisch PLUS Handperen 4 Stuks - PLUS",
+       "MetaDescription": "Bestel Biologisch PLUS Handperen 4 Stuks online op plus.nl. Laat je boodschappen makkelijk en snel thuis bezorgen of haal het op bij jouw PLUS.",
+       "OriginalPrice": "2.99",
+       "NewPrice": "0.0",
+       "Quantity": 0,
+       "LineItemId": "",
+       "IsProductOverMajorityAge": false,
+       "Logos": {
+        "PLPInUpperLeft": {
+         "List": [],
+         "EmptyListItem": {
+          "Name": "",
+          "LongDescription": "",
+          "URL": "",
+          "Order": 0
+         }
+        },
+        "PLPAboveTitle": {
+         "List": [],
+         "EmptyListItem": {
+          "Name": "",
+          "LongDescription": "",
+          "URL": "",
+          "Order": 0
+         }
+        },
+        "PLPBehindSizeUnit": {
+         "List": [],
+         "EmptyListItem": {
+          "Name": "",
+          "LongDescription": "",
+          "URL": "",
+          "Order": 0
+         }
+        }
+       },
+       "EAN": "",
+       "Packging": "Schaal",
+       "Categories": {
+        "List": [
+         {
+          "Name": "Aardappelen, groente, fruit"
+         },
+         {
+          "Name": "Fruit"
+         },
+         {
+          "Name": "Appels, peren, overig hardfruit"
+         }
+        ]
+       },
+       "IsAvailable": true,
+       "PromotionLabel": "Gratis bezorging BIJ 10.00 EURO",
+       "PromotionBasedLabel": "",
+       "PromotionStartDate": "2026-10-14",
+       "PromotionEndDate": "2026-10-20",
+       "IsFreeDeliveryOffer": true,
+       "IsOfflineSaleOnly": false,
+       "MaxOrderLimit": 199,
+       "CitrusAdId": "",
+       "IsLocalItem": false
+      },
+      "BadgeQuantity": 0
+     }
+    ]
+   }
+  }
+ },
+ {
+  "versionInfo": {
+   "hasModuleVersionChanged": false,
+   "hasApiVersionChanged": false
+  },
+  "data": {
+   "TotalPages": 2,
+   "TotalNumberItems": 10,
+   "ProductList": {
+    "List": [
+     {
+      "PLP_Str": {
+       "SKU": "308208",
+       "Brand": "PLUS",
+       "Name": "PLUS Snoepkomkommer",
+       "Product_Subtitle": "Per 230 g",
+       "Slug": "plus-snoepkomkommer-bakje-230-g-308208",
+       "ImageURL": "https://images.ctfassets.net/s0lodsnpsezb/308208_M/60d79b97bc139aecee4a96a5fbce1785/308208.png",
+       "ImageLabel": "",
+       "MetaTitle": "PLUS Snoepkomkommer 230 Gram - PLUS",
+       "MetaDescription": "Bestel PLUS Snoepkomkommer 230 Gram online op plus.nl. Laat je boodschappen makkelijk en snel thuis bezorgen of haal het op bij jouw PLUS.",
+       "OriginalPrice": "2.29",
+       "NewPrice": "0.0",
+       "Quantity": 0,
+       "LineItemId": "",
+       "IsProductOverMajorityAge": false,
+       "Logos": {
+        "PLPInUpperLeft": {
+         "List": [],
+         "EmptyListItem": {
+          "Name": "",
+          "LongDescription": "",
+          "URL": "",
+          "Order": 0
+         }
+        },
+        "PLPAboveTitle": {
+         "List": [],
+         "EmptyListItem": {
+          "Name": "",
+          "LongDescription": "",
+          "URL": "",
+          "Order": 0
+         }
+        },
+        "PLPBehindSizeUnit": {
+         "List": [],
+         "EmptyListItem": {
+          "Name": "",
+          "LongDescription": "",
+          "URL": "",
+          "Order": 0
+         }
+        }
+       },
+       "EAN": "",
+       "Packging": "Bakje",
+       "Categories": {
+        "List": [
+         {
+          "Name": "Aardappelen, groente, fruit"
+         },
+         {
+          "Name": "Groente"
+         },
+         {
+          "Name": "Tomaten, paprika, komkommer, mais"
+         }
+        ]
+       },
+       "IsAvailable": true,
+       "PromotionLabel": "3 VOOR 5.00",
+       "PromotionBasedLabel": "",
+       "PromotionStartDate": "2026-09-30",
+       "PromotionEndDate": "2026-11-24",
+       "IsFreeDeliveryOffer": false,
+       "IsOfflineSaleOnly": false,
+       "MaxOrderLimit": 199,
+       "CitrusAdId": "",
+       "IsLocalItem": false
+      },
+      "BadgeQuantity": 0
+     },
+     {
+      "PLP_Str": {
+       "SKU": "992701",
+       "Brand": "PLUS Boerentrots",
+       "Name": "PLUS Boerentrots Speklap zonder zwoerd 8 stuks",
+       "Product_Subtitle": "Per kilo",
+       "Slug": "plus-boerentrots-speklap-zonder-zwoerd-8-stuks-kg-960-g-992701",
+       "ImageURL": "https://images.ctfassets.net/s0lodsnpsezb/992701_M/e358ab1a3da1203efafb0bbc375f6aad/992701.png",
+       "ImageLabel": "",
+       "MetaTitle": "PLUS Boerentrots Speklap zonder zwoerd 8 stuks 960 Gram - PLUS",
+       "MetaDescription": "Bestel PLUS Boerentrots Speklap zonder zwoerd 8 stuks 960 Gram online op plus.nl. Laat je boodschappen makkelijk en snel thuis bezorgen of haal het op bij jouw PLUS.",
+       "OriginalPrice": "12.54",
+       "NewPrice": "0.0",
+       "Quantity": 0,
+       "LineItemId": "",
+       "IsProductOverMajorityAge": false,
+       "Logos": {
+        "PLPInUpperLeft": {
+         "List": [
+          {
+           "Name": "Laagblijver",
+           "LongDescription": "Laagblijver",
+           "URL": "//images.ctfassets.net/s0lodsnpsezb/L_QUxHX0xBQUdCTElKVkVS_M/39a96d0793059539802b2a576b581b0b/L_ALG_LAAGBLIJVER.png",
+           "Order": 129
+          }
+         ]
+        },
+        "PLPAboveTitle": {
+         "List": [],
+         "EmptyListItem": {
+          "Name": "",
+          "LongDescription": "",
+          "URL": "",
+          "Order": 0
+         }
+        },
+        "PLPBehindSizeUnit": {
+         "List": [],
+         "EmptyListItem": {
+          "Name": "",
+          "LongDescription": "",
+          "URL": "",
+          "Order": 0
+         }
+        }
+       },
+       "EAN": "",
+       "Packging": "Kg",
+       "Categories": {
+        "List": [
+         {
+          "Name": "Vlees, kip, vis, vega"
+         },
+         {
+          "Name": "Rundvlees, varkensvlees"
+         },
+         {
+          "Name": "Varkensvlees"
+         }
+        ]
+       },
+       "IsAvailable": true,
+       "PromotionLabel": "",
+       "PromotionBasedLabel": "",
+       "PromotionStartDate": "1900-01-01",
+       "PromotionEndDate": "1900-01-01",
+       "IsFreeDeliveryOffer": false,
+       "IsOfflineSaleOnly": false,
+       "MaxOrderLimit": 199,
+       "CitrusAdId": "",
+       "IsLocalItem": false
+      },
+      "BadgeQuantity": 0
+     },
+     {
+      "PLP_Str": {
+       "SKU": "944056",
+       "Brand": "PLUS",
+       "Name": "PLUS Vissticks",
+       "Product_Subtitle": "Per 15 st",
+       "Slug": "plus-vissticks-doos-15-st-944056",
+       "ImageURL": "https://images.ctfassets.net/s0lodsnpsezb/944056_M/303a5a39656191a8bac12bd04dc95bda/944056.png",
+       "ImageLabel": "",
+       "MetaTitle": "PLUS Vissticks 15 Stuks - PLUS",
+       "MetaDescription": "Bestel PLUS Vissticks 15 Stuks online op plus.nl. Laat je boodschappen makkelijk en snel thuis bezorgen of haal het op bij jouw PLUS.",
+       "OriginalPrice": "2.49",
+       "NewPrice": "0",
+       "Quantity": 0,
+       "LineItemId": "",
+       "IsProductOverMajorityAge": false,
+       "Logos": {
+        "PLPInUpperLeft": {
+         "List": [
+          {
+           "Name": "Laagblijver",
+           "LongDescription": "Laagblijver",
+           "URL": "//images.ctfassets.net/s0lodsnpsezb/L_QUxHX0xBQUdCTElKVkVS_M/39a96d0793059539802b2a576b581b0b/L_ALG_LAAGBLIJVER.png",
+           "Order": 129
+          }
+         ]
+        },
+        "PLPAboveTitle": {
+         "List": [],
+         "EmptyListItem": {
+          "Name": "",
+          "LongDescription": "",
+          "URL": "",
+          "Order": 0
+         }
+        },
+        "PLPBehindSizeUnit": {
+         "List": [],
+         "EmptyListItem": {
+          "Name": "",
+          "LongDescription": "",
+          "URL": "",
+          "Order": 0
+         }
+        }
+       },
+       "EAN": "",
+       "Packging": "Doos",
+       "Categories": {
+        "List": [
+         {
+          "Name": "Vlees, kip, vis, vega"
+         },
+         {
+          "Name": "Vis"
+         },
+         {
+          "Name": "Koolvis"
+         }
+        ]
+       },
+       "IsAvailable": true,
+       "PromotionLabel": "",
+       "PromotionBasedLabel": "",
+       "PromotionStartDate": "1900-01-01",
+       "PromotionEndDate": "1900-01-01",
+       "IsFreeDeliveryOffer": false,
+       "IsOfflineSaleOnly": false,
+       "MaxOrderLimit": 199,
+       "CitrusAdId": "",
+       "IsLocalItem": false
+      },
+      "BadgeQuantity": 0
+     },
+     {
+      "PLP_Str": {
+       "SKU": "593861",
+       "Brand": "Neutraal",
+       "Name": "Neutraal Mouline/trekking sok 3 pack",
+       "Product_Subtitle": "",
+       "Slug": "neutraal-mouline-trekking-sok-3-pack-wikkel-3-593861",
+       "ImageURL": "",
+       "ImageLabel": "",
+       "MetaTitle": "Neutraal Mouline/trekking sok 3 pack 3  - PLUS",
+       "MetaDescription": "Bestel Neutraal Mouline/trekking sok 3 pack 3  online op plus.nl. Laat je boodschappen makkelijk en snel thuis bezorgen of haal het op bij jouw PLUS.",
+       "OriginalPrice": "7.99",
+       "NewPrice": "0",
+       "Quantity": 0,
+       "LineItemId": "",
+       "IsProductOverMajorityAge": false,
+       "Logos": {
+        "PLPInUpperLeft": {
+         "List": [],
+         "EmptyListItem": {
+          "Name": "",
+          "LongDescription": "",
+          "URL": "",
+          "Order": 0
+         }
+        },
+        "PLPAboveTitle": {
+         "List": [],
+         "EmptyListItem": {
+          "Name": "",
+          "LongDescription": "",
+          "URL": "",
+          "Order": 0
+         }
+        },
+        "PLPBehindSizeUnit": {
+         "List": [],
+         "EmptyListItem": {
+          "Name": "",
+          "LongDescription": "",
+          "URL": "",
+          "Order": 0
+         }
+        }
+       },
+       "EAN": "",
+       "Packging": "Wikkel",
+       "Categories": {
+        "List": [
+         {
+          "Name": "Wonen, bloemen, service"
+         },
+         {
+          "Name": "Kleding, textiel"
+         },
+         {
+          "Name": "Sokken"
+         }
+        ]
+       },
+       "IsAvailable": true,
+       "PromotionLabel": "",
+       "PromotionBasedLabel": "",
+       "PromotionStartDate": "1900-01-01",
+       "PromotionEndDate": "1900-01-01",
+       "IsFreeDeliveryOffer": false,
+       "IsOfflineSaleOnly": false,
+       "MaxOrderLimit": 199,
+       "CitrusAdId": "",
+       "IsLocalItem": false
+      },
+      "BadgeQuantity": 0
+     },
+     {
+      "PLP_Str": {
+       "SKU": "180944",
+       "Brand": "Uit de keuken van",
+       "Name": "Uit de keuken van PLUS Verse Loempia",
+       "Product_Subtitle": "Per 400 g",
+       "Slug": "uit-de-keuken-van-plus-verse-loempia-schaal-400-g-180944",
+       "ImageURL": "https://images.ctfassets.net/s0lodsnpsezb/180944_M/395a284ee9eb0844c2df5fff45757717/180944.png",
+       "ImageLabel": "",
+       "MetaTitle": "Uit de keuken van PLUS Verse Loempia 400 Gram - PLUS",
+       "MetaDescription": "Bestel Uit de keuken van PLUS Verse Loempia 400 Gram online op plus.nl. Laat je boodschappen makkelijk en snel thuis bezorgen of haal het op bij jouw PLUS.",
+       "OriginalPrice": "4.29",
+       "NewPrice": "0",
+       "Quantity": 0,
+       "LineItemId": "",
+       "IsProductOverMajorityAge": false,
+       "Logos": {
+        "PLPInUpperLeft": {
+         "List": [],
+         "EmptyListItem": {
+          "Name": "",
+          "LongDescription": "",
+          "URL": "",
+          "Order": 0
+         }
+        },
+        "PLPAboveTitle": {
+         "List": [],
+         "EmptyListItem": {
+          "Name": "",
+          "LongDescription": "",
+          "URL": "",
+          "Order": 0
+         }
+        },
+        "PLPBehindSizeUnit": {
+         "List": [],
+         "EmptyListItem": {
+          "Name": "",
+          "LongDescription": "",
+          "URL": "",
+          "Order": 0
+         }
+        }
+       },
+       "EAN": "",
+       "Packging": "Schaal",
+       "Categories": {
+        "List": [
+         {
+          "Name": "Verse kant-en-klaarmaaltijden"
+         },
+         {
+          "Name": "Oosterse maaltijden"
+         }
+        ]
+       },
+       "IsAvailable": true,
+       "PromotionLabel": "",
+       "PromotionBasedLabel": "",
+       "PromotionStartDate": "1900-01-01",
+       "PromotionEndDate": "1900-01-01",
+       "IsFreeDeliveryOffer": false,
+       "IsOfflineSaleOnly": false,
+       "MaxOrderLimit": 199,
+       "CitrusAdId": "",
+       "IsLocalItem": false
+      },
+      "BadgeQuantity": 0
+     }
+    ]
+   }
+  }
+ }
+]

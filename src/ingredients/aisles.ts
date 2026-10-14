@@ -1,8 +1,8 @@
 /**
  * Which part of the shop a Chain's category is, whatever the Chain calls it.
  *
- * Dirk, Jumbo and Vomar each have their own category tree, a few hundred
- * leaves between them. An Ingredient says which aisles it is sold in, rather than
+ * Dirk, Jumbo, Vomar and Plus each have their own category tree, a few
+ * hundred leaves between them. An Ingredient says which aisles it is sold in, rather than
  * listing every Chain's categories, and the aisle also gives a Product its
  * form: carrots in Groente are fresh, in Groenteconserven jarred, and in
  * Babyvoeding not carrots at all. That is how "wortelen" stops matching Hak
@@ -36,6 +36,8 @@ const RULES: [RegExp, Aisle][] = [
   [/^vers > vleeswaren & salades > vegetarische/i, "vega"],
   [/^vers > vleeswaren & salades > (vleeswaren|filet americain|paté)$/i, "deli"],
   [/^vers > grill/i, "readymeal"],
+  // Plus files soup among sauces and conserves; a soup is a ready meal.
+  [/^soepen, conserven, sauzen, smaakmakers > soep\b/i, "readymeal"],
   // Soup, but not soup meat ("Soepballetjes en soepvlees"); gourmetten is raw
   // meat for the table grill.
   [/maaltijd|verspakket|> (verse )?soep(en)?$|houdbare soepen|quiche|pannenkoek|sushi|sandwich|pizza|ovenschotel|salades|slaatjes|borrelhapjes/i, "readymeal"],
@@ -44,16 +46,16 @@ const RULES: [RegExp, Aisle][] = [
   [/^aardappelen, groente|^vers > (aardappelen|groente|fruit|verse kruiden)/i, "produce"],
   [/vegetarisch|vleesvervanger|plantaardig/i, "vega"],
   // Not /kaas/: Dirk's dairy department is called "Zuivel & kaas".
-  [/kaas gesneden|kaas stuk|overige kazen|kaas voor|^vers > kaas/i, "cheese"],
-  [/^vleeswaren|vleeswaren$|filet americain|^vers > verse tapas/i, "deli"],
+  [/kaas gesneden|kaas stuk|overige kazen|kaas voor|^vers > kaas|^kaas, vleeswaren, tapas > kaas/i, "cheese"],
+  [/^vleeswaren|vleeswaren$|filet americain|^vers > verse tapas|^kaas, vleeswaren, tapas > (vleeswaren|tapas)/i, "deli"],
   [/^vers > vlees > sauzen/i, "pantry"],
   [/^vlees|^vers > (vlees|kip & kalkoen)/i, "meat"],
   [/^zuivel|eieren|houdbare zuivel|koffiemelk/i, "dairy"],
   [/broodbeleg/i, "pantry"],
   [/^brood|gebak|afbakbrood|^vers > (brood|banket|verse crackers)/i, "bakery"],
   [/^dranken|^frisdrank|^bier en wijn|^bier, wijn|^koffie en thee/i, "drinks"],
-  [/^snacks|^koek, snoep|^voorraadkast > (chips|chocolade|tussendoortjes)/i, "snacks"],
-  [/^vers > (ontbijt|verse noten)|^voorraadkast|^wereldkeukens|^ontbijt|^conserven, soepen|bakproducten/i, "pantry"],
+  [/^snacks|^koek, snoep|^voorraadkast > (chips|chocolade|tussendoortjes)|^snoep, koek/i, "snacks"],
+  [/^vers > (ontbijt|verse noten)|^voorraadkast|^soepen, conserven, sauzen|^pasta, rijst|^bewuste voeding|^wereldkeukens|^ontbijt|^conserven, soepen|bakproducten/i, "pantry"],
 ];
 
 /** The aisle of one category path, or null when no rule claims it. */

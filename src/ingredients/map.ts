@@ -30,6 +30,9 @@ const OWN_BRAND: Readonly<Record<string, RegExp>> = {
   // Vomar's own label and the Superunie lines it sells as its own: the
   // cheapest of each kind on its shelves is G'woon, not "Vomar".
   vomar: /^(vomar|g'woon|melkan|daily chef)\b|^bio\+/i,
+  // PLUS and its own lines (PLUS Boerentrots, Biologisch PLUS, "Uit de
+  // keuken van PLUS"), and the Superunie lines it shares with Vomar.
+  plus: /^(biologisch )?plus\b|^uit de keuken van\b|^melkan\b|^bio\+/i,
 };
 
 /** Whether a Product is its Chain's own brand, mapped to an Ingredient or not. */

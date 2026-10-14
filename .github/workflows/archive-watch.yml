@@ -42,7 +42,7 @@ jobs:
         run: |
           date=$(date -u +%F)
           status=0
-          for chain in dirk jumbo vomar; do
+          for chain in dirk jumbo plus vomar; do
             if ! aws s3 cp \
                 "s3://${{ secrets.R2_BUCKET }}/$date/$chain/manifest.json" \
                 "manifest-$chain.json" \

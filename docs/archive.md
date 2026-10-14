@@ -227,6 +227,59 @@ answered `[]`; the `discountDeal` flag the page code checks marks everyday low
 prices and was absent from every Product. So Vomar's prices are always Shelf
 Prices.
 
+### Plus — working, verified live, honest agent accepted
+
+Added on 2026-10-14 (#27). The research rated Plus "Low": an OutSystems app
+whose pages arrive as an empty shell, with its old mobile API gone. Watching
+a product page load in headless Chromium found the route. The pages fetch
+their data from OutSystems "screen services", and those answer a plain POST
+from our honest agent, with no browser, cookie or login:
+
+- `POST /screenservices/ECP_Product_CW/Categories/CategoryList_TF/DataActionGetMenuCategories`:
+  the category tree, step `categories`.
+- `POST /screenservices/ECP_Composition_CW/ProductLists/PLP_Content/DataActionGetProductListAndCategoryInfo`
+  with `{CategorySlug, PageNumber}`: 12 Products per page of a top-level
+  category, step `products/<slug>`. Each row has price, **Offer price,
+  Offer wording and dates**, brand, pack and category path.
+
+Every request needs two things from Plus's own pages:
+
+- **`X-CSRFToken`**, OutSystems' fixed token for anonymous visitors. Without
+  it the answer is 403 "Invalid Login".
+- **`versionInfo`**: the module version, and each action's API version. These
+  change whenever Plus deploys, and a stale pair is answered with no data and
+  `hasApiVersionChanged: true`. So each run reads the current ones first. The
+  module version comes from `/moduleservices/moduleinfo`, and each action's
+  from the `callDataAction(...)` in the script that calls it. These are not
+  archived (they are code); every archived request records the versions it
+  sent. A step answered with a version change fails loudly.
+
+A full day is **1,468 requests, about 37 minutes**, and 5.4 MB stored: 17,473
+Products in 18 top-level categories, 17,249 distinct. Prices are national:
+setting a Store number changed no price in any Store sampled; a Store only
+stocks less.
+
+**Access and terms.** `robots.txt` (served from
+`/ECP_Robots_API/rest/robots/index`) disallows only back-office paths.
+Plus's terms for account holders (*Algemene voorwaarden*, 5.1) forbid
+reproducing, publishing or adapting the website's information without
+permission, except for personal household use. That is a general copyright
+clause, not Jumbo's Database Directive one, and we hold no account.
+**Decision, 2026-10-14:** the project owner, shown it, chose to archive Plus.
+
+**No EANs, by decision.** Only the product-detail action carries an EAN, and
+its answer also holds ingredients, nutrients and supplier marketing text, which
+a screen service cannot leave out. It is not archived (ADR-0003). Plus joins
+Exact Products only as likely the same, as Dirk does. The list and menu
+answers name Plus-hosted image URLs; they are archived verbatim and never
+fetched or read.
+
+**Plus's own figures can disagree with its wording.** Pears labelled
+"1.69 PER KILO" carry an Offer price of 1.49, on Plus's own product page too.
+Both are stored as sent, and no price is derived from wording (ADR-0002).
+"Gratis bezorging BIJ 10.00 EURO" appears as a promotion on Products and is a
+delivery term, not an Offer; ingest drops it, as for Jumbo.
+
 ### Spar — assessed, not archived
 
 Assessed on 2026-10-14 (#11) and dropped by the owner the same day: Spar is
@@ -325,7 +378,7 @@ GitHub's own runners, until the repository variable `ARCHIVE_RUNNER` says
 otherwise. The repository is private, and GitHub Free gives private
 repositories 2,000 Actions minutes a month. A full day of Dirk and Jumbo bills
 about 100, since each Chain's job is billed separately; Vomar's job adds about
-3 more, mostly setup. So a daily schedule
+3 more, mostly setup, and Plus's about 40. So a daily schedule
 would be blocked around the 20th of each month. Every blocked day is price
 history lost for good (#24).
 

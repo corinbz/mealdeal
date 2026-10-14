@@ -1,6 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createMapper, type MappableProduct } from "../src/ingredients/map.ts";
+import { aisleOf } from "../src/ingredients/aisles.ts";
 import { checkVocabulary } from "../src/ingredients/vocabulary.ts";
 
 /**
@@ -41,6 +42,10 @@ const R: Record<string, Omit<MappableProduct, "name">> = {
   "Goede Vangst Zalmfilet Met Huid 4st": product("vomar", "Goede Vangst", ["Vers > Verse Vis > Verse Vis"]),
   "Mager Rundergehakt": product("vomar", "Vomar", ["Vers > Vlees > Gehakt & Tartaar"]),
   "G'woon Pindakaas": product("vomar", "G'woon", ["Voorraadkast > Broodbeleg > Hartig Broodbeleg"]),
+  "PLUS Achterham": product("plus", "PLUS", ["Kaas, vleeswaren, tapas > Vleeswaren > Ham"]),
+  "PLUS Spaghetti": product("plus", "PLUS", ["Pasta, rijst, internationale keuken > Pasta > Spaghetti, linguine, tagliatelle"]),
+  "PLUS Houdbare Halfvolle Melk": product("plus", "PLUS", ["Zuivel, eieren, boter > Houdbare zuivel > Houdbare melk"]),
+  "Uit de keuken van PLUS Verse Loempia": product("plus", "Uit de keuken van", ["Verse kant-en-klaarmaaltijden > Oosterse maaltijden"]),
 };
 const mapped = (name: string) => map({ name, ...R[name]! });
 const ingredient = (name: string) => mapped(name)?.ingredient ?? null;
@@ -123,4 +128,19 @@ test("knows Vomar's own brands, the Superunie lines included", () => {
   assert.equal(mapped("G'woon Pindakaas")?.huismerk, true);
   assert.equal(mapped("Mager Rundergehakt")?.huismerk, true);
   assert.equal(mapped("Goede Vangst Zalmfilet Met Huid 4st")?.huismerk, false);
+});
+
+test("reads Plus's category tree, and its own brands", () => {
+  assert.deepEqual(
+    [ingredient("PLUS Achterham"), ingredient("PLUS Spaghetti"), ingredient("PLUS Houdbare Halfvolle Melk")],
+    ["ham", "pasta", "melk"],
+  );
+  assert.equal(mapped("PLUS Houdbare Halfvolle Melk")?.variant, "halfvol");
+  // "Kaas, vleeswaren, tapas" holds cheese and sliced meats both; no rule
+  // knew the name before Plus.
+  assert.equal(aisleOf("Kaas, vleeswaren, tapas > Kaas > Voorverpakte kaasplakken"), "cheese");
+  assert.equal(aisleOf("Kaas, vleeswaren, tapas > Vleeswaren > Ham"), "deli");
+  assert.equal(mapped("PLUS Spaghetti")?.huismerk, true);
+  // A ready meal, not an Ingredient; but its brand is Plus's own line.
+  assert.equal(ingredient("Uit de keuken van PLUS Verse Loempia"), null);
 });
