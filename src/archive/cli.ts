@@ -19,12 +19,13 @@ import { createClient, EdgeDenied } from "./http.ts";
 import { createSink } from "./sink.ts";
 import { dirk } from "./chains/dirk.ts";
 import { jumbo } from "./chains/jumbo.ts";
+import { hoogvliet } from "./chains/hoogvliet.ts";
 import { lidl } from "./chains/lidl.ts";
 import { plus } from "./chains/plus.ts";
 import { vomar } from "./chains/vomar.ts";
 import type { Chain } from "./chains/types.ts";
 
-const CHAINS: Record<string, Chain> = { dirk, jumbo, lidl, plus, vomar };
+const CHAINS: Record<string, Chain> = { dirk, hoogvliet, jumbo, lidl, plus, vomar };
 
 /** Dirk prices are per-Store. Store 66 is the one the research verified. */
 const DEFAULT_STORE_IDS = [66];

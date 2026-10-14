@@ -173,6 +173,24 @@ for them (loose fruit, soups, flowers). The catalogue keeps only Lidl's latest
 run, so last week's Offers never linger, and no fall in its count holds back
 a publish: the set changes every week.
 
+**Hoogvliet** (#29) prices nationally and sends EANs, a brand, a pack in
+two fields (`inhoud_ce` "500", `eenheid` "Gram", stored together as "500
+Gram") and its own Unit Price. That Unit Price is on the Shelf Price, so it
+is stored only when no Offer price applies; under one, a Unit Price is
+derived from the pack at the price paid. Where Hoogvliet reduces a Product's
+own price ("per stuk 1,89", "50% korting"), its final price is the Offer
+price; where it does not ("2 voor 6,99", "1 + 1 Gratis") the deal stays in
+the wording (ADR-0002). A Product's Offer and the folder tile its
+`promotion_id` names are one Offer, with the tile's headline; tiles for weeks
+ahead are recorded as upcoming Offers with no Products, and last week's are
+not. Instants come with an offset, or as Amsterdam wall-clock times with
+none. Categories arrive flat, every level of every path; seasonal shelves
+("Feestdagen", "Themashops", "Alles voor de barbecue") and the weekly
+"Aanbiedingen" listing are left out where a Product has a shelf of its own.
+Catch weight 2 marks a Product packed by weight. 8,282 Products on
+2026-10-14, 45 without a Unit Price (rolls and multipacks), 1,087 Offers,
+924 of them in later weeks.
+
 Two things in Vomar's data that look like they help and do not:
 
 - **A measure in a piece-counted name is each piece's size, not the pack's.**

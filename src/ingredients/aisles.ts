@@ -1,7 +1,7 @@
 /**
  * Which part of the shop a Chain's category is, whatever the Chain calls it.
  *
- * Dirk, Jumbo, Vomar, Plus and Lidl each have their own category tree, a few
+ * Dirk, Jumbo, Vomar, Plus, Lidl and Hoogvliet each have their own category tree, a few
  * hundred leaves between them. An Ingredient says which aisles it is sold in, rather than
  * listing every Chain's categories, and the aisle also gives a Product its
  * form: carrots in Groente are fresh, in Groenteconserven jarred, and in
@@ -24,6 +24,18 @@ export type Form = "vers" | "diepvries" | "conserven";
  * ("Aardappelen, groente & fruit > Groenteconserven").
  */
 const RULES: [RegExp, Aisle][] = [
+  // Hoogvliet, first: its meat department is called "Vlees, vis,
+  // vegetarisch", which the vega rule below would claim whole, and its baby
+  // department shares Lidl's name for a non-food one.
+  [/^vlees, vis, vegetarisch > vegetarisch/i, "vega"],
+  [/^vlees, vis, vegetarisch > vis > diepvries/i, "frozen"],
+  [/^vlees, vis, vegetarisch > (kip|rund)/i, "meat"],
+  [/^baby, kind > (babyvoeding|drinken)/i, "baby"],
+  [/^kaas, vleeswaren, tapas > (buitenlandse kaas|geraspte kaas|kook & saladekazen|plakken kaas|smeerkaas|stukken kaas)/i, "cheese"],
+  [/^chips, zoutjes, noten/i, "snacks"],
+  [/^bakkerij > (krentenbollen|roggebrood|thuis afbakken|vers brood)/i, "bakery"],
+  [/^soepen, conserven, sauzen, kruiden > soepen/i, "readymeal"],
+  [/^koffie, thee > (koffie|thee)$|^koffie, thee > (koffie|thee) >/i, "drinks"],
   // Lidl, first: its food sits under one department ("Eten en dichtbij
   // voedsel"), and the general rules below would read "Kaas, zuivelproducten
   // & eieren > Kaas" as eggs.

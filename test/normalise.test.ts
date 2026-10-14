@@ -23,6 +23,9 @@ test("parses the plain metric forms", () => {
   assert.deepEqual(parsePackSize("1 kg"), { quantity: 1, unit: "kg" });
   assert.deepEqual(parsePackSize("2 liter"), { quantity: 2, unit: "l" });
   assert.deepEqual(parsePackSize("300ml"), { quantity: 0.3, unit: "l" });
+  // Hoogvliet writes its units out.
+  assert.deepEqual(parsePackSize("1500 Milliliter"), { quantity: 1.5, unit: "l" });
+  assert.deepEqual(parsePackSize("33 Centiliter"), { quantity: 0.33, unit: "l" });
 });
 
 test("reads Dutch decimal commas", () => {
