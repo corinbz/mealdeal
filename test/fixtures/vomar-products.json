@@ -1,0 +1,539 @@
+[
+ {
+  "products": [
+   {
+    "id": "8454168f-a9c4-4fbd-ac47-35511be2e465",
+    "articleNumber": 738859,
+    "description": "Voordeel Aardappelen",
+    "contents": "5000",
+    "unit": "gram",
+    "price": 1.89,
+    "inWebshop": true,
+    "departmentWebShopNumber": 50,
+    "mainGroupWebShopNumber": 500,
+    "subGroupWebShopNumber": 10,
+    "pieceWeight": 0,
+    "primaryEan": "8717472020932",
+    "brand": null,
+    "additionalEans": [
+     "8716401998038",
+     "8716447500455",
+     "8710251013019",
+     "8710251015020",
+     "8710251224033",
+     "8710251905024",
+     "8710408746500",
+     "8718989035570",
+     "8718989035211",
+     "8718989034795"
+    ],
+    "labels": [],
+    "images": [
+     {
+      "fileName": "product-images/c8aff0fd-8859-42e4-9bea-e83c6feac598.png",
+      "imageType": "PackShot"
+     },
+     {
+      "fileName": "product-images/b308fdb2-3050-4b74-b607-000172889a79.png",
+      "imageType": "PackShot"
+     },
+     {
+      "fileName": "product-images/f67ab8b1-67a1-4013-bf2f-72fa92925a59.png",
+      "imageType": "PackShot"
+     }
+    ]
+   }
+  ],
+  "totalCount": 1,
+  "page": 1,
+  "pageSize": 1000,
+  "totalPages": 1
+ },
+ {
+  "products": [
+   {
+    "id": "9f55ccba-c805-4542-8886-e015248bbe58",
+    "articleNumber": 111726,
+    "description": "Elstar Appels Los",
+    "contents": "1000",
+    "unit": "gram",
+    "price": 1.99,
+    "inWebshop": true,
+    "departmentWebShopNumber": 50,
+    "mainGroupWebShopNumber": 503,
+    "subGroupWebShopNumber": 10,
+    "pieceWeight": 2,
+    "primaryEan": "2221230000000",
+    "brand": null,
+    "additionalEans": [
+     "5039023005438",
+     "4123",
+     "4121",
+     "2241230000000",
+     "2241210000000",
+     "2123"
+    ],
+    "labels": [],
+    "images": [
+     {
+      "fileName": "product-images/f474566f-fcac-4d2d-9e60-0734ed647605.png",
+      "imageType": "PackShot"
+     },
+     {
+      "fileName": "product-images/c8bd6481-7bbc-4b2d-b31d-aaeb997c2826.png",
+      "imageType": "PackShot"
+     },
+     {
+      "fileName": "product-images/2e7c6102-7d39-4134-8532-93c66d8712ef.png",
+      "imageType": "PackShot"
+     },
+     {
+      "fileName": "product-images/f12102a6-94b9-4e62-a9e3-e73f83734966.png",
+      "imageType": "PackShot"
+     },
+     {
+      "fileName": "product-images/56ba3b45-2142-41f6-ae59-308084f74f81.png",
+      "imageType": "PackShot"
+     },
+     {
+      "fileName": "product-images/4dc4e2e2-f2d7-4ea0-b96c-0a699d261e92.png",
+      "imageType": "PackShot"
+     },
+     {
+      "fileName": "product-images/33b8269f-df40-4e3a-9daa-4ec7fc6b5409.png",
+      "imageType": "PackShot"
+     },
+     {
+      "fileName": "product-images/45f9d402-e153-4a92-b47b-29fe1ceee669.png",
+      "imageType": "PackShot"
+     },
+     {
+      "fileName": "product-images/30d7d38a-cf67-4844-b6c7-d58c39e442ae.png",
+      "imageType": "PackShot"
+     }
+    ]
+   }
+  ],
+  "totalCount": 1,
+  "page": 1,
+  "pageSize": 1000,
+  "totalPages": 1
+ },
+ {
+  "products": [
+   {
+    "id": "762ceedb-3c61-496c-886b-fa7c0488d1ea",
+    "articleNumber": 90123,
+    "description": "Noordwoudse Belegen Stuk",
+    "contents": "500",
+    "unit": "gram",
+    "price": 9.69,
+    "inWebshop": true,
+    "departmentWebShopNumber": 50,
+    "mainGroupWebShopNumber": 506,
+    "subGroupWebShopNumber": 13,
+    "pieceWeight": 1,
+    "primaryEan": "2306423000000",
+    "brand": "Vomar",
+    "additionalEans": [
+     "2386950000000",
+     "2383727000000"
+    ],
+    "labels": [],
+    "images": [
+     {
+      "fileName": "product-images/18ff0b09-09c8-4208-bfa3-026ec2bbe0ca.png",
+      "imageType": "PackShot"
+     },
+     {
+      "fileName": "product-images/49c68842-73be-4e6b-9da5-16eda7f01228.png",
+      "imageType": "PackShot"
+     }
+    ]
+   }
+  ],
+  "totalCount": 1,
+  "page": 1,
+  "pageSize": 1000,
+  "totalPages": 1
+ },
+ {
+  "products": [
+   {
+    "id": "9f463bd6-0749-4157-825d-2f293d6351ea",
+    "articleNumber": 725803,
+    "description": "Komkommer",
+    "contents": "per",
+    "unit": "stuk",
+    "price": 0.67,
+    "inWebshop": true,
+    "departmentWebShopNumber": 50,
+    "mainGroupWebShopNumber": 505,
+    "subGroupWebShopNumber": 26,
+    "pieceWeight": 0,
+    "primaryEan": "8714531604003",
+    "brand": null,
+    "additionalEans": [
+     "8717249241379",
+     "8717875905102",
+     "8717249242703",
+     "8716617000013",
+     "8436557067586",
+     "8436001272023",
+     "8426723110017",
+     "8435320627040",
+     "761",
+     "8436000259339",
+     "2223880000000",
+     "8710147000093",
+     "8714978009843",
+     "8712785000350"
+    ],
+    "labels": [],
+    "images": [
+     {
+      "fileName": "product-images/237aae60-df1d-4c19-8712-474a9f9839d3.png",
+      "imageType": "PackShot"
+     },
+     {
+      "fileName": "product-images/0fd08211-468e-4068-8111-334ad24672bc.png",
+      "imageType": "PackShot"
+     },
+     {
+      "fileName": "product-images/306b3e6e-99e7-417b-a1c5-1129ea19fb24.png",
+      "imageType": "PackShot"
+     },
+     {
+      "fileName": "product-images/577c0812-29a4-48b7-99ea-55f0a46436e9.png",
+      "imageType": "PackShot"
+     },
+     {
+      "fileName": "product-images/130574e8-cf54-4918-8941-af5b97ece6e0.png",
+      "imageType": "PackShot"
+     },
+     {
+      "fileName": "product-images/54d34b03-ff12-4857-b811-e36896c1ffc1.png",
+      "imageType": "PackShot"
+     },
+     {
+      "fileName": "product-images/99a03990-6309-4c54-aebe-abd0c8b48897.png",
+      "imageType": "PackShot"
+     },
+     {
+      "fileName": "product-images/6f4843cb-978c-49fd-b7be-69ba4ff73f57.png",
+      "imageType": "PackShot"
+     },
+     {
+      "fileName": "product-images/aceeba87-a556-49de-94cc-bf883b17a400.png",
+      "imageType": "PackShot"
+     },
+     {
+      "fileName": "product-images/a0dd419b-a303-4cfc-aff9-7e7c8dc14111.png",
+      "imageType": "PackShot"
+     },
+     {
+      "fileName": "product-images/82e47738-4ea2-4215-9077-95e1331b5db8.png",
+      "imageType": "PackShot"
+     },
+     {
+      "fileName": "product-images/6268a954-6a58-4b58-a76c-c6b4b880361b.png",
+      "imageType": "PackShot"
+     },
+     {
+      "fileName": "product-images/8c0ce120-787c-4f93-8d84-80cb90fa1f32.png",
+      "imageType": "PackShot"
+     },
+     {
+      "fileName": "product-images/90ecc75a-8921-4caf-b481-34e1ca5abd70.png",
+      "imageType": "PackShot"
+     },
+     {
+      "fileName": "product-images/6c257f10-6f77-464a-91f4-0b85e10c024e.png",
+      "imageType": "PackShot"
+     },
+     {
+      "fileName": "product-images/b092f5a2-922e-4cbc-a426-1c67bc92a277.png",
+      "imageType": "PackShot"
+     },
+     {
+      "fileName": "product-images/916613db-0d3d-41f8-a408-284665bdb510.png",
+      "imageType": "PackShot"
+     },
+     {
+      "fileName": "product-images/fb855644-13e6-43fc-8998-10347646105f.png",
+      "imageType": "PackShot"
+     }
+    ]
+   }
+  ],
+  "totalCount": 1,
+  "page": 1,
+  "pageSize": 1000,
+  "totalPages": 1
+ },
+ {
+  "products": [
+   {
+    "id": "367c488c-35e0-4ada-be05-ebc4ffee3fd4",
+    "articleNumber": 135204,
+    "description": "Bio+ Eieren",
+    "contents": "6",
+    "unit": "stuks",
+    "price": 2.29,
+    "inWebshop": true,
+    "departmentWebShopNumber": 50,
+    "mainGroupWebShopNumber": 521,
+    "subGroupWebShopNumber": 11,
+    "pieceWeight": 0,
+    "primaryEan": "8710624346621",
+    "brand": "Bio+",
+    "additionalEans": [
+     "8710624288112"
+    ],
+    "labels": [
+     "BIO"
+    ],
+    "images": [
+     {
+      "fileName": "product-images/8cbc24dc-07f2-471f-b07e-e3bd17ffd7d4.png",
+      "imageType": "PackShot"
+     }
+    ]
+   },
+   {
+    "id": "c33afe9c-89aa-4bd5-b78a-93363017e8c1",
+    "articleNumber": 713600,
+    "description": "Melkan Melk Halfvol",
+    "contents": "1000",
+    "unit": "ml",
+    "price": 0.75,
+    "inWebshop": true,
+    "departmentWebShopNumber": 50,
+    "mainGroupWebShopNumber": 521,
+    "subGroupWebShopNumber": 20,
+    "pieceWeight": 0,
+    "primaryEan": "8710624283902",
+    "brand": "Melkan",
+    "additionalEans": [
+     "8710624204624",
+     "8713300020723",
+     "8710624290016",
+     "8710624064709"
+    ],
+    "labels": [],
+    "images": [
+     {
+      "fileName": "product-images/d75be520-17ae-408e-8ad4-7d55136ac1b3.png",
+      "imageType": "PackShot"
+     },
+     {
+      "fileName": "product-images/b1dcc144-33f1-4009-a3ee-b51cdb9a11be.png",
+      "imageType": "PackShot"
+     }
+    ]
+   }
+  ],
+  "totalCount": 2,
+  "page": 1,
+  "pageSize": 1000,
+  "totalPages": 1
+ },
+ {
+  "products": [
+   {
+    "id": "be8f8371-3bf3-4b81-8cfd-f44c91f81a22",
+    "articleNumber": 122576,
+    "description": "G'woon Pindakaas",
+    "contents": "350",
+    "unit": "gram",
+    "price": 0.67,
+    "inWebshop": true,
+    "departmentWebShopNumber": 55,
+    "mainGroupWebShopNumber": 552,
+    "subGroupWebShopNumber": 11,
+    "pieceWeight": 0,
+    "primaryEan": "8710624219048",
+    "brand": "G'woon",
+    "additionalEans": [],
+    "labels": [],
+    "images": [
+     {
+      "fileName": "product-images/bdebe450-e5fe-4fff-b7fa-b501a9c654cd.png",
+      "imageType": "PackShot"
+     },
+     {
+      "fileName": "product-images/0827664f-5418-4408-b140-54403af08a6f.png",
+      "imageType": "PackShot"
+     }
+    ]
+   },
+   {
+    "id": "12bcb689-7306-4838-9689-130931db3547",
+    "articleNumber": 108293,
+    "description": "Calve Pindakaas",
+    "contents": "350",
+    "unit": "gram",
+    "price": 2.99,
+    "inWebshop": true,
+    "departmentWebShopNumber": 55,
+    "mainGroupWebShopNumber": 552,
+    "subGroupWebShopNumber": 11,
+    "pieceWeight": 0,
+    "primaryEan": "8711200428953",
+    "brand": "Calve",
+    "additionalEans": [
+     "8722700462958",
+     "8720182127426"
+    ],
+    "labels": [],
+    "images": [
+     {
+      "fileName": "product-images/e210e3df-9bfa-4f90-993a-690199e87f32.png",
+      "imageType": "PackShot"
+     }
+    ]
+   }
+  ],
+  "totalCount": 2,
+  "page": 1,
+  "pageSize": 1000,
+  "totalPages": 1
+ },
+ {
+  "products": [
+   {
+    "id": "1e33019c-a2df-4d49-87d2-c7c2ebca0f88",
+    "articleNumber": 143386,
+    "description": "Green Soap Navul Sinas 500ml",
+    "contents": null,
+    "unit": null,
+    "price": 5.35,
+    "inWebshop": true,
+    "departmentWebShopNumber": 25,
+    "mainGroupWebShopNumber": 250,
+    "subGroupWebShopNumber": 12,
+    "pieceWeight": 0,
+    "primaryEan": "8719325558838",
+    "brand": "Green Soap",
+    "additionalEans": [],
+    "labels": [],
+    "images": [
+     {
+      "fileName": "product-images/ebf9e301-708a-4000-8f00-a68f529a94b0.png",
+      "imageType": "PackShot"
+     },
+     {
+      "fileName": "product-images/5be4f333-5747-4904-9982-79e9c4b2d2b6.png",
+      "imageType": "PackShot"
+     }
+    ]
+   }
+  ],
+  "totalCount": 1,
+  "page": 1,
+  "pageSize": 1000,
+  "totalPages": 1
+ },
+ {
+  "products": [
+   {
+    "id": "4e69121c-aac9-4ded-a546-c67efe68ae5b",
+    "articleNumber": 135406,
+    "description": "G'woon Huisvuilzak 60l",
+    "contents": "20",
+    "unit": "stuks",
+    "price": 1.49,
+    "inWebshop": true,
+    "departmentWebShopNumber": 40,
+    "mainGroupWebShopNumber": 410,
+    "subGroupWebShopNumber": 11,
+    "pieceWeight": 0,
+    "primaryEan": "8718989050771",
+    "brand": "G'woon",
+    "additionalEans": [
+     "8718989003876",
+     "8710624273231"
+    ],
+    "labels": [],
+    "images": [
+     {
+      "fileName": "product-images/c823d274-616c-456e-8db5-3f87546a7b83.png",
+      "imageType": "PackShot"
+     },
+     {
+      "fileName": "product-images/3c56b276-3bf3-40ab-bb1f-791569c69b55.png",
+      "imageType": "PackShot"
+     }
+    ]
+   }
+  ],
+  "totalCount": 1,
+  "page": 1,
+  "pageSize": 1000,
+  "totalPages": 1
+ },
+ {
+  "products": [
+   {
+    "id": "44debdab-3ff8-4179-832d-205986408b71",
+    "articleNumber": 805335,
+    "description": "Dr Oetker Ristorante Mozzarella",
+    "contents": "355GR",
+    "unit": "gram",
+    "price": 2.69,
+    "inWebshop": true,
+    "departmentWebShopNumber": 20,
+    "mainGroupWebShopNumber": 204,
+    "subGroupWebShopNumber": 10,
+    "pieceWeight": 0,
+    "primaryEan": "4001724039112",
+    "brand": "Ristorante",
+    "additionalEans": [
+     "4001724819806"
+    ],
+    "labels": [],
+    "images": [
+     {
+      "fileName": "product-images/e7f39332-42d1-4234-b0a4-c79170b277b8.png",
+      "imageType": "Packshot"
+     }
+    ]
+   }
+  ],
+  "totalCount": 1,
+  "page": 1,
+  "pageSize": 1000,
+  "totalPages": 1
+ },
+ {
+  "products": [
+   {
+    "id": "7618e948-28d9-4bcf-8385-5990bf2492c3",
+    "articleNumber": 306880,
+    "description": "Smint Xl Duo Aardbei Duo Aardbei Xl",
+    "contents": "2",
+    "unit": null,
+    "price": 4.69,
+    "inWebshop": true,
+    "departmentWebShopNumber": 55,
+    "mainGroupWebShopNumber": 554,
+    "subGroupWebShopNumber": 13,
+    "pieceWeight": 0,
+    "primaryEan": "8723400794486",
+    "brand": "Smint",
+    "additionalEans": [],
+    "labels": [],
+    "images": [
+     {
+      "fileName": "product-images/3f408c2e-124b-4c88-9827-832c72ec2c16.png",
+      "imageType": "PackShot"
+     }
+    ]
+   }
+  ],
+  "totalCount": 1,
+  "page": 1,
+  "pageSize": 1000,
+  "totalPages": 1
+ }
+]

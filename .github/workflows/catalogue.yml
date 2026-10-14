@@ -46,7 +46,7 @@ jobs:
 
     env:
       # Must match the Chains the archive workflow sweeps on its schedule.
-      CHAINS: dirk jumbo
+      CHAINS: dirk jumbo vomar
       DATABASE_URL: postgres://mealdeal:mealdeal@localhost:5432/mealdeal
       R2: s3://${{ secrets.R2_BUCKET }}
       AWS_ENDPOINT_URL: https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com

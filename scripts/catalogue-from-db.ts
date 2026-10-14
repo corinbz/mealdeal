@@ -102,13 +102,14 @@ const db = connect();
 
 const { rows: chains } = await db.query<{
   id: string; name: string; kind: string; archive_date: string | null; products_recorded: number | null;
+  offers_recorded: number | null;
 }>(
   // archive_date as text: read as a Date, it is local midnight in Amsterdam,
   // which toISOString() reports as the previous day.
-  `SELECT c.id, c.name, c.kind, r.archive_date::text AS archive_date, r.products_recorded
+  `SELECT c.id, c.name, c.kind, r.archive_date::text AS archive_date, r.products_recorded, r.offers_recorded
      FROM chain c
      LEFT JOIN LATERAL (
-       SELECT archive_date, products_recorded FROM ingest_run
+       SELECT archive_date, products_recorded, offers_recorded FROM ingest_run
         WHERE chain_id = c.id AND outcome = 'complete'
         ORDER BY id DESC LIMIT 1
      ) r ON true
@@ -215,6 +216,12 @@ const data = {
     store: c.id === "dirk" ? "Store 66" : null,
     observedAt: c.archive_date,
     catalogueSize: Number(c.products_recorded ?? 0),
+    /**
+     * False for a Chain that published no Offers on the day, as Vomar never
+     * does in a readable form: its prices there are Shelf Prices, and the
+     * page says so rather than letting it look as if nothing were reduced.
+     */
+    offers: Number(c.offers_recorded ?? 0) > 0,
   })),
   columns: [...COLUMNS],
   /**

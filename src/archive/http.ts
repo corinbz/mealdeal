@@ -77,9 +77,10 @@ const sleep = (ms: number) =>
   new Promise<void>((resolve) => setTimeout(resolve, ms));
 
 /**
- * A GraphQL client that makes one request at a time, paced.
+ * A client that makes one request at a time, paced: GraphQL POSTs for Dirk
+ * and Jumbo, plain GETs for Vomar.
  *
- * Both Chains' endpoints are unauthenticated and neither asked us for a key,
+ * Every Chain's endpoint is unauthenticated and none asked us for a key,
  * which is precisely why the traffic should stay modest and attributable: the
  * research found Dirk had left schema introspection enabled, i.e. a gateway
  * that was not hardened for public exposure and could be hardened at any
@@ -106,7 +107,14 @@ export function createClient(options: ClientOptions) {
     const body = JSON.stringify(
       variables === undefined ? { query } : { query, variables },
     );
+    return attempt(options.endpoint, {
+      method: "POST",
+      headers: { ...options.headers, "content-type": "application/json" },
+      body,
+    });
+  }
 
+  async function attempt(url: string, init: RequestInit): Promise<Response> {
     for (let attempt = 0; ; attempt++) {
       const wait = Math.max(0, lastStartedAt + options.minIntervalMs - Date.now());
       if (wait > 0) await sleep(wait);
@@ -116,10 +124,8 @@ export function createClient(options: ClientOptions) {
       let raw = "";
       try {
         stats.requests++;
-        const response = await fetch(options.endpoint, {
-          method: "POST",
-          headers: { ...options.headers, "content-type": "application/json" },
-          body,
+        const response = await fetch(url, {
+          ...init,
           signal: AbortSignal.timeout(options.timeoutMs),
         });
         status = response.status;
@@ -150,18 +156,34 @@ export function createClient(options: ClientOptions) {
     }
   }
 
+  /** Puts a request behind every earlier one, so only one is ever in flight. */
+  function enqueue(send: () => Promise<Response>): Promise<Response> {
+    const queued = chain.then(send);
+    // Keep the queue alive even when a request rejects, so a later caller's
+    // own error handling still runs in order.
+    chain = queued.catch(() => undefined);
+    return queued;
+  }
+
   return {
-    /** Queues a request behind every earlier one, so only one is ever in flight. */
+    /** A GraphQL query, POSTed to the endpoint. */
     request(
       label: string,
       query: string,
       variables?: Record<string, unknown>,
     ): Promise<Response> {
-      const queued = chain.then(() => send(label, query, variables));
-      // Keep the queue alive even when a request rejects, so a later caller's
-      // own error handling still runs in order.
-      chain = queued.catch(() => undefined);
-      return queued;
+      return enqueue(() => send(label, query, variables));
+    },
+    /**
+     * A plain GET of a path under the endpoint, for a Chain that serves JSON
+     * rather than GraphQL (Vomar). There is no selection set to guard here:
+     * the Chain decides which fields come back, so ADR-0003 is kept by what
+     * ingest reads, not by what is asked for.
+     */
+    get(path: string, params: Readonly<Record<string, string | number>> = {}): Promise<Response> {
+      const url = new URL(path, options.endpoint);
+      for (const [key, value] of Object.entries(params)) url.searchParams.set(key, String(value));
+      return enqueue(() => attempt(url.href, { method: "GET", headers: options.headers }));
     },
     stats(): Stats {
       return { ...stats };

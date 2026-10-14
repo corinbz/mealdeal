@@ -20,7 +20,7 @@
     --good: #2f7a3f; --good-wash: #d9ecd9; --bad: #b8432f; --bad-wash: #f6dcd4;
     --offer: #ffe9a3; --offer-ink: #2b2118; --scrim: rgba(30, 20, 10, .45);
     --bag-shade: rgba(0, 0, 0, .12); --lift: 0 14px 24px -16px rgba(60, 30, 0, .6);
-    --c0: #12805a; --c1: #c4801a; --c2: #3b6aa0; --c3: #c0772b; --c4: #5b4a9e; --c5: #2b8a8a; --c6: #7a6a2a; --c7: #a8452f;
+    --c0: #12805a; --c1: #c4801a; --c2: #7a3fa0; --c3: #c0772b; --c4: #5b4a9e; --c5: #2b8a8a; --c6: #7a6a2a; --c7: #a8452f;
     --r: 16px;
     --font: Nunito, ui-rounded, "SF Pro Rounded", system-ui, sans-serif;
   }
@@ -32,7 +32,7 @@
       --good: #72c28e; --good-wash: rgba(114, 194, 142, .16); --bad: #f08c75; --bad-wash: rgba(240, 140, 117, .16);
       --offer: rgba(255, 214, 102, .18); --offer-ink: #ffd666; --scrim: rgba(0, 0, 0, .6);
       --bag-shade: rgba(0, 0, 0, .22); --lift: 0 14px 26px -14px rgba(0, 0, 0, .7);
-      --c0: #239270; --c1: #c38425; --c2: #4f80bd; --c3: #c4853a; --c4: #7b68bd; --c5: #3a9a99; --c6: #a08a3a; --c7: #c0604a;
+      --c0: #239270; --c1: #c38425; --c2: #9358b8; --c3: #c4853a; --c4: #7b68bd; --c5: #3a9a99; --c6: #a08a3a; --c7: #c0604a;
     }
   }
   :root[data-theme="dark"] {
@@ -42,7 +42,7 @@
     --good: #72c28e; --good-wash: rgba(114, 194, 142, .16); --bad: #f08c75; --bad-wash: rgba(240, 140, 117, .16);
     --offer: rgba(255, 214, 102, .18); --offer-ink: #ffd666; --scrim: rgba(0, 0, 0, .6);
     --bag-shade: rgba(0, 0, 0, .22); --lift: 0 14px 26px -14px rgba(0, 0, 0, .7);
-    --c0: #239270; --c1: #c38425; --c2: #4f80bd; --c3: #c4853a; --c4: #7b68bd; --c5: #3a9a99; --c6: #a08a3a; --c7: #c0604a;
+    --c0: #239270; --c1: #c38425; --c2: #9358b8; --c3: #c4853a; --c4: #7b68bd; --c5: #3a9a99; --c6: #a08a3a; --c7: #c0604a;
   }
 
   * { box-sizing: border-box; }
@@ -360,6 +360,10 @@
   // ── Chains: one colour slot each, defined per theme in CSS ────────────
   const chains = data.chains.map((c, i) => ({ ...c, color: "var(--c" + (i % 8) + ")" }));
   const chainById = (id) => chains.find((c) => c.id === id);
+  /** "Dirk, Jumbo en Vomar". */
+  const andList = (xs) => xs.length < 2 ? xs.join("") : xs.slice(0, -1).join(", ") + " en " + xs[xs.length - 1];
+  /** Chains whose Offers are not online, so their prices are Shelf Prices (Vomar). Older catalogues lack the field. */
+  const noOffers = chains.filter((c) => c.offers === false);
   const tag = (c) => '<span class="ct" style="--c:' + c.color + '">' + esc(c.name) + "</span>";
 
   // ── Freshness: which day each Chain's prices are from ─────────────────
@@ -797,8 +801,9 @@
         '<div class="sec" style="margin-top:38px"><h2>Waar zit het verschil?</h2><span>grootste verschil bovenaan · tik voor alle prijzen en om een product te corrigeren</span></div>' +
         '<div class="legend">' + chains.map(tag).join("") + "<span>· omcirkeld = goedkoopst</span></div>" +
         '<div class="diffs">' + diffs + "</div>" +
-        '<p class="note">Prijzen van ' + chains.map((c) => esc(c.name) + " (" + esc(c.store || "landelijk") + ", " + esc(c.observedAt || "?") + ")").join(" en ") +
-        ". Per winkel kiezen we het product met de laagste kiloprijs onder de namen die elk woord bevatten. Dat gaat soms mis; daarom kun je corrigeren.</p>";
+        '<p class="note">Prijzen van ' + andList(chains.map((c) => esc(c.name) + " (" + esc(c.store || "landelijk") + ", " + esc(c.observedAt || "?") + ")")) +
+        ". " + (noOffers.length ? andList(noOffers.map((c) => esc(c.name))) + (noOffers.length > 1 ? " zetten hun" : " zet zijn") +
+        " aanbiedingen alleen in een folder, niet als prijzen online; daar telt de gewone prijs. " : "") + "Per winkel kiezen we het product met de laagste kiloprijs onder de namen die elk woord bevatten. Dat gaat soms mis; daarom kun je corrigeren.</p>";
     } },
 
     winkelen: { label: "Winkelen", ic: "✓", render(s) {

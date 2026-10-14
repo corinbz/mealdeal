@@ -35,6 +35,12 @@ const R: Record<string, Omit<MappableProduct, "name">> = {
   "Vloerbrood volkoren heel": product("dirk", null, ["Brood, beleg & koek > Brood"]),
   "Princes Tonijnstukken in olijfolie": product("dirk", "Princes", ["Vlees & vis > Visconserven"]),
   "Jumbo Ovengroente Courgette, Paprika & Wortel 600 g": product("jumbo", null, ["Aardappelen, groente en fruit > Groentemix en stamppot > Ovengroente"]),
+  "Winterpeen Verpakt": product("vomar", null, ["Vers > Groente > Wortels & Knolgroente"]),
+  "4m75 Olvarit Wortel": product("vomar", "Olvarit", ["Baby & Kind > Baby- en Kindervoeding > Maaltijden"]),
+  "Schouderham": product("vomar", "Vomar", ["Vers > Vleeswaren & Salades > Vleeswaren"]),
+  "Goede Vangst Zalmfilet Met Huid 4st": product("vomar", "Goede Vangst", ["Vers > Verse Vis > Verse Vis"]),
+  "Mager Rundergehakt": product("vomar", "Vomar", ["Vers > Vlees > Gehakt & Tartaar"]),
+  "G'woon Pindakaas": product("vomar", "G'woon", ["Voorraadkast > Broodbeleg > Hartig Broodbeleg"]),
 };
 const mapped = (name: string) => map({ name, ...R[name]! });
 const ingredient = (name: string) => mapped(name)?.ingredient ?? null;
@@ -97,4 +103,24 @@ test("biologisch and huismerk are read off the Product, for the Preferences", ()
   );
   assert.equal(mapped("1 de Beste Uien")?.huismerk, true);
   assert.equal(mapped("Hollandse Winterpeen")?.huismerk, false);
+});
+
+test("reads Vomar's category tree, whose names differ from the other Chains'", () => {
+  // Fresh food sits under "Vers > ...", which no rule knew before Vomar.
+  assert.deepEqual(
+    [ingredient("Winterpeen Verpakt"), ingredient("Goede Vangst Zalmfilet Met Huid 4st"), ingredient("Mager Rundergehakt")],
+    ["wortelen", "zalm", "gehakt"],
+  );
+  assert.equal(mapped("Winterpeen Verpakt")?.form, "vers");
+  // Baby meals are baby food, not ready meals and not carrots.
+  assert.equal(ingredient("4m75 Olvarit Wortel"), null);
+  // "Vers > Vleeswaren & Salades > Vleeswaren": sliced meat, though its
+  // group's name says salades.
+  assert.equal(ingredient("Schouderham"), "ham");
+});
+
+test("knows Vomar's own brands, the Superunie lines included", () => {
+  assert.equal(mapped("G'woon Pindakaas")?.huismerk, true);
+  assert.equal(mapped("Mager Rundergehakt")?.huismerk, true);
+  assert.equal(mapped("Goede Vangst Zalmfilet Met Huid 4st")?.huismerk, false);
 });

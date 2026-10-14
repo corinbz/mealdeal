@@ -55,6 +55,27 @@ export function createRecorder(client: Client) {
       }
       return response.json;
     },
+    /**
+     * A GET, archived with its query parameters in place of variables. A JSON
+     * endpoint has no GraphQL errors to collect; the Chain's run decides what
+     * an unusable answer looks like and notes it as the step's failure.
+     */
+    async get(
+      label: string,
+      path: string,
+      params: Readonly<Record<string, string | number>> = {},
+    ): Promise<unknown> {
+      const response = await client.get(path, params);
+      records.push({
+        seq: records.length,
+        at: new Date().toISOString(),
+        label,
+        variables: { path, ...params },
+        status: response.status,
+        body: response.raw,
+      });
+      return response.json;
+    },
     records,
     errors,
   };
