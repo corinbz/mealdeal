@@ -11,11 +11,13 @@
  * repository, not from a browser.
  */
 
-import { words, type ComparisonUnit } from "../words.ts";
+import { createResolver } from "../words.ts";
 
 /** The catalogue as scripts/catalogue-from-db.ts and apply-history.ts write it. */
 export interface DigestCatalogue {
   readonly chains: readonly { readonly id: string; readonly name: string; readonly observedAt: string | null }[];
+  readonly columns: readonly string[];
+  readonly vocabulary?: readonly unknown[];
   readonly catalogue: Readonly<Record<string, readonly (readonly unknown[])[]>>;
 }
 
@@ -36,66 +38,34 @@ export interface Digest {
   readonly deals: number;
 }
 
-/** At most this many deals per staple, the cheapest by Unit Price first. */
+/** At most this many deals per staple, the cheapest per unit first. */
 const PER_STAPLE = 3;
 
 /**
- * "Bloemkool Broccoli Gehaktbal met Gekookte Aardappelen" is a ready meal, not
- * broccoli, but matches it as the page matches. On the page a Correction fixes
- * that; an email cannot be corrected, so a dish named "X met Y" is left out
- * unless the staple names one too. Matching itself is the page's, and stays
- * crude until Products map to Ingredients (#14).
+ * An item the vocabulary does not know is resolved by name, and "Bloemkool
+ * Broccoli Gehaktbal met Gekookte Aardappelen" then matches broccoli. On the
+ * page a Correction fixes that; an email cannot be corrected, so for such an
+ * item a dish named "X met Y" is left out. An item read as an Ingredient needs
+ * no such rule: a ready meal maps to no Ingredient (#14).
  */
 const DISH = /\s(met|&)\s/i;
 
-interface Product {
-  readonly chain: string;
-  readonly name: string;
-  readonly words: string[];
-  readonly unit: ComparisonUnit;
-  readonly shelf: number;
-  readonly offer: number | null;
-  readonly unitPrice: number;
-  readonly wording: string | null;
-  readonly low: number | null;
-  readonly days: number | null;
-}
-
 /** The deals the real-discount check supports, per staple, in the order given. */
 export function realDeals(data: DigestCatalogue, staples: readonly string[]): { staple: string; deals: Deal[] }[] {
-  const products: Product[] = data.chains.flatMap((c) =>
-    (data.catalogue[c.id] ?? []).map((r) => ({
-      chain: c.name,
-      name: r[1] as string,
-      words: words.nameWords(r[1] as string),
-      unit: r[5] as ComparisonUnit,
-      shelf: r[6] as number,
-      offer: r[7] as number | null,
-      unitPrice: r[8] as number,
-      wording: r[9] as string | null,
-      low: (r[13] as number | null | undefined) ?? null,
-      days: (r[14] as number | null | undefined) ?? null,
-    })),
-  );
-  const tally = (w: string[]) => {
-    const counts = { kg: 0, l: 0, piece: 0 };
-    for (const p of products) if (words.matches(w, p.words)) counts[p.unit]++;
-    return counts;
-  };
-
+  const resolver = createResolver(data);
+  const chainName = new Map(data.chains.map((c) => [c.id, c.name]));
   return staples.flatMap((text) => {
-    const item = words.parse(text, tally);
+    const item = resolver.parse(text);
     if (!item) return [];
-    const wanted = words.wordsOf(item.noun);
-    const deals = products
-      .filter((p) => p.unit === item.unit && words.matches(wanted, p.words))
-      .filter((p) => DISH.test(item.noun) || !DISH.test(p.name))
-      .filter((p) => p.offer !== null && p.low !== null && p.days !== null && p.offer < p.low)
-      .sort((a, b) => a.unitPrice - b.unitPrice)
+    const deals = data.chains
+      .flatMap((c) => resolver.candidates(c.id, item))
+      .filter((p) => item.ingredient || DISH.test(item.noun) || !DISH.test(p.name))
+      .filter((p) => p.offerPriceCents !== null && p.referenceLowCents !== null && p.referenceDays !== null && p.offerPriceCents < p.referenceLowCents)
+      .sort((a, b) => resolver.unitPrice(a, item) - resolver.unitPrice(b, item))
       .slice(0, PER_STAPLE)
       .map((p) => ({
-        chain: p.chain, name: p.name, wording: p.wording, offerPriceCents: p.offer!,
-        shelfPriceCents: p.shelf, referenceLowCents: p.low!, referenceDays: p.days!,
+        chain: chainName.get(p.chainId)!, name: p.name, wording: p.offerWording, offerPriceCents: p.offerPriceCents!,
+        shelfPriceCents: p.shelfPriceCents, referenceLowCents: p.referenceLowCents!, referenceDays: p.referenceDays!,
       }));
     return [{ staple: item.noun, deals }];
   });

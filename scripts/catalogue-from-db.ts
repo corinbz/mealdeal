@@ -20,6 +20,9 @@
 
 import { writeFile } from "node:fs/promises";
 import { connect } from "../src/ingest/db.ts";
+import { formOf } from "../src/ingredients/aisles.ts";
+import { createMapper } from "../src/ingredients/map.ts";
+import { VOCABULARY, type ComparisonUnit } from "../src/ingredients/vocabulary.ts";
 
 const OUT = new URL("../prototype/catalogue.js", import.meta.url);
 
@@ -54,8 +57,46 @@ type Row = [
    */
   nextWording: string | null,
   nextStartsOn: string | null,
+  /** Which Ingredient the Product is (#14), or null when it is no single one. */
+  ingredient: string | null,
+  variant: string | null,
+  form: string | null,
+  /** 1 biologisch, 2 huismerk: what the Preferences select on. */
+  flags: number,
+  /**
+   * The Unit Price in the Ingredient's own Comparison Unit, converted where
+   * the vocabulary states how (a courgette is about 0.3 kg); null when it
+   * cannot be, and then the Product is no comparison candidate for it.
+   */
+  ingredientUnitPriceCents: number | null,
+  /** The pack in the Ingredient's Comparison Unit, likewise. */
+  ingredientPack: number | null,
   // scripts/apply-history.ts appends referenceLowCents and referenceDays.
 ];
+
+/**
+ * The name of each position in a Row. Readers look a field up by name, so a
+ * field added later does not shift every reader's numbers.
+ */
+const COLUMNS = [
+  "ref", "name", "packaging", "packQuantity", "packUnit", "comparisonUnit", "shelfPriceCents", "offerPriceCents",
+  "unitPriceCents", "offerWording", "offerEndsOn", "nextWording", "nextStartsOn", "ingredient", "variant", "form",
+  "flags", "ingredientUnitPriceCents", "ingredientPack",
+] as const;
+
+/** One Ingredient's quantity in another unit: courgette 1 piece = 0.3 kg. */
+function inIngredientUnit(perUnitOf: ComparisonUnit, quantity: number, ingredientUnit: ComparisonUnit, equals: Partial<Record<ComparisonUnit, number>>, price: boolean): number | null {
+  if (perUnitOf === ingredientUnit) return quantity;
+  const x = equals[perUnitOf];
+  if (!x) return null;
+  // A price per kg times 0.3 kg is the price of one courgette; a pack of
+  // 0.6 kg divided by 0.3 kg is two courgettes.
+  return price ? Math.round(quantity * x) : Math.round((quantity / x) * 1000) / 1000;
+}
+
+const map = createMapper();
+const vocabulary = new Map(VOCABULARY.map((d) => [d.id, d]));
+const mappedCount: Record<string, { mapped: number; comparable: number; total: number }> = {};
 
 const db = connect();
 
@@ -83,6 +124,7 @@ for (const chain of chains) {
     pack_unit: string | null; comparison_unit: string; shelf_price_cents: number; offer_price_cents: number | null;
     unit_price_cents: number; wording: string | null; ends_on: string | null;
     next_wording: string | null; next_starts_on: string | null; has_next: boolean;
+    brand: string | null; categories: string[];
   }>(
     // The latest Observation per Product, joined to the running Offer naming
     // it and, separately, the next upcoming one. All from the same run: a day
@@ -95,7 +137,7 @@ for (const chain of chains) {
         WHERE o.chain_id = $1
         ORDER BY o.chain_product_ref, o.observed_at DESC, o.run_id DESC
      )
-     SELECT p.chain_product_ref, p.name, p.pack_text, p.pack_quantity,
+     SELECT p.chain_product_ref, p.name, p.brand, p.categories, p.pack_text, p.pack_quantity,
             p.pack_unit, l.comparison_unit, l.shelf_price_cents, l.offer_price_cents,
             l.unit_price_cents, off.wording,
             (off.ends_at AT TIME ZONE 'Europe/Amsterdam')::date::text AS ends_on,
@@ -127,22 +169,41 @@ for (const chain of chains) {
     [chain.id],
   );
 
-  catalogue[chain.id] = rows.map<Row>((r) => [
-    r.chain_product_ref,
-    r.name,
-    r.pack_text && r.pack_text !== r.name ? r.pack_text : null,
-    r.pack_quantity === null ? null : Number(r.pack_quantity),
-    r.pack_unit,
-    r.comparison_unit,
-    r.shelf_price_cents,
-    r.offer_price_cents,
-    r.unit_price_cents,
-    r.wording,
-    r.ends_on,
-    // An upcoming Offer with no tags still exists; the page names it generically.
-    r.has_next ? (r.next_wording ?? "") : null,
-    r.next_starts_on,
-  ]);
+  const counts = (mappedCount[chain.id] = { mapped: 0, comparable: 0, total: rows.length });
+  catalogue[chain.id] = rows.map<Row>((r) => {
+    const m = map({ chainId: chain.id, name: r.name, brand: r.brand, categories: r.categories });
+    const def = m ? vocabulary.get(m.ingredient)! : null;
+    const unit = r.comparison_unit as ComparisonUnit;
+    const iPrice = def ? inIngredientUnit(unit, r.unit_price_cents, def.unit, def.equals, true) : null;
+    const packQuantity = r.pack_quantity === null ? null : Number(r.pack_quantity);
+    const iPack = def && packQuantity !== null && r.pack_unit
+      ? inIngredientUnit(r.pack_unit as ComparisonUnit, packQuantity, def.unit, def.equals, false)
+      : null;
+    if (m) counts.mapped++;
+    if (iPrice !== null) counts.comparable++;
+    return [
+      r.chain_product_ref,
+      r.name,
+      r.pack_text && r.pack_text !== r.name ? r.pack_text : null,
+      packQuantity,
+      r.pack_unit,
+      r.comparison_unit,
+      r.shelf_price_cents,
+      r.offer_price_cents,
+      r.unit_price_cents,
+      r.wording,
+      r.ends_on,
+      // An upcoming Offer with no tags still exists; the page names it generically.
+      r.has_next ? (r.next_wording ?? "") : null,
+      r.next_starts_on,
+      m?.ingredient ?? null,
+      m?.variant ?? null,
+      m?.form ?? null,
+      (m?.biologisch ? 1 : 0) | (m?.huismerk ? 2 : 0),
+      iPrice,
+      iPack,
+    ];
+  });
 }
 
 const data = {
@@ -155,6 +216,16 @@ const data = {
     observedAt: c.archive_date,
     catalogueSize: Number(c.products_recorded ?? 0),
   })),
+  columns: [...COLUMNS],
+  /**
+   * What the page reads a typed item against. `fresh`: the Ingredient is sold
+   * fresh, so frozen, tinned and jarred count only when a Preference allows.
+   */
+  vocabulary: VOCABULARY.map((d) => ({
+    id: d.id, name: d.name, unit: d.unit, also: d.also, equals: d.equals,
+    variants: d.variants.map((v) => ({ id: v.id, name: v.name })),
+    fresh: d.aisles.some((a) => formOf(a) === "vers"),
+  })),
   catalogue,
 };
 
@@ -164,4 +235,10 @@ const counts = chains.map((c) => {
   return `${c.name} ${rows.length} (${rows.filter((r) => r[11] !== null).length} with an upcoming Offer)`;
 }).join(", ");
 console.error(`wrote ${OUT.pathname}: ${counts} comparable products`);
+// Reported every run (#14): how much of each Chain maps to an Ingredient, and
+// how much of that compares in the Ingredient's own unit.
+for (const c of chains) {
+  const n = mappedCount[c.id]!;
+  console.error(`  ${c.name}: ${n.mapped} mapped to an Ingredient, ${n.total - n.mapped} unmapped; ${n.comparable} comparable in the Ingredient's unit`);
+}
 await db.end();

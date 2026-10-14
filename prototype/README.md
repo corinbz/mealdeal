@@ -98,22 +98,34 @@ prices nationally. Coverage happens to be 12 of 12 at both today; the UI still
 shows it beside every total, because a Basket a Chain cannot fill is the normal
 case.
 
-## The wrong answers are the point
+## Resolution through Ingredients
 
-Resolution here is the crude substring rule every incumbent falls back on, and
-it is left crude so its failures are visible:
+What you type is read as a Requirement against the Ingredient vocabulary
+(#14): "1 l halfvolle melk" is the Ingredient melk, Variant halfvol; "6 bio
+eieren" adds the Preference biologisch; "diepvries", "uit pot", "huismerk"
+and "a-merk" are Preferences too. Each Chain then picks among its own Products
+of that Ingredient, within the Variant and Preferences, and fresh unless a
+Preference allows otherwise, cheapest per unit first. The recipes are written
+the same way, so they resolve exactly as the list does. `resolve.js` does
+this, and the weekly digest runs the same file.
 
-| Requirement | Resolves to | Why it is wrong |
+The word rule that came before still answers anything the vocabulary does not
+know, and the item says so ("Niet herkend"). Its failures were the reason for
+Ingredients:
+
+| Requirement | Word matching chose | Now |
 | --- | --- | --- |
-| 1 kg appels | Aardappelen kruimig | "appel" also matches "aard**appel**" |
-| 500 g wortelen | Doperwten en wortelen | tinned peas, not fresh carrots |
-| 1 komkommer | Snoepkomkommer 10 stuks | cheapest per piece, but forces a 10-pack |
+| 1 kg appels | Aardappelen kruimig ("appel" ends "aard**appel**") | appels |
+| 500 g wortelen | Doperwten en wortelen, or Olvarit baby food | fresh carrots |
+| broccoli | a broccoli-meatball ready meal | broccoli |
 
-Correcting one is the demonstration, not a workaround: Corrections are the
-asset a competitor cannot scrape (ADR-0004), and they only exist because
-automated resolution is this imperfect. The last row also surfaced a design
-problem worth keeping: the lowest Unit Price can force a pack many times
-larger than the requirement, so cells flag "pack is 10x what you need".
+A **Correction** is kept per Chain and Ingredient (and Variant), so correcting
+rundergehakt once holds for every list item and recipe that needs it.
+Corrections made before Ingredients are moved over when the page loads.
+Corrections are still the asset a competitor cannot scrape (ADR-0004): the
+vocabulary maps about half of each Chain's food Products, and they cover what
+it misses. The lowest Unit Price can still force a pack many times larger than
+the requirement, so cells flag "pack is 10x what you need".
 
 ## Not built here
 

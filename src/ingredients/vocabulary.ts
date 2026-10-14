@@ -225,8 +225,9 @@ ing("dadels", "kg", ["pantry", "produce", "deli"], ["dadel", "dadels"], {});
 // ── Meat ────────────────────────────────────────────────────────────────
 ing("gehakt", "kg", MEAT, ["gehakt", "gehaktmix"], {
   not: ["bal", "ballen", "schnitzel", "slavink", "brood", "kruiden", "mix voor", "vega", "speklap", "hamburger", "cordon"],
-  variants: [["rund", "rundergehakt", ["runder", "rund"]], ["half-om-half", "half-om-half gehakt", ["half om half", "half-om-half", "h.o.h", "gemengd"]],
-    ["varken", "varkensgehakt", ["varkens"]], ["kip", "kipgehakt", ["kip"]]],
+  // Half-om-half first: "Half-om-Half Gehakt Varken-Rund" names rund as well.
+  variants: [["half-om-half", "half-om-half gehakt", ["half om half", "half-om-half", "h.o.h", "gemengd", "varken-rund"]],
+    ["rund", "rundergehakt", ["runder", "rund"]], ["varken", "varkensgehakt", ["varkens"]], ["kip", "kipgehakt", ["kip"]]],
 });
 ing("gehaktballen", "kg", MEAT, ["gehaktbal", "gehaktballen", "balletje", "slavink"], { not: ["vega", "soep", "saus", "tomatensaus", "jus"] });
 ing("hamburgers", "kg", MEAT, ["hamburger", "burger", "burgers"], { not: ["vega", "broodje", "saus", "kruiden", "kip"] });

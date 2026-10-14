@@ -153,6 +153,42 @@ This is the third time this failure mode has come up in this codebase: Dirk's
 steps, silently skipping Jumbo's whole Offer feed. Both were found by asking
 "what would an empty success look like here?" rather than by a crash.
 
+## Products to Ingredients
+
+Each Chain files a Product in its own category tree, and ingest records
+where: Dirk's department and web group, and the path of names to every Jumbo
+category a Product was listed under. The mapper (`src/ingredients/`) reads
+that and the name, and says which Ingredient a Product is, its Variant and
+form, and whether it is biologisch or huismerk. It may also say that the
+Product is no single Ingredient. The catalogue build runs it on every
+Product and reports, per Chain, how many mapped and how many compare in the
+Ingredient's own unit.
+
+- **Categories become aisles.** A few hundred category leaves are classified
+  once into about a dozen aisles (produce, conserves, frozen, baby, pet...).
+  Each Ingredient says which aisles it is sold in, and the aisle gives the
+  form: carrots in Groente are fresh, in Groenteconserven jarred, and in
+  Babyvoeding not carrots at all. A Product filed with ready meals, baby food
+  or pet food anywhere is that, whatever else it is filed under. This, not a
+  list of excluded words, is what rules out the misfires.
+- **A name word belongs to the longest Ingredient word it ends with**, across
+  the whole vocabulary: "aardappel" is aardappelen even where only appels are
+  sold. Words of three letters or fewer must match whole, since "ui" ends
+  "slagerhuis".
+- **A name naming several Ingredients is a mix.** It maps to a mix Ingredient
+  (wokgroente, rauwkost) if it names one, and otherwise to none. Only what
+  comes before "met", "in", "op", "zonder" or "minder" names the Product, so
+  "Tonijnstukken in olijfolie" is tuna.
+- **Units convert where the vocabulary says how**: a courgette is about
+  0.3 kg, so a per-kg price compares per piece.
+
+On 2026-10-14 about 1,700 of Dirk's and 3,650 of Jumbo's food Products
+mapped. Most of the rest are processed, seasoned or mixed. The vocabulary
+(`src/ingredients/vocabulary.ts`, about 230 Ingredients) grows by adding
+words, and Corrections cover what it misses in the meantime. To see what it
+does with a real day without the R2 keys, export one with
+`.github/workflows/archive-export.yml` and ingest it locally.
+
 ## Every morning, with no laptop
 
 `.github/workflows/catalogue.yml` runs after each archive run on `main` (and
