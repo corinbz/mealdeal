@@ -16,6 +16,7 @@
  */
 
 import type { CoverageCatalogue } from "./coverage.ts";
+import { followsFromPack, looksDrained } from "../ingest/unit-price.ts";
 
 export type SelfCheck = "jump" | "split" | "unit";
 
@@ -27,14 +28,14 @@ export interface KnownSlip {
   readonly why: string;
 }
 
-/** All thresholds of the three checks, in one place. */
+/**
+ * Thresholds of the checks. A unit price is measured with ingest's own
+ * yardstick (src/ingest/unit-price.ts), so the check and the reader that
+ * chose the figure cannot drift apart.
+ */
 export const SELF_CHECK_LIMITS = {
   /** A shelf price changed by this share or more overnight, either way (1.4x up or down to 1/1.4). */
   jump: 0.4,
-  /** A unit price off the pack's by more than this share, and by more than unitCents. */
-  unitShare: 0.1,
-  /** So that a tissue at 0.3 cents a piece shown as 0 is not a slip. */
-  unitCents: 2,
 } as const;
 
 export interface Jump { readonly chain: string; readonly ref: string; readonly name: string; readonly ingredient: string | null; readonly was: number; readonly now: number }
@@ -118,10 +119,10 @@ export function assessSelfChecks(built: CoverageCatalogue, published: CoverageCa
     if (!q || unit === null || at(r, "packUnit") !== at(r, "comparisonUnit")) continue;
     const prices = [at<number | null>(r, "shelfPriceCents"), at<number | null>(r, "offerPriceCents")].filter((p): p is number => p !== null);
     if (!prices.length) continue;
-    if (prices.some((p) => Math.abs(unit - p / q) <= Math.max(limits.unitShare * (p / q), limits.unitCents))) continue;
+    if (prices.some((p) => followsFromPack(unit, p, q))) continue;
     units.push({ chain: ch.id, ref: String(at(r, "ref")), name: at(r, "name"), ingredient: at(r, "ingredient"), pack: packOf(q, at(r, "packUnit")),
       priceCents: prices.at(-1)!, unitPriceCents: unit, derivedCents: Math.round(prices.at(-1)! / q),
-      kind: (at(r, "form") === "conserven" || IN_LIQUID.test(at<string>(r, "name"))) && prices.some((p) => unit / (p / q) >= 1.05 && unit / (p / q) <= 3) ? "drained" : "other" });
+      kind: (at(r, "form") === "conserven" || IN_LIQUID.test(at<string>(r, "name"))) && prices.some((p) => looksDrained(unit, p, q)) ? "drained" : "other" });
   }
   units.sort((a, b) => mappedFirst(a, b) || a.chain.localeCompare(b.chain) || a.name.localeCompare(b.name));
 

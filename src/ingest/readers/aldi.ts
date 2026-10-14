@@ -1,5 +1,6 @@
 import { readStep, jsonOf } from "../archive.ts";
-import { deriveUnitPrice, parseInstant, parsePackSize, type ComparisonUnit, type PackSize } from "../normalise.ts";
+import { parseInstant, parsePackSize, type ComparisonUnit } from "../normalise.ts";
+import { isApproximate, unitPriceOf } from "../unit-price.ts";
 import type { ChainReader, ChainReading, OfferReading, PriceReading } from "./types.ts";
 
 /**
@@ -107,28 +108,6 @@ function basePrice(price: Price): { cents: number; unit: ComparisonUnit } | null
   return null;
 }
 
-/**
- * Whether Aldi's Unit Price can be the pack's; where not, the pack's own
- * arithmetic is used instead. Two kinds are Aldi's slips at any pack: a Unit
- * Price equal to the price of a pack that is not a kilo or litre
- * ("Varkenshaas, ca. 500 g, 6,00, 6,00 per kg"), and one twenty times the
- * pack's or more ("200 g, 1,95, 1950,00 per kg").
- *
- * A pack of a stated weight ("400 g", "3x75 g", not "ca. 600 g") is also
- * compared on the pack when Aldi's figure is more than 10% off it (#37).
- * Aldi's own figure was then stale ("Nederlandse aardbeien, 400 g, 2,99,
- * 11,96 per kg", as if 250 g), per one pack of a multipack ("3-pack
- * crackers, 3x75 g, 1,39, 18,53 per kg"), or per drained kilo, where the
- * owner chose the whole pack for every Chain. A weighed pack's figure stands:
- * its price is only roughly the stated weight's.
- */
-function plausible(chain: { cents: number; unit: ComparisonUnit }, shown: number, pack: PackSize | null, approximate: boolean): boolean {
-  if (!pack || pack.unit !== chain.unit || pack.quantity <= 0) return true;
-  const own = deriveUnitPrice(shown, pack)!;
-  if ((chain.cents === shown && Math.abs(pack.quantity - 1) > 0.05) || chain.cents >= own * 20) return false;
-  return approximate || Math.abs(chain.cents - own) <= Math.max(0.1 * own, 2);
-}
-
 /** The sign as Aldi words it, and its price: "-50% 1,19", "2 VOOR 6,00", "OP=OP 4,59". */
 function wordingOf(price: Price): string | null {
   const sign = label(price);
@@ -204,16 +183,8 @@ export const aldiReader: ChainReader = {
         // "Per stuk." and "0.75 l.": a sign's full stop is not part of the unit.
         const pack = parsePackSize(packText?.replace(/\.$/, ""));
         const chain = basePrice(current);
-        let unitPriceCents: number | null = null;
-        let comparisonUnit: ComparisonUnit | null = null;
-        let unitPriceSource: PriceReading["unitPriceSource"] = null;
-        if (chain && !plausible(chain, shown, pack, /\bca\b|circa|±/i.test(packText ?? ""))) {
-          [unitPriceCents, comparisonUnit, unitPriceSource] = [deriveUnitPrice(shown, pack!), pack!.unit, "derived"];
-        } else if (chain) {
-          [unitPriceCents, comparisonUnit, unitPriceSource] = [chain.cents, chain.unit, "chain"];
-        } else if (pack) {
-          [unitPriceCents, comparisonUnit, unitPriceSource] = [deriveUnitPrice(shown, pack), pack.unit, "derived"];
-        }
+        // Aldi's own figure is on the price shown, Offer or not (src/ingest/unit-price.ts).
+        const { unitPriceCents, comparisonUnit, unitPriceSource } = unitPriceOf(shown, pack, chain && { ...chain, ofCents: shown }, { approximate: isApproximate(packText) });
         if (unitPriceCents === null) withoutUnitPrice++;
 
         prices.push({
