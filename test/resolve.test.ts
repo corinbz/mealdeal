@@ -152,3 +152,28 @@ test("an Exact Product resolves to each Chain's own one, and only likely where n
   assert.equal(exactResolver.likelyProduct("dirk", id)?.name, "Calvé Pindakaas");
   assert.equal(exactResolver.exactIdOf(exactResolver.products.vomar["vomar-v2"]), "8711200431632");
 });
+
+test("a staple alerts when today is clearly below its Usual Price, and only with enough history", () => {
+  const { priceDrop, USUAL_MIN_DAYS } = context.MealdealResolve;
+  const days = (cents: (number | null)[], offerToday = false) =>
+    cents.map((c, i) => c === null ? null : { cents: c, offer: offerToday && i === cents.length - 1, product: "Melk" });
+  const steady = Array.from({ length: USUAL_MIN_DAYS }, (_, i) => (i % 2 ? 100 : 104));
+
+  // Usual is the median of the days before today (102); 85 is 17% below it.
+  assert.deepEqual({ ...priceDrop(days([...steady, 85], true)) }, { cents: 85, usualCents: 102, percent: 17, offer: true, product: "Melk" });
+  // 14% below is not clearly below.
+  assert.equal(priceDrop(days([...steady, 88])), null);
+  // One day short of enough history: no alert, however low.
+  assert.equal(priceDrop(days([...steady.slice(1), 50])), null);
+  // Gaps do not count as history.
+  assert.equal(priceDrop(days([...steady.slice(1), null, 50])), null);
+  // Not observed today: nothing to alert on.
+  assert.equal(priceDrop(days([...steady, null])), null);
+  // Often on Offer at 70: that is its usual price, so 70 again is no drop.
+  const offers = Array.from({ length: 20 }, (_, i) => (i % 3 ? 70 : 100));
+  assert.equal(priceDrop(days([...offers, 70])), null);
+});
+
+test("three days of history are too few for any staple to alert", () => {
+  for (const text of ["1 l melk", "400 g spinazie"]) assert.equal(resolver.priceDropAt("dirk", resolver.parse(text)), null);
+});

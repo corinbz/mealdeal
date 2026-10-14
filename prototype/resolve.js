@@ -187,6 +187,9 @@
       return { dates, days };
     }
 
+    /** A staple's Price Drop at one Chain today (#19), or null; see priceDrop. */
+    const priceDropAt = (chainId, item) => priceDrop(dailyPrices(chainId, item).days);
+
     // ── Exact Products (#15) ─────────────────────────────────────────────
     // One branded item at one Pack Size, proven at each Chain by a shared EAN
     // (src/catalogue/exact.ts). A Chain publishing no EANs (Dirk) may have a
@@ -253,8 +256,27 @@
       return out.sort((a, b) => a.extra - b.extra || a.name.localeCompare(b.name)).slice(0, limit);
     }
 
-    return { products, vocabulary, parse, suggest, candidates, satisfies, packsFor, unitPrice, correctionKey, dailyPrices,
+    return { products, vocabulary, parse, suggest, candidates, satisfies, packsFor, unitPrice, correctionKey, dailyPrices, priceDropAt,
       exact, exactIdOf, exactProduct, likelyProduct, exactMatches };
+  }
+
+  /**
+   * The Price Drop rule (#19, CONTEXT.md). The Usual Price is the median of the
+   * Daily Prices observed before today, Offer days included, so a staple that
+   * is often on Offer is usually that cheap and does not alert. A Price Drop
+   * is today's Daily Price at least DROP_SHARE below it. Fewer than
+   * USUAL_MIN_DAYS observed days before today is not enough to judge, and a
+   * Chain not observed today has no price to alert on.
+   */
+  const USUAL_MIN_DAYS = 14, DROP_SHARE = 0.15;
+  function priceDrop(days) {
+    const now = days[days.length - 1];
+    const before = days.slice(0, -1).filter(Boolean).map((d) => d.cents).sort((a, b) => a - b);
+    if (!now || before.length < USUAL_MIN_DAYS) return null;
+    const mid = before.length >> 1;
+    const usualCents = before.length % 2 ? before[mid] : Math.round((before[mid - 1] + before[mid]) / 2);
+    if (now.cents > usualCents * (1 - DROP_SHARE)) return null;
+    return { cents: now.cents, usualCents, percent: Math.round((1 - now.cents / usualCents) * 100), offer: now.offer, product: now.product };
   }
 
   /** Edits between two strings, a swap of neighbours counting as one ("kpi" for "kip"). */
@@ -268,5 +290,5 @@
     return d[a.length][b.length];
   }
 
-  global.MealdealResolve = { createResolver };
+  global.MealdealResolve = { createResolver, priceDrop, USUAL_MIN_DAYS, DROP_SHARE };
 })(typeof window !== "undefined" ? window : globalThis);
