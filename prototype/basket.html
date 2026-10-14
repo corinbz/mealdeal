@@ -781,36 +781,12 @@
   let browseData = null;
   function browseIndex() {
     if (browseData) return browseData;
-    const ingredients = data.vocabulary.map((d) => {
-      const item = { ingredient: d.id, variant: null, preferences: {} };
-      const by = {};
-      for (const c of chains) { const p = R.candidates(c.id, item)[0]; if (p) by[c.id] = { p, cost: p.ingredientUnitPriceCents }; }
-      const avail = chains.filter((c) => by[c.id]).sort((a, b) => by[a.id].cost - by[b.id].cost);
-      const min = avail.length ? by[avail[0].id].cost : null, max = avail.length ? by[avail.at(-1).id].cost : null;
-      // Against the middle Chain, not the dearest: one odd Product at one
-      // Chain (bouillon powder against cubes) would otherwise top the list.
-      // An offers-only Chain is in the line but not the middle, which it would only pull down.
-      const mids = avail.filter((c) => !c.offersOnly).map((c) => by[c.id].cost), n = mids.length;
-      const mid = n ? (n % 2 ? mids[n >> 1] : Math.round((mids[n / 2 - 1] + mids[n / 2]) / 2)) : null;
-      return { d, aisle: d.aisle || null, by, avail, min, max, mid, share: n > 1 && mid ? Math.max(0, (mid - min) / mid) : 0 };
-    });
+    // Shared with the morning coverage report (prototype/resolve.js), in this page's Chains, which carry their colour.
+    const own = new Map(chains.map((c) => [c.id, c])), mine = (c) => own.get(c.id);
+    const S = R.spreads();
+    const ingredients = S.ingredients.map((g) => ({ ...g, aisle: g.d.aisle || null, avail: g.avail.map(mine) }));
     const byId = new Map(ingredients.map((g) => [g.d.id, g]));
-    // An Offer worth it is priced and beats every other Chain's cheapest of
-    // its Ingredient today: a Chain's own "was" price says little about that.
-    // One with no price of its own ("1+1 gratis") cannot be ranked (ADR-0002).
-    const worth = [];
-    for (const c of chains) for (const p of Object.values(products[c.id])) {
-      if (!p.ingredient || p.offerPriceCents === null || !R.satisfies(p, { ingredient: p.ingredient, variant: null, preferences: {} })) continue;
-      const g = byId.get(p.ingredient); if (!g) continue;
-      const rival = g.avail.find((x) => x.id !== c.id);
-      if (!rival || p.ingredientUnitPriceCents >= g.by[rival.id].cost) continue;
-      worth.push({ p, c, g, rival, rivalCost: g.by[rival.id].cost, share: 1 - p.ingredientUnitPriceCents / g.by[rival.id].cost });
-    }
-    // The cheapest per Chain and Ingredient: six Jumbo pumpkins on Offer are one find.
-    const firsts = new Map();
-    for (const w of worth) { const k = w.c.id + "|" + w.g.d.id; if (!firsts.has(k) || w.share > firsts.get(k).share) firsts.set(k, w); }
-    worth.length = 0; worth.push(...firsts.values());
-    worth.sort((a, b) => b.share - a.share);
+    const worth = S.worth.map((w) => ({ ...w, c: mine(w.c), rival: mine(w.rival), g: byId.get(w.g.d.id) }));
     // Exact Products (#15) proven by EAN at two Chains or more, the largest
     // difference in what one pack costs first.
     const same = [];
@@ -826,6 +802,12 @@
     return (browseData = { ingredients, worth, same, aisles: AISLES.filter(([a]) => ingredients.some((g) => g.aisle === a)) });
   }
   const BROWSE_PAGE = 40;
+  /**
+   * Differences over SPREAD_CHECK held back at the foot of Bladeren until
+   * looked at: more often a wrong match or a slipped unit than a bargain.
+   */
+  const unchecked = (n, body) => n ? '<div class="sec"><h2>Nog niet gecontroleerd</h2><span>' + n + " · meer dan " + Math.round(window.MealdealResolve.SPREAD_CHECK * 100) +
+    "% verschil</span></div>" + '<p class="hint">Zo’n groot verschil is vaker een verkeerd gekoppeld product of een verkeerde eenheid dan een koopje. We kijken het eerst na; tot dan staat het hier en niet bovenaan.</p>' + body : "";
   const pct = (share) => Math.round(share * 100) + "%";
   /** "1 kg aardappelen": an Ingredient as a list item, in the unit it compares by. */
   const ingredientItem = (d) => parse((d.unit === "piece" ? "1 " : "1 " + d.unit + " ") + d.name);
@@ -890,14 +872,15 @@
           [["alle", "Alles"], ...B.aisles].map(([id, label]) => '<button data-act="browse-aisle" data-id="' + id + '" aria-pressed="' + (browse.aisle === id) + '">' + label + "</button>").join("") + "</div>" : "");
 
       if (browse.view === "aanbiedingen") {
-        const rows = B.worth.filter((w) => aisleOk(w.g));
-        return head + '<div class="sec"><h2>Aanbiedingen die lonen</h2><span>' + rows.length + " · goedkoper dan elke andere winkel, grootste verschil bovenaan</span></div>" +
-          (rows.length ? '<div class="worth">' + rows.slice(0, limit).map(({ p, c, g, rival, rivalCost, share }) =>
+        const all = B.worth.filter((w) => aisleOk(w.g)), rows = all.filter((w) => !w.unchecked), held = all.filter((w) => w.unchecked);
+        const card = ({ p, c, g, rival, rivalCost, share, unchecked }) =>
             '<div class="it"><div class="nm">' + esc(p.name) + '</div><div class="v">' + euro(p.offerPriceCents) + "<small>" + euro(p.ingredientUnitPriceCents) + unit(g.d) + "</small></div>" +
-            '<div class="why">' + tag(c) + " " + offerChip(p, offerFor(p, "nu")) + '<span class="delta zero">' + pct(share) + " goedkoper</span></div>" +
+            '<div class="why">' + tag(c) + " " + offerChip(p, offerFor(p, "nu")) + (unchecked ? '<span class="delta">' + pct(share) + " goedkoper?</span>" : '<span class="delta zero">' + pct(share) + " goedkoper</span>") + "</div>" +
             '<div class="why">' + esc(g.d.name) + " elders vanaf " + tag(rival) + " " + euro(rivalCost) + unit(g.d) + "</div>" +
-            '<div class="why"><button class="add-i' + (onList(g.d) ? " on" : "") + '" data-act="browse-add" data-id="' + esc(g.d.id) + '">' + (onList(g.d) ? "✓ Op je lijst" : "+ " + esc(g.d.name) + " op je lijst") + "</button></div></div>").join("") + "</div>" + more(rows.length)
-            : '<p class="lede">Hier is nu geen aanbieding goedkoper dan elders.</p>') +
+            '<div class="why"><button class="add-i' + (onList(g.d) ? " on" : "") + '" data-act="browse-add" data-id="' + esc(g.d.id) + '">' + (onList(g.d) ? "✓ Op je lijst" : "+ " + esc(g.d.name) + " op je lijst") + "</button></div></div>";
+        return head + '<div class="sec"><h2>Aanbiedingen die lonen</h2><span>' + rows.length + " · goedkoper dan elke andere winkel, grootste verschil bovenaan</span></div>" +
+          (rows.length ? '<div class="worth">' + rows.slice(0, limit).map(card).join("") + "</div>" + more(rows.length)
+            : '<p class="lede">Hier is nu geen aanbieding goedkoper dan elders.</p>') + unchecked(held.length, '<div class="worth">' + held.map(card).join("") + "</div>") +
           '<p class="note">Alleen aanbiedingen met een eigen prijs: een actie als “1+1 gratis” of “2e halve prijs” heeft er geen, en die rekenen we niet om. ' +
           "Vergeleken met de goedkoopste prijs per eenheid van hetzelfde ingrediënt bij de andere winkels vandaag, niet met wat de winkel zelf als oude prijs noemt.</p>";
       }
@@ -912,7 +895,8 @@
           exactNote();
       }
 
-      const rows = B.ingredients.filter((g) => g.avail.length && aisleOk(g))
+      const all = B.ingredients.filter((g) => g.avail.length && aisleOk(g)), held = all.filter((g) => g.unchecked).sort((a, b) => b.share - a.share);
+      const rows = all.filter((g) => !g.unchecked)
         .sort(browse.sort === "az" ? (a, b) => a.d.name.localeCompare(b.d.name, "nl") : (a, b) => b.share - a.share || a.d.name.localeCompare(b.d.name, "nl"));
       const line = (g) => {
         const open = browseOpen === g.d.id, lo = g.avail[0], hi = g.avail.at(-1), r = { avail: g.avail, by: g.by, min: g.min, max: g.max };
@@ -920,7 +904,7 @@
           '<span class="nm">' + esc(g.d.name) + '<span class="q">' + g.avail.length + " van " + chains.length + " winkels</span></span>" +
           '<span class="plw">' + priceLine(r) + '<div class="pl-ends"><span class="lo">' + euro(g.min) + unit(g.d) + " " + esc(lo.name) + "</span><span>" +
           (g.avail.length > 1 ? euro(g.max) + unit(g.d) + " " + esc(hi.name) : "") + "</span></div></span>" +
-          '<span class="spread">' + (g.avail.length < 2 ? "—<small>één winkel</small>" : g.share ? "<b>−" + pct(g.share) + "</b><small>" + esc(lo.name) + " vs. midden</small>" : g.max > g.min ? "—<small>niet onder het midden</small>" : "gelijk<small>overal</small>") + "</span></button>" +
+          '<span class="spread">' + (g.unchecked ? "−" + pct(g.share) + "?<small>nog te controleren</small>" : g.avail.length < 2 ? "—<small>één winkel</small>" : g.share ? "<b>−" + pct(g.share) + "</b><small>" + esc(lo.name) + " vs. midden</small>" : g.max > g.min ? "—<small>niet onder het midden</small>" : "gelijk<small>overal</small>") + "</span></button>" +
           (open ? '<div class="open">' + g.avail.map((c) => {
             const { p, cost } = g.by[c.id], o = offerFor(p, "nu");
             return '<div class="pr">' + tag(c) + '<span class="pn" title="' + esc(p.name) + '">' + (o ? offerChip(p, o) + " " : "") + esc(p.name) + (p.packaging ? " · " + esc(p.packaging) : "") + "</span>" +
@@ -932,6 +916,7 @@
         (browse.sort === "az" ? " · op naam" : " · waar de winkel het meest uitmaakt bovenaan") + " · tik voor de producten</span></div>" +
         '<div class="legend">' + chains.map(tag).join("") + "<span>· omcirkeld = goedkoopst</span></div>" +
         '<div class="diffs">' + rows.slice(0, limit).map(line).join("") + "</div>" + more(rows.length) +
+        unchecked(held.length, '<div class="diffs">' + held.map(line).join("") + "</div>") +
         '<p class="note">Per winkel het goedkoopste product van dat ingrediënt per kilo, liter of stuk, vers waar het vers verkocht wordt, aanbiedingen met een prijs meegerekend. ' +
         "Het percentage is hoeveel goedkoper de goedkoopste winkel is dan de middelste: wat je bespaart door de goede winkel te kiezen in plaats van een gewone. " +
         "Kruiden, bouillon en brood worden in heel verschillende vormen verkocht; tik zo'n ingrediënt aan om te zien welke producten vergeleken worden. Alleen producten die we aan een ingrediënt koppelen staan hier" +

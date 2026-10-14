@@ -256,8 +256,54 @@
       return out.sort((a, b) => a.extra - b.extra || a.name.localeCompare(b.name)).slice(0, limit);
     }
 
+    /**
+     * Where the Chain makes the most difference (#36), for Bladeren and the
+     * morning coverage report alike. Per Ingredient, each Chain's cheapest
+     * Product in the Ingredient's unit, priced Offers included; `share` is how
+     * far the cheapest Chain is below the middle one. `worth` is every priced
+     * Offer below each other Chain's cheapest, the best per Chain and Ingredient.
+     *
+     * A difference over SPREAD_CHECK is more often a wrong match or a slipped
+     * unit than a bargain, so it is `unchecked` until data.checked names that
+     * very Product as looked at (src/catalogue/checked-spreads.ts).
+     */
+    function spreads() {
+      const checked = new Set((data.checked || []).map((k) => k.chain + "-" + k.ref + "|" + k.ingredient));
+      const unchecked = (p, share) => share > SPREAD_CHECK && !checked.has(p.id + "|" + p.ingredient);
+      const ingredients = (data.vocabulary || []).map((d) => {
+        const item = { ingredient: d.id, variant: null, preferences: {} };
+        const by = {};
+        for (const c of data.chains) { const p = candidates(c.id, item)[0]; if (p) by[c.id] = { p, cost: p.ingredientUnitPriceCents }; }
+        const avail = data.chains.filter((c) => by[c.id]).sort((a, b) => by[a.id].cost - by[b.id].cost);
+        const min = avail.length ? by[avail[0].id].cost : null, max = avail.length ? by[avail.at(-1).id].cost : null;
+        // Against the middle Chain, not the dearest: one odd Product at one
+        // Chain (bouillon powder against cubes) would otherwise top the list.
+        // An offers-only Chain is in the line but not the middle, which it would only pull down.
+        const mids = avail.filter((c) => !c.offersOnly).map((c) => by[c.id].cost), n = mids.length;
+        const mid = n ? (n % 2 ? mids[n >> 1] : Math.round((mids[n / 2 - 1] + mids[n / 2]) / 2)) : null;
+        const share = n > 1 && mid ? Math.max(0, (mid - min) / mid) : 0;
+        return { d, by, avail, min, max, mid, share, unchecked: avail.length > 0 && unchecked(by[avail[0].id].p, share) };
+      });
+      const byId = new Map(ingredients.map((g) => [g.d.id, g]));
+      // An Offer worth it is priced and beats every other Chain's cheapest of
+      // its Ingredient today: a Chain's own "was" price says little about that.
+      // One with no price of its own ("1+1 gratis") cannot be ranked (ADR-0002).
+      const best = new Map();
+      for (const c of data.chains) for (const p of Object.values(products[c.id])) {
+        if (!p.ingredient || p.offerPriceCents === null || !satisfies(p, { ingredient: p.ingredient, variant: null, preferences: {} })) continue;
+        const g = byId.get(p.ingredient); if (!g) continue;
+        const rival = g.avail.find((x) => x.id !== c.id);
+        if (!rival || p.ingredientUnitPriceCents >= g.by[rival.id].cost) continue;
+        const share = 1 - p.ingredientUnitPriceCents / g.by[rival.id].cost;
+        // The cheapest per Chain and Ingredient: six Jumbo pumpkins on Offer are one find.
+        const k = c.id + "|" + g.d.id;
+        if (!best.has(k) || share > best.get(k).share) best.set(k, { p, c, g, rival, rivalCost: g.by[rival.id].cost, share, unchecked: unchecked(p, share) });
+      }
+      return { ingredients, worth: [...best.values()].sort((a, b) => b.share - a.share) };
+    }
+
     return { products, vocabulary, parse, suggest, candidates, satisfies, packsFor, unitPrice, correctionKey, dailyPrices, priceDropAt,
-      exact, exactIdOf, exactProduct, likelyProduct, exactMatches };
+      exact, exactIdOf, exactProduct, likelyProduct, exactMatches, spreads };
   }
 
   /**
@@ -290,5 +336,8 @@
     return d[a.length][b.length];
   }
 
-  global.MealdealResolve = { createResolver, priceDrop, USUAL_MIN_DAYS, DROP_SHARE };
+  /** A difference between Chains larger than this is checked before it is shown as a bargain. */
+  const SPREAD_CHECK = 0.7;
+
+  global.MealdealResolve = { createResolver, priceDrop, USUAL_MIN_DAYS, DROP_SHARE, SPREAD_CHECK };
 })(typeof window !== "undefined" ? window : globalThis);
