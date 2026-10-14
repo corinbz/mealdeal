@@ -45,6 +45,9 @@ interface LidlItem {
   }> | null;
   storeStartDate?: unknown;
   storeEndDate?: unknown;
+  /** Sold in Stores, and sold in Lidl's webshop. Every food Offer seen is in Stores only. */
+  store?: unknown;
+  online?: unknown;
   // Images, banners and badges are on every product and deliberately not read (ADR-0003).
 }
 
@@ -146,6 +149,10 @@ export const lidlReader: ChainReader = {
         }
         if (seenRefs.has(ref)) continue;
         seenRefs.add(ref);
+        // Only what a Store sells is compared (the owner, 2026-10-14). A
+        // product not yet in Stores says store: false too, so only one Lidl
+        // sells online and not in Stores is passed over.
+        if (item.online === true && item.store !== true) continue;
 
         // One price list for every region (regionsV2 names region 1's for all six).
         const region = Object.values(item.regionsPrices ?? {})[0];

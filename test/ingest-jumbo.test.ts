@@ -211,17 +211,6 @@ test("keeps offer mechanics as the words the chain wrote", async () => {
   assert.equal(rows[0]!.headline, "Page vochtig toiletpapier");
 });
 
-test("joins several tags without interpreting any of them", async () => {
-  await ingestJumbo();
-  const { rows } = await db.query<{ wording: string }>(
-    "SELECT wording FROM offer_observation WHERE chain_offer_ref = '3022751'",
-  );
-  // "voor 1,09" is a price, "Alleen online" is a channel restriction. Neither
-  // is a discount percentage, and a parser that tried to make one would be
-  // wrong about both.
-  assert.equal(rows[0]!.wording, "voor 1,09 · Alleen online");
-});
-
 test("stores no wording for a brand page whose only tag repeats its title", async () => {
   await ingestJumbo();
   const { rows } = await db.query<{ wording: string | null; headline: string }>(
@@ -231,12 +220,37 @@ test("stores no wording for a brand page whose only tag repeats its title", asyn
   assert.equal(rows[0]!.headline, "Wayang");
 });
 
-test("keeps a tag that is only part of the title", async () => {
+test("does not record an online-only Offer: only what a Store charges counts", async () => {
   await ingestJumbo();
-  const { rows } = await db.query<{ wording: string }>(
-    "SELECT wording FROM offer_observation WHERE chain_offer_ref = '3023008'",
+  // "voor 1,09 · Alleen online" and "Gratis lepelsetje · Alleen online -
+  // OP=OP" are for online orders. The owner compares Store prices (2026-10-14).
+  const { rows } = await db.query(
+    "SELECT chain_offer_ref FROM offer_observation WHERE chain_offer_ref IN ('3022751', '3023008')",
   );
-  assert.equal(rows[0]!.wording, "Gratis lepelsetje · Alleen online - OP=OP");
+  assert.deepEqual(rows, []);
+});
+
+test("an online-only promo price is not paid, and Jumbo's Unit Price on it goes too", async () => {
+  const root = await writeFixtureArchive({ jumbo: { "products/cat-1": ["jumbo-products.online.json"] } });
+  await record(db, "jumbo", FIXTURE_DATE, await jumboReader.read(root, FIXTURE_DATE));
+  const { rows } = await db.query<{
+    chain_product_ref: string; shelf_price_cents: number; offer_price_cents: number | null;
+    unit_price_cents: number; comparison_unit: string; unit_price_source: string;
+  }>(
+    `SELECT chain_product_ref, shelf_price_cents, offer_price_cents, unit_price_cents, comparison_unit, unit_price_source
+       FROM price_observation ORDER BY chain_product_ref`,
+  );
+  // Heineken 0.0 24x330ML: 18.99 online, 25.99 in a Store. Jumbo's 2.40/l is
+  // the online price; 25.99 over 7.92 l is 3.28/l.
+  assert.deepEqual(rows[0], {
+    chain_product_ref: "734732TRA", shelf_price_cents: 2599, offer_price_cents: null,
+    unit_price_cents: 328, comparison_unit: "l", unit_price_source: "derived",
+  });
+  // No promo price to drop: Jumbo's own figure stands.
+  assert.deepEqual(rows[1], {
+    chain_product_ref: "776380PAK", shelf_price_cents: 349, offer_price_cents: null,
+    unit_price_cents: 1396, comparison_unit: "kg", unit_price_source: "chain",
+  });
 });
 
 test("does not record a delivery perk as an Offer", async () => {
@@ -249,8 +263,8 @@ test("does not record a delivery perk as an Offer", async () => {
   // are not Offers, and shown in the deal slot they read as discounts.
   assert.deepEqual(rows, []);
   const { rows: kept } = await db.query<{ n: string }>("SELECT count(*) AS n FROM offer_observation");
-  // The real Offers in the same response are all still recorded.
-  assert.equal(Number(kept[0]!.n), 5);
+  // The in-store Offers in the same response are all still recorded.
+  assert.equal(Number(kept[0]!.n), 3);
 });
 
 test("parses the bracketed timezone and flags next week's offer", async () => {
@@ -274,7 +288,7 @@ test("links offers to the skus they apply to", async () => {
   const { rows } = await db.query<{ chain_product_ref: string }>(
     `SELECT op.chain_product_ref FROM offer_product op
        JOIN offer_observation o ON o.id = op.offer_observation_id
-      WHERE o.chain_offer_ref = '3022751' ORDER BY 1`,
+      WHERE o.chain_offer_ref = '3021228' ORDER BY 1`,
   );
-  assert.deepEqual(rows.map((r) => r.chain_product_ref), ["479521STK"]);
+  assert.deepEqual(rows.map((r) => r.chain_product_ref), ["178467STK", "703857ZK", "703858ZK", "772816ZK"]);
 });

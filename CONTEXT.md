@@ -90,7 +90,7 @@ per litre. The figure all comparison is done on.
 _Avoid_: Price per kg, normalised price, unit cost
 
 **Daily Price**:
-For one Chain on one day, the lowest Unit Price a shopper could pay for an
+For one Chain on one day, the lowest Unit Price a shopper could pay in a Store for an
 Ingredient, at the Offer price while a priced Offer runs. Within one Variant
 when one is named, otherwise across all of them; within any Preferences; and
 per Store where a Chain prices per Store. A day without an Observation is a
