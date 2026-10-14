@@ -119,6 +119,18 @@ Ingredients:
 | 500 g wortelen | Doperwten en wortelen, or Olvarit baby food | fresh carrots |
 | broccoli | a broccoli-meatball ready meal | broccoli |
 
+Each list item has a small **price history** line per Chain, and tapping it
+opens the full chart: the item's Daily Price per day for the last 30 days, the
+lowest price per unit among the Products that satisfy it, with Offer days
+marked. A gap in a line is a day nothing was measured; nothing is filled in.
+There is a crosshair (arrow keys work too) and a table view. History starts on
+the first day archived and cannot be backfilled. It comes from `prices.js`,
+which `pull-catalogue.sh` also fetches; without it the page shows no history.
+
+Each Chain's colour was checked for colour-blind readers when the chart was
+added. Dirk's green and Jumbo's former maroon were nearly the same colour for
+deuteranopes, so Jumbo is amber now.
+
 A **Correction** is kept per Chain and Ingredient (and Variant), so correcting
 rundergehakt once holds for every list item and recipe that needs it.
 Corrections made before Ingredients are moved over when the page loads.

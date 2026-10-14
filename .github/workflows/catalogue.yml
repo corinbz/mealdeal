@@ -124,6 +124,11 @@ jobs:
           [ -n "${history:-}" ] && args="$args --history $history"
           node scripts/apply-history.ts $args
 
+      # Each mapped Product's price per day in its Ingredient's unit, which the
+      # page draws an item's Daily Price history from (#16).
+      - name: Build the price history for the page
+        run: node scripts/daily-prices.ts --catalogue prototype/catalogue.js --history history.json --out prices.js
+
       - name: Check it may replace the published one
         run: |
           args="--date ${{ steps.day.outputs.date }} --built prototype/catalogue.js"
@@ -142,4 +147,6 @@ jobs:
             --content-type "text/javascript; charset=utf-8" --only-show-errors
           echo "Published $(du -h prototype/catalogue.js | cut -f1) to catalogue/latest.js"
           aws s3 cp history.json "$R2/catalogue/history.json" --content-type application/json --only-show-errors
+          aws s3 cp prices.js "$R2/catalogue/prices.js" --content-type "text/javascript; charset=utf-8" --only-show-errors
+          echo "Published $(du -h prices.js | cut -f1) to catalogue/prices.js"
           echo "Published $(du -h history.json | cut -f1) to catalogue/history.json"

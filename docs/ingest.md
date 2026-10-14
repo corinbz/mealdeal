@@ -227,8 +227,19 @@ at all. A Product with no recorded days before the Offer gets no verdict. An
 Offer with no price of its own (`1+1 gratis`) is not turned into one
 (ADR-0002): only its normal price is judged, which is where an inflated "was"
 price shows. The history is derived from catalogues and holds nothing the
-archive does not. If it is lost, verdicts start over the next morning.
-Nothing rebuilds it from the archive yet.
+archive does not. If it is lost, or past days should read differently after
+a mapping or parser change, `.github/workflows/history-rebuild.yml` replays
+every archived day since a given date, in order, each into a fresh database
+as the refresh does, and publishes the result.
+
+From it the refresh also builds `catalogue/prices.js`: each mapped Product's
+price per day for the last 30 calendar days, in its Ingredient's unit. The
+pack price is divided by the pack size, or scaled by today's unit price when
+the pack size is unknown. The page takes each item's **Daily Price** from it
+(#16): per Chain and day, the lowest of those prices among the Products that
+satisfy the item, so the line respects its Variant and Preferences. A day
+nothing satisfying was observed is a gap, and so is a day the refresh never
+ran at all.
 
 It runs on GitHub's runners, at roughly 5 minutes a day against the private
 repository's 2,000 free a month (see "Which machine runs it" in

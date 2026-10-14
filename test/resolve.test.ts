@@ -19,6 +19,10 @@ const COLUMNS = ["ref", "name", "comparisonUnit", "shelfPriceCents", "unitPriceC
 type Row = [string, string, string, number, number, number, string, string | null, string | null, string | null, number, number | null, number | null];
 const BIO = 1, HUISMERK = 2;
 
+const PRICES = {
+  dates: ["2026-10-12", "2026-10-13", "2026-10-14"],
+  series: { dirk: { "3": [90, 95, 95], "4": [[89], null, 99], "5": [130, 139, 139], "1": [500, null, 498] } },
+};
 const resolver = context.MealdealResolve.createResolver({
   chains: [{ id: "dirk", name: "Dirk" }, { id: "jumbo", name: "Jumbo" }],
   columns: COLUMNS,
@@ -46,7 +50,7 @@ const resolver = context.MealdealResolve.createResolver({
       ["a", "Jumbo Rundergehakt", "kg", 479, 958, 0.5, "kg", "gehakt", "rund", "vers", HUISMERK, 958, 0.5],
     ] satisfies Row[],
   },
-});
+}, PRICES);
 const first = (chain: string, text: string) => resolver.candidates(chain, resolver.parse(text))[0]?.name ?? null;
 
 test("a Correction is kept per Chain and Ingredient, so it applies to every item needing it", () => {
@@ -88,4 +92,14 @@ test("an item the vocabulary does not know resolves by Product name, and says so
 
 test("a Chain without the Ingredient has no candidate, which Coverage then shows", () => {
   assert.equal(first("jumbo", "400 g spinazie"), null);
+});
+
+test("the Daily Price is the lowest per day among the Products that satisfy the item", () => {
+  const plain = (text: string) => resolver.dailyPrices("dirk", resolver.parse(text)).days.map((d: any) => d && [d.cents, d.offer]);
+  // Any melk: volle on most days, but halfvolle while it was on Offer.
+  assert.deepEqual(plain("1 l melk"), [[89, true], [95, false], [95, false]]);
+  // Halfvolle only: the Bio carton fills the day the cheaper one was not observed.
+  assert.deepEqual(plain("1 l halfvolle melk"), [[89, true], [139, false], [99, false]]);
+  // A day nothing satisfying was observed is a gap.
+  assert.deepEqual(plain("400 g spinazie"), [[500, false], null, [498, false]]);
 });

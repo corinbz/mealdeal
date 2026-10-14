@@ -52,6 +52,10 @@ jobs:
           cp prototype/words.js site/words.js
           cp prototype/resolve.js site/resolve.js
           aws s3 cp "s3://${{ secrets.R2_BUCKET }}/catalogue/latest.js" site/catalogue.js --only-show-errors
+          # The price history (#16). Until a refresh has published one, the
+          # page gets none, and shows no history rather than failing.
+          aws s3 cp "s3://${{ secrets.R2_BUCKET }}/catalogue/prices.js" site/prices.js --only-show-errors 2>/dev/null \
+            || echo "window.PRICES = null;" > site/prices.js
           # Unlisted is not private, but it should not be found: no search
           # engine indexes it. The page, its catalogue and the service worker
           # are revalidated on every visit, so the phone never shows yesterday's
