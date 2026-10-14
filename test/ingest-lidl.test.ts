@@ -79,12 +79,19 @@ test("a product on the page at its price is a Shelf Price and no Offer", async (
   assert.deepEqual(await offerOf("11004749"), []);
 });
 
-test("an Offer only with the Lidl Plus app is wording, at the price everyone pays", async () => {
+test("a Lidl Plus price counts as paid, as if the shopper had the app", async () => {
   await ingestLidl();
-  // Mandarins: 1.29 with the app, 1.99 without. Without it nobody pays 1.29.
+  // The owner's choice (2026-10-14): every Chain's card and app prices count.
+  // Mandarins: 1.29 with the app, 1.99 without.
   const mandarijnen = await observation("11113446");
-  assert.deepEqual([mandarijnen!.shelf_price_cents, mandarijnen!.offer_price_cents], [199, null]);
+  assert.deepEqual([mandarijnen!.shelf_price_cents, mandarijnen!.offer_price_cents], [199, 129]);
   assert.equal((await offerOf("11113446"))[0]!.wording, "-35% · 1.29 met Lidl Plus");
+  // Croissants at 0.88 for everyone, 0.79 with the app.
+  const croissants = await observation("11353634");
+  assert.deepEqual([croissants!.shelf_price_cents, croissants!.offer_price_cents, croissants!.unit_price_cents], [88, 79, 832]);
+  // Grapes at 1.19 for everyone and 1.29 with the app: the lower one stands.
+  assert.equal((await observation("11150885"))!.offer_price_cents, 119);
+  assert.equal((await offerOf("11150885"))[0]!.wording, "-50% · Mega deal!");
 });
 
 test("an Offer not yet in store keeps today's price, and its own only in the wording", async () => {

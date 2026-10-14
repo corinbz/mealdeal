@@ -13,10 +13,11 @@ import type { ChainReader, ChainReading, OfferReading, PriceReading } from "./ty
  *     price, the Offer price the reduced one.
  *   - on the page at its price, with nothing struck through (a week's bakery
  *     or a themed range). That is a Shelf Price, and no Offer.
- *   - reduced only with the Lidl Plus app: no price for everyone, a Lidl Plus
- *     price and the price it was. The Shelf Price is the "was" price; the
- *     Offer is wording only, naming the Lidl Plus price, because without the
- *     app nobody pays it.
+ *   - reduced with the Lidl Plus app: a Lidl Plus price and the price it
+ *     was. The Shelf Price is the "was" price and the Offer price the Lidl
+ *     Plus one. The owner chose on 2026-10-14 to count every Chain's card and
+ *     app prices as if the shopper held them; the page says so, and the
+ *     Offer's wording names the app.
  *
  * So Lidl's catalogue here is a hundred-odd Products a week, not its
  * assortment: Lidl publishes no other prices. No EANs: `ians` are Lidl's own
@@ -172,9 +173,12 @@ export const lidlReader: ChainReader = {
             .filter(Boolean).join(" · ") || "aanbieding";
         } else if (now !== null) {
           shelf = now;
-        } else if (plus !== null) {
-          // Only with the app: the price it was is what everyone else pays.
-          shelf = plusWas !== null && plusWas > plus ? plusWas : null;
+        }
+        // With the app, cheaper still (or only then reduced): counted as paid.
+        // Where the price for everyone is already lower, that one stands.
+        if (plus !== null && plus < (offerCents ?? now ?? Infinity)) {
+          shelf ??= plusWas !== null && plusWas > plus ? plusWas : null;
+          offerCents = shelf !== null && plus < shelf ? plus : null;
           wording = [text(lidlPlus?.highlightText), `${euros(plus)} ${text(lidlPlus?.lidlPlusText) ?? "met Lidl Plus"}`]
             .filter(Boolean).join(" · ");
         }
@@ -184,7 +188,7 @@ export const lidlReader: ChainReader = {
         // (ADR-0002). A product stated at one price, reduced from nothing,
         // is not sold until then at all.
         if (isUpcoming && offerCents !== null) {
-          wording = `${euros(offerCents)} · ${wording}`;
+          if (!wording?.includes(euros(offerCents))) wording = `${euros(offerCents)} · ${wording}`;
           offerCents = null;
         } else if (isUpcoming && now !== null && was === null) {
           wording = euros(now);

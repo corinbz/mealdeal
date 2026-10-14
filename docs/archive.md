@@ -306,10 +306,13 @@ webshop sales terms, with nothing on reuse or automated access.
 - Reduced: the price it was is the Shelf Price, the price the Offer price.
 - At its price, nothing struck through (a week's bakery, a themed range): a
   Shelf Price, and no Offer.
-- **Reduced only with the Lidl Plus app** (48 of 142): no price for everyone,
-  a Lidl Plus price and the price it was. The Shelf Price is the price it
-  was; the Offer is wording only ("-35% · 1.29 met Lidl Plus"), because
-  without the app nobody pays it.
+- **Reduced with the Lidl Plus app** (48 of 142 only with it): a Lidl Plus
+  price and the price it was. The Shelf Price is the price it was, and the
+  Offer price the Lidl Plus one, wherever it is lower than the price for
+  everyone. **Decision, 2026-10-14:** the owner chose to count every Chain's
+  card and app prices as if the shopper held them, and to say so on the page
+  and in the digest ("Gerekend alsof je Lidl Plus hebt"). The wording names
+  the app ("-35% · 1.29 met Lidl Plus").
 
 An Offer not yet in store (from Thursday or Friday) keeps today's price, and
 its own price only in its wording. About a third of the products state no

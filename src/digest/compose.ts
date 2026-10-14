@@ -15,7 +15,7 @@ import { createResolver } from "../words.ts";
 
 /** The catalogue as scripts/catalogue-from-db.ts and apply-history.ts write it. */
 export interface DigestCatalogue {
-  readonly chains: readonly { readonly id: string; readonly name: string; readonly observedAt: string | null }[];
+  readonly chains: readonly { readonly id: string; readonly name: string; readonly observedAt: string | null; readonly card?: string | null }[];
   readonly columns: readonly string[];
   readonly vocabulary?: readonly unknown[];
   readonly catalogue: Readonly<Record<string, readonly (readonly unknown[])[]>>;
@@ -93,6 +93,11 @@ export function composeDigest(data: DigestCatalogue, staples: readonly string[],
   const withDeals = found.filter((s) => s.deals.length), without = found.filter((s) => !s.deals.length);
   // A staple that reads as a typo is said so, with the likely name, since a
   // misspelt staple is resolved by name only and may quietly match nothing.
+  // Card and app prices count as paid, as on the page; said wherever they do.
+  const cards = data.chains.map((c) => c.card).filter((c): c is string => !!c);
+  const cardNote = cards.length
+    ? `Gerekend alsof je ${cards.join(" en ")} hebt: aanbiedingen die alleen met ${cards.length > 1 ? "een klantenkaart of app" : "de app"} gelden, tellen mee. Zonder betaal je daar de gewone prijs.`
+    : null;
   const typos = found.filter((s) => s.suggestion).map((s) => `"${s.staple}" niet herkend; bedoel je "${s.suggestion}"? Pas je vaste boodschappen aan.`);
 
   const text = [
@@ -102,6 +107,7 @@ export function composeDigest(data: DigestCatalogue, staples: readonly string[],
     ...(without.length ? [`Geen echte korting deze week op: ${without.map((s) => s.staple).join(", ")}.`, ""] : []),
     ...(typos.length ? [...typos, ""] : []),
     "Alleen aanbiedingen onder de laagste prijs van de dagen ervoor staan hierin. Een actie zonder eigen prijs, zoals 1+1 gratis, of zonder prijsgeschiedenis, telt niet mee.",
+    ...(cardNote ? [cardNote] : []),
     "",
     `Recepten van deze week: ${site}#recepten`,
     `Prijzen van ${swept.join("; ")}.`,
@@ -119,6 +125,7 @@ ${withDeals.map((s) => `<h2 style="font-size:16px;margin:18px 0 6px">${esc(s.sta
 ${without.length ? `<p style="color:#6b5b4b">Geen echte korting deze week op: ${esc(without.map((s) => s.staple).join(", "))}.</p>` : ""}
 ${typos.map((t) => `<p style="color:#b8432f">${esc(t)}</p>`).join("\n")}
 <p style="font-size:13px;color:#6b5b4b">Alleen aanbiedingen onder de laagste prijs van de dagen ervoor staan hierin. Een actie zonder eigen prijs, zoals 1+1 gratis, of zonder prijsgeschiedenis, telt niet mee.</p>
+${cardNote ? `<p style="font-size:13px;color:#6b5b4b">${esc(cardNote)}</p>` : ""}
 <p><a href="${esc(site)}#recepten">Recepten van deze week</a> · <a href="${esc(site)}#lijst">Je lijst</a></p>
 <p style="font-size:12px;color:#8a7a6a">Afmelden: zet de wekelijkse mail uit met één klik op <a href="${esc(disableUrl)}">Disable workflow</a>.</p>
 </body></html>`;
