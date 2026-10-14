@@ -39,6 +39,15 @@ export interface Digest {
 /** At most this many deals per staple, the cheapest by Unit Price first. */
 const PER_STAPLE = 3;
 
+/**
+ * "Bloemkool Broccoli Gehaktbal met Gekookte Aardappelen" is a ready meal, not
+ * broccoli, but matches it as the page matches. On the page a Correction fixes
+ * that; an email cannot be corrected, so a dish named "X met Y" is left out
+ * unless the staple names one too. Matching itself is the page's, and stays
+ * crude until Products map to Ingredients (#14).
+ */
+const DISH = /\s(met|&)\s/i;
+
 interface Product {
   readonly chain: string;
   readonly name: string;
@@ -80,6 +89,7 @@ export function realDeals(data: DigestCatalogue, staples: readonly string[]): { 
     const wanted = words.wordsOf(item.noun);
     const deals = products
       .filter((p) => p.unit === item.unit && words.matches(wanted, p.words))
+      .filter((p) => DISH.test(item.noun) || !DISH.test(p.name))
       .filter((p) => p.offer !== null && p.low !== null && p.days !== null && p.offer < p.low)
       .sort((a, b) => a.unitPrice - b.unitPrice)
       .slice(0, PER_STAPLE)

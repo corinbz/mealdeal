@@ -42,6 +42,15 @@ test("a staple matches like the page: every typed word ends a word of the name",
   assert.deepEqual(found[0]!.deals.map((d) => d.name), ["Rundergehakt", "Jumbo Kipgehakt"]);
 });
 
+test("a dish named for a staple is not that staple", () => {
+  const data: DigestCatalogue = { chains: DATA.chains.slice(1), catalogue: { jumbo: [
+    row("m", "Jumbo Bloemkool Broccoli Gehaktbal met Gekookte Aardappelen 500 g", "kg", 499, 399, "voor 3,99", 499, 1),
+    row("n", "Jumbo Broccoli 500 g", "kg", 119, 109, "voor 1,09", 119, 1),
+  ] } };
+  assert.deepEqual(realDeals(data, ["400 g broccoli"])[0]!.deals.map((d) => d.name), ["Jumbo Broccoli 500 g"]);
+  assert.equal(realDeals(data, ["gehaktbal met aardappelen"])[0]!.deals.length, 1);
+});
+
 test("the email says which day the prices are from, and names staples without a real discount", () => {
   const digest = composeDigest(DATA, ["500 g rundergehakt", "1 l halfvolle melk"], "https://example.pages.dev/", "https://github.com/x");
   assert.equal(digest.deals, 1);
