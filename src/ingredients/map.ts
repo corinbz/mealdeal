@@ -86,6 +86,14 @@ function excludes(term: string, lower: string, raw: readonly string[]): boolean 
 
 const BRAND_NOT_FOOD = /^gouda's glorie\b/;
 
+/**
+ * What a name or brand says about how a Product is kept, where the Chain's
+ * category does not: Hoogvliet and Plus file Vis Marine, a frozen brand,
+ * beside fresh fish, and Jumbo its tinned mackerel among the tapas.
+ */
+const FROZEN = /\b(diepvries|bevroren|vis marine)\b/;
+const TINNED = /\bin [\p{L} ]*?(olie|olijfolie|zonnebloemolie|water|tomatensaus|pekel)\b|\bgebroken\b/u;
+
 const ELSEWHERE: ReadonlySet<Aisle> = new Set(["readymeal", "baby", "pet", "nonfood"]);
 
 /** Words after which a name goes on about something else: "X met Y". */
@@ -174,10 +182,13 @@ export function createMapper(vocabulary: readonly IngredientDef[] = VOCABULARY) 
     // carrots sit in Groente too, but they are in a jar.
     const kept = [...aisles].filter((a) => chosen.aisles.has(a));
     const aisle = kept.find((a) => formOf(a) === "conserven" || formOf(a) === "diepvries") ?? kept[0]!;
+    // Only for an Ingredient that is sold tinned at all: mozzarella in water is fresh.
+    const said = FROZEN.test(lower) || FROZEN.test((product.brand ?? "").toLowerCase()) ? "diepvries"
+      : chosen.aisles.has("conserves") && TINNED.test(lower) ? "conserven" : null;
     return {
       ingredient: def.id,
       variant: variant?.id ?? null,
-      form: formOf(aisle),
+      form: said ?? formOf(aisle),
       biologisch: /\bbio(logisch|logische)?\b/.test(lower) || product.categories.some((c) => /biologisch/i.test(c)),
       huismerk: isOwnBrand(product.chainId, product.brand, product.name),
     };
