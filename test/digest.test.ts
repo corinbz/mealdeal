@@ -92,3 +92,8 @@ test("wording is escaped in the HTML", () => {
   const data = catalogue({ dirk: [{ name: "Rundergehakt", unit: "kg", shelf: 449, offer: 399, wording: "<b>actie</b>", low: 449, days: 3, ingredient: "gehakt", variant: "rund" }] });
   assert.match(composeDigest(data, ["rundergehakt"], "https://e/", "https://g/").html, /&lt;b&gt;actie&lt;\/b&gt;/);
 });
+
+test("a staple that reads as a typo is named, with the likely name", () => {
+  const digest = composeDigest(DATA, ["500 g rundergehak"], "https://e/", "https://g/");
+  assert.match(digest.text, /"rundergehak" niet herkend; bedoel je "rundergehakt"\?/);
+});

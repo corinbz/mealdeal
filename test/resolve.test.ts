@@ -103,3 +103,11 @@ test("the Daily Price is the lowest per day among the Products that satisfy the 
   // A day nothing satisfying was observed is a gap.
   assert.deepEqual(plain("400 g spinazie"), [[500, false], null, [498, false]]);
 });
+
+test("a typo of a known Ingredient gets a suggestion; an unknown word gets none", () => {
+  assert.equal(resolver.parse("500 g spinzaie").suggestion, "spinazie");
+  assert.equal(resolver.parse("1 l halfvole melk").suggestion, "halfvolle melk");
+  assert.equal(resolver.parse("pindaksa").suggestion, "pindakaas");
+  assert.equal(resolver.parse("1 kg kattenvoer").suggestion, null);
+  assert.equal(resolver.parse("400 g spinazie").suggestion, undefined, "a recognised item needs none");
+});

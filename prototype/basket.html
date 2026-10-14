@@ -96,6 +96,7 @@
   .vd { display: inline-block; font-size: 12px; font-weight: 700; border-radius: 6px; padding: 0 6px; margin-left: 4px; color: var(--ink-2); }
   .vd.low { background: var(--good-wash); color: var(--good); }
   .vd.not { background: var(--bad-wash); color: var(--bad); }
+  .sug { border: 0; background: none; padding: 0; font: inherit; font-weight: 900; color: inherit; text-decoration: underline; cursor: pointer; }
   .hist { grid-column: 1 / -1; display: grid; gap: 2px; width: 100%; border: 0; background: none; padding: 4px 0 0; font: inherit; color: var(--ink-2); text-align: left; cursor: pointer; }
   .hist svg { width: 100%; height: 28px; display: block; overflow: visible; }
   .hist .cap { font-size: 13px; font-weight: 700; }
@@ -732,6 +733,7 @@
           '<button data-act="remove" data-id="' + r.item.id + '" title="Van de lijst">✕</button></div>' +
           (r.item.guessed ? '<div class="guess">' + (r.item.ingredient ? "Hoeveelheid geraden: gerekend in " + ({ kg: "kilo", l: "liter", piece: "stuks" })[r.item.unit] : "Eenheid geraden: tik het aantal om te wisselen") + "</div>" : "") +
           (r.item.ingredient ? "" : '<div class="guess">Niet herkend: gezocht op de naam van producten</div>') +
+          (R.suggest(r.item.noun) ? '<div class="guess">Bedoel je <button class="sug" data-act="suggest" data-id="' + r.item.id + '">' + esc(R.suggest(r.item.noun)) + "</button>?</div>" : "") +
           '<div class="best">' + best + "</div>" + priceLine(r, true) + sparkline(r.item) + offersFor(r.item) + "</div>";
       };
       const staples = s.rows.filter((r) => r.item.staple), once = s.rows.filter((r) => !r.item.staple);
@@ -1028,6 +1030,13 @@
       case "recipe": addRecipe(id); break;
       case "open-recipe": sheet = { kind: "recipe", id }; break;
       case "history": sheet = { kind: "history", itemId: id }; break;
+      case "suggest": {
+        // Read the item again with the suggested name in place of the typo, keeping its quantity.
+        const name = item && R.suggest(item.noun), text = name && item.text.toLowerCase().replace(item.noun.toLowerCase(), name);
+        const fixed = text && parse(text);
+        if (fixed) { Object.assign(item, fixed, { id: item.id, staple: item.staple }); delete item.suggestion; hint = "Aangepast: " + qtyText(fixed) + " " + fixed.noun; }
+        break;
+      }
       case "step": { const set = (stepsDone[sheet.id] ||= new Set()); const n = Number(id); set.has(n) ? set.delete(n) : set.add(n); break; }
       case "close": sheet = null; break;
       default: return;

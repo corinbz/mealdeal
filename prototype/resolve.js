@@ -59,6 +59,30 @@
       for (const v of d.variants) names.set(key(v.name), { ingredient: d.id, variant: v.id });
     }
 
+    /**
+     * The name of the Ingredient or Variant an unrecognised noun is probably a
+     * typo of ("kipdijfillet" -> "kipdijfilet"), or null. Close means one
+     * letter off, or two in a longer name: closer than that is a different
+     * word, and a guess would be worse than "not recognised".
+     */
+    const display = new Map();
+    for (const d of vocabulary.values()) {
+      for (const n of [d.name, ...d.also]) if (!display.has(key(n))) display.set(key(n), n);
+      for (const v of d.variants) display.set(key(v.name), v.name);
+    }
+    function suggest(noun) {
+      const typed = W.wordsOf(noun).join(" ");
+      if (!typed || names.has(typed)) return null;
+      const allowed = typed.length > 7 ? 2 : 1;
+      let best = null, bestDistance = allowed + 1;
+      for (const [k, name] of display) {
+        if (Math.abs(k.length - typed.length) > allowed) continue;
+        const d = distance(typed, k);
+        if (d < bestDistance) { best = name; bestDistance = d; }
+      }
+      return best;
+    }
+
     const matching = (chainId, unit, words) => searchable[chainId].filter((p) =>
       (unit === null || p.unit === unit) && W.matches(words, p.words));
     const tally = (words) => {
@@ -72,7 +96,7 @@
       const words = W.wordsOf(noun);
       for (let i = 0; i < words.length; i++) {
         const found = names.get(words.slice(i).join(" "));
-        if (found) return found;
+        if (found) return { ...found, partial: i > 0 };
       }
       return null;
     }
@@ -86,7 +110,7 @@
       if (!item) return null;
       const found = lookup(item.noun), def = found && vocabulary.get(found.ingredient);
       const base = { ...item, text: text.trim().replace(/\s+/g, " "), preferences };
-      if (!def) return { ...base, ingredient: null, variant: null };
+      if (!def) return { ...base, ingredient: null, variant: null, suggestion: suggest(item.noun) };
       let { quantity, unit, guessed } = item;
       if (unit !== def.unit) {
         // Written in another unit than the Ingredient compares by: convert
@@ -97,8 +121,10 @@
         else guessed = true;
         unit = def.unit;
       }
+      // Read from its last words only ("halfvole melk" as melk), a misspelt
+      // Variant would be dropped without a word: suggest it.
       return { ...base, noun: found.variant ? def.variants.find((v) => v.id === found.variant).name : item.noun,
-        quantity, unit, guessed, ingredient: def.id, variant: found.variant };
+        quantity, unit, guessed, ingredient: def.id, variant: found.variant, ...(found.partial ? { suggestion: suggest(item.noun) } : {}) };
     }
 
     /** Whether a Product may satisfy a Requirement. */
@@ -161,7 +187,18 @@
       return { dates, days };
     }
 
-    return { products, vocabulary, parse, candidates, satisfies, packsFor, unitPrice, correctionKey, dailyPrices };
+    return { products, vocabulary, parse, suggest, candidates, satisfies, packsFor, unitPrice, correctionKey, dailyPrices };
+  }
+
+  /** Edits between two strings, a swap of neighbours counting as one ("kpi" for "kip"). */
+  function distance(a, b) {
+    const d = Array.from({ length: a.length + 1 }, (_, i) => [i, ...Array(b.length).fill(0)]);
+    for (let j = 1; j <= b.length; j++) d[0][j] = j;
+    for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++) {
+      d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + 1);
+    }
+    return d[a.length][b.length];
   }
 
   global.MealdealResolve = { createResolver };
