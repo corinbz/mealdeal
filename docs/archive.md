@@ -279,14 +279,17 @@ It then sets `ARCHIVE_RUNNER` to `["self-hosted","pi"]` and starts a run.
 in R2 and passes `archive:check`. GitHub emails the owner about a failed
 scheduled run. It exists because the archive cannot report its own absence:
 
-- GitHub skipped the first scheduled run outright, on 2026-10-14. Scheduled
-  runs are best effort.
+- GitHub started the first scheduled run 5 hours 10 minutes late, on
+  2026-10-14: due at 04:30, created at 09:40 UTC. Scheduled runs are best
+  effort, and a delay that long looks the same as a skip until it ends.
 - A job waiting for a Pi that is off sits queued with no error until GitHub
   drops it.
 
 The Chains still serve that day's prices when it fires, so the day can still be
-captured: `gh workflow run archive.yml -f chain=all`. That run resumes whatever
-part of the day is already in R2. The watchdog's list of Chains must match the
+captured: `gh workflow run archive.yml -f chain=all`. That is safe even if the
+scheduled run is only late: runs queue behind each other, and each resumes
+whatever part of the day is already in R2, carrying the manifest's steps and
+request counts forward. The watchdog's list of Chains must match the
 archive workflow's.
 
 Do **not** commit the archive to git — `.gitignore` excludes `/archive/`
