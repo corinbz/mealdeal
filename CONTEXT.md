@@ -30,6 +30,27 @@ _Avoid_: Local chain, small chain
 One purchasable item in a Chain's assortment, at a single Pack Size.
 _Avoid_: Item, SKU, article
 
+**Ingredient**:
+A kind of food regardless of brand, Pack Size or Chain, such as melk or
+pindakaas. Each Chain's Products map onto Ingredients; a Product that is not
+one food, such as a ready meal, maps to none.
+_Avoid_: Food, category, product type, grocery
+
+**Variant**:
+A kind of an Ingredient that differs in what the food is: its fat level, meat,
+texture or cut, such as halfvolle melk or rundergehakt. A Requirement may name
+one; one that names only the Ingredient is satisfied by any of its Variants.
+_Avoid_: Subtype, flavour, sort
+
+**Exact Product**:
+One branded item at one Pack Size, as sold by several Chains: the same
+Calvé pindakaas 350 g wherever it is. Proven by a shared EAN; a Product
+without one, such as every Product at Dirk, joins by brand, name and Pack Size
+and is then only ever shown as likely the same. Own-brand goods are never an
+Exact Product, since no two Chains share one: they compete only as Products of
+one Ingredient.
+_Avoid_: Same product, equivalent, identical product, match
+
 **Chain Reference**:
 The identifier a Chain uses for one of its own Products. It is meaningful only
 inside that Chain and asserts nothing across Chains, unlike an EAN.
@@ -62,9 +83,19 @@ A Product's price normalised to a comparable quantity, such as per kilogram or
 per litre. The figure all comparison is done on.
 _Avoid_: Price per kg, normalised price, unit cost
 
+**Daily Price**:
+For one Chain on one day, the lowest Unit Price a shopper could pay for an
+Ingredient, at the Offer price while a priced Offer runs. Within one Variant
+when one is named, otherwise across all of them; within any Preferences; and
+per Store where a Chain prices per Store. A day without an Observation is a
+gap, never filled.
+_Avoid_: Average price, usual price, index price
+
 **Comparison Unit**:
-The quantity an Ingredient is compared by — per kilogram, per litre, or per
-piece. Products are only ever compared against others sharing one.
+The one quantity an Ingredient is compared by — per kilogram, per litre, or
+per piece. A Product priced in another unit compares only through a stated
+conversion (about 250 g to a courgette), and without one it is not a
+comparison candidate for that Ingredient.
 _Avoid_: Measure, uom, denomination
 
 ### Recording
@@ -88,14 +119,29 @@ A named, saved set of Basket Items. A user may keep several. Each Item is
 either a staple, kept between trips, or a one-off, cleared once a trip is done.
 _Avoid_: Cart, list, order
 
+**Requirement**:
+A quantity of an Ingredient, of one of its Variants, or of one Exact Product,
+such as "500 g pindakaas". What a Basket Item and a Recipe both consist of, so
+that a Recipe can be costed like a Basket.
+_Avoid_: Ingredient (for the quantified form), line, need
+
 **Basket Item**:
-A requirement to satisfy, such as "500g peanut butter" — not a particular
-Product. Each Chain resolves it to a Product of its own independently.
+A Requirement on a Basket, with any Preferences — not a particular Product.
+Each Chain resolves it to a Product of its own independently.
 _Avoid_: Line item, cart item, product
 
+**Preference**:
+A constraint on a Basket Item about how its food was produced or who made
+it, such as biologisch, A-merk, huismerk, scharrel or diepvries. It narrows
+which Products may satisfy the Item without changing its Ingredient or
+Variant. Fresh is assumed wherever an Ingredient is sold fresh: frozen, tinned
+and jarred count only when a Preference allows them.
+_Avoid_: Filter, qualifier, option
+
 **Resolution**:
-Choosing which of a Chain's Products satisfies a Basket Item. Picks the lowest
-Unit Price by default.
+Choosing which of a Chain's Products satisfies a Basket Item. By default, the
+lowest Unit Price among that Chain's Products of its Ingredient, within its
+Variant and Preferences; for an Exact Product, that Chain's own one of it.
 _Avoid_: Matching, mapping, substitution
 
 **Suggestion**:
@@ -117,10 +163,5 @@ _Avoid_: Override, fix, remap
 ### Meal planning
 
 **Recipe**:
-Ingredients and steps for one meal.
+The Requirements and steps for one meal.
 _Avoid_: Dish, meal
-
-**Ingredient**:
-A quantity of a food requirement inside a Recipe, expressed in the same
-vocabulary as a Basket Item so that Recipes can be costed.
-_Avoid_: Component, element
