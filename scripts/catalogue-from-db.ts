@@ -21,7 +21,8 @@
 import { writeFile } from "node:fs/promises";
 import { connect } from "../src/ingest/db.ts";
 import { formOf } from "../src/ingredients/aisles.ts";
-import { createMapper, isOwnBrand } from "../src/ingredients/map.ts";
+import { createMapper, isOwnBrand, type Mapping } from "../src/ingredients/map.ts";
+import { borrowMappings, productKey } from "../src/catalogue/borrow.ts";
 import { groupExactProducts, type ExactCandidate } from "../src/catalogue/exact.ts";
 import { VOCABULARY, type ComparisonUnit } from "../src/ingredients/vocabulary.ts";
 
@@ -111,7 +112,7 @@ function inIngredientUnit(perUnitOf: ComparisonUnit, quantity: number, ingredien
 
 const map = createMapper();
 const vocabulary = new Map(VOCABULARY.map((d) => [d.id, d]));
-const mappedCount: Record<string, { mapped: number; comparable: number; total: number }> = {};
+const mappedCount: Record<string, { mapped: number; borrowed: number; comparable: number; total: number }> = {};
 
 const db = connect();
 
@@ -132,17 +133,23 @@ const { rows: chains } = await db.query<{
     ORDER BY c.name`,
 );
 
+/** One Product's latest Observation, as the query below reads it. */
+interface ProductRow {
+  chain_product_ref: string; name: string; pack_text: string | null; pack_quantity: string | null;
+  pack_unit: string | null; comparison_unit: string; shelf_price_cents: number; offer_price_cents: number | null;
+  unit_price_cents: number; wording: string | null; ends_on: string | null;
+  next_wording: string | null; next_starts_on: string | null; has_next: boolean;
+  brand: string | null; categories: string[]; eans: string[];
+}
+
 const catalogue: Record<string, Row[]> = {};
 const exactCandidates: ExactCandidate[] = [];
+/** Each Chain's rows as read, and each Product's own Mapping, until EAN twins have lent theirs. */
+const pending: Record<string, ProductRow[]> = {};
+const own = new Map<string, Mapping | null>();
 
 for (const chain of chains) {
-  const { rows } = await db.query<{
-    chain_product_ref: string; name: string; pack_text: string | null; pack_quantity: string | null;
-    pack_unit: string | null; comparison_unit: string; shelf_price_cents: number; offer_price_cents: number | null;
-    unit_price_cents: number; wording: string | null; ends_on: string | null;
-    next_wording: string | null; next_starts_on: string | null; has_next: boolean;
-    brand: string | null; categories: string[]; eans: string[];
-  }>(
+  const { rows } = await db.query<ProductRow>(
     // The latest Observation per Product, joined to the running Offer naming
     // it and, separately, the next upcoming one. All from the same run: a day
     // can be re-ingested after a parser fix, its runs share an observed_at,
@@ -189,9 +196,38 @@ for (const chain of chains) {
     [chain.id, OFFERS_ONLY.has(chain.id) ? chain.run_id : null],
   );
 
-  const counts = (mappedCount[chain.id] = { mapped: 0, comparable: 0, total: rows.length });
-  catalogue[chain.id] = rows.map<Row>((r) => {
+  pending[chain.id] = rows.map((r) => {
     const m = map({ chainId: chain.id, name: r.name, brand: r.brand, categories: r.categories });
+    own.set(productKey(chain.id, r.chain_product_ref), m);
+    const packQuantity = r.pack_quantity === null ? null : Number(r.pack_quantity);
+    exactCandidates.push({
+      chainId: chain.id, ref: r.chain_product_ref, name: r.name, brand: r.brand, eans: r.eans,
+      packQuantity, packUnit: r.pack_unit, huismerk: isOwnBrand(chain.id, r.brand, r.name),
+    });
+    return r;
+  });
+}
+
+/**
+ * Exact Products (#15): the same branded item at several Chains, proven by a
+ * shared EAN, with any Product only likely the same at a Chain publishing no
+ * EANs. Members are refs into each Chain's rows above. See src/catalogue/exact.ts.
+ */
+const exact = groupExactProducts(exactCandidates);
+
+/**
+ * A Product mapping to nothing borrows its EAN twin's Ingredient (#34); see
+ * src/catalogue/borrow.ts. Twins that disagree are listed, to be fixed.
+ */
+const borrowed = borrowMappings(exact, own);
+
+for (const chain of chains) {
+  const rows = pending[chain.id]!;
+  const counts = (mappedCount[chain.id] = { mapped: 0, borrowed: 0, comparable: 0, total: rows.length });
+  catalogue[chain.id] = rows.map<Row>((r) => {
+    const key = productKey(chain.id, r.chain_product_ref);
+    const lent = borrowed.mappings.get(key);
+    const m = own.get(key) ?? lent ?? null;
     const def = m ? vocabulary.get(m.ingredient)! : null;
     const unit = r.comparison_unit as ComparisonUnit;
     const iPrice = def ? inIngredientUnit(unit, r.unit_price_cents, def.unit, def.equals, true) : null;
@@ -200,10 +236,7 @@ for (const chain of chains) {
       ? inIngredientUnit(r.pack_unit as ComparisonUnit, packQuantity, def.unit, def.equals, false)
       : null;
     if (m) counts.mapped++;
-    exactCandidates.push({
-      chainId: chain.id, ref: r.chain_product_ref, name: r.name, brand: r.brand, eans: r.eans,
-      packQuantity, packUnit: r.pack_unit, huismerk: isOwnBrand(chain.id, r.brand, r.name),
-    });
+    if (lent) counts.borrowed++;
     if (iPrice !== null) counts.comparable++;
     return [
       r.chain_product_ref,
@@ -229,13 +262,6 @@ for (const chain of chains) {
     ];
   });
 }
-
-/**
- * Exact Products (#15): the same branded item at several Chains, proven by a
- * shared EAN, with any Product only likely the same at a Chain publishing no
- * EANs. Members are refs into each Chain's rows above. See src/catalogue/exact.ts.
- */
-const exact = groupExactProducts(exactCandidates);
 const withEans = new Set(exactCandidates.filter((c) => c.eans.length).map((c) => c.chainId));
 
 const data = {
@@ -284,7 +310,13 @@ console.error(`wrote ${OUT.pathname}: ${counts} comparable products`);
 // how much of that compares in the Ingredient's own unit.
 for (const c of chains) {
   const n = mappedCount[c.id]!;
-  console.error(`  ${c.name}: ${n.mapped} mapped to an Ingredient, ${n.total - n.mapped} unmapped; ${n.comparable} comparable in the Ingredient's unit`);
+  console.error(`  ${c.name}: ${n.mapped} mapped to an Ingredient (${n.borrowed} borrowed from an EAN twin), ${n.total - n.mapped} unmapped; ${n.comparable} comparable in the Ingredient's unit`);
+}
+// EAN twins mapped to different Ingredients: one of them is wrong (#34).
+const names = Object.fromEntries(chains.map((c) => [c.id, c.name]));
+console.error(`  ${borrowed.conflicts.length} Exact Products whose Chains map them to different Ingredients${borrowed.conflicts.length ? ":" : ""}`);
+for (const k of borrowed.conflicts) {
+  console.error(`    ${k.name} (${k.id}): ${Object.entries(k.ingredients).map(([c, i]) => `${names[c]} ${i ?? "none"}`).join(", ")}`);
 }
 const likely = exact.filter((g) => Object.keys(g.likely).length).length;
 console.error(`  ${exact.length} Exact Products shared by EAN, ${likely} with a Product likely the same where no EAN is published`);
