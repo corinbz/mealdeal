@@ -1,5 +1,5 @@
 import { readStep, jsonOf } from "../archive.ts";
-import { deriveUnitPrice, parseInstant, parsePackSize, type ComparisonUnit } from "../normalise.ts";
+import { deriveUnitPrice, parseInstant, parsePackSize, type ComparisonUnit, type PackSize } from "../normalise.ts";
 import type { ChainReader, ChainReading, OfferReading, PriceReading } from "./types.ts";
 
 /**
@@ -107,6 +107,20 @@ function basePrice(price: Price): { cents: number; unit: ComparisonUnit } | null
   return null;
 }
 
+/**
+ * Whether Aldi's Unit Price can be the pack's. Mostly it is, and where it
+ * differs it is usually right: a jar is priced by its drained weight. Two
+ * kinds are Aldi's slips, and the pack's own arithmetic is used instead: a
+ * Unit Price equal to the price of a pack that is not a kilo or litre
+ * ("Varkenshaas, ca. 500 g, 6,00, 6,00 per kg"), and one twenty times the
+ * pack's or more ("200 g, 1,95, 1950,00 per kg").
+ */
+function plausible(chain: { cents: number; unit: ComparisonUnit }, shown: number, pack: PackSize | null): boolean {
+  if (!pack || pack.unit !== chain.unit || pack.quantity <= 0) return true;
+  const own = deriveUnitPrice(shown, pack)!;
+  return !((chain.cents === shown && Math.abs(pack.quantity - 1) > 0.05) || chain.cents >= own * 20);
+}
+
 /** The sign as Aldi words it, and its price: "-50% 1,19", "2 VOOR 6,00", "OP=OP 4,59". */
 function wordingOf(price: Price): string | null {
   const sign = label(price);
@@ -185,7 +199,9 @@ export const aldiReader: ChainReader = {
         let unitPriceCents: number | null = null;
         let comparisonUnit: ComparisonUnit | null = null;
         let unitPriceSource: PriceReading["unitPriceSource"] = null;
-        if (chain) {
+        if (chain && !plausible(chain, shown, pack)) {
+          [unitPriceCents, comparisonUnit, unitPriceSource] = [deriveUnitPrice(shown, pack!), pack!.unit, "derived"];
+        } else if (chain) {
           [unitPriceCents, comparisonUnit, unitPriceSource] = [chain.cents, chain.unit, "chain"];
         } else if (pack) {
           [unitPriceCents, comparisonUnit, unitPriceSource] = [deriveUnitPrice(shown, pack), pack.unit, "derived"];

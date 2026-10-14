@@ -50,6 +50,21 @@ test("records the price a Store charges for one pack today, at no Store", async 
   assert.deepEqual(products.map((p) => [p.chain_product_ref, p.is_weight_product]), [["1200267", false], ["1203862", false], ["1219379", true]]);
 });
 
+test("works out the Unit Price from the pack where Aldi's cannot be right", async () => {
+  // RECORDED 2026-10-14: Aldi's Unit Price equal to the pack's price, and one a hundred times it.
+  const root = await writeFixtureArchive({ aldi: { "products/page-0": ["aldi-unit-slips.json"] } }, DATE);
+  await record(db, "aldi", DATE, await aldiReader.read(root, DATE));
+  const { rows } = await db.query(
+    `SELECT chain_product_ref, shelf_price_cents, unit_price_cents, unit_price_source FROM price_observation ORDER BY chain_product_ref`,
+  );
+  assert.deepEqual(rows, [
+    // Varkenshaas, ca. 500 g at 6,00, "6,00 per kg".
+    { chain_product_ref: "1224343", shelf_price_cents: 600, unit_price_cents: 1200, unit_price_source: "derived" },
+    // Melkchocolade, 200 g at 1,95, "1950,00 per kg".
+    { chain_product_ref: "1225372", shelf_price_cents: 195, unit_price_cents: 975, unit_price_source: "derived" },
+  ]);
+});
+
 test("records each Offer with its sign, the one ahead as upcoming", async () => {
   await ingestAldi();
   const { rows } = await db.query(
