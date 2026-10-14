@@ -152,6 +152,11 @@ test("reads Plus's category tree, and its own brands", () => {
   // knew the name before Plus.
   assert.equal(aisleOf("Kaas, vleeswaren, tapas > Kaas > Voorverpakte kaasplakken"), "cheese");
   assert.equal(aisleOf("Kaas, vleeswaren, tapas > Vleeswaren > Ham"), "deli");
+  // Coffee and sugar share a shelf with coffee milk, which is dairy (#37).
+  assert.equal(aisleOf("Frisdrank, sappen, koffie, thee > Koffie, koffiemelk, suiker > Filterkoffie"), "drinks");
+  assert.equal(aisleOf("Frisdrank, sappen, koffie, thee > Koffie, koffiemelk, suiker > Suiker"), "pantry");
+  assert.equal(aisleOf("Frisdrank, sappen, koffie, thee > Koffie, koffiemelk, suiker > Koffiemelk, koffieroom, koffiecreamers"), "dairy");
+  assert.equal(aisleOf("Aardappelen, groente, fruit > Groente > Slaschotels, salades, dressings, slaversierders"), "produce");
   assert.equal(mapped("PLUS Spaghetti")?.huismerk, true);
   // A ready meal, not an Ingredient; but its brand is Plus's own line.
   assert.equal(ingredient("Uit de keuken van PLUS Verse Loempia"), null);
