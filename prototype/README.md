@@ -144,6 +144,30 @@ vocabulary maps about half of each Chain's food Products, and they cover what
 it misses. The lowest Unit Price can still force a pack many times larger than
 the requirement, so cells flag "pack is 10x what you need".
 
+## Exact products
+
+Some items are a particular branded product rather than a kind of food:
+Calvé Pindakaas Regular 350 g, not just pindakaas (#15). Typing a brand and
+product ("calve pindakaas 350 g") offers the matching **Exact Products**
+under the input, and the "ander product" sheet offers one wherever a
+candidate is one. Choosing it turns the item into that very product, counted
+in packs.
+
+An Exact Product is proven by a shared EAN (ADR-0006): 2,502 of them were
+shared by Jumbo and Vomar on 2026-10-14. `src/catalogue/exact.ts` builds them
+and refuses three joins the data showed to be wrong: in-store codes (EANs
+starting with 2), own-brand Products, and one EAN on two packs that differ by
+more than 10% (`docs/ingest.md`).
+
+Exact items are compared **as themselves, in their own section, with their
+own per-Chain totals**, on Lijst, Vergelijk and Winkelen. They are never added
+to a bag's total, because the bags compare Ingredients and usually pick an own
+brand, and the two can name different winners. Dirk publishes no EANs, so it
+is never in an exact comparison. It says "niet vergelijkbaar", not "niet te
+koop", and where a Dirk Product is likely the same (same brand, same pack,
+the closest name, 772 of them) it is shown as "waarschijnlijk hetzelfde" and
+counted nowhere.
+
 ## Not built here
 
 No server, no accounts, no sharing between devices, no real recipe data (the

@@ -124,6 +124,21 @@
   .wk button { border: 0; background: none; font: inherit; font-weight: 800; color: var(--ink-2); padding: 6px 14px; border-radius: 999px; cursor: pointer; }
   .wk button[aria-pressed="true"] { background: var(--ink); color: var(--card); }
   .wk button:disabled { opacity: .45; cursor: default; }
+  /* Exact Products (#15): a branded item compared as itself, apart from the bags. */
+  .xb { display: inline-block; vertical-align: middle; margin-left: 6px; font-size: 12px; font-weight: 800; border-radius: 6px; padding: 0 6px; background: var(--ink); color: var(--on-ink); }
+  .it .xs { grid-column: 1 / -1; display: grid; gap: 3px; font-size: 14px; color: var(--ink-2); margin-top: 4px; }
+  .it .xs > span { display: flex; flex-wrap: wrap; gap: 2px 8px; align-items: baseline; }
+  .it .xs b { color: var(--ink); }
+  .likely { font-size: 12px; font-weight: 800; border-radius: 6px; padding: 0 6px; border: 1px dashed var(--ink-3); color: var(--ink-2); }
+  .nc { color: var(--ink-3); font-style: italic; }
+  .xo { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: -4px 4px 12px; font-size: 14px; color: var(--ink-2); }
+  .xo button, .xbtn { border: 0; background: var(--paper-2); color: var(--ink); border-radius: 999px; padding: 4px 12px; font: inherit; font-size: 14px; font-weight: 800; cursor: pointer; }
+  .xbtn { justify-self: start; margin: -2px 0 8px 12px; font-size: 13px; }
+  .xt { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 0 0 12px; font-size: 15px; }
+  .xshop { background: var(--card); border-radius: var(--r); padding: 12px 14px; margin-top: 18px; box-shadow: 0 2px 0 var(--line); }
+  .xshop header { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+  .xshop .ci { color: var(--ink); }
+  .xshop .miss { color: var(--ink-3); font-size: 14px; padding: 6px 0; }
   .it .nx { grid-column: 1 / -1; font-size: 14px; color: var(--ink-2); display: flex; flex-wrap: wrap; gap: 4px 12px; }
   .add { display: flex; background: var(--card); border-radius: 999px; padding: 5px; box-shadow: 0 2px 0 var(--line); }
   .add input { flex: 1; min-width: 0; border: 0; background: transparent; padding: 10px 16px; font-size: 17px; font-weight: 700; outline: none; }
@@ -417,7 +432,7 @@
   if (!Array.isArray(list)) list = SEED.map((t) => ({ id: newId(), staple: false, ...parse(t) }));
   // An item saved before Ingredients (#14) is read again from its own text,
   // keeping its place on the list and whether it is a staple.
-  list = list.map((i) => ("ingredient" in i ? i : { id: i.id, staple: i.staple, ...(parse(i.text || "") || i) }));
+  list = list.map((i) => ("ingredient" in i || i.exact ? i : { id: i.id, staple: i.staple, ...(parse(i.text || "") || i) }));
   const corrections = load("mealdeal.corrections.v1", {}); // "chain|i|ingredient|variant" -> productId
   // A Correction saved per typed noun ("dirk|kg|rundergehakt") now applies to
   // its Ingredient, so it holds for every item and recipe that needs it.
@@ -433,6 +448,7 @@
   let week = load("mealdeal.week.v1", "nu");                // "nu" | "volgende": whose Offers Recepten and Lijst show
   const PAGE_KEYS = ["recepten", "lijst", "vergelijk", "winkelen"];
   let page = PAGE_KEYS.includes(location.hash.slice(1)) ? location.hash.slice(1) : "lijst";
+  let exactOffer = null;                                    // { itemId, matches }: Exact Products the item just typed may mean
   let hint = "", openRow = null, sheet = null;              // sheet: { kind: "recipe", id } | { kind: "fix", chainId, itemId }
   const added = new Set(), stepsDone = {};
 
@@ -523,8 +539,69 @@
     return { p, o, offer, packs, cost: packs * price, over: known ? pack / item.quantity : 1 };
   }
 
+  // ── Exact Products (#15) ────────────────────────────────────────────
+  // An item may name one Exact Product: Calvé Pindakaas Regular 350 g, the
+  // same EAN at each Chain. It is compared as itself, in its own section with
+  // its own totals, and never added to a bag's total, which compares
+  // Ingredients and may well be own-brand (ADR-0006). A Chain that publishes
+  // no EANs (Dirk) is not comparable; a Product there that is likely the
+  // same is shown, labelled, and counted nowhere.
+  const eanChains = chains.filter((c) => c.eans !== false), noEanChains = chains.filter((c) => c.eans === false);
+  function exactLine(chainId, item, likely) {
+    const p = likely ? R.likelyProduct(chainId, item.exact) : R.exactProduct(chainId, item.exact);
+    if (!p) return null;
+    const o = offerFor(p, "nu"), price = o && o.priceCents ? o.priceCents : p.shelfPriceCents;
+    return { p, o, offer: o ? o.wording : null, packs: item.quantity, cost: item.quantity * price };
+  }
+  function exactSnapshot() {
+    const rows = list.filter((i) => i.exact).map((item) => {
+      const by = Object.fromEntries(eanChains.map((c) => [c.id, exactLine(c.id, item, false)]));
+      const likely = Object.fromEntries(noEanChains.map((c) => [c.id, exactLine(c.id, item, true)]));
+      const avail = eanChains.filter((c) => by[c.id]).sort((a, b) => by[a.id].cost - by[b.id].cost);
+      return { item, by, likely, avail, min: avail.length ? by[avail[0].id].cost : null };
+    });
+    const totals = eanChains.map((c) => {
+      let cost = 0, filled = 0;
+      for (const r of rows) if (r.by[c.id]) { filled++; cost += r.by[c.id].cost; }
+      return { chain: c, cost, filled, total: rows.length, full: filled === rows.length && rows.length > 0 };
+    }).sort((a, b) => b.full - a.full || a.cost - b.cost);
+    return { rows, totals };
+  }
+  /** Turns a list item into one Exact Product, keeping a piece count typed as the number of packs. */
+  function makeExact(itemId, exactId) {
+    const it = list.find((i) => i.id === itemId), g = R.exact.get(exactId);
+    if (!it || !g) return;
+    const packs = it.unit === "piece" && !it.guessed ? Math.max(1, Math.round(it.quantity)) : 1;
+    const i = list.indexOf(it);
+    list[i] = { id: it.id, staple: it.staple, exact: g.id, text: g.name, noun: g.name, quantity: packs, unit: "piece",
+      guessed: false, ingredient: null, variant: null, preferences: {} };
+    hint = "Exact product: " + g.name;
+  }
+  /** One exact item at one Chain: its price, not comparable without EANs, or the Product likely the same. */
+  function exactCell(r, c) {
+    if (c.eans === false) {
+      const l = r.likely[c.id];
+      return "<span>" + tag(c) + (l
+        ? ' <span class="likely">waarschijnlijk hetzelfde</span> ' + esc(l.p.name) + " " + euro(l.cost) + '<span class="nc">telt niet mee</span>'
+        : ' <span class="nc">niet vergelijkbaar: ' + esc(c.name) + " publiceert geen EAN</span>") + "</span>";
+    }
+    const l = r.by[c.id];
+    if (!l) return "<span>" + tag(c) + ' <span class="nc">niet te koop</span></span>';
+    return "<span>" + tag(c) + " <b>" + euro(l.cost) + "</b>" + (l.offer ? " " + offerChip(l.p, l.o) : "") +
+      (r.avail.length > 1 && l.cost === r.min ? ' <span class="delta zero">laagst</span>' : r.avail.length > 1 ? ' <span class="delta">+' + euro(l.cost - r.min) + "</span>" : "") +
+      (l.p.name !== r.item.noun ? ' <span class="nc">' + esc(l.p.name) + "</span>" : "") + "</span>";
+  }
+  const exactCard = (r) => '<div class="it"><div class="nm">' + esc(r.item.noun) + '<span class="xb">exact product</span>' +
+    '<button class="q" data-act="packs" data-id="' + r.item.id + '" title="Aantal verpakkingen">' + r.item.quantity + "×</button></div>" +
+    '<div class="ops"><button data-act="staple" data-id="' + r.item.id + '" aria-pressed="' + r.item.staple + '" title="Vaste boodschap">📌</button>' +
+    '<button data-act="remove" data-id="' + r.item.id + '" title="Van de lijst">✕</button></div>' +
+    '<div class="xs">' + chains.map((c) => exactCell(r, c)).join("") + "</div></div>";
+  const exactNote = () => '<p class="note">Een exact product is hetzelfde merkartikel in dezelfde verpakking bij elke winkel, herkend aan dezelfde streepjescode (EAN). ' +
+    "Het wordt apart vergeleken en telt niet mee in de tassen, die per soort product vergelijken en vaak een huismerk kiezen." +
+    (noEanChains.length ? " " + andList(noEanChains.map((c) => esc(c.name))) + " publiceert geen EAN's: wat daar waarschijnlijk hetzelfde is, op merk, naam en verpakking, tonen we wel, maar telt nergens mee." : "") + "</p>";
+
   function snapshot() {
-    const rows = list.map((item) => {
+    const rows = list.filter((i) => !i.exact).map((item) => {
       const by = Object.fromEntries(chains.map((c) => [c.id, line(c.id, item)]));
       const avail = chains.filter((c) => by[c.id]).sort((a, b) => by[a.id].cost - by[b.id].cost);
       return { item, by, avail, min: avail.length ? by[avail[0].id].cost : null, max: avail.length ? by[avail.at(-1).id].cost : null };
@@ -550,7 +627,7 @@
     }
     // Only worth showing when it fills the list, beats one shop, and really uses both.
     if (combo && (combo.filled < rows.length || (best && combo.cost >= best.cost) || new Set(Object.values(combo.from)).size < 2)) combo = null;
-    return { rows, totals, best, combo };
+    return { rows, totals, best, combo, exact: exactSnapshot() };
   }
   function currentPlan(s) {
     if (plan && plan.kind === "combo" && s.combo && s.combo.ids.join() === plan.ids.join()) return plan;
@@ -740,23 +817,35 @@
           (R.suggest(r.item.noun) ? '<div class="guess">Bedoel je <button class="sug" data-act="suggest" data-id="' + r.item.id + '">' + esc(R.suggest(r.item.noun)) + "</button>?</div>" : "") +
           '<div class="best">' + best + "</div>" + priceLine(r, true) + sparkline(r.item) + offersFor(r.item) + "</div>";
       };
-      const staples = s.rows.filter((r) => r.item.staple), once = s.rows.filter((r) => !r.item.staple);
+      const staples = s.rows.filter((r) => r.item.staple), once = s.rows.filter((r) => !r.item.staple), ex = s.exact.rows;
+      const offer = exactOffer && list.some((i) => i.id === exactOffer.itemId && !i.exact) ? exactOffer : null;
       const p = currentPlan(s), top = rankedRecipes(week)[0];
       return "<h1>Boodschappenlijst</h1><p class=\"lede\">Wat er in huis moet komen. Waar het het goedkoopst is, zie je bij Vergelijk.</p>" +
         freshness("Prijzen van") + weekSwitch() +
         (top ? '<div class="banner"><span>' + (week === "volgende" ? "Volgende week" : "Deze week") + ': <b>' + esc(top.rc.name) + "</b>, " + top.best.deals + " ingrediënt" + (top.best.deals === 1 ? "" : "en") + ' in de aanbieding</span><button class="btn" data-act="go" data-id="recepten">' + RECIPES.length + " recepten bekijken</button></div>" : "") +
         '<form class="add"><label for="q" hidden>Op de lijst zetten</label><input id="q" name="q" placeholder="500 g rundergehakt, 2 courgettes, melk…" autocomplete="off"><button>Erbij</button></form>' +
         '<p class="hint' + (hint.startsWith("!") ? " warn" : "") + '">' + esc(hint.replace(/^!/, "")) + "</p>" +
+        (offer ? '<div class="xo"><span>Of precies dit merkproduct, bij elke winkel vergeleken:</span>' + offer.matches.map((m) =>
+          '<button data-act="make-exact" data-id="' + esc(m.id) + '" data-item="' + offer.itemId + '">' + esc(m.name) + "</button>").join("") + "</div>" : "") +
         '<div class="sec"><h2>Deze keer</h2><span>' + once.length + " · gaan eraf na het winkelen</span></div>" +
         (once.length ? '<div class="items">' + once.map(card).join("") + "</div>" : '<p class="lede">Niets extra deze keer.</p>') +
         '<div class="sec"><h2>Vaste boodschappen</h2><span>' + staples.length + " · 📌 blijven op de lijst</span></div>" +
         (staples.length ? '<div class="items">' + staples.map(card).join("") + "</div>" : '<p class="lede">Pin iets met 📌 om het te bewaren.</p>') +
-        (s.rows.length ? '<div class="foot"><span>' + s.rows.length + " artikelen · " + p.ids.map((id) => esc(chainById(id).name)).join(" + ") + " <b>" + euro(planCost(s, p)) + "</b></span>" +
+        (ex.length ? '<div class="sec"><h2>Exacte producten</h2><span>' + ex.length + " · hetzelfde merkartikel overal, apart vergeleken</span></div>" +
+          '<div class="items">' + ex.map(exactCard).join("") + "</div>" : "") +
+        (s.rows.length || ex.length ? '<div class="foot"><span>' + s.rows.length + " artikelen · " + p.ids.map((id) => esc(chainById(id).name)).join(" + ") + " <b>" + euro(planCost(s, p)) + "</b>" +
+          (ex.length ? " · + " + ex.length + " exact" + (ex.length > 1 ? "e producten" : " product") + ", apart" : "") + "</span>" +
           '<span><button class="btn ghost" data-act="go" data-id="vergelijk">Vergelijk winkels</button> <button class="btn" data-act="go" data-id="winkelen">Winkelen</button></span></div>' : "");
     } },
 
     vergelijk: { label: "Vergelijk", ic: "⚖", render(s) {
-      if (!s.rows.length) return '<h1>Niets te vergelijken</h1><p class="lede">Zet eerst iets op je lijst.</p>';
+      if (!s.rows.length && !s.exact.rows.length) return '<h1>Niets te vergelijken</h1><p class="lede">Zet eerst iets op je lijst.</p>';
+      const ex = s.exact;
+      const exactSection = !ex.rows.length ? "" : '<div class="sec" style="margin-top:38px"><h2>Exacte producten</h2><span>hetzelfde merkartikel, herkend aan de EAN · niet in de tassen</span></div>' +
+        '<div class="xt">' + ex.totals.map((t) => "<span>" + tag(t.chain) + " <b>" + (t.full ? "" : "≥") + euro(t.cost) + "</b> " + t.filled + " van " + t.total + "</span>").join("") +
+        noEanChains.map((c) => "<span>" + tag(c) + ' <span class="nc">niet vergelijkbaar</span></span>').join("") + "</div>" +
+        '<div class="items">' + ex.rows.map(exactCard).join("") + "</div>" + exactNote();
+      if (!s.rows.length) return "<h1>Exacte producten</h1>" + freshness("Prijzen van") + exactSection;
       const p = currentPlan(s), base = s.best ? s.best.cost : null;
       const bag = (t, i) => {
         const c = t.chain, on = p.kind === "single" && p.ids[0] === c.id;
@@ -800,15 +889,28 @@
         '<div class="rack">' + combo + s.totals.map(bag).join("") + "</div>" +
         '<div class="sec" style="margin-top:38px"><h2>Waar zit het verschil?</h2><span>grootste verschil bovenaan · tik voor alle prijzen en om een product te corrigeren</span></div>' +
         '<div class="legend">' + chains.map(tag).join("") + "<span>· omcirkeld = goedkoopst</span></div>" +
-        '<div class="diffs">' + diffs + "</div>" +
+        '<div class="diffs">' + diffs + "</div>" + exactSection +
         '<p class="note">Prijzen van ' + andList(chains.map((c) => esc(c.name) + " (" + esc(c.store || "landelijk") + ", " + esc(c.observedAt || "?") + ")")) +
         ". " + (noOffers.length ? andList(noOffers.map((c) => esc(c.name))) + (noOffers.length > 1 ? " zetten hun" : " zet zijn") +
         " aanbiedingen alleen in een folder, niet als prijzen online; daar telt de gewone prijs. " : "") + "Per winkel kiezen we het product met de laagste kiloprijs onder de namen die elk woord bevatten. Dat gaat soms mis; daarom kun je corrigeren.</p>";
     } },
 
     winkelen: { label: "Winkelen", ic: "✓", render(s) {
-      if (!s.rows.length) return '<h1>Winkelen</h1><p class="lede">Je lijst is leeg.</p>';
+      if (!s.rows.length && !s.exact.rows.length) return '<h1>Winkelen</h1><p class="lede">Je lijst is leeg.</p>';
       const p = currentPlan(s);
+      // Exact items are bought where the plan goes, at the cheapest of its
+      // Chains that sells the very item; never added to the bags' totals.
+      const exactShop = !s.exact.rows.length ? "" : '<section class="xshop"><header><b>Exacte producten</b><span>apart van de tassen</span></header><div class="chk">' +
+        s.exact.rows.map((r) => {
+          const at = p.ids.map(chainById).filter((c) => r.by[c.id]).sort((a, b) => r.by[a.id].cost - r.by[b.id].cost)[0];
+          const likely = !at && p.ids.map(chainById).find((c) => r.likely[c.id]);
+          const l = at ? r.by[at.id] : likely ? r.likely[likely.id] : null, d = done.has(r.item.id);
+          if (!l) return '<div class="miss">' + esc(r.item.noun) + " · niet bij " + andList(p.ids.map((id) => esc(chainById(id).name))) + "</div>";
+          return '<button class="ci' + (d ? " done" : "") + '" data-act="tick" data-id="' + r.item.id + '" aria-pressed="' + d + '"><span class="tick">' + (d ? "✓" : "") + "</span>" +
+            '<span class="nm">' + esc(r.item.noun) + '<span class="q">' + r.item.quantity + "×</span></span>" +
+            '<span class="g">' + tag(at || likely) + " " + (likely ? '<span class="likely">waarschijnlijk hetzelfde</span> ' : "") + (l.offer ? offerChip(l.p, l.o) + " " : "") + esc(l.p.name) + "</span>" +
+            '<span class="v">' + euro(l.cost) + "</span></button>";
+        }).join("") + "</div></section>";
       const groups = p.ids.map((id) => ({ c: chainById(id), rows: s.rows.filter((r) => sourceOf(r, p, s) === id) })).filter((g) => g.rows.length);
       const nowhere = s.rows.filter((r) => !sourceOf(r, p, s));
       let left = 0, ticked = 0, count = 0, total = 0;
@@ -826,7 +928,7 @@
       return "<h1>Winkelen</h1>" + freshness("Prijzen van") +
         '<div class="plan"><span>' + (p.kind === "combo" ? "Twee winkels:" : "Alles bij") + " " + p.ids.map((id) => esc(chainById(id).name)).join(" + ") + " · <b>" + euro(total) + "</b></span>" +
         '<button data-act="go" data-id="vergelijk">andere tas kiezen</button></div>' + shops +
-        (nowhere.length ? '<div class="missing">Hier niet te koop: ' + nowhere.map((r) => esc(r.item.noun)).join(", ") + "</div>" : "") +
+        exactShop + (nowhere.length ? '<div class="missing">Hier niet te koop: ' + nowhere.map((r) => esc(r.item.noun)).join(", ") + "</div>" : "") +
         '<div class="progress"><span><b>' + euro(left) + "</b> nog</span><span class=\"bar\"><i style=\"width:" + pct + '%"></i></span><span>' + ticked + "/" + count + "</span>" +
         (ticked ? '<button class="btn" data-act="finish">Klaar</button>' : "") + "</div>";
     } },
@@ -966,7 +1068,8 @@
         const p = products[chainId][id], o = offerFor(p, "nu"), price = o && o.priceCents ? o.priceCents : p.shelfPriceCents;
         return '<button class="alt' + (id === current ? " on" : "") + '" data-act="pick" data-id="' + id + '"><span class="n">' + esc(p.name) + '</span><span class="v">' + euro(price) + "</span>" +
           '<span class="m">' + euro(R.unitPrice(p, item)) + ({ kg: "/kg", l: "/l", piece: " per stuk" })[item.ingredient ? item.unit : p.comparisonUnit] + (p.packaging ? " · " + esc(p.packaging) : "") +
-          (o ? " · " + offerChip(p, o) : "") + "</span></button>";
+          (o ? " · " + offerChip(p, o) : "") + "</span></button>" +
+          (R.exactIdOf(p) ? '<button class="xbtn" data-act="make-exact" data-id="' + esc(R.exactIdOf(p)) + '" data-item="' + item.id + '">Vergelijk precies dit product bij elke winkel</button>' : "");
       }).join("") + "</div>" + (correctionKey(chainId, item) in corrections ? '<button class="btn ghost reset" data-act="unfix">Terug naar automatisch</button>' : "") + "</section>";
   }
 
@@ -979,7 +1082,7 @@
   }
   function render() {
     const s = snapshot();
-    const counts = { recepten: RECIPES.length, lijst: s.rows.length, vergelijk: chains.length, winkelen: s.rows.filter((r) => !done.has(r.item.id)).length };
+    const counts = { recepten: RECIPES.length, lijst: s.rows.length + s.exact.rows.length, vergelijk: chains.length, winkelen: s.rows.filter((r) => !done.has(r.item.id)).length };
     for (const nav of ["tabs-top", "tabs-bottom"]) document.getElementById(nav).innerHTML = PAGE_KEYS.map((k) =>
       '<button data-act="go" data-id="' + k + '"' + (k === page ? ' aria-current="page"' : "") + '><span class="ic">' + PAGES[k].ic + "</span>" +
       PAGES[k].label + '<span class="n">' + counts[k] + "</span></button>").join("");
@@ -1005,8 +1108,11 @@
     e.preventDefault();
     const input = e.target.querySelector("input[name=q]"), parsed = parse(input.value);
     if (!parsed) { hint = "!Niet gelezen. Probeer “500 g rundergehakt” of “2 courgettes”."; render(); return; }
-    list.unshift({ id: newId(), staple: false, ...parsed });
+    const fresh = { id: newId(), staple: false, ...parsed };
+    list.unshift(fresh);
     hint = "Toegevoegd: " + qtyText(parsed) + " " + parsed.noun;
+    const matches = R.exactMatches(input.value);
+    exactOffer = matches.length ? { itemId: fresh.id, matches } : null;
     input.value = "";
     persist(); render();
   });
@@ -1015,7 +1121,7 @@
     const id = b.dataset.id, item = list.find((i) => i.id === id);
     switch (b.dataset.act) {
       case "week": week = id === "volgende" && hasNextWeek ? "volgende" : "nu"; break;
-      case "go": page = id; hint = ""; history.replaceState(null, "", "#" + id); window.scrollTo(0, 0); break;
+      case "go": page = id; hint = ""; exactOffer = null; history.replaceState(null, "", "#" + id); window.scrollTo(0, 0); break;
       case "staple": if (item) item.staple = !item.staple; break;
       case "remove": list = list.filter((i) => i.id !== id); done.delete(id); break;
       case "unit": {
@@ -1030,6 +1136,8 @@
       case "fix": sheet = { kind: "fix", chainId: b.dataset.chain, itemId: id }; break;
       case "pick": { const it = list.find((i) => i.id === sheet.itemId); if (it) corrections[correctionKey(sheet.chainId, it)] = id; for (const k in ingCache) delete ingCache[k]; sheet = null; break; }
       case "unfix": { const it = list.find((i) => i.id === sheet.itemId); if (it) delete corrections[correctionKey(sheet.chainId, it)]; for (const k in ingCache) delete ingCache[k]; sheet = null; break; }
+      case "make-exact": makeExact(b.dataset.item, id); exactOffer = null; sheet = null; break;
+      case "packs": if (item && item.exact) item.quantity = item.quantity % 9 + 1; break;
       case "tick": done.has(id) ? done.delete(id) : done.add(id); break;
       case "finish": list = list.filter((i) => i.staple || !done.has(i.id)); done.clear(); page = "lijst"; history.replaceState(null, "", "#lijst"); break;
       case "recipe": addRecipe(id); break;
