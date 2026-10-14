@@ -172,6 +172,12 @@
   .banner { margin: 0 0 14px; background: var(--card); border-radius: var(--r); padding: 12px 14px; box-shadow: 0 2px 0 var(--line); display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
   .banner b { font-weight: 900; }
   .banner .btn { background: var(--good); color: var(--on-ink); }
+  .drops { margin: 0 0 14px; background: var(--card); border-radius: var(--r); padding: 12px 14px; box-shadow: 0 2px 0 var(--line); }
+  .drops h2 { margin: 0 0 6px; font-size: 17px; font-weight: 900; }
+  .drops ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .drops li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; font-size: 14px; }
+  .drops li > b:first-child { font-size: 15px; flex-basis: 100%; }
+  .drops .note { margin: 8px 0 0; }
   .items { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; }
   .it { background: var(--card); border-radius: var(--r); padding: 12px 14px 10px; box-shadow: 0 2px 0 var(--line); display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; }
   .it .nm { font-weight: 900; font-size: 18px; line-height: 1.15; }
@@ -844,10 +850,23 @@
           '<div class="best">' + best + "</div>" + priceLine(r, true) + sparkline(r.item) + offersFor(r.item) + "</div>";
       };
       const staples = s.rows.filter((r) => r.item.staple), once = s.rows.filter((r) => !r.item.staple), ex = s.exact.rows;
+      // Staples cheaper today than usual, per Chain (#19). The rule is in
+      // resolve.js (priceDrop) and CONTEXT.md: no alert without enough history.
+      const drops = staples.map((r) => ({ r, at: chains.map((c) => ({ c, d: R.priceDropAt(c.id, r.item) })).filter((x) => x.d).sort((a, b) => a.d.cents - b.d.cents) }))
+        .filter((x) => x.at.length).sort((a, b) => Math.max(...b.at.map((x) => x.d.percent)) - Math.max(...a.at.map((x) => x.d.percent)));
+      const measured = (window.PRICES && window.PRICES.dates.length) || 0, need = window.MealdealResolve.USUAL_MIN_DAYS;
+      const dropBlock = drops.length
+        ? '<div class="drops"><h2>Nu goedkoper dan normaal</h2><ul>' + drops.map(({ r, at }) => "<li><b>" + esc(r.item.noun) + "</b>" +
+            at.map(({ c, d }) => "<span>" + tag(c) + " <b>" + euro(d.cents) + "</b> " + (UNIT_TEXT[r.item.unit] || "") +
+              ' <span class="delta zero">−' + d.percent + "%</span> " + '<span class="nc">normaal ' + euro(d.usualCents) + (d.offer ? " · aanbieding" : "") + "</span></span>").join("") + "</li>").join("") +
+          '</ul><p class="note">Vaste boodschappen die vandaag minstens ' + Math.round(window.MealdealResolve.DROP_SHARE * 100) + "% onder hun normale prijs zijn: de middelste laagste prijs per dag van de afgelopen " + (measured - 1) + " dagen. Goed moment om in te slaan.</p></div>"
+        : staples.length && measured <= need
+          ? '<p class="note">Zodra er ' + (need + 1) + " dagen prijzen gemeten zijn (nu " + measured + "), zie je hier welke vaste boodschappen goedkoper zijn dan normaal.</p>"
+          : "";
       const offer = exactOffer && list.some((i) => i.id === exactOffer.itemId && !i.exact) ? exactOffer : null;
       const p = currentPlan(s), top = rankedRecipes(week)[0];
       return "<h1>Boodschappenlijst</h1><p class=\"lede\">Wat er in huis moet komen. Waar het het goedkoopst is, zie je bij Vergelijk.</p>" +
-        freshness("Prijzen van") + cardNote() + weekSwitch() +
+        freshness("Prijzen van") + cardNote() + dropBlock + weekSwitch() +
         (top ? '<div class="banner"><span>' + (week === "volgende" ? "Volgende week" : "Deze week") + ': <b>' + esc(top.rc.name) + "</b>, " + top.best.deals + " ingrediënt" + (top.best.deals === 1 ? "" : "en") + ' in de aanbieding</span><button class="btn" data-act="go" data-id="recepten">' + RECIPES.length + " recepten bekijken</button></div>" : "") +
         '<form class="add"><label for="q" hidden>Op de lijst zetten</label><input id="q" name="q" placeholder="500 g rundergehakt, 2 courgettes, melk…" autocomplete="off"><button>Erbij</button></form>' +
         '<p class="hint' + (hint.startsWith("!") ? " warn" : "") + '">' + esc(hint.replace(/^!/, "")) + "</p>" +

@@ -95,7 +95,20 @@ Ingredient, at the Offer price while a priced Offer runs. Within one Variant
 when one is named, otherwise across all of them; within any Preferences; and
 per Store where a Chain prices per Store. A day without an Observation is a
 gap, never filled.
-_Avoid_: Average price, usual price, index price
+_Avoid_: Average price, index price (and Usual Price, which is a different thing)
+
+**Usual Price**:
+For one Basket Item at one Chain, the median of its Daily Prices on the days
+observed before today, within the days the page keeps (up to 30), Offer days
+included: an item that is often on Offer is usually that cheap. With fewer
+than 14 days observed there is no Usual Price.
+_Avoid_: Average price, normal price, regular price
+
+**Price Drop**:
+A staple whose Daily Price at a Chain today is at least 15% below its Usual
+Price there, shown when the app opens so a shopper can stock up (#19). No
+Usual Price, or no Observation today, means no Price Drop.
+_Avoid_: Deal, alert, bargain
 
 **Comparison Unit**:
 The one quantity an Ingredient is compared by — per kilogram, per litre, or
