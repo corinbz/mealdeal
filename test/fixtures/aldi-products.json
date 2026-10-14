@@ -1,0 +1,342 @@
+[
+  {
+    "nbHits": 7,
+    "page": 0,
+    "nbPages": 1,
+    "hitsPerPage": 1000,
+    "exhaustiveNbHits": true,
+    "exhaustiveTypo": true,
+    "exhaustive": {
+      "nbHits": true,
+      "typo": true
+    },
+    "query": "",
+    "params": "page=0&hitsPerPage=1000&attributesToRetrieve=%5B%22objectID%22%2C%22name%22%2C%22brandName%22%2C%22salesUnit%22%2C%22shortDescription%22%2C%22isAvailable%22%2C%22categoryIDs%22%2C%22mainCategoryID%22%2C%22hierarchicalCategories%22%2C%22productReferences%22%2C%22currentPrice%22%2C%22promotionPrices%22%5D&attributesToHighlight=%5B%5D",
+    "renderingContent": {},
+    "processingTimeMS": 3,
+    "processingTimingsMS": {
+      "_request": {
+        "roundTrip": 15
+      },
+      "afterFetch": {
+        "format": {
+          "total": 4
+        },
+        "merge": {
+          "entries": {
+            "parse": 1,
+            "total": 1
+          },
+          "mergeLoop": {
+            "total": 1
+          },
+          "total": 1
+        },
+        "total": 1
+      },
+      "extensions": 1,
+      "total": 3
+    },
+    "serverTimeMS": 8,
+    "hits": [
+      {
+        "isAvailable": true,
+        "categoryIDs": [
+          "fruit"
+        ],
+        "salesUnit": "500 g",
+        "productReferences": [
+          {
+            "type": "KVArticleNumber",
+            "value": "0008310"
+          }
+        ],
+        "name": "Pitloze witte druiven",
+        "currentPrice": {
+          "priceValue": 1.19,
+          "strikePrice": {
+            "strikePriceValue": 2.39
+          },
+          "basePrice": [
+            {
+              "basePriceValue": 2.38,
+              "basePriceScale": "kg"
+            }
+          ],
+          "priceTagLabels": {
+            "promoText1": "-50%"
+          },
+          "validFrom": 1791756000,
+          "validUntil": 1792360799
+        },
+        "shortDescription": "Verse witte druiven 500 g bij ALDI. Zoete, pitloze druiven van topkwaliteit voor een scherpe prijs. Bezoek je ALDI winkel voor deze heerlijke traktatie!",
+        "mainCategoryID": "fruit",
+        "hierarchicalCategories": {
+          "lvl0": [
+            "Aardappels, groente en fruit"
+          ],
+          "lvl1": [
+            "Aardappels, groente en fruit > Fruit"
+          ]
+        },
+        "promotionPrices": [
+          {
+            "validFrom": 1791756000,
+            "validUntil": 1792360799,
+            "priceValue": 1.19,
+            "strikePrice": {
+              "strikePriceValue": 2.39
+            },
+            "basePrice": [
+              {
+                "basePriceValue": 2.38,
+                "basePriceScale": "kg"
+              }
+            ],
+            "priceTagLabels": {
+              "promoText1": "-50%"
+            },
+            "validFromLocalDate": "2026-10-12",
+            "validUntilLocalDate": "2026-10-18"
+          }
+        ],
+        "objectID": "1203862"
+      },
+      {
+        "isAvailable": true,
+        "brandName": "JONA",
+        "currentPrice": {
+          "priceValue": 1,
+          "basePrice": [
+            {
+              "basePriceValue": 10,
+              "basePriceScale": "kg"
+            }
+          ],
+          "priceTagLabels": {
+            "promoText1": "2 VOOR"
+          },
+          "validFrom": 1791756000,
+          "validUntil": 1792360799
+        },
+        "shortDescription": "OP=OP.",
+        "promotionPrices": [
+          {
+            "validFrom": 1791756000,
+            "validUntil": 1792360799,
+            "priceValue": 1,
+            "basePrice": [
+              {
+                "basePriceValue": 10,
+                "basePriceScale": "kg"
+              }
+            ],
+            "priceTagLabels": {
+              "promoText1": "2 VOOR"
+            },
+            "validFromLocalDate": "2026-10-12",
+            "validUntilLocalDate": "2026-10-18"
+          }
+        ],
+        "categoryIDs": [
+          "offer"
+        ],
+        "salesUnit": "100 g",
+        "productReferences": [
+          {
+            "type": "KVArticleNumber",
+            "value": "0008458"
+          }
+        ],
+        "name": "Knabberbolletjes",
+        "mainCategoryID": "offer",
+        "objectID": "1204497"
+      },
+      {
+        "isAvailable": true,
+        "brandName": "TOYLINO",
+        "currentPrice": {
+          "priceValue": 24.99,
+          "priceTagLabels": {
+            "promoText1": "v.a. wo. 21.10."
+          },
+          "validFrom": 1791496800,
+          "validUntil": 1792533599
+        },
+        "shortDescription": "1018-1551 bouwstenen. Eiffeltoren: 27x27x67 cm, Vrijheidsbeeld: 18x18x52 cm, Brandenburger Tor: 48x24x28 cm of de Big Ben: 24x24x55 cm.",
+        "hierarchicalCategories": {
+          "lvl0": [
+            "Sintassortiment "
+          ],
+          "lvl1": [
+            "Sintassortiment  > Bouwsets"
+          ]
+        },
+        "promotionPrices": [
+          {
+            "validFrom": 1792533600,
+            "validUntil": 1796511599,
+            "priceValue": 24.99,
+            "priceTagLabels": {
+              "promoText1": "v.a. wo. 21.10."
+            },
+            "validFromLocalDate": "2026-10-21",
+            "validUntilLocalDate": "2026-12-05"
+          }
+        ],
+        "categoryIDs": [
+          "bouwsets"
+        ],
+        "salesUnit": "Per set",
+        "productReferences": [
+          {
+            "type": "KVArticleNumber",
+            "value": "2110203"
+          }
+        ],
+        "name": "Bouwset iconische gebouwen.",
+        "mainCategoryID": "bouwsets",
+        "objectID": "1245356"
+      },
+      {
+        "isAvailable": true,
+        "brandName": "HOLSTENSEGEN",
+        "categoryIDs": [
+          "winterassortiment"
+        ],
+        "salesUnit": "400 g",
+        "productReferences": [
+          {
+            "type": "KVArticleNumber",
+            "value": "0005815"
+          }
+        ],
+        "name": "Aardappelspecialiteit",
+        "currentPrice": {
+          "priceValue": 1.29,
+          "basePrice": [
+            {
+              "basePriceValue": 3.23,
+              "basePriceScale": "kg"
+            }
+          ],
+          "priceTagLabels": {
+            "promoText1": "OP=OP"
+          },
+          "validFrom": 1791324000,
+          "validUntil": 1793228399
+        },
+        "shortDescription": "400 g.",
+        "mainCategoryID": "winterassortiment",
+        "hierarchicalCategories": {
+          "lvl0": [
+            "Speciaal assortiment"
+          ],
+          "lvl1": [
+            "Speciaal assortiment > Winterassortiment"
+          ]
+        },
+        "objectID": "1200267"
+      },
+      {
+        "isAvailable": true,
+        "categoryIDs": [
+          "fruit"
+        ],
+        "salesUnit": "Per kg",
+        "productReferences": [
+          {
+            "type": "KVArticleNumber",
+            "value": "0002883"
+          }
+        ],
+        "name": "Bananen",
+        "currentPrice": {
+          "priceValue": 1.15,
+          "validFrom": 1791324000,
+          "validUntil": 1792969199
+        },
+        "shortDescription": "Verse bananen per kg bij ALDI. Rijpe, gele bananen vol vezels en voedingsstoffen. Perfect voor ontbijt, tussendoortje of bakken. Ontdek in jouw ALDI winkel!",
+        "mainCategoryID": "fruit",
+        "hierarchicalCategories": {
+          "lvl0": [
+            "Aardappels, groente en fruit"
+          ],
+          "lvl1": [
+            "Aardappels, groente en fruit > Fruit"
+          ]
+        },
+        "objectID": "1219379"
+      },
+      {
+        "isAvailable": false,
+        "categoryIDs": [
+          "fruit"
+        ],
+        "salesUnit": "150 g",
+        "productReferences": [
+          {
+            "type": "KVArticleNumber",
+            "value": "2012167"
+          }
+        ],
+        "name": "Rode bessen",
+        "shortDescription": "150 g.",
+        "mainCategoryID": "fruit",
+        "hierarchicalCategories": {
+          "lvl0": [
+            "Aardappels, groente en fruit"
+          ],
+          "lvl1": [
+            "Aardappels, groente en fruit > Fruit"
+          ]
+        },
+        "objectID": "1200380"
+      },
+      {
+        "isAvailable": true,
+        "brandName": "MOLENLAND",
+        "categoryIDs": [
+          "offer"
+        ],
+        "salesUnit": "250-300 g",
+        "productReferences": [
+          {
+            "type": "KVArticleNumber",
+            "value": "C_2008843_2008844_2107133_2107134"
+          }
+        ],
+        "name": "Goudse 30+ kaas plakken",
+        "currentPrice": {
+          "priceValue": 2.49,
+          "strikePrice": {
+            "strikePriceValue": 3.55
+          },
+          "priceTagLabels": {
+            "promoText1": "TOT -29%"
+          },
+          "validFrom": 1791756000,
+          "validUntil": 1792360799
+        },
+        "shortDescription": "Jong, jong belegen, belegen of extra belegen.",
+        "mainCategoryID": "offer",
+        "promotionPrices": [
+          {
+            "validFrom": 1791756000,
+            "validUntil": 1792360799,
+            "priceValue": 2.49,
+            "strikePrice": {
+              "strikePriceValue": 3.55
+            },
+            "priceTagLabels": {
+              "promoText1": "TOT -29%"
+            },
+            "validFromLocalDate": "2026-10-12",
+            "validUntilLocalDate": "2026-10-18"
+          }
+        ],
+        "objectID": "91214530"
+      }
+    ]
+  }
+]

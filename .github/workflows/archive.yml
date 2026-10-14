@@ -15,7 +15,7 @@ on:
       chain:
         description: Chain to archive
         type: choice
-        options: [dekamarkt, dirk, hoogvliet, jumbo, lidl, plus, vomar, all]
+        options: [aldi, dekamarkt, dirk, hoogvliet, jumbo, lidl, plus, vomar, all]
         default: dirk
       max_product_steps:
         description: Limit product steps (leave empty for a full run)
@@ -33,12 +33,12 @@ jobs:
     # One job per Chain, in parallel. A full Sweep of Dirk, Jumbo or Plus takes
     # most of an hour, so back to back they would overrun the timeout, and a Chain
     # whose edge refuses us must not cost another its day. Vomar takes about
-    # two minutes, Hoogvliet three, DekaMarkt about ten, Lidl one request. A scheduled run has no
-    # inputs and archives every Chain.
+    # two minutes, Hoogvliet three, DekaMarkt about ten, Aldi four requests,
+    # Lidl one. A scheduled run has no inputs and archives every Chain.
     strategy:
       fail-fast: false
       matrix:
-        chain: ${{ fromJSON((!inputs.chain || inputs.chain == 'all') && '["dekamarkt","dirk","hoogvliet","jumbo","lidl","plus","vomar"]' || format('["{0}"]', inputs.chain)) }}
+        chain: ${{ fromJSON((!inputs.chain || inputs.chain == 'all') && '["aldi","dekamarkt","dirk","hoogvliet","jumbo","lidl","plus","vomar"]' || format('["{0}"]', inputs.chain)) }}
 
     # GitHub's own runners, unless the repository variable ARCHIVE_RUNNER names
     # others, such as ["self-hosted","pi"] for the owner's Raspberry Pi. A full
@@ -52,8 +52,8 @@ jobs:
       CHAIN: ${{ matrix.chain }}
       # Jumbo tarpits our honest agent string. On 2026-10-13 the project owner
       # chose to send a browser one for Jumbo, then to do so on the daily
-      # schedule too. See "Jumbo" in docs/archive.md. DekaMarkt, Dirk,
-      # Hoogvliet, Lidl, Plus and Vomar accept the honest default and are never
+      # schedule too. See "Jumbo" in docs/archive.md. Aldi, DekaMarkt,
+      # Dirk, Hoogvliet, Lidl, Plus and Vomar accept the honest default and are never
       # sent this.
       JUMBO_USER_AGENT: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
       # R2 is S3-compatible, so the AWS CLI can talk to it: it comes with

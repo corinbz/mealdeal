@@ -410,6 +410,39 @@ the site's materials rests with DekaMarkt and its licensors; no clause
 addresses automated access or reuse. **Decision, 2026-10-14:** the project
 owner, shown it, chose to archive DekaMarkt.
 
+### Aldi — working, verified live, honest agent accepted
+
+Added on 2026-10-14 (#31). aldi.nl is Aldi Nord's Next.js storefront. Its
+Products live in an Algolia index (`an_prd_nl_nl_products2`, application
+`2HU29PF6BH`), which the pages query from the browser with a public,
+search-only key in the site's own scripts; each category page and both
+Offer pages (`/aanbiedingen.html`, `/aanbiedingen-volgende-week.html`)
+embed the hits of such a query. The Sweep asks the index itself, with no
+filter, a thousand hits a page: **four requests a day**, about 300 KiB, a
+few seconds.
+
+Why not the pages: the 214 category pages list 2,568 Products and miss
+1,224 of the index's 3,794. Action articles ("OP=OP", while stock lasts)
+are filed under an `offer` category no page lists, and only this and next
+week's appear on the Offer pages; the rest would be one product page each.
+The records are the same ones the pages embed.
+
+Only the fields used are asked for (`attributesToRetrieve`), never `assets`
+(Aldi-hosted images) nor `longDescription` (ADR-0003). A record carries the
+price now (`currentPrice`, with the Shelf Price as a strike price under an
+Offer, and Aldi's own Unit Price) and every Offer it is in from last week to
+weeks ahead (`promotionPrices`, with dates). **Prices are national**:
+nothing on the site chooses a Store. **No EAN** is published.
+
+**Access and terms.** `robots.txt` on www.aldi.nl allows everything but a
+few registration and job pages and filtered URLs; the index is on Algolia's
+host, asked with the key Aldi ships to every visitor. aldi.nl has **no
+terms of use for the website**: its *Algemene voorwaarden* cover Shop&Go,
+the app and competitions, and its disclaimer only sets the conditions of
+Offers ("Actieprijzen gelden per stuk bij een multibuy", while stocks last).
+No clause addresses automated access or reuse. **Decision, 2026-10-14:** the
+project owner, shown it, chose to archive Aldi.
+
 ### Spar — assessed, not archived
 
 Assessed on 2026-10-14 (#11) and dropped by the owner the same day: Spar is

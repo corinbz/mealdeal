@@ -1,12 +1,13 @@
 /**
  * Which part of the shop a Chain's category is, whatever the Chain calls it.
  *
- * Dirk, Jumbo, Vomar, Plus, Lidl and Hoogvliet each have their own category tree, a few
- * hundred leaves between them. An Ingredient says which aisles it is sold in, rather than
- * listing every Chain's categories, and the aisle also gives a Product its
- * form: carrots in Groente are fresh, in Groenteconserven jarred, and in
- * Babyvoeding not carrots at all. That is how "wortelen" stops matching Hak
- * and Olvarit without a word list that can never be complete.
+ * Dirk, Jumbo, Vomar, Plus, Lidl, Hoogvliet, DekaMarkt and Aldi each have their
+ * own category tree, a few hundred leaves between them. An Ingredient says
+ * which aisles it is sold in, rather than listing every Chain's categories,
+ * and the aisle also gives a Product its form: carrots in Groente are fresh,
+ * in Groenteconserven jarred, and in Babyvoeding not carrots at all. That is
+ * how "wortelen" stops matching Hak and Olvarit without a word list that can
+ * never be complete.
  */
 
 export type Aisle =
@@ -54,6 +55,16 @@ const RULES: [RegExp, Aisle][] = [
   [/^eten en dichtbij voedsel > voedselvoorraad > (groente- en fruitconserven|conserven|ingemaakte)/i, "conserves"],
   [/^eten en dichtbij voedsel > kant-en-klaar/i, "readymeal"],
   [/^eten en dichtbij voedsel > (voedselvoorraad|muesli|koffie|oliën)/i, "pantry"],
+  // Aldi, first: the general rules below would read its baking shelf as
+  // bread and its cheese at the drinks table as a ready meal.
+  [/^aardappels, groente en fruit/i, "produce"],
+  [/^kaas en vleeswaren > kaas|^borrelhapjes > kaas/i, "cheese"],
+  [/^borrelhapjes > vleeswaren/i, "deli"],
+  [/^chips, noten en zoutjes > noten/i, "pantry"],
+  [/^chips, noten en zoutjes/i, "snacks"],
+  [/^brood, bakkerij en bakken > (beschuit|zelf bakken)/i, "pantry"],
+  [/^(bier, mixdranken|wijn|winnaarsproducten > wijn|sappen, frisdrank)|^thee en koffie > (koffie|thee)$/i, "drinks"],
+  [/^soepen, sauzen, kruiden en conserven > (kruiden|olie|sauzen)/i, "pantry"],
   [/huisdier|dierenvoeding/i, "pet"],
   [/babyvoeding|peutervoeding|flesvoeding|kindervoeding|^baby (en|&) kind/i, "baby"],
   [/drogisterij|^huishoud|^non.?food|& non food|^bloemen/i, "nonfood"],

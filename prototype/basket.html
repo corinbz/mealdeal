@@ -20,7 +20,7 @@
     --good: #2f7a3f; --good-wash: #d9ecd9; --bad: #b8432f; --bad-wash: #f6dcd4;
     --offer: #ffe9a3; --offer-ink: #2b2118; --scrim: rgba(30, 20, 10, .45);
     --bag-shade: rgba(0, 0, 0, .12); --lift: 0 14px 24px -16px rgba(60, 30, 0, .6);
-    --c0: #12805a; --c1: #c4801a; --c2: #7a3fa0; --c3: #4a3ad0; --c4: #901000; --c5: #782860; --c6: #a84000; --c7: #a8452f;
+    --c0: #12805a; --c1: #c4801a; --c2: #7a3fa0; --c3: #4a3ad0; --c4: #901000; --c5: #782860; --c6: #a84000; --c7: #985078;
     --r: 16px;
     --font: Nunito, ui-rounded, "SF Pro Rounded", system-ui, sans-serif;
   }
@@ -32,7 +32,7 @@
       --good: #72c28e; --good-wash: rgba(114, 194, 142, .16); --bad: #f08c75; --bad-wash: rgba(240, 140, 117, .16);
       --offer: rgba(255, 214, 102, .18); --offer-ink: #ffd666; --scrim: rgba(0, 0, 0, .6);
       --bag-shade: rgba(0, 0, 0, .22); --lift: 0 14px 26px -14px rgba(0, 0, 0, .7);
-      --c0: #239270; --c1: #c38425; --c2: #9358b8; --c3: #7050f8; --c4: #c00038; --c5: #984080; --c6: #a84000; --c7: #c0604a;
+      --c0: #239270; --c1: #c38425; --c2: #9358b8; --c3: #7050f8; --c4: #c00038; --c5: #984080; --c6: #a84000; --c7: #b05888;
     }
   }
   :root[data-theme="dark"] {
@@ -42,7 +42,7 @@
     --good: #72c28e; --good-wash: rgba(114, 194, 142, .16); --bad: #f08c75; --bad-wash: rgba(240, 140, 117, .16);
     --offer: rgba(255, 214, 102, .18); --offer-ink: #ffd666; --scrim: rgba(0, 0, 0, .6);
     --bag-shade: rgba(0, 0, 0, .22); --lift: 0 14px 26px -14px rgba(0, 0, 0, .7);
-    --c0: #239270; --c1: #c38425; --c2: #9358b8; --c3: #7050f8; --c4: #c00038; --c5: #984080; --c6: #a84000; --c7: #c0604a;
+    --c0: #239270; --c1: #c38425; --c2: #9358b8; --c3: #7050f8; --c4: #c00038; --c5: #984080; --c6: #a84000; --c7: #b05888;
   }
 
   * { box-sizing: border-box; }
@@ -377,7 +377,7 @@
   // Each Chain keeps its colour whichever Chains a catalogue holds: by
   // position, Plus arriving between Jumbo and Vomar would have repainted
   // Vomar. Every pair was checked for colour-blind readers (README).
-  const COLOUR_SLOT = { dirk: 0, jumbo: 1, vomar: 2, plus: 3, lidl: 4, hoogvliet: 5, dekamarkt: 6 };
+  const COLOUR_SLOT = { dirk: 0, jumbo: 1, vomar: 2, plus: 3, lidl: 4, hoogvliet: 5, dekamarkt: 6, aldi: 7 };
   const chains = data.chains.map((c, i) => ({ ...c, color: "var(--c" + (COLOUR_SLOT[c.id] ?? 4 + (i % 4)) + ")" }));
   const chainById = (id) => chains.find((c) => c.id === id);
   /** "Dirk, Jumbo en Vomar". */

@@ -153,5 +153,6 @@ INSERT INTO chain (id, name, kind) VALUES
   ('plus',  'Plus',  'National Chain'),
   ('lidl',  'Lidl',  'National Chain'),
   ('hoogvliet', 'Hoogvliet', 'Regional Chain'),
-  ('dekamarkt', 'DekaMarkt', 'Regional Chain')
+  ('dekamarkt', 'DekaMarkt', 'Regional Chain'),
+  ('aldi', 'Aldi', 'National Chain')
 ON CONFLICT (id) DO NOTHING;

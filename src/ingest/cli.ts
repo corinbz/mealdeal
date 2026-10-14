@@ -11,6 +11,7 @@
 
 import { connect, migrate } from "./db.ts";
 import { record, DEFAULT_OPTIONS } from "./record.ts";
+import { aldiReader } from "./readers/aldi.ts";
 import { dekamarktReader, dirkReader } from "./readers/detailresult.ts";
 import { jumboReader } from "./readers/jumbo.ts";
 import { lidlReader } from "./readers/lidl.ts";
@@ -20,6 +21,7 @@ import { vomarReader } from "./readers/vomar.ts";
 import type { ChainReader } from "./readers/types.ts";
 
 const READERS: Record<string, ChainReader> = {
+  aldi: aldiReader,
   dekamarkt: dekamarktReader,
   dirk: dirkReader,
   hoogvliet: hoogvlietReader,

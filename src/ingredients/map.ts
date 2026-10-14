@@ -39,6 +39,9 @@ const OWN_BRAND: Readonly<Record<string, RegExp>> = {
   // DekaMarkt's own labels (DekaVers, Deka's keuken, Altijd handig), Dirk's
   // 1 de Beste from the same group, and the Superunie lines, as at Hoogvliet.
   dekamarkt: /^(dekamarkt|dekavers|deka's keuken|1 de beste|altijd handig|g'woon|melkan|daily chef|bonb[ée]b[ée])\b|^bio\+/i,
+  // Aldi sells mostly its own labels: those on its "ALDI merken" shelf
+  // (2026-10-14), and the ones it sells beside them, chiefly non-food.
+  aldi: /^(aldi|albona|all seasons|asia green garden|barissimo|bellasan|bio|biscotto|bon-ri|cachet|choceur|cucina|daylicious|de afbakker|de hete ketel|de kruiden ?company|dentitex|fair|fresh (&|and) free|golden (bridge|power|seafood)|goud.gebakken|gourmet|grandessa|heerlijck banket|helaes|hofstee de drie eiken|juliet|kaapse (pracht|kracht)|kiekeboe|lacura|le gusto|lyttos|mama mancini|mamia|milsani|molenland|moser roth|mucci|my vay|party gebak|potato king|power force|quellbrunn|rio d ?'oro|river|romeo|satessa|schultenbr[äa]u|snack fan|solo|sun snacks|sweet.land|tandil|trader joe's|triangle pharma|trophy smaakmakers|una|westmin(i)?ster|home creation|tesoros del sur|lily & dan|crofton|gardenline|ambiano|casalux|crane|workzone|ferrex|topcraft|adventuridge|up2fashion|toylino|novitesse|ride\+go|finest bakery|lekker & snel)\b/i,
   // Lidl sells mostly its own lines, each under a name of its own.
   lidl: /^(lidl|milbona|combino|kania|lupilu|cien|w5|deluxe|bellarom|sondey|belbake|chef select|floralys|trattoria alfredo|pilos|solevita|freeway|vitasia|crownfield|snack day|alesto|fin carr[ée]|saskia|maribel|favorina|dulano|golden seafood|ocean sea|nixe|baresa|italiamo|eridanous|mcennedy|perlenbacher|envia|formil|ryneczek lidla|maître jean.pierre|maitre jean.pierre)\b/i,
 };
