@@ -364,6 +364,31 @@ checked afresh. The catalogue carries the list as `checked`. Both the page and
 the report read it through `spreads()` in `prototype/resolve.js`, and the
 threshold is `SPREAD_CHECK` there.
 
+Last come three **self-checks** (#37), each a class of mistakes that would
+otherwise be found by chance while shopping. The thresholds sit together in
+`SELF_CHECK_LIMITS` in `src/catalogue/self-checks.ts`.
+
+- **Overnight jumps:** a shelf price up or down 40% or more since yesterday,
+  with no Offer either day.
+- **Split mappings:** the same name and pack at two Chains or more, mapped to
+  different Ingredients or at one Chain only. Two different Ingredients are
+  listed first.
+- **Unit prices that do not follow from the pack:** listed in full for mapped
+  Products and only counted for the rest. A tin or jar of something in liquid
+  whose unit price is up to three times the pack's is counted apart, as a
+  likely drained-weight price (uitlekgewicht). Jumbo states those for tins and
+  jars, and the fix there is one rule, not one Product.
+
+Anything found right as it is goes in `src/catalogue/known-slips.ts` with the
+reason. A split entry naming any one member quietens the whole group, and the
+report names entries it no longer finds.
+
+The first run on 2026-10-14 found Jumbo selling whole cases under one unit's
+title: sku 47868DSL, "Arla Bio Halfvolle Melk 1 L", is a box of six at
+€10.74. The Jumbo reader now takes such a pack as the multiple its price over
+Jumbo's own unit price gives (`wholeCase`), which cut Jumbo's unit slips from
+652 to 455.
+
 It also judges every Offer against its Product's **Reference Price**, the
 lowest price of the 30 days before the reduction began (#18). The refresh's
 database holds only one day, so `catalogue/history.json` carries each

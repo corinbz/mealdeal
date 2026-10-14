@@ -137,6 +137,21 @@ function unitPriceFor(
   return { unitPriceCents: null, comparisonUnit: chainUnit, unitPriceSource: null };
 }
 
+/**
+ * The pack as sold, when Jumbo sells a whole case under one unit's title
+ * (#37). "Arla Bio Halfvolle Melk 1 L" with sku 47868DSL costs €10.74 at
+ * €1.79 a litre: a box of six, though its title names one. Jumbo's own unit
+ * price is right, so a pack whose price over that unit price is a whole
+ * multiple of the title's, two or more, is that many. Anything else is left
+ * as titled: a jar priced per drained kilo is less than its title, not more.
+ */
+export function wholeCase(pack: PackSize | null, chainCents: number | null, chainUnit: ComparisonUnit | null, paidCents: number): PackSize | null {
+  if (!pack || !chainCents || chainUnit !== pack.unit) return pack;
+  const times = paidCents / chainCents / pack.quantity, n = Math.round(times);
+  if (n < 2 || Math.abs(times - n) > 0.05 * n) return pack;
+  return { quantity: Math.round(pack.quantity * n * 1000) / 1000, unit: pack.unit };
+}
+
 export const jumboReader: ChainReader = {
   chainId: "jumbo",
 
@@ -201,7 +216,7 @@ export const jumboReader: ChainReader = {
         // Jumbo exposes no separate pack field in the selection set we
         // archive, so the pack wording available to us is the title itself.
         // Kept verbatim rather than re-written into a tidier form.
-        const pack = parsePackSize(name);
+        const pack = wholeCase(parsePackSize(name), chainUnitCents, chainUnit, promo ?? shelf);
         const unit = unitPriceFor(chainUnitCents, chainUnit, pack, promo ?? shelf);
         if (unit.unitPriceCents === null) withoutUnitPrice++;
 
