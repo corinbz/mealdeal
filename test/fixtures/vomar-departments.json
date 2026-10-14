@@ -1,0 +1,344 @@
+[
+ {
+  "departments": [
+   {
+    "departmentNumber": 20,
+    "departmentDescription": "Diepvries",
+    "mainGroups": [
+     {
+      "mainGroupNumber": 204,
+      "mainGroupDescription": "Diepvries Pizza's",
+      "subGroups": [
+       {
+        "subGroupNumber": 10,
+        "subGroupDescription": "Pizza's"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "departmentNumber": 25,
+    "departmentDescription": "Drogisterij",
+    "mainGroups": [
+     {
+      "mainGroupNumber": 250,
+      "mainGroupDescription": "Bad, Douche & Zeep",
+      "subGroups": [
+       {
+        "subGroupNumber": 11,
+        "subGroupDescription": "Douche"
+       },
+       {
+        "subGroupNumber": 12,
+        "subGroupDescription": "Handzeep"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "departmentNumber": 40,
+    "departmentDescription": "Huishouden",
+    "mainGroups": [
+     {
+      "mainGroupNumber": 410,
+      "mainGroupDescription": "Vuilnis- & Stofzuigerzakken",
+      "subGroups": [
+       {
+        "subGroupNumber": 11,
+        "subGroupDescription": "Vuilnis- & Pedaalemmerzakken"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "departmentNumber": 50,
+    "departmentDescription": "Vers",
+    "mainGroups": [
+     {
+      "mainGroupNumber": 500,
+      "mainGroupDescription": "Aardappelen",
+      "subGroups": [
+       {
+        "subGroupNumber": 10,
+        "subGroupDescription": "Aardappelen"
+       },
+       {
+        "subGroupNumber": 11,
+        "subGroupDescription": "Gekoelde Aardappelproducten"
+       }
+      ]
+     },
+     {
+      "mainGroupNumber": 503,
+      "mainGroupDescription": "Fruit",
+      "subGroups": [
+       {
+        "subGroupNumber": 10,
+        "subGroupDescription": "Appels"
+       },
+       {
+        "subGroupNumber": 11,
+        "subGroupDescription": "Citrus Fruit"
+       },
+       {
+        "subGroupNumber": 12,
+        "subGroupDescription": "Exotisch Fruit"
+       },
+       {
+        "subGroupNumber": 13,
+        "subGroupDescription": "Gekoeld Fruit"
+       },
+       {
+        "subGroupNumber": 15,
+        "subGroupDescription": "Meloenen"
+       },
+       {
+        "subGroupNumber": 16,
+        "subGroupDescription": "Peren"
+       },
+       {
+        "subGroupNumber": 17,
+        "subGroupDescription": "Steenvruchten"
+       },
+       {
+        "subGroupNumber": 18,
+        "subGroupDescription": "Zacht Fruit"
+       }
+      ]
+     },
+     {
+      "mainGroupNumber": 505,
+      "mainGroupDescription": "Groente",
+      "subGroups": [
+       {
+        "subGroupNumber": 10,
+        "subGroupDescription": "Bladgroente"
+       },
+       {
+        "subGroupNumber": 11,
+        "subGroupDescription": "Champignons"
+       },
+       {
+        "subGroupNumber": 14,
+        "subGroupDescription": "Gemengde Groente"
+       },
+       {
+        "subGroupNumber": 15,
+        "subGroupDescription": "Gesneden Groente"
+       },
+       {
+        "subGroupNumber": 16,
+        "subGroupDescription": "Groente"
+       },
+       {
+        "subGroupNumber": 18,
+        "subGroupDescription": "Koolsoorten"
+       },
+       {
+        "subGroupNumber": 19,
+        "subGroupDescription": "Peulvuchten"
+       },
+       {
+        "subGroupNumber": 20,
+        "subGroupDescription": "Slaschotels"
+       },
+       {
+        "subGroupNumber": 21,
+        "subGroupDescription": "Slasoorten"
+       },
+       {
+        "subGroupNumber": 22,
+        "subGroupDescription": "Stengelgroente"
+       },
+       {
+        "subGroupNumber": 24,
+        "subGroupDescription": "Uien"
+       },
+       {
+        "subGroupNumber": 25,
+        "subGroupDescription": "Verse Groente"
+       },
+       {
+        "subGroupNumber": 26,
+        "subGroupDescription": "Vruchtgroente"
+       },
+       {
+        "subGroupNumber": 27,
+        "subGroupDescription": "Wortels & Knolgroente"
+       }
+      ]
+     },
+     {
+      "mainGroupNumber": 506,
+      "mainGroupDescription": "Kaas",
+      "subGroups": [
+       {
+        "subGroupNumber": 10,
+        "subGroupDescription": "Buitenlandse Kaas"
+       },
+       {
+        "subGroupNumber": 11,
+        "subGroupDescription": "Geitenkaas"
+       },
+       {
+        "subGroupNumber": 12,
+        "subGroupDescription": "Geraspte Kaas"
+       },
+       {
+        "subGroupNumber": 13,
+        "subGroupDescription": "Hollandse Kaas"
+       },
+       {
+        "subGroupNumber": 14,
+        "subGroupDescription": "Kaas"
+       },
+       {
+        "subGroupNumber": 15,
+        "subGroupDescription": "Kaassnacks"
+       },
+       {
+        "subGroupNumber": 16,
+        "subGroupDescription": "Roomkaas"
+       },
+       {
+        "subGroupNumber": 17,
+        "subGroupDescription": "Smeerkaas & Spreads"
+       },
+       {
+        "subGroupNumber": 18,
+        "subGroupDescription": "Vetarme Kaas"
+       }
+      ]
+     },
+     {
+      "mainGroupNumber": 521,
+      "mainGroupDescription": "Zuivel, Boter & Eieren",
+      "subGroups": [
+       {
+        "subGroupNumber": 10,
+        "subGroupDescription": "Bakken & Braden"
+       },
+       {
+        "subGroupNumber": 11,
+        "subGroupDescription": "Biologisch"
+       },
+       {
+        "subGroupNumber": 12,
+        "subGroupDescription": "Boter"
+       },
+       {
+        "subGroupNumber": 13,
+        "subGroupDescription": "Desserts"
+       },
+       {
+        "subGroupNumber": 14,
+        "subGroupDescription": "Eieren"
+       },
+       {
+        "subGroupNumber": 15,
+        "subGroupDescription": "Halvarine"
+       },
+       {
+        "subGroupNumber": 16,
+        "subGroupDescription": "Ijskoffie"
+       },
+       {
+        "subGroupNumber": 17,
+        "subGroupDescription": "Kindertoetjes"
+       },
+       {
+        "subGroupNumber": 18,
+        "subGroupDescription": "Kwark"
+       },
+       {
+        "subGroupNumber": 19,
+        "subGroupDescription": "Margarine"
+       },
+       {
+        "subGroupNumber": 20,
+        "subGroupDescription": "Melk"
+       },
+       {
+        "subGroupNumber": 21,
+        "subGroupDescription": "Roomboter"
+       },
+       {
+        "subGroupNumber": 22,
+        "subGroupDescription": "Roomproducten"
+       },
+       {
+        "subGroupNumber": 23,
+        "subGroupDescription": "Soja Producten"
+       },
+       {
+        "subGroupNumber": 24,
+        "subGroupDescription": "Yoghurt"
+       },
+       {
+        "subGroupNumber": 25,
+        "subGroupDescription": "Zuiveldranken"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "departmentNumber": 55,
+    "departmentDescription": "Voorraadkast",
+    "mainGroups": [
+     {
+      "mainGroupNumber": 552,
+      "mainGroupDescription": "Broodbeleg",
+      "subGroups": [
+       {
+        "subGroupNumber": 11,
+        "subGroupDescription": "Hartig Broodbeleg"
+       },
+       {
+        "subGroupNumber": 12,
+        "subGroupDescription": "Honing"
+       },
+       {
+        "subGroupNumber": 13,
+        "subGroupDescription": "Jam"
+       },
+       {
+        "subGroupNumber": 14,
+        "subGroupDescription": "Stroop & Appelstroop"
+       },
+       {
+        "subGroupNumber": 15,
+        "subGroupDescription": "Zoet Broodbeleg"
+       }
+      ]
+     },
+     {
+      "mainGroupNumber": 554,
+      "mainGroupDescription": "Chocolade & Snoep",
+      "subGroups": [
+       {
+        "subGroupNumber": 10,
+        "subGroupDescription": "Chocolade"
+       },
+       {
+        "subGroupNumber": 11,
+        "subGroupDescription": "Drop & Keelverzachters"
+       },
+       {
+        "subGroupNumber": 12,
+        "subGroupDescription": "Pepermunt & Kauwgom"
+       },
+       {
+        "subGroupNumber": 13,
+        "subGroupDescription": "Snoep"
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ }
+]

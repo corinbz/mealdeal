@@ -148,5 +148,6 @@ CREATE TRIGGER offer_observation_append_only
 
 INSERT INTO chain (id, name, kind) VALUES
   ('dirk',  'Dirk',  'Regional Chain'),
-  ('jumbo', 'Jumbo', 'National Chain')
+  ('jumbo', 'Jumbo', 'National Chain'),
+  ('vomar', 'Vomar', 'Regional Chain')
 ON CONFLICT (id) DO NOTHING;

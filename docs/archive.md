@@ -180,6 +180,53 @@ a background job, not something to wait on. The promotions feed returns all
 **359 Offers in a single call**, 112 of them not yet started, which is why the
 offer step is cheap and the product step is not.
 
+### Vomar — working, verified live, honest agent accepted
+
+Added on 2026-10-14 (#10). Vomar answers our honest, self-identifying agent,
+so no override is needed or sent.
+
+**Access and terms, checked the same day:**
+
+- `robots.txt` on `www.vomar.nl` and `api.vomar.nl` blocks three named crawlers
+  (HenryTheMiragoRobot, Mirago, MJ12bot) and four `/misc/*` paths, then
+  `Allow: /`. `gateway.vomar.nl`, which is what we call, has no `robots.txt`
+  (404).
+- **No terms of use exist to read.** `/algemene-voorwaarden`, `/disclaimer`
+  and `/gebruiksvoorwaarden` are all 404, and the footer links only a
+  `/privacyverklaring`, which concerns shoppers' personal data and says
+  nothing about automated access. The site's own small print says only that
+  prices may change and that Offers are not meant for resellers. This
+  confirms the research's "ToS unverified": there is nothing to verify.
+
+**What is archived.** The research found product objects in the Nuxt payload
+of Vomar's category pages. Those pages are built from a JSON gateway, and the
+archive records the gateway instead: the same data, without a page of HTML and
+script around it, and the same requests Vomar's own pages make.
+
+- `GET https://gateway.vomar.nl/departments`: the whole tree, 10 departments
+  and 85 main groups with their subgroups. Step `departments`.
+- `GET /products?departmentNumber=…&mainGroupNumber=…&pageSize=1000&page=…`:
+  every Product in one main group. Step `products/dept-50/mg-500`. No main
+  group came near 1000 on 2026-10-14, but the pager is followed anyway.
+
+A full day is 86 requests, about two minutes at the default pacing, and
+644 KiB stored: **6,268 Products, every one with a primary EAN.** Prices are
+national; no endpoint takes a Store.
+
+**What it sends that we did not ask for.** A GET has no selection set, so the
+guard in `src/archive/guard.ts` has nothing to check. Every Product carries
+`images`, a list of Vomar-hosted file names. They are archived as part of the
+response, verbatim like everything else, but no image is ever fetched and
+ingest never reads the field (ADR-0003; a test holds it to that).
+
+**No Offers.** `/aanbiedingen` redirects to `/folders`, which embeds a
+Publitas leaflet: pictures of pages. Its hotspot data holds links, not
+products, and reading prices off the pictures would be both unreliable and
+Chain media (ADR-0003). `api.vomar.nl/api/v1/article/getAllDiscountDealArticles`
+answered `[]`; the `discountDeal` flag the page code checks marks everyday low
+prices and was absent from every Product. So Vomar's prices are always Shelf
+Prices.
+
 ## Politeness
 
 One request at a time, no concurrency option, with a configurable gap
@@ -252,8 +299,9 @@ objects, and never needs to create or delete a bucket.
 
 GitHub's own runners, until the repository variable `ARCHIVE_RUNNER` says
 otherwise. The repository is private, and GitHub Free gives private
-repositories 2,000 Actions minutes a month. A full day of both Chains bills
-about 100, since each Chain's job is billed separately, so a daily schedule
+repositories 2,000 Actions minutes a month. A full day of Dirk and Jumbo bills
+about 100, since each Chain's job is billed separately; Vomar's job adds about
+3 more, mostly setup. So a daily schedule
 would be blocked around the 20th of each month. Every blocked day is price
 history lost for good (#24).
 

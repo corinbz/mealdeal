@@ -91,10 +91,12 @@ Chain resolves to, and a pack far larger than the requirement is flagged
 
 ## Where the data comes from
 
-**Both Chains are real.** The fixture is resolved against the ingested
+**All three Chains are real.** The fixture is resolved against the ingested
 database, so every name, Pack Size, Shelf Price and Offer wording came from a
-Sweep: 7,359 Dirk products from Store 66 and 17,104 Jumbo products, which Jumbo
-prices nationally. Coverage happens to be 12 of 12 at both today; the UI still
+Sweep: 7,359 Dirk products from Store 66, 17,104 Jumbo products and 6,268
+Vomar products, the last two priced nationally. Vomar publishes no Offers
+online, so its bag is always at Shelf Prices, and the note under Vergelijk
+says so. Coverage happens to be 12 of 12 at all three today; the UI still
 shows it beside every total, because a Basket a Chain cannot fill is the normal
 case.
 
@@ -129,7 +131,10 @@ which `pull-catalogue.sh` also fetches; without it the page shows no history.
 
 Each Chain's colour was checked for colour-blind readers when the chart was
 added. Dirk's green and Jumbo's former maroon were nearly the same colour for
-deuteranopes, so Jumbo is amber now.
+deuteranopes, so Jumbo is amber now. Vomar, the third, is purple rather than the
+blue first in the palette: for tritanopes that blue sat beside Dirk's green
+(ΔE 12). The purple stays at least ΔE 33 from both others under every type
+simulated, and carries white text at 4.5:1 or better in both themes.
 
 A **Correction** is kept per Chain and Ingredient (and Variant), so correcting
 rundergehakt once holds for every list item and recipe that needs it.

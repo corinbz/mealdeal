@@ -63,7 +63,7 @@ Four decisions the schema enforces rather than hopes for:
 - **No cross-Chain Product identity**, not even between Products sharing an
   EAN (ADR-0001). Basket Items resolve per Chain.
 
-## The two Chains are opposite cases
+## Each Chain is its own case
 
 **Dirk** publishes no EAN and no Unit Price, so every comparison figure is
 derived from free-text pack wording, and prices are per-Store. Verified
@@ -131,6 +131,26 @@ What the real data also settled, which guesses had not:
 - EAN coverage is total where Dirk's is nil: **76 of 76** ingested Jumbo
   Products carried one, against 0 of 963 for Dirk.
 
+**Vomar** (issue #10) sits between them. Like Jumbo it prices nationally
+and sends EANs: a primary one on every Product, often with additional ones.
+Like Dirk it publishes no Unit Price, so every figure is `derived`. Its pack
+comes in two fields, `contents` and `unit` ("500" and "gram"), stored together
+as the pack wording, and that reads cleanly far more often than Dirk's free
+text: **6,268 Products on 2026-10-14, one without a Unit Price.** Weighed
+goods are marked: `pieceWeight` 2 is loose produce priced per kg, 1 a weighed
+pre-packed item such as cheese. Vomar publishes **no Offers** in a readable
+form, so its prices are always Shelf Prices, and the basket page says so.
+
+Two things in Vomar's data that look like they help and do not:
+
+- **A measure in a piece-counted name is each piece's size, not the pack's.**
+  In all 18 such Products it was the capacity of a bin bag ("G'woon
+  Huisvuilzak 60l", 20 stuks), so unlike Jumbo the name never overrides
+  Vomar's own pack fields. It is read only when they are empty.
+- **An EAN starting with 2 is an in-store code**, from GS1's restricted range:
+  loose apples carry `2221230000000`. It is stored as sent, but it identifies
+  nothing outside Vomar and must never join Products across Chains (#15).
+
 ## A run that records nothing must not look like success
 
 `ingest_run` counts products seen, products recorded, prices, offers, products
@@ -156,8 +176,9 @@ steps, silently skipping Jumbo's whole Offer feed. Both were found by asking
 ## Products to Ingredients
 
 Each Chain files a Product in its own category tree, and ingest records
-where: Dirk's department and web group, and the path of names to every Jumbo
-category a Product was listed under. The mapper (`src/ingredients/`) reads
+where: Dirk's department and web group, the path of names to every Jumbo
+category a Product was listed under, and Vomar's department, main group and
+subgroup. The mapper (`src/ingredients/`) reads
 that and the name, and says which Ingredient a Product is, its Variant and
 form, and whether it is biologisch or huismerk. It may also say that the
 Product is no single Ingredient. The catalogue build runs it on every
@@ -182,8 +203,9 @@ Ingredient's own unit.
 - **Units convert where the vocabulary says how**: a courgette is about
   0.3 kg, so a per-kg price compares per piece.
 
-On 2026-10-14 about 1,700 of Dirk's and 3,650 of Jumbo's food Products
-mapped. Most of the rest are processed, seasoned or mixed. The vocabulary
+On 2026-10-14 about 1,700 of Dirk's, 3,650 of Jumbo's and 1,450 of Vomar's
+food Products mapped. Vomar's huismerk is its own label and the Superunie
+lines it sells as its own: G'woon, Melkan, Bio+ and Daily Chef. Most of the rest are processed, seasoned or mixed. The vocabulary
 (`src/ingredients/vocabulary.ts`, about 230 Ingredients) grows by adding
 words, and Corrections cover what it misses in the meantime. To see what it
 does with a real day without the R2 keys, export one with

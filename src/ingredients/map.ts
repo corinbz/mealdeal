@@ -27,6 +27,9 @@ export interface Mapping {
 const OWN_BRAND: Readonly<Record<string, RegExp>> = {
   dirk: /^(1 de beste|dirk)\b/i,
   jumbo: /^jumbo\b/i,
+  // Vomar's own label and the Superunie lines it sells as its own: the
+  // cheapest of each kind on its shelves is G'woon, not "Vomar".
+  vomar: /^(vomar|g'woon|melkan|daily chef)\b|^bio\+/i,
 };
 
 interface Compiled {

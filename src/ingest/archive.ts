@@ -89,3 +89,15 @@ export function payloadOf(record: ArchivedResponse): Record<string, unknown> | n
   if (typeof envelope.data !== "object" || envelope.data === null) return null;
   return envelope.data as Record<string, unknown>;
 }
+
+/**
+ * The parsed body of a plain JSON response (Vomar), or null when it is not
+ * JSON. There is no envelope to unwrap and no GraphQL errors to look for.
+ */
+export function jsonOf(record: ArchivedResponse): unknown {
+  try {
+    return JSON.parse(record.body) as unknown;
+  } catch {
+    return null;
+  }
+}
