@@ -248,5 +248,46 @@ objects, and never needs to create or delete a bucket.
 - **Manifests are attached to each run** for 30 days. They are small and are
   the only thing worth reading when a run looks wrong.
 
+### Which machine runs it
+
+GitHub's own runners, until the repository variable `ARCHIVE_RUNNER` says
+otherwise. The repository is private, and GitHub Free gives private
+repositories 2,000 Actions minutes a month. A full day of both Chains bills
+about 100, since each Chain's job is billed separately, so a daily schedule
+would be blocked around the 20th of each month. Every blocked day is price
+history lost for good (#24).
+
+So the owner's Raspberry Pi runs it as a self-hosted runner, where minutes
+are free. Only the machine changes: the workflow, schedule, logs and usage
+guard are the same, and R2 stays the durable copy. On the Pi, as the user
+the runners should run as:
+
+```sh
+./scripts/setup-pi-runner.sh
+```
+
+It checks the OS is 64-bit, installs the AWS CLI and the runner's
+dependencies, and registers one runner per Chain as a service. Each runner
+takes one job at a time, so with one runner per Chain they sweep in parallel.
+It then sets `ARCHIVE_RUNNER` to `["self-hosted","pi"]` and starts a run.
+`gh variable delete ARCHIVE_RUNNER` moves the archive back to GitHub's runners.
+
+### When a morning is missed
+
+`.github/workflows/archive-watch.yml` runs at 08:00 UTC on GitHub's runners
+(about a minute a day) and goes red unless each Chain's manifest for today is
+in R2 and passes `archive:check`. GitHub emails the owner about a failed
+scheduled run. It exists because the archive cannot report its own absence:
+
+- GitHub skipped the first scheduled run outright, on 2026-10-14. Scheduled
+  runs are best effort.
+- A job waiting for a Pi that is off sits queued with no error until GitHub
+  drops it.
+
+The Chains still serve that day's prices when it fires, so the day can still be
+captured: `gh workflow run archive.yml -f chain=all`. That run resumes whatever
+part of the day is already in R2. The watchdog's list of Chains must match the
+archive workflow's.
+
 Do **not** commit the archive to git — `.gitignore` excludes `/archive/`
 (root-anchored, so it does not also swallow `src/archive/`), and `.env`.
