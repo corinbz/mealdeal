@@ -1,0 +1,63 @@
+[
+  {
+    "_why": "RECORDED LIVE from www.jumbo.com/api/graphql on 2026-10-14, two rows verbatim: Products whose only promotion is online only.",
+    "data": {
+      "searchProducts": {
+        "products": [
+          {
+            "sku": "734732TRA",
+            "title": "Heineken 0.0% 24x330ML",
+            "ean": "8712000062385",
+            "price": {
+              "price": 2599,
+              "promoPrice": 1899,
+              "pricePerUnit": {
+                "price": 240,
+                "unit": "l"
+              }
+            },
+            "promotions": [
+              {
+                "id": "3015221",
+                "tags": [
+                  {
+                    "text": "voor 18,99"
+                  },
+                  {
+                    "text": "Alleen online"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "sku": "776380PAK",
+            "title": "Dr. Oetker Chocolate Cookies 250 g",
+            "ean": "8710466335128",
+            "price": {
+              "price": 349,
+              "promoPrice": null,
+              "pricePerUnit": {
+                "price": 1396,
+                "unit": "kg"
+              }
+            },
+            "promotions": [
+              {
+                "id": "3022880",
+                "tags": [
+                  {
+                    "text": "Gratis koektrommel bij 2 stuks"
+                  },
+                  {
+                    "text": "Alleen online - OP=OP"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

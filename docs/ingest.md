@@ -128,6 +128,15 @@ What the real data also settled, which guesses had not:
     "€ 1,50 bezorgkorting · Bij elke 2 stuks") change no Product's price, so a
     promotion that is only a perk is not recorded as an Offer at all (issue
     #5): 37 of the 359 on 2026-10-13.
+  - **Jumbo's online-only Offers** ("Alleen online", "Alleen online -
+    OP=OP") are not paid in a Store, and only what a Store charges is
+    compared (the owner, 2026-10-14). They are not recorded as Offers, and a
+    Product whose only promotions are online-only keeps its Shelf Price with
+    no Offer price; Jumbo's own Unit Price, computed on the online price, is
+    replaced by one derived from the pack. 18 of 290 promotions and 40
+    Products' prices on 2026-10-14. Dirk, Plus, Vomar and Lidl mark no
+    online-only prices: Lidl tags every Offer "Alleen in de winkel", and a
+    product it sold only online would be passed over.
 - EAN coverage is total where Dirk's is nil: **76 of 76** ingested Jumbo
   Products carried one, against 0 of 963 for Dirk.
 

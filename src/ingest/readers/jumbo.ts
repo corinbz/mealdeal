@@ -39,6 +39,7 @@ interface JumboProduct {
     promoPrice?: unknown;
     pricePerUnit?: { price?: unknown; unit?: unknown } | null;
   } | null;
+  promotions?: { tags?: { text?: unknown }[] | null }[] | null;
 }
 
 interface JumboPromotion {
@@ -69,6 +70,14 @@ const isDeliveryPerk = (tag: string) => /bezorg/i.test(tag);
 const isPerkCondition = (tag: string) => /^(vanaf\s*€|bij\s+(elke?\s+)?(\d+\s+)?stuks?$)/i.test(tag);
 /** Tag text can carry zero-width spaces ("Gratis bezorging\u200b"). */
 const tagText = (value: unknown) => text(typeof value === "string" ? value.replace(/[\u200b-\u200d\ufeff]/g, "") : value);
+
+/**
+ * "Alleen online", "Alleen online - OP=OP": an Offer only for online orders.
+ * The owner compares what a shopper pays in a Store (2026-10-14), so these
+ * are neither Offers nor a price paid. The archive still holds them.
+ */
+const isOnlineOnly = (tags: unknown) =>
+  Array.isArray(tags) && tags.some((t: { text?: unknown }) => /^alleen online\b/i.test(tagText(t?.text) ?? ""));
 
 /**
  * Jumbo states the unit as a bare word. Anything else is left unmapped.
@@ -178,13 +187,22 @@ export const jumboReader: ChainReader = {
         if (seenRefs.has(ref)) continue;
         seenRefs.add(ref);
 
-        const chainUnitCents = centsFrom(row.price?.pricePerUnit?.price);
+        // A promo price whose every promotion is online only is not paid in
+        // a Store. Jumbo's own Unit Price is computed on that price, so it
+        // goes too and the Unit Price is derived from the Shelf Price. A
+        // Product also on an in-store promotion keeps it: the in-store one
+        // is the price Jumbo states.
+        const promotions = Array.isArray(row.promotions) ? row.promotions : [];
+        const onlineOnly = promotions.length > 0 && promotions.every((p) => isOnlineOnly(p?.tags));
+        const promo = onlineOnly ? null : centsFrom(row.price?.promoPrice);
+        const droppedPromo = onlineOnly && centsFrom(row.price?.promoPrice) !== null;
+        const chainUnitCents = droppedPromo ? null : centsFrom(row.price?.pricePerUnit?.price);
         const chainUnit = comparisonUnit(row.price?.pricePerUnit?.unit);
         // Jumbo exposes no separate pack field in the selection set we
         // archive, so the pack wording available to us is the title itself.
         // Kept verbatim rather than re-written into a tidier form.
         const pack = parsePackSize(name);
-        const unit = unitPriceFor(chainUnitCents, chainUnit, pack, centsFrom(row.price?.promoPrice) ?? shelf);
+        const unit = unitPriceFor(chainUnitCents, chainUnit, pack, promo ?? shelf);
         if (unit.unitPriceCents === null) withoutUnitPrice++;
 
         const ean = text(row.ean);
@@ -200,7 +218,7 @@ export const jumboReader: ChainReader = {
           storeRef: null, // Jumbo's public endpoint publishes national prices.
           observedAt: parseInstant(record.at) ?? new Date(`${date}T00:00:00Z`),
           shelfPriceCents: shelf,
-          offerPriceCents: centsFrom(row.price?.promoPrice),
+          offerPriceCents: promo,
           ...unit,
         });
       }
@@ -241,6 +259,8 @@ export const jumboReader: ChainReader = {
         const perk = sent.some(isDeliveryPerk);
         const tags = perk ? sent.filter((t) => !isDeliveryPerk(t) && !isPerkCondition(t)) : sent;
         if (perk && tags.length === 0) continue;
+        // Online orders only: not an Offer in any Store.
+        if (isOnlineOnly(raw.tags)) continue;
 
         offers.push({
           chainOfferRef: ref,
