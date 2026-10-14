@@ -288,7 +288,9 @@
   .rc::before { content: ""; position: absolute; left: 50%; top: -22px; width: 38%; height: 30px; transform: translateX(-50%); border: 7px solid var(--line); border-bottom: 0; border-radius: 40px 40px 0 0; }
   .rc .hd { padding: 16px 16px 10px; border-bottom: 1px dashed var(--line); cursor: pointer; border-radius: 10px 10px 0 0; }
   .rc .hd:hover h3 { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
-  .ex { font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); border: 1.5px dashed var(--ink-3); border-radius: 6px; padding: 0 6px; }
+  .credit { color: var(--ink-3); font-size: 12px; margin: 10px 0 0; }
+  .credit a { color: inherit; }
+  .more-rc { grid-column: 1 / -1; justify-self: center; margin-top: 4px; }
   .rc h3 { margin: 8px 0 2px; font-size: 21px; font-weight: 900; line-height: 1.15; letter-spacing: -.01em; }
   .rc .meta { color: var(--ink-2); font-size: 14px; font-weight: 600; }
   .rc .save { margin: 10px 0 0; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
@@ -352,6 +354,7 @@
 <script src="prices.js"></script>
 <script src="words.js"></script>
 <script src="resolve.js"></script>
+<script src="recipes.js"></script>
 <script>
   if (!window.CATALOGUE) {
     document.getElementById("main").innerHTML =
@@ -477,6 +480,7 @@
   let exactOffer = null;                                    // { itemId, matches }: Exact Products the item just typed may mean
   let hint = "", openRow = null, sheet = null;              // sheet: { kind: "recipe", id } | { kind: "fix", chainId, itemId }
   const added = new Set(), stepsDone = {};
+  const RECIPES_SHOWN = 8; let showAllRecipes = false;
 
   function persist() {
     save("mealdeal.list.v1", list); save("mealdeal.corrections.v1", corrections);
@@ -681,64 +685,11 @@
   // the catalogue. Each ingredient is a Requirement written as a shopper would
   // type it, read through the same vocabulary as the list, so a Correction
   // made on the list holds in every recipe that needs that Ingredient.
-  const req = (text) => parse(text);
-  const ONION = req("500 g uien"), POTATO = req("1 kg kruimige aardappelen"), MINCE = req("500 g rundergehakt");
-  const MILK = (ml) => req(ml + " ml halfvolle melk"), CHEESE = req("150 g belegen kaas");
-  const RECIPES = [
-    { id: "andijvie", name: "Andijviestamppot met rookworst", persons: 4, minutes: 30, ingredients: [
-      POTATO, req("500 g andijvie"), req("275 g rookworst"), MILK(250), ONION],
-      pantry: ["boter", "zout", "peper"], steps: [
-      "Schil de aardappelen, snijd ze in gelijke stukken en kook ze in ongeveer 20 minuten gaar in water met een snuf zout.",
-      "Leg intussen de rookworst 20 minuten in heet water dat net niet meer kookt.",
-      "Snipper de ui en bak hem in een klontje boter in 5 minuten zacht en goudgeel.",
-      "Was de andijvie, laat hem goed uitlekken en snijd hem fijn.",
-      "Giet de aardappelen af en stamp ze fijn met de warme melk en een klontje boter.",
-      "Schep de rauwe andijvie en de gebakken ui erdoor en breng op smaak met zout en peper. Serveer met de rookworst in plakken."] },
-    { id: "wraps", name: "Wraps met gehakt, paprika en avocado", persons: 4, minutes: 25, ingredients: [
-      req("8 tortilla's"), MINCE, req("500 g puntpaprika"), req("2 avocado's"), ONION],
-      pantry: ["olie", "zout", "peper", "paprikapoeder"], steps: [
-      "Snipper de ui en snijd de puntpaprika in reepjes.",
-      "Verhit een scheutje olie in een koekenpan en bak het gehakt rul. Breng op smaak met zout, peper en een theelepel paprikapoeder.",
-      "Bak de ui en de paprika 5 minuten mee tot ze zacht zijn.",
-      "Halveer de avocado's, haal de pit eruit en snijd het vruchtvlees in plakjes.",
-      "Verwarm de tortilla's een halve minuut per stuk in een droge koekenpan.",
-      "Vul de wraps met het gehaktmengsel en de avocado, vouw de onderkant om en rol ze op."] },
-    { id: "pompoen", name: "Romige pompoensoep", persons: 4, minutes: 40, ingredients: [
-      req("1 pompoen"), ONION, req("500 g wortelen"), req("250 ml kookroom")],
-      pantry: ["olie", "2 bouillonblokjes", "zout", "peper"], steps: [
-      "Halveer de pompoen, schep de pitten eruit en snijd hem in blokjes. Een oranje pompoen hoef je niet te schillen.",
-      "Snipper de ui en snijd de wortelen in plakjes.",
-      "Fruit de ui 3 minuten in een soeppan met een scheutje olie. Voeg pompoen en wortel toe en bak 5 minuten mee.",
-      "Voeg 1 liter water en de bouillonblokjes toe en laat 25 minuten zachtjes koken.",
-      "Pureer de soep glad met een staafmixer en roer de kookroom erdoor.",
-      "Breng op smaak met zout en peper en warm nog even door."] },
-    { id: "spruitjes", name: "Spruitjes met gehaktbal en puree", persons: 4, minutes: 45, ingredients: [
-      req("750 g spruiten"), POTATO, MINCE, MILK(250)],
-      pantry: ["boter", "zout", "peper", "1 ei", "paneermeel"], steps: [
-      "Meng het gehakt met het ei, 2 eetlepels paneermeel, zout en peper en draai er 4 ballen van.",
-      "Bak de gehaktballen rondom bruin in een flinke klont boter. Zet het vuur laag en laat ze met de deksel op de pan 20 minuten garen.",
-      "Schil de aardappelen en kook ze in ongeveer 20 minuten gaar.",
-      "Maak de spruiten schoon, snijd een kruisje in de steel en kook ze 8 tot 10 minuten.",
-      "Giet de aardappelen af en stamp ze met de warme melk en een klontje boter tot een gladde puree.",
-      "Serveer de puree met de spruiten, de gehaktballen en de jus uit de pan."] },
-    { id: "pesto", name: "Spaghetti pesto met broccoli", persons: 4, minutes: 20, ingredients: [
-      req("500 g spaghetti"), req("185 g pesto"), req("500 g broccoli"), CHEESE],
-      pantry: ["zout"], steps: [
-      "Breng een grote pan water met een flinke snuf zout aan de kook en kook de spaghetti volgens de verpakking.",
-      "Snijd de broccoli in kleine roosjes en kook ze de laatste 4 minuten mee met de pasta.",
-      "Schep een kopje kookwater apart en giet de pasta en broccoli af.",
-      "Meng de pesto erdoor, met een scheutje kookwater voor een smeuïge saus.",
-      "Snijd de kaas in reepjes en strooi die over de pasta."] },
-    { id: "bloemkool", name: "Bloemkool met kaassaus en aardappelen", persons: 4, minutes: 35, ingredients: [
-      req("1 bloemkool"), MILK(500), CHEESE, POTATO],
-      pantry: ["30 g boter", "3 el bloem", "zout", "peper", "nootmuskaat"], steps: [
-      "Schil de aardappelen en kook ze in ongeveer 20 minuten gaar.",
-      "Snijd de bloemkool in roosjes en kook ze in 8 minuten beetgaar.",
-      "Smelt de boter in een steelpan, roer de bloem erdoor en laat dit 1 minuut zachtjes garen.",
-      "Voeg al roerend scheutje voor scheutje de melk toe tot je een gladde saus hebt.",
-      "Scheur de kaas erin en laat smelten. Breng op smaak met zout, peper en een snufje nootmuskaat.",
-      "Giet de kaassaus over de bloemkool en serveer met de aardappelen."] },
-  ];
+  // The recipes themselves are data, in recipes.js (#20, ADR-0007).
+  const RECIPES = (window.RECIPES || []).map((r) => ({ ...r, ingredients: r.requirements.map((text) => parse(text)) }));
+  /** The credit line a recipe adapted from Wikibooks carries wherever it is shown. */
+  const credit = (rc) => rc.source === "own" ? "" : '<p class="credit">Bewerkt naar <a href="' + esc(rc.source.url) + '" target="_blank" rel="noopener"><i>' +
+    esc(rc.source.title) + '</i></a> op Wikibooks, <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.nl" target="_blank" rel="noopener">CC BY-SA 4.0</a></p>';
   const ingText = (g) => qtyText(g) + " " + g.noun;
   const ingCache = {};
   /** The cheapest way to buy one ingredient at one chain, Offers included. */
@@ -763,14 +714,18 @@
       return { chain: c, lines, cost: have.reduce((n, l) => n + l.cost, 0), missing: lines.length - have.length,
         deals: have.filter((l) => l.onOffer).length, saving: have.reduce((n, l) => n + (l.was ? l.was - l.cost : 0), 0) };
     }).sort((a, b) => a.missing - b.missing || a.cost - b.cost);
-    return { rc, at, best: at[0] };
+    // Complete where at least one Chain sells every ingredient. One that is
+    // not is never ranked as if the missing part were free (ADR-0007).
+    return { rc, at, best: at[0], complete: !!at[0] && at[0].missing === 0 };
   }
   // This week, the most saved first. Next week no Offer that has yet to start
   // has a price, so ranking on savings would only reward the few Offers that
   // run on: recipes rank on how many ingredients are on Offer then.
-  const rankedRecipes = (w = week) => RECIPES.map((rc) => priceRecipe(rc, w)).sort(w === "volgende"
-    ? (a, b) => b.best.deals - a.best.deals || b.best.saving - a.best.saving
-    : (a, b) => b.best.saving - a.best.saving || b.best.deals - a.best.deals);
+  const rankedRecipes = (w = week) => RECIPES.map((rc) => priceRecipe(rc, w)).sort((a, b) => b.complete - a.complete || (w === "volgende"
+    ? b.best.deals - a.best.deals || b.best.saving - a.best.saving
+    : b.best.saving - a.best.saving || b.best.deals - a.best.deals));
+  /** What one person pays, or why there is no such figure. */
+  const perPerson = (rc, best, complete) => complete ? euro(Math.round(best.cost / rc.persons)) + " p.p." : "nergens compleet te koop";
   function addRecipe(id) {
     const rc = RECIPES.find((r) => r.id === id); if (!rc) return;
     let n = 0;
@@ -804,15 +759,17 @@
       const deals = [...seen.values()].sort((a, b) => gain(b.l) - gain(a.l)).map(({ c, l }) =>
         '<div class="deal"><span class="n">' + esc(l.p.name) + "</span><span>" + tag(c) + '</span><span class="v">' + euro(l.cost) +
         (l.was ? '<span class="was">' + euro(l.was) + "</span>" : "") + '</span><span class="w">' + offerChip(l.p, l.o) + "</span></div>").join("");
-      const cards = priced.map(({ rc, at, best }) =>
+      const shown = showAllRecipes ? priced : priced.slice(0, RECIPES_SHOWN);
+      const cards = shown.map(({ rc, at, best, complete }) =>
         '<article class="rc"><div class="hd" data-act="open-recipe" data-id="' + rc.id + '" role="button" tabindex="0" aria-label="Bereiding van ' + esc(rc.name) + '">' +
-        '<span class="ex">voorbeeldrecept</span><h3>' + esc(rc.name) + "</h3>" +
-        '<div class="meta">' + rc.persons + " personen · " + rc.minutes + " min · " + euro(Math.round(best.cost / rc.persons)) + " p.p.</div>" +
+        "<h3>" + esc(rc.name) + "</h3>" +
+        '<div class="meta">' + rc.persons + " personen · " + rc.minutes + " min · " + perPerson(rc, best, complete) + "</div>" +
         '<div class="save">' + (best.saving ? "<b>" + euro(best.saving) + " korting</b>" : "") + "<span>" + best.deals + " van " + rc.ingredients.length + " in de aanbieding bij " + esc(best.chain.name) + "</span></div>" +
         '<span class="more">Bekijk bereiding →</span></div>' +
         "<ul>" + rc.ingredients.map((g, i) => ingRow(g, best.lines[i], best.chain)).join("") + "</ul>" +
         '<div class="ft"><div class="chains">' + at.map((x, i) => '<span class="' + (i ? "" : "best") + '">' + tag(x.chain) + " <b>" + euro(x.cost) + "</b>" + (x.missing ? " · " + x.missing + " mist" : "") + "</span>").join("") + "</div>" +
-        '<button class="btn' + (added.has(rc.id) ? " on" : "") + '" data-act="recipe" data-id="' + rc.id + '">' + (added.has(rc.id) ? "✓ Op je lijst" : "Zet op mijn lijst") + "</button></div></article>").join("");
+        '<button class="btn' + (added.has(rc.id) ? " on" : "") + '" data-act="recipe" data-id="' + rc.id + '">' + (added.has(rc.id) ? "✓ Op je lijst" : "Zet op mijn lijst") + "</button></div>" + credit(rc) + "</article>").join("") +
+        (priced.length > shown.length ? '<button class="btn ghost more-rc" data-act="all-recipes">Alle ' + priced.length + " recepten tonen</button>" : "");
       const next = week === "volgende";
       return "<h1>" + (next ? "Recepten voor volgende week" : "Recepten van deze week") + "</h1>" + weekSwitch() +
         (next
@@ -822,7 +779,7 @@
         '<p class="hint">' + esc(hint) + "</p>" +
         '<div class="sec"><h2>' + (next ? "Volgende week in de aanbieding" : "In de aanbieding") + "</h2><span>waar deze recepten op draaien</span></div><div class='deals'>" + deals + "</div>" +
         '<div class="recipes">' + cards + "</div>" +
-        '<p class="note">De recepten zijn voorbeelden. Prijzen, producten en acties zijn echt, uit de prijzen van ' + esc(chains[0].observedAt) + ".</p>";
+        '<p class="note">Recepten van mealdeal, en enkele bewerkt naar het Wikibooks Kookboek. Prijzen, producten en acties komen uit de prijzen van ' + esc(chains[0].observedAt) + ". Wat uit de kast komt, zoals zout en olie, is niet meegerekend.</p>";
     } },
 
     lijst: { label: "Lijst", ic: "☰", render(s) {
@@ -864,7 +821,7 @@
           ? '<p class="note">Zodra er ' + (need + 1) + " dagen prijzen gemeten zijn (nu " + measured + "), zie je hier welke vaste boodschappen goedkoper zijn dan normaal.</p>"
           : "";
       const offer = exactOffer && list.some((i) => i.id === exactOffer.itemId && !i.exact) ? exactOffer : null;
-      const p = currentPlan(s), top = rankedRecipes(week)[0];
+      const p = currentPlan(s), top = rankedRecipes(week).find((x) => x.complete && x.best.deals);
       return "<h1>Boodschappenlijst</h1><p class=\"lede\">Wat er in huis moet komen. Waar het het goedkoopst is, zie je bij Vergelijk.</p>" +
         freshness("Prijzen van") + cardNote() + dropBlock + weekSwitch() +
         (top ? '<div class="banner"><span>' + (week === "volgende" ? "Volgende week" : "Deze week") + ': <b>' + esc(top.rc.name) + "</b>, " + top.best.deals + " ingrediënt" + (top.best.deals === 1 ? "" : "en") + ' in de aanbieding</span><button class="btn" data-act="go" data-id="recepten">' + RECIPES.length + " recepten bekijken</button></div>" : "") +
@@ -1091,10 +1048,10 @@
 
   function recipeSheet(id) {
     const rc = RECIPES.find((r) => r.id === id); if (!rc) return "";
-    const { at, best } = priceRecipe(rc), ticked = stepsDone[rc.id] || new Set();
+    const { at, best, complete } = priceRecipe(rc), ticked = stepsDone[rc.id] || new Set();
     return '<div class="scrim" data-act="close"></div><section class="sheet rd" role="dialog" aria-modal="true" aria-labelledby="sheet-title">' +
-      '<header><div><span class="ex">voorbeeldrecept</span><h2 id="sheet-title">' + esc(rc.name) + "</h2>" +
-      '<div class="meta">' + rc.persons + " personen · " + rc.minutes + " min · " + euro(Math.round(best.cost / rc.persons)) + " p.p." + (best.saving ? " · " + euro(best.saving) + " korting bij " + esc(best.chain.name) : "") + "</div></div>" +
+      '<header><div><h2 id="sheet-title">' + esc(rc.name) + "</h2>" +
+      '<div class="meta">' + rc.persons + " personen · " + rc.minutes + " min · " + perPerson(rc, best, complete) + (best.saving ? " · " + euro(best.saving) + " korting bij " + esc(best.chain.name) : "") + "</div></div>" +
       '<button class="x" data-act="close" aria-label="Sluiten">✕</button></header>' +
       '<div class="body"><div class="ing"><h3>Ingrediënten</h3><ul>' + rc.ingredients.map((g, i) => ingRow(g, best.lines[i], best.chain)).join("") + "</ul>" +
       '<div class="kast"><b>Uit de kast:</b> ' + rc.pantry.map(esc).join(", ") + "</div>" +
@@ -1102,7 +1059,7 @@
       '<button class="btn' + (added.has(rc.id) ? " on" : "") + '" data-act="recipe" data-id="' + rc.id + '">' + (added.has(rc.id) ? "✓ Op je lijst" : "Zet op mijn lijst") + "</button></div>" +
       "<div><h3>Bereiding</h3><ol>" + rc.steps.map((t, i) => '<li><button data-act="step" data-id="' + i + '" class="' + (ticked.has(i) ? "done" : "") + '" aria-pressed="' + ticked.has(i) + '">' +
         '<span class="n">' + (ticked.has(i) ? "✓" : i + 1) + '</span><span class="t">' + esc(t) + "</span></button></li>").join("") +
-      '</ol><p class="tip">Tik een stap aan als hij klaar is.</p></div></div></section>';
+      '</ol><p class="tip">Tik een stap aan als hij klaar is.</p>' + credit(rc) + "</div></div></section>";
   }
   function fixSheet(chainId, itemId) {
     const item = list.find((i) => i.id === itemId), chain = chainById(chainId); if (!item || !chain) return "";
@@ -1188,6 +1145,7 @@
       case "tick": done.has(id) ? done.delete(id) : done.add(id); break;
       case "finish": list = list.filter((i) => i.staple || !done.has(i.id)); done.clear(); page = "lijst"; history.replaceState(null, "", "#lijst"); break;
       case "recipe": addRecipe(id); break;
+      case "all-recipes": showAllRecipes = true; break;
       case "open-recipe": sheet = { kind: "recipe", id }; break;
       case "history": sheet = { kind: "history", itemId: id }; break;
       case "suggest": {
