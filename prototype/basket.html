@@ -1,6 +1,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>mealdeal</title>
+<!-- Hosted at an unlisted address for one user (#17): keep it out of search. -->
+<meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&display=swap">
@@ -338,9 +340,11 @@
   /** One line per page, near the prices: every Chain's date, loud when any is out of date. */
   function freshness(what) {
     const stale = chains.filter(isStale);
+    // Offline, these are the prices from the last visit (sw.js): say so where the date is read.
+    const offline = navigator.onLine === false ? '<span class="warn">Offline: dit zijn de prijzen van je laatste bezoek.</span>' : "";
     return '<p class="fresh' + (stale.length ? " stale" : "") + '" role="' + (stale.length ? "alert" : "note") + '"><span>' + what + "</span>" +
       chains.map((c) => "<span>" + tag(c) + ' <span class="when">' + esc(ageText(c)) + "</span></span>").join("") +
-      (stale.length ? '<span class="warn">Mogelijk niet meer actueel: ' + stale.map((c) => esc(c.name)).join(", ") + (stale.length > 1 ? " zijn" : " is") + " ouder dan " + STALE_AFTER_DAYS + " dagen.</span>" : "") + "</p>";
+      (stale.length ? '<span class="warn">Mogelijk niet meer actueel: ' + stale.map((c) => esc(c.name)).join(", ") + (stale.length > 1 ? " zijn" : " is") + " ouder dan " + STALE_AFTER_DAYS + " dagen.</span>" : "") + offline + "</p>";
   }
   const bagAge = (c) => '<span class="age' + (isStale(c) ? " stale" : "") + '">prijzen ' + esc(ageText(c)) + (isStale(c) ? " · verouderd" : "") + "</span>";
 
@@ -876,4 +880,11 @@
 
   applyTheme();
   render();
+
+  // Offline support needs a server; opened from disk the page works without it.
+  if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+    navigator.serviceWorker.register("sw.js").catch(() => { /* the page still works online */ });
+  }
+  addEventListener("online", render);
+  addEventListener("offline", render);
 </script>

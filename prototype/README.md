@@ -30,6 +30,34 @@ in the browser against its whole comparable catalogue. Items can be marked
 staples, which survive **Done shopping**; the list and any Corrections are kept
 in this browser's storage, for one user, with no server.
 
+## Hosting
+
+The same page is served from Cloudflare Pages at an unlisted
+`https://mealdeal-<random>.pages.dev`, so it opens on a phone in the shop
+(#17). `.github/workflows/app.yml` deploys it after every catalogue the morning
+refresh publishes, and whenever the page changes. One-time setup, from the
+repository root:
+
+```sh
+./scripts/setup-pages.sh
+```
+
+That creates a Pages-only API token and the project, and stores
+`CLOUDFLARE_API_TOKEN` and `PAGES_PROJECT` for the workflow. Until it has run,
+the deploy is skipped rather than failing.
+
+**Unlisted, not private.** Anyone with the address can open it. It is in no
+search engine (`noindex`), and no certificate log, because `*.pages.dev` uses
+one wildcard certificate. There are no accounts, and the list stays in each
+browser, so the address shows prices and nothing of yours. Cloudflare Access
+can put a sign-in in front of it if that changes.
+
+**Offline.** `sw.js` keeps the last page and catalogue a phone loaded. Online,
+it fetches fresh copies first, but gives up after 3 seconds: a shop's single bar
+that never answers is worse than no signal. Offline, the last copy opens and
+says so next to the date its prices are from. The list was never on the
+network. Opened from disk, the page skips this and works as before.
+
 ## What it is testing
 
 Three domain decisions that are easy to agree with on paper and easy to design
