@@ -20,8 +20,9 @@ prototype this page was rebuilt from) is on the `prototype/basket-design`
 branch.
 
 ```sh
-node scripts/catalogue-from-db.ts   # after each ingest; writes prototype/catalogue.js
-# then open prototype/basket.html in a browser, straight from disk
+./scripts/pull-catalogue.sh         # this morning's catalogue, published by the daily refresh
+node scripts/catalogue-from-db.ts   # or build it from your own database after an ingest
+# either writes prototype/catalogue.js; then open prototype/basket.html straight from disk
 ```
 
 The list is editable: type "500 g rundergehakt" and every Chain resolves it

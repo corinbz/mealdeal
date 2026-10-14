@@ -1,0 +1,130 @@
+# Builds the catalogue the basket page runs on from the day just archived,
+# and publishes it to R2, with no laptop involved (#13).
+#
+# It reads the archive, never a Chain (ADR-0005), into a throwaway database:
+# the archive is the system of record, so nothing here needs to be kept.
+name: Refresh the catalogue
+
+on:
+  # After every archive run on main, scheduled or by hand. A run that failed
+  # is red already, and is skipped below rather than reported twice.
+  workflow_run:
+    workflows: ["Archive chain prices"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      date:
+        description: Day to build from (YYYY-MM-DD). Empty means today, in UTC.
+        type: string
+        default: ""
+
+# Two refreshes publishing at once could finish in either order.
+concurrency:
+  group: catalogue
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: mealdeal
+          POSTGRES_PASSWORD: mealdeal
+          POSTGRES_DB: mealdeal
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U mealdeal"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      # Must match the Chains the archive workflow sweeps on its schedule.
+      CHAINS: dirk jumbo
+      DATABASE_URL: postgres://mealdeal:mealdeal@localhost:5432/mealdeal
+      R2: s3://${{ secrets.R2_BUCKET }}
+      AWS_ENDPOINT_URL: https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com
+      AWS_REQUEST_CHECKSUM_CALCULATION: when_required
+      AWS_RESPONSE_CHECKSUM_VALIDATION: when_required
+      AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: auto
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+
+      - run: npm ci
+
+      # The day the archive run recorded, not the day this job happens to
+      # start: the archive names its directory when it starts.
+      - name: Choose the day
+        id: day
+        run: |
+          date="${{ inputs.date }}"
+          started="${{ github.event.workflow_run.run_started_at }}"
+          [ -z "$date" ] && [ -n "$started" ] && date="${started:0:10}"
+          [ -z "$date" ] && date=$(date -u +%F)
+          echo "date=$date" >> "$GITHUB_OUTPUT"
+          echo "Building the catalogue from $date"
+
+      - name: Download the day from the archive
+        run: aws s3 sync "$R2/${{ steps.day.outputs.date }}/" "archive/${{ steps.day.outputs.date }}/" --only-show-errors
+
+      # Every Chain or none: a catalogue with one Chain from today and none
+      # for the other would make Basket comparison quietly one-sided.
+      - name: Check each Chain's day is complete
+        run: |
+          status=0
+          for chain in $CHAINS; do
+            manifest="archive/${{ steps.day.outputs.date }}/$chain/manifest.json"
+            if [ ! -f "$manifest" ]; then
+              echo "::error::No $chain archive for ${{ steps.day.outputs.date }}"
+              status=1
+            elif ! npm run --silent archive:check -- --manifest "$manifest"; then
+              status=1
+            fi
+          done
+          exit $status
+
+      - name: Ingest
+        run: npm run ingest -- --migrate --chain all --date "${{ steps.day.outputs.date }}"
+
+      - name: Build the catalogue
+        run: node scripts/catalogue-from-db.ts
+
+      - name: Fetch the published catalogue
+        run: |
+          if aws s3 cp "$R2/catalogue/latest.js" published.js --only-show-errors 2>/dev/null; then
+            echo "published=published.js" >> "$GITHUB_ENV"
+          else
+            echo "Nothing published yet, so this is the first catalogue"
+          fi
+
+      - name: Check it may replace the published one
+        run: |
+          args="--date ${{ steps.day.outputs.date }} --built prototype/catalogue.js"
+          for chain in $CHAINS; do args="$args --chain $chain"; done
+          [ -n "${published:-}" ] && args="$args --published $published"
+          node scripts/check-catalogue.ts $args
+
+      - name: Check the bucket stays inside R2's free tier
+        run: |
+          aws s3api list-objects-v2 --bucket "${{ secrets.R2_BUCKET }}" --output json > bucket-listing.json
+          npm run --silent archive:usage -- bucket-listing.json
+
+      - name: Publish
+        run: |
+          aws s3 cp prototype/catalogue.js "$R2/catalogue/latest.js" \
+            --content-type "text/javascript; charset=utf-8" --only-show-errors
+          echo "Published $(du -h prototype/catalogue.js | cut -f1) to catalogue/latest.js"
