@@ -14,7 +14,7 @@ on:
     branches: [main]
   push:
     branches: [main]
-    paths: ["prototype/basket.html", "prototype/sw.js", "prototype/words.js", ".github/workflows/app.yml"]
+    paths: ["prototype/basket.html", "prototype/sw.js", "prototype/words.js", "prototype/resolve.js", ".github/workflows/app.yml"]
   workflow_dispatch:
 
 concurrency:
@@ -50,6 +50,7 @@ jobs:
           cp prototype/basket.html site/index.html
           cp prototype/sw.js site/sw.js
           cp prototype/words.js site/words.js
+          cp prototype/resolve.js site/resolve.js
           aws s3 cp "s3://${{ secrets.R2_BUCKET }}/catalogue/latest.js" site/catalogue.js --only-show-errors
           # Unlisted is not private, but it should not be found: no search
           # engine indexes it. The page, its catalogue and the service worker

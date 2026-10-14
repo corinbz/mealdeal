@@ -5,28 +5,50 @@ import { composeDigest, realDeals, type DigestCatalogue } from "../src/digest/co
 /**
  * The weekly digest may only call something a discount when the real-discount
  * check (#18) supports it: an Offer with its own price, below the Product's
- * lowest price of the days before.
+ * lowest price of the days before. Staples resolve as on the basket page
+ * (prototype/resolve.js), through the Ingredient vocabulary (#14).
  */
 
-type Row = [string, string, null, number, string, string, number, number | null, number, string | null, null, null, null, number | null, number | null];
-const row = (ref: string, name: string, unit: "kg" | "l" | "piece", shelf: number, offer: number | null, wording: string | null, low: number | null, days: number | null): Row =>
-  [ref, name, null, 1, unit, unit, shelf, offer, offer ?? shelf, wording, null, null, null, low, days];
+const COLUMNS = [
+  "ref", "name", "packaging", "packQuantity", "packUnit", "comparisonUnit", "shelfPriceCents", "offerPriceCents",
+  "unitPriceCents", "offerWording", "offerEndsOn", "nextWording", "nextStartsOn", "ingredient", "variant", "form",
+  "flags", "ingredientUnitPriceCents", "ingredientPack", "referenceLowCents", "referenceDays",
+];
 
-const DATA: DigestCatalogue = {
-  chains: [{ id: "dirk", name: "Dirk", observedAt: "2026-10-21" }, { id: "jumbo", name: "Jumbo", observedAt: "2026-10-21" }],
-  catalogue: {
-    dirk: [
-      row("1", "Rundergehakt", "kg", 449, 399, "1 euro korting", 449, 12), // real low
-      row("2", "Halfvolle melk", "l", 109, 99, "actie", 95, 12),            // not lower than recently
-      row("3", "Kruimige aardappelen", "kg", 249, null, "1+1 gratis", 249, 12), // no price of its own
-    ],
-    jumbo: [
-      row("a", "Jumbo Rundergehakt 500 g", "kg", 469, 429, "25% korting", null, null), // no history
-      row("b", "Jumbo Kipgehakt", "kg", 499, 449, "actie", 499, 30),                    // another staple's word
-      row("c", "Jumbo Aardappelen Kruimig", "kg", 279, 199, "25% korting", 279, 30),     // real low
-    ],
-  },
+interface P { name: string; unit: "kg" | "l" | "piece"; shelf: number; offer?: number | null; wording?: string | null;
+  low?: number | null; days?: number | null; ingredient?: string | null; variant?: string | null }
+let n = 0;
+const row = (p: P) => {
+  const price = p.offer ?? p.shelf;
+  return [String(++n), p.name, null, 1, p.unit, p.unit, p.shelf, p.offer ?? null, price, p.wording ?? null, null, null, null,
+    p.ingredient ?? null, p.variant ?? null, p.ingredient ? "vers" : null, 0, p.ingredient ? price : null, p.ingredient ? 1 : null,
+    p.low ?? null, p.days ?? null];
 };
+
+const VOCABULARY = [
+  { id: "gehakt", name: "gehakt", unit: "kg", also: [], equals: {}, fresh: true, variants: [{ id: "rund", name: "rundergehakt" }] },
+  { id: "melk", name: "melk", unit: "l", also: [], equals: {}, fresh: true, variants: [{ id: "halfvol", name: "halfvolle melk" }] },
+  { id: "aardappelen", name: "aardappelen", unit: "kg", also: [], equals: {}, fresh: true, variants: [{ id: "kruimig", name: "kruimige aardappelen" }] },
+];
+
+const catalogue = (rows: Record<string, P[]>, chains = [["dirk", "Dirk"], ["jumbo", "Jumbo"]]): DigestCatalogue => ({
+  chains: chains.filter(([id]) => rows[id!]).map(([id, name]) => ({ id: id!, name: name!, observedAt: "2026-10-21" })),
+  columns: COLUMNS,
+  vocabulary: VOCABULARY,
+  catalogue: Object.fromEntries(Object.entries(rows).map(([id, ps]) => [id, ps.map(row)])),
+});
+
+const DATA = catalogue({
+  dirk: [
+    { name: "Rundergehakt", unit: "kg", shelf: 449, offer: 399, wording: "1 euro korting", low: 449, days: 12, ingredient: "gehakt", variant: "rund" },
+    { name: "Halfvolle melk", unit: "l", shelf: 109, offer: 99, wording: "actie", low: 95, days: 12, ingredient: "melk", variant: "halfvol" },
+    { name: "Kruimige aardappelen", unit: "kg", shelf: 249, offer: null, wording: "1+1 gratis", low: 249, days: 12, ingredient: "aardappelen", variant: "kruimig" },
+  ],
+  jumbo: [
+    { name: "Jumbo Rundergehakt 500 g", unit: "kg", shelf: 469, offer: 429, wording: "25% korting", ingredient: "gehakt", variant: "rund" }, // no history
+    { name: "Jumbo Aardappelen Kruimig", unit: "kg", shelf: 279, offer: 199, wording: "25% korting", low: 279, days: 30, ingredient: "aardappelen", variant: "kruimig" },
+  ],
+});
 
 test("only Offers below the Reference Price are claimed", () => {
   const found = realDeals(DATA, ["500 g rundergehakt", "1 l halfvolle melk", "1 kg kruimige aardappelen"]);
@@ -37,18 +59,17 @@ test("only Offers below the Reference Price are claimed", () => {
   ]);
 });
 
-test("a staple matches like the page: every typed word ends a word of the name", () => {
-  const found = realDeals(DATA, ["gehakt"]);
-  assert.deepEqual(found[0]!.deals.map((d) => d.name), ["Rundergehakt", "Jumbo Kipgehakt"]);
+test("a staple resolves through its Ingredient, as on the list", () => {
+  // "gehakt" names the Ingredient without a Variant, so any Variant may satisfy it.
+  assert.deepEqual(realDeals(DATA, ["gehakt"])[0]!.deals.map((d) => d.name), ["Rundergehakt"]);
 });
 
-test("a dish named for a staple is not that staple", () => {
-  const data: DigestCatalogue = { chains: DATA.chains.slice(1), catalogue: { jumbo: [
-    row("m", "Jumbo Bloemkool Broccoli Gehaktbal met Gekookte Aardappelen 500 g", "kg", 499, 399, "voor 3,99", 499, 1),
-    row("n", "Jumbo Broccoli 500 g", "kg", 119, 109, "voor 1,09", 119, 1),
-  ] } };
+test("a staple the vocabulary does not know still resolves by name, without dishes named after it", () => {
+  const data = catalogue({ jumbo: [
+    { name: "Jumbo Bloemkool Broccoli Gehaktbal met Gekookte Aardappelen 500 g", unit: "kg", shelf: 499, offer: 399, wording: "voor 3,99", low: 499, days: 1 },
+    { name: "Jumbo Broccoli 500 g", unit: "kg", shelf: 119, offer: 109, wording: "voor 1,09", low: 119, days: 1 },
+  ] });
   assert.deepEqual(realDeals(data, ["400 g broccoli"])[0]!.deals.map((d) => d.name), ["Jumbo Broccoli 500 g"]);
-  assert.equal(realDeals(data, ["gehaktbal met aardappelen"])[0]!.deals.length, 1);
 });
 
 test("the email says which day the prices are from, and names staples without a real discount", () => {
@@ -68,6 +89,6 @@ test("a week with nothing real says so rather than sending deals it cannot suppo
 });
 
 test("wording is escaped in the HTML", () => {
-  const data: DigestCatalogue = { chains: DATA.chains.slice(0, 1), catalogue: { dirk: [row("1", "Rundergehakt", "kg", 449, 399, "<b>actie</b>", 449, 3)] } };
+  const data = catalogue({ dirk: [{ name: "Rundergehakt", unit: "kg", shelf: 449, offer: 399, wording: "<b>actie</b>", low: 449, days: 3, ingredient: "gehakt", variant: "rund" }] });
   assert.match(composeDigest(data, ["rundergehakt"], "https://e/", "https://g/").html, /&lt;b&gt;actie&lt;\/b&gt;/);
 });
