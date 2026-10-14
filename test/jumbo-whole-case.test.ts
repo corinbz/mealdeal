@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { drained, wholeCase } from "../src/ingest/readers/jumbo.ts";
+import { drained, unitPriceFor, wholeCase } from "../src/ingest/readers/jumbo.ts";
 
 /**
  * Jumbo sells some cases under one unit's title, and prices tins per drained
@@ -36,4 +36,11 @@ test("a figure per drained kilo gives way to the whole pack's, as the owner chos
   assert.equal(drained(2654, "kg", { quantity: 0.125, unit: "kg" }, 398), false);
   // 751918PAK "Halfvolle Melk 1 L": as titled.
   assert.equal(drained(85, "l", { quantity: 1, unit: "l" }, 85), false);
+});
+
+test("a pack's price given as each piece's is shared among the pieces", () => {
+  // 435167STK "Jumbo Biologisch Paprika Duo 2 Stuks": €2.99 at "€2.99 per piece".
+  assert.deepEqual(unitPriceFor(299, "piece", { quantity: 2, unit: "piece" }, 299), { unitPriceCents: 150, comparisonUnit: "piece", unitPriceSource: "derived" });
+  // A single piece at its own price is Jumbo's figure.
+  assert.deepEqual(unitPriceFor(95, "piece", { quantity: 1, unit: "piece" }, 95), { unitPriceCents: 95, comparisonUnit: "piece", unitPriceSource: "chain" });
 });
