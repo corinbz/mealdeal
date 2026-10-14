@@ -14,7 +14,7 @@ on:
     branches: [main]
   push:
     branches: [main]
-    paths: ["prototype/basket.html", "prototype/sw.js", "prototype/words.js", "prototype/resolve.js", ".github/workflows/app.yml"]
+    paths: ["prototype/basket.html", "prototype/sw.js", "prototype/words.js", "prototype/resolve.js", "prototype/recipes.js", ".github/workflows/app.yml"]
   workflow_dispatch:
 
 concurrency:
@@ -51,6 +51,7 @@ jobs:
           cp prototype/sw.js site/sw.js
           cp prototype/words.js site/words.js
           cp prototype/resolve.js site/resolve.js
+          cp prototype/recipes.js site/recipes.js
           aws s3 cp "s3://${{ secrets.R2_BUCKET }}/catalogue/latest.js" site/catalogue.js --only-show-errors
           # The price history (#16). Until a refresh has published one, the
           # page gets none, and shows no history rather than failing.
