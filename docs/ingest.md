@@ -393,7 +393,14 @@ Jumbo also prices a tin or jar of something in liquid per drained kilo, where
 the other Chains price the whole pack, so its tins looked half as dear again
 as they were. The owner chose the whole pack for every Chain, so the Jumbo
 reader takes the pack's figure over Jumbo's when Jumbo's is 1.05 to 3 times
-it (`drained`). That took 171 mapped Products off the list.
+it. That took 171 mapped Products off the list.
+
+Which Unit Price a Product is compared on, the Chain's or the pack's, is one
+rule for every reader, in `src/ingest/unit-price.ts`, and the unit check
+above measures with the same yardstick. A Chain's figure that does not follow
+from a pack the Chain states in a field of its own (Aldi, Hoogvliet) gives way
+to the pack's arithmetic. A pack read out of a title (Jumbo) is our reading,
+often of the wrong number, so there only a drained-kilo figure gives way.
 
 It also judges every Offer against its Product's **Reference Price**, the
 lowest price of the 30 days before the reduction began (#18). The refresh's
