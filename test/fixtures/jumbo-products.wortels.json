@@ -1,0 +1,53 @@
+[
+  {
+    "_why": "RECORDED LIVE from Jumbo category 005792 (Wortels, knolgroenten en radijs) on 2026-10-14, first three rows.",
+    "data": {
+      "searchProducts": {
+        "products": [
+          {
+            "sku": "196113ZK",
+            "title": "Jumbo Wortelen 1 kg",
+            "ean": "8718452285211",
+            "price": {
+              "price": 139,
+              "promoPrice": null,
+              "pricePerUnit": {
+                "price": 139,
+                "unit": "kg"
+              }
+            },
+            "promotions": []
+          },
+          {
+            "sku": "786683STK",
+            "title": "Jumbo Winterpeen ca. 150 g",
+            "ean": null,
+            "price": {
+              "price": 35,
+              "promoPrice": null,
+              "pricePerUnit": {
+                "price": 35,
+                "unit": "pieces"
+              }
+            },
+            "promotions": []
+          },
+          {
+            "sku": "285590ZK",
+            "title": "Jumbo Waspeen van Goede Aarde 500 g",
+            "ean": "8718452972685",
+            "price": {
+              "price": 129,
+              "promoPrice": null,
+              "pricePerUnit": {
+                "price": 258,
+                "unit": "kg"
+              }
+            },
+            "promotions": []
+          }
+        ]
+      }
+    }
+  }
+]

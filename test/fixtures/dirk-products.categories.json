@@ -1,0 +1,117 @@
+[
+  {
+    "_why": "RECORDED LIVE from Dirk on 2026-10-14 (archive day 2026-10-14, Store 66), four rows from four web groups assembled into one response. They carry the department and web group Dirk files each Product under, which is what tells fresh carrots from carrots in a jar, in baby food, and pet food.",
+    "data": {
+      "productsAssortment": [
+        {
+          "productId": 4595,
+          "productNumber": null,
+          "storeId": 66,
+          "normalPrice": 0.98,
+          "offerPrice": 0.0,
+          "priceDate": "2026-10-14T11:33:55.244+02:00",
+          "startDate": "2026-03-11T00:00:00.000+01:00",
+          "endDate": "2049-12-31T23:59:59.000+01:00",
+          "isSingleUsePlastic": false,
+          "singleUsePlasticValue": 0,
+          "productInformation": {
+            "productId": 4595,
+            "productNumber": "268882",
+            "brand": "Hollandse",
+            "headerText": "Hollandse Winterpeen",
+            "subText": "",
+            "packaging": "1 kg (ca. 4 stuks)",
+            "isWeightProduct": true,
+            "maxAmount": null,
+            "department": "Aardappelen, groente & fruit",
+            "webgroup": "Groente"
+          },
+          "productOffer": null
+        },
+        {
+          "productId": 5333,
+          "productNumber": null,
+          "storeId": 66,
+          "normalPrice": 1.87,
+          "offerPrice": 0.89,
+          "priceDate": "2026-10-14T11:34:07.247+02:00",
+          "startDate": "2026-10-14T00:00:00.000+02:00",
+          "endDate": "2026-10-20T23:59:59.000+02:00",
+          "isSingleUsePlastic": false,
+          "singleUsePlasticValue": 0,
+          "productInformation": {
+            "productId": 5333,
+            "productNumber": "333809",
+            "brand": "Hak",
+            "headerText": "Hak Wortelen extra fijn",
+            "subText": "",
+            "packaging": "350 g",
+            "isWeightProduct": false,
+            "maxAmount": null,
+            "department": "Aardappelen, groente & fruit",
+            "webgroup": "Groenteconserven"
+          },
+          "productOffer": {
+            "productOfferId": 583634,
+            "productId": 5333,
+            "startDate": "2026-10-14T00:00:00.000+02:00",
+            "endDate": "2026-10-20T23:59:00.000+02:00",
+            "disclaimerStartDate": "2026-10-14T00:00:00.000+02:00",
+            "disclaimerEndDate": "2026-10-20T00:00:00.000+02:00",
+            "textPriceSign": "ACTIE_\n "
+          }
+        },
+        {
+          "productId": 18899,
+          "productNumber": null,
+          "storeId": 66,
+          "normalPrice": 1.36,
+          "offerPrice": 0.0,
+          "priceDate": "2026-10-14T11:52:25.459+02:00",
+          "startDate": "2026-09-21T00:00:00.000+02:00",
+          "endDate": "2049-12-31T23:59:59.000+01:00",
+          "isSingleUsePlastic": false,
+          "singleUsePlasticValue": 0,
+          "productInformation": {
+            "productId": 18899,
+            "productNumber": "376453",
+            "brand": "Olvarit",
+            "headerText": "Olvarit 6+ Maanden Tomaat Rund Aardappel Wortel",
+            "subText": "",
+            "packaging": "200 g",
+            "isWeightProduct": false,
+            "maxAmount": null,
+            "department": "Kind & drogisterij",
+            "webgroup": "Babyvoeding vanaf 6 maanden"
+          },
+          "productOffer": null
+        },
+        {
+          "productId": 1470,
+          "productNumber": null,
+          "storeId": 66,
+          "normalPrice": 5.99,
+          "offerPrice": 0.0,
+          "priceDate": "2026-10-14T11:50:26.926+02:00",
+          "startDate": "2026-07-29T00:00:00.000+02:00",
+          "endDate": "2049-12-31T23:59:59.000+01:00",
+          "isSingleUsePlastic": false,
+          "singleUsePlasticValue": 0,
+          "productInformation": {
+            "productId": 1470,
+            "productNumber": "146678",
+            "brand": "Purina One",
+            "headerText": "Purina One Kattenvoer sensitive kalkoen & rijst",
+            "subText": "",
+            "packaging": "800 g",
+            "isWeightProduct": false,
+            "maxAmount": null,
+            "department": "Huishoud & huisdieren",
+            "webgroup": "Huisdieren"
+          },
+          "productOffer": null
+        }
+      ]
+    }
+  }
+]

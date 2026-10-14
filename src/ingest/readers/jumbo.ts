@@ -132,6 +132,10 @@ export const jumboReader: ChainReader = {
   chainId: "jumbo",
 
   async read(archiveRoot: string, date: string): Promise<ChainReading> {
+    const paths = await categoryPaths(archiveRoot, date);
+    // Every category a Product was listed under, not just the first: a
+    // Product sits in several, and the first one seen is an accident of order.
+    const filedUnder = new Map<string, Set<string>>();
     const prices: PriceReading[] = [];
     const offers: OfferReading[] = [];
     const parseFailures: string[] = [];
@@ -167,6 +171,8 @@ export const jumboReader: ChainReader = {
           parseFailures.push(`jumbo product ${ref}: listed with no price (${shelf ?? "null"})`);
           continue;
         }
+        const path = paths.get(record.label.replace(/^products\/cat-/, ""));
+        if (path) (filedUnder.get(ref) ?? filedUnder.set(ref, new Set()).get(ref)!).add(path);
         // Categories overlap, so the same sku arrives more than once per run.
         // One observation per Product per run, not one per category it sits in.
         if (seenRefs.has(ref)) continue;
@@ -190,6 +196,7 @@ export const jumboReader: ChainReader = {
           pack,
           isWeightProduct: false,
           eans: ean ? [ean] : [],
+          categories: [], // Filled in below, once every category is read.
           storeRef: null, // Jumbo's public endpoint publishes national prices.
           observedAt: parseInstant(record.at) ?? new Date(`${date}T00:00:00Z`),
           shelfPriceCents: shelf,
@@ -263,6 +270,32 @@ export const jumboReader: ChainReader = {
       }
     }
 
-    return { prices, offers, productsSeen, withoutUnitPrice, parseFailures };
+    return {
+      prices: prices.map((p) => ({ ...p, categories: [...(filedUnder.get(p.chainProductRef) ?? [])].sort() })),
+      offers, productsSeen, withoutUnitPrice, parseFailures,
+    };
   },
 };
+
+/**
+ * Category id to its path of names, from the archived category tree. Its
+ * names sometimes carry trailing spaces ("Lactosevrije melk "); they are
+ * trimmed, since two spellings of one category would be two categories.
+ */
+async function categoryPaths(archiveRoot: string, date: string): Promise<Map<string, string>> {
+  interface Node { id?: unknown; name?: unknown; children?: Node[] | null }
+  const paths = new Map<string, string>();
+  const walk = (nodes: Node[] | null | undefined, prefix: string[]) => {
+    for (const node of nodes ?? []) {
+      const id = text(node.id), name = text(node.name);
+      if (!id || !name) continue;
+      const path = [...prefix, name];
+      paths.set(id, path.join(" > "));
+      walk(node.children, path);
+    }
+  };
+  for await (const record of readStep(archiveRoot, date, "jumbo", "categories")) {
+    walk(payloadOf(record)?.categoriesTree as Node[] | undefined, []);
+  }
+  return paths;
+}

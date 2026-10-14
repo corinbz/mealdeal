@@ -1,0 +1,37 @@
+[
+  {
+    "_why": "RECORDED LIVE from Jumbo's categoriesTree on 2026-10-14, trimmed to two branches. Names keep Jumbo's own spelling.",
+    "data": {
+      "categoriesTree": [
+        {
+          "id": "005733",
+          "name": "Aardappelen, groente en fruit",
+          "children": [
+            {
+              "id": "005751",
+              "name": "Groente",
+              "children": [
+                {
+                  "id": "005792",
+                  "name": "Wortels, knolgroenten en radijs",
+                  "children": null
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "005503",
+          "name": "Conserven, soepen, sauzen, oliën",
+          "children": [
+            {
+              "id": "005526",
+              "name": "Groenteconserven",
+              "children": null
+            }
+          ]
+        }
+      ]
+    }
+  }
+]

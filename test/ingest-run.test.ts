@@ -163,6 +163,7 @@ test("stores several eans for one product", async () => {
         pack: { quantity: 1, unit: "l" },
         isWeightProduct: false,
         eans: ["8710398526694", "8710398526410"],
+        categories: [],
         storeRef: null,
         observedAt: new Date("2026-10-13T08:00:00Z"),
         shelfPriceCents: 129,

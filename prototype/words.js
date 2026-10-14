@@ -11,8 +11,10 @@
 
   function stem(w) {
     // Repeated, so singular and plural meet: courgettes -> courgette -> courgett.
+    // Diminutives lose their t as well: aardappeltjes -> aardappel, so they
+    // meet the plain word rather than a shorter one (appel).
     let before;
-    do { before = w; if (w.length > 4) w = w.replace(/(jes|je|en|e|s)$/, ""); } while (w !== before);
+    do { before = w; if (w.length > 4) w = w.replace(/(tjes|tje|jes|je|en|e|s)$/, ""); } while (w !== before);
     return w;
   }
   /** The stems a typed noun must match. */
