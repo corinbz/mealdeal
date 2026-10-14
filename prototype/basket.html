@@ -96,6 +96,12 @@
   .vd { display: inline-block; font-size: 12px; font-weight: 700; border-radius: 6px; padding: 0 6px; margin-left: 4px; color: var(--ink-2); }
   .vd.low { background: var(--good-wash); color: var(--good); }
   .vd.not { background: var(--bad-wash); color: var(--bad); }
+  .vd.later { background: var(--offer); color: var(--offer-ink); border: 1px dashed var(--offer-ink); }
+  .wk { display: inline-flex; background: var(--card); border-radius: 999px; padding: 3px; box-shadow: 0 2px 0 var(--line); margin: 0 0 14px; }
+  .wk button { border: 0; background: none; font: inherit; font-weight: 800; color: var(--ink-2); padding: 6px 14px; border-radius: 999px; cursor: pointer; }
+  .wk button[aria-pressed="true"] { background: var(--ink); color: var(--card); }
+  .wk button:disabled { opacity: .45; cursor: default; }
+  .it .nx { grid-column: 1 / -1; font-size: 14px; color: var(--ink-2); display: flex; flex-wrap: wrap; gap: 4px 12px; }
   .add { display: flex; background: var(--card); border-radius: 999px; padding: 5px; box-shadow: 0 2px 0 var(--line); }
   .add input { flex: 1; min-width: 0; border: 0; background: transparent; padding: 10px 16px; font-size: 17px; font-weight: 700; outline: none; }
   .add button { border: 0; background: var(--ink); color: var(--on-ink); border-radius: 999px; padding: 0 20px; font-weight: 800; cursor: pointer; }
@@ -352,8 +358,8 @@
   const bagAge = (c) => '<span class="age' + (isStale(c) ? " stale" : "") + '">prijzen ' + esc(ageText(c)) + (isStale(c) ? " · verouderd" : "") + "</span>";
 
   // ── Catalogue: positional rows, unpacked once ─────────────────────────
-  // Row: [ref, name, packaging, packQuantity, packUnit, unit, shelf, offerPrice, unitPrice, wording, upcoming,
-  //       referenceLow, referenceDays]
+  // Row: [ref, name, packaging, packQuantity, packUnit, unit, shelf, offerPrice, unitPrice, wording, endsOn,
+  //       nextWording, nextStartsOn, referenceLow, referenceDays]
   function stem(w) {
     // Repeated, so singular and plural meet: courgettes -> courgette -> courgett.
     let before;
@@ -367,9 +373,11 @@
       const id = c.id + "-" + r[0];
       products[c.id][id] = {
         id, name: r[1], packaging: r[2], packQuantity: r[3], packUnit: r[4], comparisonUnit: r[5],
-        shelfPriceCents: r[6], offerPriceCents: r[7], unitPriceCents: r[8], offerWording: r[9], offerUpcoming: r[10] === 1,
+        shelfPriceCents: r[6], offerPriceCents: r[7], unitPriceCents: r[8], offerWording: r[9], offerEndsOn: r[10],
+        // The next Offer, kept apart from the running one (#8). It has no price until it runs.
+        nextWording: r[11], nextStartsOn: r[12], chainId: c.id,
         // Absent from a catalogue built without history (scripts/apply-history.ts).
-        referenceLowCents: r[11] ?? null, referenceDays: r[12] ?? null,
+        referenceLowCents: r[13] ?? null, referenceDays: r[14] ?? null,
       };
       return { id, unit: r[5], words: r[1].toLowerCase().split(/[^\p{L}]+/u).filter(Boolean).map(stem) };
     });
@@ -436,6 +444,7 @@
   let plan = load("mealdeal.plan.v1", null);                // { kind: "single" | "combo", ids }
   const done = new Set(load("mealdeal.done.v1", []));       // ticked while shopping
   let theme = load("mealdeal.theme.v1", "system");          // "system" | "light" | "dark"
+  let week = load("mealdeal.week.v1", "nu");                // "nu" | "volgende": whose Offers Recepten and Lijst show
   const PAGE_KEYS = ["recepten", "lijst", "vergelijk", "winkelen"];
   let page = PAGE_KEYS.includes(location.hash.slice(1)) ? location.hash.slice(1) : "lijst";
   let hint = "", openRow = null, sheet = null;              // sheet: { kind: "recipe", id } | { kind: "fix", chainId, itemId }
@@ -443,7 +452,7 @@
 
   function persist() {
     save("mealdeal.list.v1", list); save("mealdeal.corrections.v1", corrections);
-    save("mealdeal.plan.v1", plan); save("mealdeal.done.v1", [...done]);
+    save("mealdeal.plan.v1", plan); save("mealdeal.done.v1", [...done]); save("mealdeal.week.v1", week);
   }
 
   // ── Resolution ────────────────────────────────────────────────────────
@@ -464,7 +473,33 @@
     if (fixed && products[chainId][fixed]) return fixed;
     return candidates(chainId, item)[0] || null;
   }
-  const isOffer = (p) => (p.offerPriceCents !== null || !!p.offerWording) && !p.offerUpcoming;
+  /** Whether an Offer is running on the day swept. Upcoming ones are never in this slot. */
+  const isOffer = (p) => p.offerPriceCents !== null || !!p.offerWording;
+
+  // ── This week or next (#8) ────────────────────────────────────────────
+  // Chains announce next week's Offers before they start. Next week, per
+  // Chain, begins on the first day its announced Offers do. An Offer counts
+  // for it if it starts then, or if this week's is still running then. One
+  // that has not started has no price yet, and none is derived from its
+  // wording (ADR-0002), so next week is priced at today's Shelf Prices.
+  // Vergelijk and Winkelen always show this week: that is where you shop.
+  const nextStart = {};
+  for (const c of chains) for (const p of Object.values(products[c.id])) {
+    if (p.nextStartsOn && (!nextStart[c.id] || p.nextStartsOn < nextStart[c.id])) nextStart[c.id] = p.nextStartsOn;
+  }
+  const hasNextWeek = Object.keys(nextStart).length > 0;
+  if (!hasNextWeek) week = "nu"; // a remembered choice outlives the catalogue that offered it
+  function offerFor(p, w) {
+    if (w === "volgende") {
+      if (p.nextWording !== null) return { wording: p.nextWording || "aanbieding", priceCents: null, startsOn: p.nextStartsOn };
+      const from = nextStart[p.chainId];
+      if (!isOffer(p) || !from || (p.offerEndsOn && p.offerEndsOn < from)) return null;
+      return { wording: p.offerWording || "aanbieding", priceCents: p.offerPriceCents, startsOn: null, continues: true };
+    }
+    return isOffer(p) ? { wording: p.offerWording || "aanbieding", priceCents: p.offerPriceCents, startsOn: null } : null;
+  }
+  const dayText = (iso) => { const [y, m, d] = iso.split("-").map(Number); return new Date(y, m - 1, d).toLocaleDateString("nl-NL", { weekday: "short", day: "numeric", month: "short" }); };
+  const nextFrom = () => { const days = Object.values(nextStart).sort(); return days.length ? dayText(days[0]) : ""; };
 
   // ── Is an Offer a real low? (#18) ─────────────────────────────────────
   // Judged per Product against the lowest price paid in the 30 days before
@@ -486,7 +521,15 @@
       ? '<span class="vd low">laagste prijs in ' + days + "</span>"
       : '<span class="vd not">niet lager dan recent: ' + euro(low) + " in " + days + "</span>";
   }
-  const offerChip = (p, wording) => '<span class="o">' + esc(wording) + "</span>" + verdict(p);
+  /** An Offer's wording, then when it starts if it has not, or else whether it is a real low. */
+  function offerChip(p, o) {
+    const when = o.startsOn ? '<span class="vd later">vanaf ' + esc(o.startsOn ? dayText(o.startsOn) : "") + "</span>"
+      : o.continues ? '<span class="vd">loopt al</span>' + verdict(p) : verdict(p);
+    return '<span class="o">' + esc(o.wording) + "</span>" + when;
+  }
+  const weekSwitch = () => '<div class="wk" role="group" aria-label="Aanbiedingen van">' +
+    '<button data-act="week" data-id="nu" aria-pressed="' + (week === "nu") + '">Deze week</button>' +
+    '<button data-act="week" data-id="volgende" aria-pressed="' + (week === "volgende") + '"' + (hasNextWeek ? "" : " disabled") + ">Volgende week</button></div>";
   /** Whole packs, because you cannot buy 0.4 of one. */
   function packsFor(p, quantity, unit) {
     // A pack size in another unit than the item (3 soup sachets, for a
@@ -494,14 +537,14 @@
     const known = p.packQuantity > 0 && p.packUnit === unit;
     return { known, packs: known ? Math.max(1, Math.ceil(quantity / p.packQuantity)) : 1 };
   }
-  function line(chainId, item) {
+  function line(chainId, item, w = "nu") {
     const id = chosenId(chainId, item);
     if (!id) return null;
     const p = products[chainId][id];
-    const offer = isOffer(p) ? (p.offerWording || "aanbieding") : null;
-    const price = offer && p.offerPriceCents ? p.offerPriceCents : p.shelfPriceCents;
+    const o = offerFor(p, w), offer = o ? o.wording : null;
+    const price = o && o.priceCents ? o.priceCents : p.shelfPriceCents;
     const { known, packs } = packsFor(p, item.quantity, item.unit);
-    return { p, offer, packs, cost: packs * price, over: known ? p.packQuantity / item.quantity : 1 };
+    return { p, o, offer, packs, cost: packs * price, over: known ? p.packQuantity / item.quantity : 1 };
   }
 
   function snapshot() {
@@ -630,31 +673,36 @@
   const ingText = (g) => qtyText({ quantity: g.q, unit: g.unit }) + " " + g.noun;
   const ingCache = {};
   /** The cheapest way to buy one ingredient at one chain, Offers included. */
-  function ingLine(chainId, g) {
-    const key = chainId + "|" + g.noun + "|" + g.q + g.unit;
+  function ingLine(chainId, g, w) {
+    const key = w + "|" + chainId + "|" + g.noun + "|" + g.q + g.unit;
     if (key in ingCache) return ingCache[key];
     const best = Object.values(products[chainId]).filter((p) => {
       const n = p.name.toLowerCase(), ws = n.split(/[^\p{L}]+/u);
       return p.comparisonUnit === g.unit && g.find.every((f) => ws.some((w) => w.endsWith(f)))
         && ![...(g.not || []), ...PET].some((x) => n.includes(x));
     }).map((p) => {
-      const onOffer = isOffer(p);
-      const price = onOffer && p.offerPriceCents ? p.offerPriceCents : p.shelfPriceCents;
+      const o = offerFor(p, w), onOffer = !!o;
+      const price = o && o.priceCents ? o.priceCents : p.shelfPriceCents;
       const { packs } = packsFor(p, g.q, g.unit);
-      return { p, packs, cost: packs * price, onOffer, offer: onOffer ? p.offerWording || "aanbieding" : null,
-        was: onOffer && p.offerPriceCents && p.offerPriceCents < p.shelfPriceCents ? packs * p.shelfPriceCents : null };
+      return { p, o, packs, cost: packs * price, onOffer, offer: o ? o.wording : null,
+        was: o && o.priceCents && o.priceCents < p.shelfPriceCents ? packs * p.shelfPriceCents : null };
     }).sort((a, b) => a.cost - b.cost)[0] || null;
     return (ingCache[key] = best);
   }
-  function priceRecipe(rc) {
+  function priceRecipe(rc, w = week) {
     const at = chains.map((c) => {
-      const lines = rc.ingredients.map((g) => ingLine(c.id, g)), have = lines.filter(Boolean);
+      const lines = rc.ingredients.map((g) => ingLine(c.id, g, w)), have = lines.filter(Boolean);
       return { chain: c, lines, cost: have.reduce((n, l) => n + l.cost, 0), missing: lines.length - have.length,
         deals: have.filter((l) => l.onOffer).length, saving: have.reduce((n, l) => n + (l.was ? l.was - l.cost : 0), 0) };
     }).sort((a, b) => a.missing - b.missing || a.cost - b.cost);
     return { rc, at, best: at[0] };
   }
-  const rankedRecipes = () => RECIPES.map(priceRecipe).sort((a, b) => b.best.saving - a.best.saving || b.best.deals - a.best.deals);
+  // This week, the most saved first. Next week no Offer that has yet to start
+  // has a price, so ranking on savings would only reward the few Offers that
+  // run on: recipes rank on how many ingredients are on Offer then.
+  const rankedRecipes = (w = week) => RECIPES.map((rc) => priceRecipe(rc, w)).sort(w === "volgende"
+    ? (a, b) => b.best.deals - a.best.deals || b.best.saving - a.best.saving
+    : (a, b) => b.best.saving - a.best.saving || b.best.deals - a.best.deals);
   function addRecipe(id) {
     const rc = RECIPES.find((r) => r.id === id); if (!rc) return;
     let n = 0;
@@ -668,7 +716,7 @@
   const ingRow = (g, l, chain) => !l
     ? '<li class="miss"><span class="l">' + esc(ingText(g)) + '</span><span class="p">—</span><span class="d">niet bij ' + esc(chain.name) + "</span></li>"
     : '<li><span class="l">' + esc(ingText(g)) + '</span><span class="p">' + euro(l.cost) + '</span><span class="d">' +
-      (l.onOffer ? offerChip(l.p, l.offer) + " " : "") + (l.was ? '<span class="was">' + euro(l.was) + "</span> " : "") +
+      (l.onOffer ? offerChip(l.p, l.o) + " " : "") + (l.was ? '<span class="was">' + euro(l.was) + "</span> " : "") +
       esc((l.packs > 1 ? l.packs + "× " : "") + l.p.name) + "</span></li>";
 
   // ── Pages ─────────────────────────────────────────────────────────────
@@ -682,7 +730,7 @@
       const gain = (l) => l.was ? l.was - l.cost : 0;
       const deals = [...seen.values()].sort((a, b) => gain(b.l) - gain(a.l)).map(({ c, l }) =>
         '<div class="deal"><span class="n">' + esc(l.p.name) + "</span><span>" + tag(c) + '</span><span class="v">' + euro(l.cost) +
-        (l.was ? '<span class="was">' + euro(l.was) + "</span>" : "") + '</span><span class="w">' + esc(l.offer) + verdict(l.p) + "</span></div>").join("");
+        (l.was ? '<span class="was">' + euro(l.was) + "</span>" : "") + '</span><span class="w">' + offerChip(l.p, l.o) + "</span></div>").join("");
       const cards = priced.map(({ rc, at, best }) =>
         '<article class="rc"><div class="hd" data-act="open-recipe" data-id="' + rc.id + '" role="button" tabindex="0" aria-label="Bereiding van ' + esc(rc.name) + '">' +
         '<span class="ex">voorbeeldrecept</span><h3>' + esc(rc.name) + "</h3>" +
@@ -692,16 +740,26 @@
         "<ul>" + rc.ingredients.map((g, i) => ingRow(g, best.lines[i], best.chain)).join("") + "</ul>" +
         '<div class="ft"><div class="chains">' + at.map((x, i) => '<span class="' + (i ? "" : "best") + '">' + tag(x.chain) + " <b>" + euro(x.cost) + "</b>" + (x.missing ? " · " + x.missing + " mist" : "") + "</span>").join("") + "</div>" +
         '<button class="btn' + (added.has(rc.id) ? " on" : "") + '" data-act="recipe" data-id="' + rc.id + '">' + (added.has(rc.id) ? "✓ Op je lijst" : "Zet op mijn lijst") + "</button></div></article>").join("");
-      return "<h1>Recepten van deze week</h1>" +
-        '<p class="lede">Gekozen rond wat er nu in de aanbieding is, met de meeste korting bovenaan. Tik een recept voor de bereiding.</p>' +
+      const next = week === "volgende";
+      return "<h1>" + (next ? "Recepten voor volgende week" : "Recepten van deze week") + "</h1>" + weekSwitch() +
+        (next
+          ? '<p class="lede">Gekozen rond de aanbiedingen die vanaf ' + esc(nextFrom()) + " ingaan, met de meeste aanbiedingen bovenaan. Een actie die nog niet loopt heeft nog geen prijs, dus dit zijn de normale prijzen van vandaag.</p>"
+          : '<p class="lede">Gekozen rond wat er nu in de aanbieding is, met de meeste korting bovenaan. Tik een recept voor de bereiding.</p>') +
         freshness("Aanbiedingen en prijzen van") +
         '<p class="hint">' + esc(hint) + "</p>" +
-        '<div class="sec"><h2>In de aanbieding</h2><span>waar deze recepten op draaien</span></div><div class="deals">' + deals + "</div>" +
+        '<div class="sec"><h2>' + (next ? "Volgende week in de aanbieding" : "In de aanbieding") + "</h2><span>waar deze recepten op draaien</span></div><div class='deals'>" + deals + "</div>" +
         '<div class="recipes">' + cards + "</div>" +
         '<p class="note">De recepten zijn voorbeelden. Prijzen, producten en acties zijn echt, uit de prijzen van ' + esc(chains[0].observedAt) + ".</p>";
     } },
 
     lijst: { label: "Lijst", ic: "☰", render(s) {
+      // Which Chains have this item on Offer in the week chosen, each labelled.
+      const offersFor = (item) => {
+        const on = chains.map((c) => [c, line(c.id, item, week)]).filter(([, l]) => l && l.o);
+        if (!on.length) return "";
+        return '<div class="nx"><span>' + (week === "volgende" ? "Volgende week in de aanbieding:" : "In de aanbieding:") + "</span>" +
+          on.map(([c, l]) => "<span>" + tag(c) + " " + offerChip(l.p, l.o) + "</span>").join("") + "</div>";
+      };
       const card = (r) => {
         const cheapest = r.avail[0];
         const best = cheapest
@@ -714,13 +772,13 @@
           '<div class="ops"><button data-act="staple" data-id="' + r.item.id + '" aria-pressed="' + r.item.staple + '" title="Vaste boodschap">📌</button>' +
           '<button data-act="remove" data-id="' + r.item.id + '" title="Van de lijst">✕</button></div>' +
           (r.item.guessed ? '<div class="guess">Eenheid geraden: tik het aantal om te wisselen</div>' : "") +
-          '<div class="best">' + best + "</div>" + priceLine(r, true) + "</div>";
+          '<div class="best">' + best + "</div>" + priceLine(r, true) + offersFor(r.item) + "</div>";
       };
       const staples = s.rows.filter((r) => r.item.staple), once = s.rows.filter((r) => !r.item.staple);
-      const p = currentPlan(s), top = rankedRecipes()[0];
+      const p = currentPlan(s), top = rankedRecipes(week)[0];
       return "<h1>Boodschappenlijst</h1><p class=\"lede\">Wat er in huis moet komen. Waar het het goedkoopst is, zie je bij Vergelijk.</p>" +
-        freshness("Prijzen van") +
-        (top ? '<div class="banner"><span>Deze week: <b>' + esc(top.rc.name) + "</b>, " + top.best.deals + ' ingrediënten in de aanbieding</span><button class="btn" data-act="go" data-id="recepten">' + RECIPES.length + " recepten bekijken</button></div>" : "") +
+        freshness("Prijzen van") + weekSwitch() +
+        (top ? '<div class="banner"><span>' + (week === "volgende" ? "Volgende week" : "Deze week") + ': <b>' + esc(top.rc.name) + "</b>, " + top.best.deals + " ingrediënt" + (top.best.deals === 1 ? "" : "en") + ' in de aanbieding</span><button class="btn" data-act="go" data-id="recepten">' + RECIPES.length + " recepten bekijken</button></div>" : "") +
         '<form class="add"><label for="q" hidden>Op de lijst zetten</label><input id="q" name="q" placeholder="500 g rundergehakt, 2 courgettes, melk…" autocomplete="off"><button>Erbij</button></form>' +
         '<p class="hint' + (hint.startsWith("!") ? " warn" : "") + '">' + esc(hint.replace(/^!/, "")) + "</p>" +
         '<div class="sec"><h2>Deze keer</h2><span>' + once.length + " · gaan eraf na het winkelen</span></div>" +
@@ -765,7 +823,7 @@
           (open ? '<div class="open">' + chains.map((c) => {
             const l = r.by[c.id], fixed = correctionKey(c.id, r.item) in corrections;
             if (!l) return '<div class="pr">' + tag(c) + '<span class="pn">niet te koop</span><span class="v">—</span><span></span><span></span></div>';
-            return '<div class="pr">' + tag(c) + '<span class="pn" title="' + esc(l.p.name) + '">' + (l.offer ? offerChip(l.p, l.offer) + " " : "") + esc(l.p.name) + "</span>" +
+            return '<div class="pr">' + tag(c) + '<span class="pn" title="' + esc(l.p.name) + '">' + (l.offer ? offerChip(l.p, l.o) + " " : "") + esc(l.p.name) + "</span>" +
               '<span class="v">' + euro(l.cost) + "</span>" + (l.cost > r.min ? '<span class="delta">+' + euro(l.cost - r.min) + "</span>" : '<span class="delta zero">laagst</span>') +
               '<button class="fix" data-act="fix" data-id="' + r.item.id + '" data-chain="' + c.id + '">' + (fixed ? "gecorrigeerd" : "ander product") + "</button></div>";
           }).join("") + "</div>" : "") + "</div>";
@@ -793,7 +851,7 @@
           const l = r.by[c.id], d = done.has(r.item.id);
           return '<button class="ci' + (d ? " done" : "") + '" data-act="tick" data-id="' + r.item.id + '" aria-pressed="' + d + '"><span class="tick">' + (d ? "✓" : "") + "</span>" +
             '<span class="nm">' + esc(r.item.noun) + '<span class="q">' + qtyText(r.item) + "</span></span>" +
-            '<span class="g">' + (l.offer ? offerChip(l.p, l.offer) + " " : "") + (l.packs > 1 ? l.packs + "× " : "") + esc(l.p.name) +
+            '<span class="g">' + (l.offer ? offerChip(l.p, l.o) + " " : "") + (l.packs > 1 ? l.packs + "× " : "") + esc(l.p.name) +
             (l.p.packaging ? " · " + esc(l.p.packaging) : "") + (l.over >= 2 ? ' · <span class="w">pak is ' + Math.round(l.over * 10) / 10 + "× wat je nodig hebt</span>" : "") + "</span>" +
             '<span class="v">' + euro(l.cost) + "</span></button>";
         }).join("") + "</div></section>").join("");
@@ -831,10 +889,10 @@
       '<header><div><span class="ct" style="--c:' + chain.color + '">' + esc(chain.name) + '</span><h2 id="sheet-title">' + esc(qtyText(item) + " " + item.noun) + "</h2>" +
       '<div class="meta">Gekozen op de laagste kiloprijs. Kies het product dat je echt bedoelt; dat onthouden we voor de volgende keer.</div></div>' +
       '<button class="x" data-act="close" aria-label="Sluiten">✕</button></header><div class="list">' + ids.map((id) => {
-        const p = products[chainId][id], offer = isOffer(p), price = offer && p.offerPriceCents ? p.offerPriceCents : p.shelfPriceCents;
+        const p = products[chainId][id], o = offerFor(p, "nu"), price = o && o.priceCents ? o.priceCents : p.shelfPriceCents;
         return '<button class="alt' + (id === current ? " on" : "") + '" data-act="pick" data-id="' + id + '"><span class="n">' + esc(p.name) + '</span><span class="v">' + euro(price) + "</span>" +
           '<span class="m">' + euro(p.unitPriceCents) + ({ kg: "/kg", l: "/l", piece: " per stuk" })[p.comparisonUnit] + (p.packaging ? " · " + esc(p.packaging) : "") +
-          (offer ? " · " + offerChip(p, p.offerWording || "aanbieding") : "") + "</span></button>";
+          (o ? " · " + offerChip(p, o) : "") + "</span></button>";
       }).join("") + "</div>" + (correctionKey(chainId, item) in corrections ? '<button class="btn ghost reset" data-act="unfix">Terug naar automatisch</button>' : "") + "</section>";
   }
 
@@ -881,6 +939,7 @@
     const b = e.target.closest("[data-act]"); if (!b) return;
     const id = b.dataset.id, item = list.find((i) => i.id === id);
     switch (b.dataset.act) {
+      case "week": week = id === "volgende" && hasNextWeek ? "volgende" : "nu"; break;
       case "go": page = id; hint = ""; history.replaceState(null, "", "#" + id); window.scrollTo(0, 0); break;
       case "staple": if (item) item.staple = !item.staple; break;
       case "remove": list = list.filter((i) => i.id !== id); done.delete(id); break;

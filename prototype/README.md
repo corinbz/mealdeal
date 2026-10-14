@@ -74,6 +74,16 @@ away by accident:
    words. Nothing converts it to a percentage, because the true effective
    price depends on how many you buy.
 
+**This week or next.** Recepten and Lijst switch between this week's Offers
+and next week's, which Chains announce before they start (#8). Next week, per
+Chain, begins on the first day its announced Offers do. An upcoming Offer is
+always labelled with that day ("vanaf wo 21 okt"). One of this week's that
+runs on is labelled "loopt al", and one that ends before then drops out.
+An Offer that has not started has no price yet, and none is derived from its
+wording, so next week is priced at today's Shelf Prices. Recipes are ranked on
+how many ingredients will be on Offer. Vergelijk and Winkelen always show this
+week, because that is where you shop.
+
 Comparison is on what you actually pay for the quantity you need: whole packs,
 at the Offer price where one applies. Unit Prices still drive which Product a
 Chain resolves to, and a pack far larger than the requirement is flagged
