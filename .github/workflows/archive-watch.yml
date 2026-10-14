@@ -1,9 +1,9 @@
 # Goes red when a morning's archive is missing or incomplete in R2.
 #
-# The archive run cannot report its own absence. GitHub skipped its first
-# scheduled run outright (2026-10-14), and once it runs on the owner's Pi
-# (#24), a Pi that is off leaves the job queued with no runner, silently,
-# until GitHub drops it. Either way a day of prices is lost for good unless
+# The archive run cannot report its own absence. GitHub started its first
+# scheduled run 5 hours 10 minutes late (2026-10-14: due 04:30, created
+# 09:40 UTC), and once it runs on the owner's Pi (#24), a Pi that is off leaves
+# the job queued with no runner, silently, until GitHub drops it. Either way a day of prices is lost for good unless
 # someone notices the same day, while the Chains still serve those prices.
 # This runs on GitHub's own runners, so it does not depend on the Pi, and a
 # failed scheduled run emails the owner.
@@ -48,7 +48,7 @@ jobs:
                 "manifest-$chain.json" \
                 --endpoint-url "https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com" \
                 --only-show-errors; then
-              echo "::error::No $chain archive for $date in R2. Capture it today with: gh workflow run archive.yml -f chain=$chain"
+              echo "::error::No $chain archive for $date in R2. The scheduled run may be late or queued; a run by hand is safe either way, since runs queue and resume: gh workflow run archive.yml -f chain=$chain"
               status=1
               continue
             fi

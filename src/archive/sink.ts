@@ -62,12 +62,16 @@ export async function createSink(root: string, chain: string, date: string) {
     steps: [],
   };
 
-  // Carry forward a previous attempt's step reports so a resumed run's
-  // manifest describes the whole day, not just the part after the failure.
+  // Carry forward a previous attempt's step reports and request counts so a
+  // resumed run's manifest describes the whole day, not just the part after
+  // the failure. A run that resumed a finished day once reported 1 request
+  // for a day that took 1492 (2026-10-14).
+  let carried = { requests: 0, retries: 0 };
   if (existsSync(manifestPath)) {
     try {
       const previous = JSON.parse(await readFile(manifestPath, "utf8")) as Manifest;
       manifest = { ...manifest, startedAt: previous.startedAt, steps: previous.steps };
+      carried = { requests: previous.requests ?? 0, retries: previous.retries ?? 0 };
     } catch {
       // A corrupt manifest is not worth failing a run over; start a fresh one.
     }
@@ -122,6 +126,8 @@ export async function createSink(root: string, chain: string, date: string) {
         outcome,
         finishedAt: new Date().toISOString(),
         ...extra,
+        ...(extra.requests === undefined ? {} : { requests: carried.requests + extra.requests }),
+        ...(extra.retries === undefined ? {} : { retries: carried.retries + extra.retries }),
       };
       await save();
       return manifest;
