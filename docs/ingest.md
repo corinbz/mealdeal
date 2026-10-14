@@ -153,6 +153,37 @@ This is the third time this failure mode has come up in this codebase: Dirk's
 steps, silently skipping Jumbo's whole Offer feed. Both were found by asking
 "what would an empty success look like here?" rather than by a crash.
 
+## Every morning, with no laptop
+
+`.github/workflows/catalogue.yml` runs after each archive run on `main` (and
+by hand, for a given day). It downloads that day from R2, ingests it into a
+throwaway Postgres, builds the catalogue the basket page runs on, and
+publishes it to `catalogue/latest.js` in the same private bucket. The archive
+stays the system of record (ADR-0005), so the database is discarded with the
+runner. To use this morning's prices locally:
+
+```sh
+./scripts/pull-catalogue.sh   # writes prototype/catalogue.js from R2
+```
+
+It publishes nothing unless all of these hold, and goes red otherwise:
+
+- **Every Chain's day is complete**, by its manifest and `archive:check`. A
+  catalogue with one Chain from today and nothing for the other would make
+  Basket comparison quietly one-sided. A failed archive run is skipped, since
+  it is red already.
+- **Ingest exits clean**, which includes recording at least one Product.
+- **Every Chain's prices are from the day swept**, and an older day never
+  replaces a newer catalogue.
+- **No Chain shrank below half of the published catalogue's comparable
+  Products.** This stands in for ingest's volume alarm, which cannot fire in a
+  throwaway database: there, every run is a Chain's first.
+  `scripts/check-catalogue.ts` does this check and the two above.
+
+It runs on GitHub's runners, at roughly 5 minutes a day against the private
+repository's 2,000 free a month (see "Which machine runs it" in
+`docs/archive.md`).
+
 ## Testing
 
 One seam, at the archive directory. Each test drives a full run — read,
