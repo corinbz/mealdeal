@@ -302,3 +302,17 @@ test("a Variant word may end the name: Yoghurt Vol", () => {
   const m = map({ chainId: "vomar", name: "Campina Yoghurt Vol", brand: null, categories: ["Vers > Zuivel, Boter & Eieren > Yoghurt"] });
   assert.deepEqual([m?.ingredient, m?.variant], ["yoghurt", "vol"]);
 });
+
+test("a brand is not what it sells: Bolletje rusks, Kips paté, Hoogvliet's Met Roomboter", () => {
+  const m = (chainId: string, name: string, categories: string[], brand: string | null = null) => map({ chainId, name, brand, categories })?.ingredient ?? null;
+  assert.equal(m("dirk", "Bolletje Beschuit volkoren", ["Brood, beleg & koek > Beschuit & crackers"]), "beschuit");
+  assert.equal(m("plus", "Kips Roompate", ["Kaas, vleeswaren, tapas > Vleeswaren > Pate, lever, zult"]), "leverworst");
+  assert.equal(m("hoogvliet", "Met Roomboter", ["Zuivel, eieren, boter > Boter, margarine > Roomboter"], "Becel"), "margarine");
+  assert.equal(m("dekamarkt", "Met passie geteeld Aardappelen kruimig", ["Aardappelen, groente & fruit > Aardappelen"], "Met passie geteeld"), "aardappelen");
+});
+
+test("Becel's liquid is for frying and Lekker Romig is coffee milk, whatever shelf", () => {
+  const m = (name: string, categories: string[]) => map({ chainId: "jumbo", name, brand: null, categories })?.ingredient ?? null;
+  assert.equal(m("Becel Vlees & Jus 450 ml", ["Zuivel, boter en eieren > Boter en Margarine > Bak- en braadboter"]), "bak- en braadboter");
+  assert.equal(m("Becel Lekker Romig 467 ml", ["Koffie en thee > Koffiemelk en creamer > Pak koffiemelk"]), "koffiemelk");
+});

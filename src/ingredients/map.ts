@@ -84,7 +84,7 @@ function excludes(term: string, lower: string, raw: readonly string[]): boolean 
   });
 }
 
-const BRAND_NOT_FOOD = /^gouda's glorie\b/;
+const BRAND_NOT_FOOD = /^(gouda's glorie|bolletje|kips)\b(?=\s+\S)/;
 
 /**
  * What a name or brand says about how a Product is kept, where the Chain's
@@ -98,7 +98,7 @@ const ELSEWHERE: ReadonlySet<Aisle> = new Set(["readymeal", "baby", "pet", "nonf
 /**
  * Where a Product with no category at all may be: any food aisle but those.
  * Aldi files its weekly action articles under "offer" alone (over a thousand
- * of them, mostly food), so the name decides, and its form is the
+ * of them, mostly food), and others only under its seasonal range, so the name decides, and its form is the
  * Ingredient's main aisle unless the name says frozen or tinned.
  */
 const ANY_FOOD: ReadonlySet<Aisle> = new Set<Aisle>(["produce", "meat", "fish", "vega", "dairy", "cheese", "deli", "bakery", "pantry", "conserves", "frozen", "drinks", "snacks"]);
@@ -145,15 +145,19 @@ export function createMapper(vocabulary: readonly IngredientDef[] = VOCABULARY) 
   }
 
   return function map(product: MappableProduct): Mapping | null {
-    const uncategorized = !product.categories.length;
+    // Aldi's seasonal range and its brand pages say nothing of the aisle either.
+    const uncategorized = product.categories.every((c) => /^(speciaal assortiment|aldi merken)\b/i.test(c));
     const aisles = uncategorized ? ANY_FOOD : new Set(product.categories.map(aisleOf).filter((a): a is Aisle => a !== null));
     if (!aisles.size) return null;
-    const lower = product.name.toLowerCase();
+    // Hoogvliet leaves the brand out of a name, so "Met Roomboter" is Becel's
+    // margarine with butter: a name starting with what it has is the brand's.
+    const lower = (product.chainId === "hoogvliet" && /^(met|zonder|minder)\s/i.test(product.name) && product.brand ? product.brand + " " + product.name : product.name).toLowerCase();
     // "X met Y", "X in olijfolie", "X op siroop": only what comes before can
     // name the Product. A dish named after X is not X.
     // "Zalm gerookt minder zout": what something is without, or with less
     // of, does not name it either.
-    // A brand that names a food it is not: Gouda's Glorie makes margarine.
+    // A brand that names a food it is not: Gouda's Glorie makes margarine,
+    // Bolletje rusks and crackers, Kips paté.
     // A vocabulary phrase spanning one of those words ("doperwtjes met
     // worteltjes") names one thing, so the name is not cut inside it.
     // How it is sold ("per bak", "per stuk") names nothing: "bak" is not a thing.
@@ -164,7 +168,7 @@ export function createMapper(vocabulary: readonly IngredientDef[] = VOCABULARY) 
     // "Avocado's" is avocados: the apostrophe of a Dutch plural is not a
     // break between two words, or the word would never end with "avocado".
     const names = written.map((w) => reading.nameWords(w.replace(/['’]/g, "")).join(""));
-    const raw = lower.split(/[^\p{L}0-9%']+/u).filter(Boolean);
+    const raw = lower.replace(BRAND_NOT_FOOD, "").split(/[^\p{L}0-9%']+/u).filter(Boolean);
 
     const owned = owners(head, names, written);
     // Words owned by the same Ingredients are one thing named twice ("Kanzi

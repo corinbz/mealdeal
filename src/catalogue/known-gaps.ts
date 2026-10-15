@@ -12,7 +12,6 @@ export const KNOWN_GAPS: readonly KnownGap[] = [
   { chain: "dirk", ingredient: "gehakt/half-om-half", why: "Dirk's only half-om-half is organic and filed with cold cuts (checked 2026-10-14, #33)" },
   { chain: "aldi", ingredient: "peultjes", why: "no peultjes or sugar snaps in Aldi's range (checked 2026-10-15)" },
   { chain: "aldi", ingredient: "venkel", why: "no venkel in Aldi's range (checked 2026-10-15)" },
-  { chain: "aldi", ingredient: "stamppotgroente", why: "only andijvie and ready-made stamppot, no stamppot vegetable mix (checked 2026-10-15)" },
   { chain: "aldi", ingredient: "peterselie", why: "Aldi's fresh parsley is filed with the dried spices, which the aisle cannot tell apart (checked 2026-10-15)" },
   { chain: "aldi", ingredient: "koriander", why: "Aldi's fresh coriander is filed with the dried spices, which the aisle cannot tell apart (checked 2026-10-15)" },
   { chain: "aldi", ingredient: "dille", why: "Aldi's fresh dill is filed with the dried spices, which the aisle cannot tell apart (checked 2026-10-15)" },
