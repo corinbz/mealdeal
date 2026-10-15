@@ -49,7 +49,7 @@ test("a Product sold per kg is priced in its Ingredient's unit, where the vocabu
 test("an unmapped Product borrows its EAN twin's Ingredient, and is counted as borrowed", () => {
   assert.equal(at("hoogvliet")[0]!.ingredient, "melk");
   assert.equal(at("hoogvliet")[0]!.variant, "halfvol");
-  assert.deepEqual(built.counts["hoogvliet"], { total: 1, excluded: { nonfood: 0, alcohol: 0 }, mapped: 1, borrowed: 1, comparable: 1, upcoming: 0 });
+  assert.deepEqual(built.counts["hoogvliet"], { total: 1, excluded: { nonfood: 0, alcohol: 0 }, mapped: 1, borrowed: 1, overruled: 0, comparable: 1, upcoming: 0 });
   assert.deepEqual(built.catalogue.exact?.map((g) => g.members), [{ hoogvliet: "h1", jumbo: "j2" }]);
   assert.deepEqual(built.conflicts, []);
 });

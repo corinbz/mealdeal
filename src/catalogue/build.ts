@@ -17,10 +17,12 @@
  */
 
 import { formOf } from "../ingredients/aisles.ts";
-import { createMapper, isOwnBrand, type Mapping } from "../ingredients/map.ts";
+import { createAllows, createMapper, isOwnBrand, type Mapping, type MappableProduct } from "../ingredients/map.ts";
 import { englishOf } from "../ingredients/english.ts";
 import { VOCABULARY, type ComparisonUnit, type IngredientDef } from "../ingredients/vocabulary.ts";
 import { borrowMappings, productKey, type Conflict } from "./borrow.ts";
+import { assessShelves, type ShelfOpinion } from "./shelves.ts";
+import { groupTwins } from "./twins.ts";
 import { CHECKED_SPREADS } from "./checked-spreads.ts";
 import { groupExactProducts, type ExactCandidate } from "./exact.ts";
 import { excluded, type Excluded } from "./food.ts";
@@ -93,7 +95,10 @@ export interface ChainCounts {
   /** Left out: non-food, and alcohol other than beer. */
   readonly excluded: Readonly<Record<Excluded, number>>;
   readonly mapped: number;
+  /** Mapped only through its twins at other Chains. */
   readonly borrowed: number;
+  /** Mapped by its own name to another Ingredient than most of its twins, and given theirs. */
+  readonly overruled: number;
   /** Mapped, and priced in the Ingredient's own unit. */
   readonly comparable: number;
   readonly upcoming: number;
@@ -103,8 +108,10 @@ export interface Built {
   readonly catalogue: Catalogue;
   /** Reported every run (#14): how much of each Chain maps, and compares. */
   readonly counts: Readonly<Record<string, ChainCounts>>;
-  /** EAN twins mapped to different Ingredients: one of them is wrong (#34). */
+  /** Twins mapped to different Ingredients, settled by a majority or not: one of them is wrong (#34). */
   readonly conflicts: readonly Conflict[];
+  /** The Chains' own shelves as a second opinion: odd ones out, and unmapped Products a shelf suggests. */
+  readonly shelves: readonly ShelfOpinion[];
 }
 
 /** One Ingredient's quantity in another unit: courgette 1 piece = 0.3 kg. */
@@ -150,27 +157,32 @@ export function buildCatalogue(source: CatalogueSource, { now = new Date(), voca
   };
 
   const own = new Map<string, Mapping | null>();
+  const mappable = new Map<string, MappableProduct>();
   const candidates: ExactCandidate[] = [];
   for (const chain of source.chains) for (const p of productsAt(chain.id)) {
-    own.set(productKey(chain.id, p.ref), map({ chainId: chain.id, name: p.name, brand: p.brand, categories: [...p.categories] }));
+    const mp = { chainId: chain.id, name: p.name, brand: p.brand, categories: [...p.categories] };
+    mappable.set(productKey(chain.id, p.ref), mp);
+    own.set(productKey(chain.id, p.ref), map(mp));
     candidates.push({
       chainId: chain.id, ref: p.ref, name: p.name, brand: p.brand, eans: p.eans,
       packQuantity: p.packQuantity, packUnit: p.packUnit, huismerk: isOwnBrand(chain.id, p.brand, p.name),
     });
   }
 
-  // Exact Products (#15), then what an unmapped one borrows from its EAN twin (#34).
+  // Exact Products (#15), shown to the shopper; then twins, more widely
+  // joined, which only lend an Ingredient to an unmapped or outvoted copy (#34).
   const exact = groupExactProducts(candidates);
-  const borrowed = borrowMappings(exact, own);
+  const allows = createAllows(vocabulary);
+  const borrowed = borrowMappings(groupTwins(candidates), own, (key, ingredient) => allows(mappable.get(key)!, ingredient));
 
   const counts: Record<string, ChainCounts> = {};
   const products: Record<string, Omit<CatalogueProduct, "referenceLowCents" | "referenceDays">[]> = {};
   for (const chain of source.chains) {
-    const c = { total: 0, excluded: left[chain.id]!, mapped: 0, borrowed: 0, comparable: 0, upcoming: 0 };
+    const c = { total: 0, excluded: left[chain.id]!, mapped: 0, borrowed: 0, overruled: 0, comparable: 0, upcoming: 0 };
     products[chain.id] = productsAt(chain.id).map((p) => {
       const key = productKey(chain.id, p.ref);
       const lent = borrowed.mappings.get(key);
-      let m = own.get(key) ?? lent ?? null;
+      let m = lent ? { ...lent, huismerk: isOwnBrand(chain.id, p.brand, p.name) } : own.get(key) ?? null;
       let def = m ? defs.get(m.ingredient)! : null;
       const pack = packOf(p);
       // Too small a pack to be what the Ingredient means (a party bread is not a loaf): not it at all.
@@ -179,7 +191,8 @@ export function buildCatalogue(source: CatalogueSource, { now = new Date(), voca
       const iPack = def && pack ? inIngredientUnit(pack.unit, pack.quantity, def.unit, def.equals, false) : null;
       c.total++;
       if (m) c.mapped++;
-      if (lent) c.borrowed++;
+      if (lent && borrowed.overruled.has(key)) c.overruled++;
+      else if (lent) c.borrowed++;
       if (iPrice !== null) c.comparable++;
       if (p.nextWording !== null) c.upcoming++;
       return {
@@ -260,5 +273,8 @@ export function buildCatalogue(source: CatalogueSource, { now = new Date(), voca
     /** Differences over 70% looked at and found real, which Bladeren then shows as any other (#36). */
     checked: CHECKED_SPREADS.map(({ chain, ref, ingredient }) => ({ chain, ref, ingredient })),
   };
-  return { catalogue, counts, conflicts: borrowed.conflicts };
+  const shelves = assessShelves(source.chains.flatMap((chain) => productsAt(chain.id).map((p, i) => ({
+    chainId: chain.id, ref: p.ref, name: p.name, shelf: p.categories[0] ?? "", ingredient: products[chain.id]![i]!.ingredient,
+  }))));
+  return { catalogue, counts, conflicts: borrowed.conflicts, shelves };
 }

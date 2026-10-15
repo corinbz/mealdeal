@@ -5,8 +5,8 @@ import type { ExactProduct } from "../src/catalogue/exact.ts";
 import type { Mapping } from "../src/ingredients/map.ts";
 
 /**
- * An unmapped Product borrows its EAN twin's Ingredient (#34), and only an
- * EAN-proven twin's: never one only likely the same.
+ * An unmapped Product borrows its twins' Ingredient (#34), and a clear
+ * majority settles twins that disagree.
  */
 
 const mapping = (ingredient: string, variant: string | null = null, form: Mapping["form"] = "vers"): Mapping =>
@@ -26,7 +26,7 @@ test("an unmapped copy takes the Ingredient its EAN twins agree on", () => {
   assert.deepEqual(conflicts, []);
 });
 
-test("twins that disagree lend nothing, and are reported even with no copy unmapped", () => {
+test("twins that disagree with no clear majority lend nothing, and are reported even with no copy unmapped", () => {
   const own = new Map([
     [productKey("jumbo", "J1"), null],
     [productKey("plus", "P1"), mapping("mozzarella")],
@@ -45,10 +45,28 @@ test("twins that disagree lend nothing, and are reported even with no copy unmap
   ]);
 });
 
-test("a Product only likely the same, at a Chain without EANs, borrows nothing", () => {
-  const own = new Map([[productKey("plus", "P1"), mapping("mozzarella")], [productKey("dirk", "D1"), null]]);
-  const { mappings } = borrowMappings([group("1", { plus: "P1", vomar: "V1" }, { dirk: "D1" })], new Map([...own, [productKey("vomar", "V1"), mapping("mozzarella")]]));
-  assert.equal(mappings.has(productKey("dirk", "D1")), false);
+test("a clear majority settles twins: the odd copy and an unmapped one take its Ingredient, and it is reported", () => {
+  const own = new Map([
+    [productKey("jumbo", "J1"), mapping("chocolade")],
+    [productKey("hoogvliet", "H1"), mapping("chocolade")],
+    [productKey("vomar", "V1"), mapping("noten")],
+    [productKey("plus", "P1"), null],
+  ]);
+  const { mappings, overruled, conflicts } = borrowMappings([group("1", { jumbo: "J1", hoogvliet: "H1", vomar: "V1", plus: "P1" })], own);
+  assert.equal(mappings.get(productKey("vomar", "V1"))?.ingredient, "chocolade");
+  assert.equal(mappings.get(productKey("plus", "P1"))?.ingredient, "chocolade");
+  assert.deepEqual([...overruled], [productKey("vomar", "V1")]);
+  assert.equal(conflicts[0]!.settled, "chocolade");
+});
+
+test("a copy whose own name rules the Ingredient out keeps its own mapping", () => {
+  const own = new Map([
+    [productKey("jumbo", "J1"), mapping("pasta")],
+    [productKey("vomar", "V1"), mapping("pasta")],
+    [productKey("plus", "P1"), null],
+  ]);
+  const { mappings } = borrowMappings([group("1", { jumbo: "J1", vomar: "V1", plus: "P1" })], own, (key) => !key.startsWith("plus"));
+  assert.equal(mappings.has(productKey("plus", "P1")), false);
 });
 
 test("a Variant or form the twins disagree on is not borrowed, the Ingredient still is", () => {

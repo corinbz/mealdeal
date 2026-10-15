@@ -25,3 +25,4 @@ prototype/prices.js
 
 # Wrangler's local state, from a local run of the scheduler Worker.
 .wrangler/
+opinions.md
