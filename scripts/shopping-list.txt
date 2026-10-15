@@ -1,0 +1,1434 @@
+# What people write on a shopping list, Dutch and English, one item per
+# line, read by scripts/check-reading.ts. A line under "# =nonfood" is
+# expected to read as nothing: the app shows food only.
+
+# groente
+aardappelen
+kruimige aardappelen
+vastkokende aardappelen
+krieltjes
+zoete aardappel
+1 kg aardappelen
+2 kg aardappelen
+uien
+rode uien
+sjalotten
+lente-ui
+bosui
+prei
+knoflook
+2 bollen knoflook
+gember
+wortels
+winterpeen
+bospeen
+worteltjes
+waspeen
+broccoli
+bloemkool
+spruitjes
+witte kool
+rode kool
+savooiekool
+spitskool
+boerenkool
+zuurkool
+andijvie
+spinazie
+verse spinazie
+wilde spinazie
+sla
+ijsbergsla
+kropsla
+rucola
+veldsla
+romaine sla
+little gem
+komkommer
+2 komkommers
+tomaten
+cherrytomaatjes
+trostomaten
+pomodori
+vleestomaat
+paprika
+rode paprika
+groene paprika
+gele paprika
+puntpaprika
+courgette
+aubergine
+champignons
+kastanjechampignons
+oesterzwammen
+shiitake
+paddenstoelen
+sperziebonen
+snijbonen
+tuinbonen
+peultjes
+sugarsnaps
+doperwten
+mais
+maiskolf
+venkel
+selderij
+bleekselderij
+knolselderij
+pastinaak
+koolrabi
+radijs
+rode biet
+gekookte bieten
+asperges
+witte asperges
+groene asperges
+witlof
+pompoen
+flespompoen
+pak choi
+chinese kool
+taugé
+groentemix
+roerbakgroente
+wokgroente
+soepgroente
+andijviestamppot
+hutspot
+diepvriesspinazie
+diepvries erwten
+diepvriesgroente
+gesneden groente
+rauwkost
+coleslaw
+avocado
+2 avocado's
+chilipeper
+rode peper
+jalapeño
+verse kruiden
+peterselie
+platte peterselie
+basilicum
+koriander
+munt
+dille
+bieslook
+rozemarijn
+tijm
+salie
+citroengras
+
+# fruit
+appels
+elstar
+jonagold
+granny smith
+peren
+conference peren
+bananen
+1 tros bananen
+sinaasappels
+handsinaasappels
+mandarijnen
+clementines
+citroenen
+limoenen
+grapefruit
+druiven
+witte druiven
+blauwe druiven
+aardbeien
+frambozen
+blauwe bessen
+bramen
+rode bessen
+kersen
+kiwi
+mango
+ananas
+meloen
+watermeloen
+galiameloen
+perziken
+nectarines
+pruimen
+abrikozen
+granaatappel
+passievrucht
+vijgen
+dadels
+lychees
+fruitsalade
+appelmoes
+rozijnen
+krenten
+gedroogde abrikozen
+gedroogde vijgen
+gedroogde cranberries
+diepvries fruit
+diepvries frambozen
+bevroren bosvruchten
+rood fruit
+kokosnoot
+
+# zuivel
+melk
+halfvolle melk
+volle melk
+magere melk
+1 l halfvolle melk
+2 l melk
+lactosevrije melk
+karnemelk
+chocolademelk
+koffiemelk
+koffieroom
+slagroom
+kookroom
+zure room
+creme fraiche
+crème fraîche
+mascarpone
+ricotta
+cottage cheese
+hüttenkäse
+yoghurt
+griekse yoghurt
+volle yoghurt
+magere yoghurt
+halfvolle yoghurt
+skyr
+kwark
+magere kwark
+vla
+vanillevla
+chocoladevla
+pap
+griesmeelpudding
+rijstepap
+custard
+toetjes
+pudding
+boter
+roomboter
+ongezouten roomboter
+halvarine
+margarine
+bakboter
+blue band
+kaas
+jonge kaas
+jong belegen kaas
+belegen kaas
+oude kaas
+extra belegen kaas
+geraspte kaas
+plakken kaas
+kaas plakjes
+smeerkaas
+roomkaas
+philadelphia
+boursin
+geitenkaas
+feta
+mozzarella
+burrata
+parmezaanse kaas
+parmezaan
+grana padano
+pecorino
+brie
+camembert
+gorgonzola
+blauwe kaas
+cheddar
+gouda
+edammer
+leerdammer
+maasdammer
+emmentaler
+gruyère
+halloumi
+paneer
+eieren
+6 eieren
+10 eieren
+12 eieren
+scharreleieren
+vrije uitloop eieren
+biologische eieren
+eiwit
+eidooiers
+hardgekookte eieren
+drinkyoghurt
+yakult
+actimel
+optimel
+chocomel
+fristi
+havermelk
+amandelmelk
+sojamelk
+haverdrank
+sojadrank
+kokosmelk
+plantaardige yoghurt
+sojayoghurt
+alpro
+vegan kaas
+
+# vlees en vis
+gehakt
+rundergehakt
+half om half gehakt
+kipgehakt
+varkensgehakt
+500 g gehakt
+kipfilet
+kippendijen
+kippenpoten
+drumsticks
+kippenvleugels
+hele kip
+kipreepjes
+kipdijfilet
+kipschnitzel
+kipnuggets
+shoarma
+gyros
+kebab
+biefstuk
+entrecote
+ossenhaas
+riblappen
+sukadelappen
+stoofvlees
+rundvlees
+draadjesvlees
+runderlappen
+hamburgers
+burgers
+slavinken
+blinde vinken
+gehaktballen
+balletjes
+speklappen
+spek
+spekjes
+ontbijtspek
+bacon
+varkenshaas
+karbonades
+schnitzel
+varkensschnitzel
+procureur
+spareribs
+saucijzen
+braadworst
+rookworst
+unox rookworst
+knakworstjes
+frankfurters
+hotdogs
+worstjes
+chorizo
+salami
+cervelaat
+ham
+achterham
+beenham
+gekookte ham
+rauwe ham
+parmaham
+serranoham
+filet americain
+rosbief
+pastrami
+kipfilet beleg
+gerookte kipfilet
+kalkoen
+kalkoenfilet
+lamsvlees
+lamskoteletten
+lamsgehakt
+eend
+konijn
+wild
+vleeswaren
+boterhamworst
+leverworst
+smeerleverworst
+paté
+grillworst
+zult
+vis
+zalm
+zalmfilet
+gerookte zalm
+kabeljauw
+koolvis
+pangasius
+tilapia
+tonijn
+tonijn in blik
+makreel
+gerookte makreel
+haring
+hollandse nieuwe
+zure haring
+rolmops
+sardines
+ansjovis
+garnalen
+grote garnalen
+hollandse garnalen
+gamba's
+mosselen
+inktvis
+calamares
+kibbeling
+lekkerbekjes
+vissticks
+fish fingers
+surimi
+krab
+kreeft
+forel
+schollefilet
+schol
+tong
+heilbot
+paling
+vegetarische burger
+vegaburger
+vegetarisch gehakt
+vega gehakt
+tofu
+tempeh
+seitan
+vegetarische kipstukjes
+falafel
+vegetarische schnitzel
+vleesvervanger
+
+# brood en ontbijt
+brood
+volkorenbrood
+witbrood
+bruinbrood
+meergranenbrood
+tijgerbrood
+casino brood
+desembrood
+speltbrood
+roggebrood
+krentenbrood
+krentenbollen
+suikerbrood
+stokbrood
+afbakbrood
+afbakbroodjes
+pistolets
+bolletjes
+kaiserbroodjes
+witte bollen
+bruine bollen
+croissants
+pains au chocolat
+broodjes
+pita broodjes
+wraps
+tortilla's
+naan
+ciabatta
+focaccia
+bagels
+english muffins
+beschuit
+crackers
+knäckebröd
+rijstwafels
+cracottes
+toast
+toastjes
+ontbijtkoek
+peperkoek
+hagelslag
+chocoladehagelslag
+vlokken
+muisjes
+roze muisjes
+gestampte muisjes
+pindakaas
+jam
+aardbeienjam
+abrikozenjam
+confiture
+honing
+appelstroop
+chocoladepasta
+nutella
+speculoospasta
+cornflakes
+muesli
+granola
+cruesli
+havermout
+brinta
+ontbijtgranen
+weetabix
+special k
+oatmeal
+tarwezemelen
+lijnzaad
+chiazaad
+
+# voorraadkast
+rijst
+basmatirijst
+zilvervliesrijst
+pandanrijst
+risottorijst
+sushirijst
+wilde rijst
+pasta
+spaghetti
+penne
+macaroni
+fusilli
+farfalle
+tagliatelle
+lasagnebladen
+lasagne
+ravioli
+tortellini
+gnocchi
+noedels
+mie
+mihoen
+rijstnoedels
+udon
+couscous
+bulgur
+quinoa
+linzen
+rode linzen
+kikkererwten
+kidneybonen
+bruine bonen
+witte bonen
+witte bonen in tomatensaus
+zwarte bonen
+capucijners
+mais in blik
+erwten in blik
+doperwten en wortelen
+tomatenpuree
+passata
+gezeefde tomaten
+tomatenblokjes
+tomaten in blik
+pastasaus
+pesto
+groene pesto
+rode pesto
+ketchup
+mayonaise
+mayo
+fritessaus
+mosterd
+grove mosterd
+currysaus
+sambal
+sambal oelek
+ketjap
+ketjap manis
+sojasaus
+sweet chili saus
+sriracha
+tabasco
+worcestershiresaus
+barbecuesaus
+bbq saus
+knoflooksaus
+cocktailsaus
+satésaus
+pindasaus
+hoisinsaus
+oestersaus
+vissaus
+teriyakisaus
+kokosmelk in blik
+currypasta
+rode currypasta
+groene currypasta
+boemboe
+nasi kruiden
+bami kruiden
+taco kruiden
+mix voor nasi
+mix voor spaghetti
+mix voor chili con carne
+bouillon
+bouillonblokjes
+groentebouillon
+kippenbouillon
+runderbouillon
+jus
+juspoeder
+olie
+olijfolie
+extra vierge olijfolie
+zonnebloemolie
+frituurolie
+frituurvet
+arachideolie
+sesamolie
+kokosolie
+azijn
+witte azijn
+balsamico azijn
+appelazijn
+zout
+zeezout
+peper
+zwarte peper
+paprikapoeder
+gerookte paprikapoeder
+kerrie
+kerriepoeder
+komijn
+kurkuma
+kaneel
+nootmuskaat
+oregano
+italiaanse kruiden
+laurierblaadjes
+chilivlokken
+cayennepeper
+gemberpoeder
+knoflookpoeder
+vanillesuiker
+suiker
+kristalsuiker
+basterdsuiker
+poedersuiker
+rietsuiker
+zoetjes
+stevia
+bloem
+tarwebloem
+zelfrijzend bakmeel
+volkorenmeel
+maizena
+paneermeel
+bakpoeder
+gist
+gedroogde gist
+cacaopoeder
+chocoladestukjes
+pure chocolade
+puddingpoeder
+gelatine
+cakemix
+pannenkoekenmix
+poffertjesmix
+wafelmix
+pannenkoeken
+poffertjes
+stroop
+pannenkoekenstroop
+ahornsiroop
+noten
+walnoten
+cashewnoten
+amandelen
+pinda's
+pistachenoten
+hazelnoten
+pecannoten
+pijnboompitten
+zonnebloempitten
+pompoenpitten
+sesamzaad
+studentenhaver
+nootjes
+borrelnootjes
+olijven
+groene olijven
+zwarte olijven
+augurken
+zilveruitjes
+kappertjes
+zongedroogde tomaten
+ingelegde paprika
+rode kool uit pot
+appelmoes uit pot
+soep
+tomatensoep
+erwtensoep
+kippensoep
+groentesoep
+champignonsoep
+uiensoep
+soep in blik
+cup a soup
+noodle soup
+instant noedels
+knakworst in blik
+ravioli in blik
+corned beef
+smac
+tonijnsalade
+zalmsalade
+eiersalade
+kip kerrie salade
+huzarensalade
+aardappelsalade
+macaronisalade
+hummus
+tzatziki
+guacamole
+salsa
+tortillachips
+taco's
+taco schelpen
+tortilla wraps
+kokosrasp
+rozijnen in pakje
+
+# diepvries
+diepvriespizza
+pizza
+pizza margherita
+patat
+friet
+frieten
+diepvriesfriet
+oven friet
+kroketten
+bitterballen
+frikandellen
+kaassoufflés
+loempia's
+mini loempia's
+nasi
+bami
+diepvriesmaaltijd
+kant-en-klaar maaltijd
+maaltijdsalade
+ijs
+vanille-ijs
+roomijs
+magnum
+ijsjes
+waterijsjes
+sorbet
+bladerdeeg
+diepvries bladerdeeg
+pizzadeeg
+taartdeeg
+diepvries kruiden
+diepvries vis
+ijsblokjes
+
+# snoep en koek
+chips
+paprikachips
+naturel chips
+ribbelchips
+pringles
+nacho's
+popcorn
+zoute popcorn
+kroepoek
+cassave chips
+zoutjes
+tuc
+pretzels
+zoute stokjes
+drop
+dropjes
+zoute drop
+zoete drop
+snoep
+winegums
+spekjes
+schuimpjes
+pepermunt
+kauwgom
+chocolade
+chocoladereep
+melkchocolade
+witte chocolade
+tony's
+tony chocolonely
+m&m's
+mars
+snickers
+twix
+bounty
+kitkat
+paaseitjes
+chocoladeletters
+pepernoten
+kruidnoten
+speculaas
+speculaasjes
+koekjes
+biscuits
+mariakaakjes
+bastognekoeken
+stroopwafels
+eierkoeken
+gevulde koeken
+roze koeken
+tompouce
+appeltaart
+cake
+marmercake
+ontbijtkoek
+muffins
+brownies
+donuts
+oliebollen
+wafels
+luikse wafels
+mergpijpjes
+krakelingen
+eierkoek
+rijstwafels met chocolade
+mueslirepen
+proteinerepen
+eiwitrepen
+energierepen
+dadelrepen
+
+# drinken
+koffie
+koffiebonen
+gemalen koffie
+filterkoffie
+koffiecups
+koffiepads
+senseo pads
+nespresso cups
+dolce gusto cups
+oploskoffie
+cappuccino
+thee
+zwarte thee
+groene thee
+pepermuntthee
+kamillethee
+rooibos
+theezakjes
+ijsthee
+lipton ice tea
+water
+bronwater
+mineraalwater
+spa rood
+spa blauw
+bruiswater
+sodawater
+cola
+cola zero
+pepsi
+pepsi max
+fanta
+sprite
+7up
+seven up
+frisdrank
+tonic
+ginger ale
+cassis
+sinas
+dubbelfris
+appelsap
+sinaasappelsap
+jus d'orange
+verse jus
+multivruchtensap
+tomatensap
+druivensap
+cranberrysap
+smoothie
+limonade
+limonadesiroop
+ranja
+siroop
+diksap
+energiedrank
+red bull
+monster
+sportdrank
+aquarius
+bier
+pils
+blikjes bier
+krat bier
+heineken
+grolsch
+hertog jan
+alcoholvrij bier
+0.0 bier
+radler
+speciaalbier
+weizen
+ipa
+wijn
+rode wijn
+witte wijn
+rosé
+prosecco
+champagne
+cava
+port
+sherry
+jenever
+whisky
+wodka
+rum
+gin
+likeur
+advocaat
+cider
+
+# baby en dier
+babyvoeding
+babymelk
+opvolgmelk
+fruithapje
+groentehapje
+babykoekjes
+kattenvoer
+hondenvoer
+brokjes
+kattenbrokken
+hondenbrokken
+natvoer
+kattensnoepjes
+hondensnoepjes
+vogelzaad
+
+# =nonfood
+wc-papier
+toiletpapier
+keukenrol
+tissues
+zakdoekjes
+afwasmiddel
+vaatwastabletten
+vaatwasmiddel
+wasmiddel
+wasverzachter
+allesreiniger
+schoonmaakazijn
+bleek
+chloor
+ontkalker
+sponsjes
+vaatdoekjes
+vuilniszakken
+afvalzakken
+diepvrieszakjes
+boterhamzakjes
+aluminiumfolie
+huishoudfolie
+bakpapier
+tandpasta
+tandenborstel
+shampoo
+conditioner
+douchegel
+zeep
+handzeep
+deodorant
+scheermesjes
+maandverband
+tampons
+luiers
+billendoekjes
+watjes
+wattenstaafjes
+pleisters
+paracetamol
+ibuprofen
+batterijen
+lampjes
+kaarsen
+waxinelichtjes
+lucifers
+aanstekers
+bloemen
+plantenvoeding
+krant
+
+# english produce
+potatoes
+baby potatoes
+sweet potatoes
+onions
+red onions
+shallots
+spring onions
+scallions
+garlic
+ginger
+carrots
+broccoli
+cauliflower
+brussels sprouts
+cabbage
+red cabbage
+kale
+spinach
+baby spinach
+lettuce
+iceberg lettuce
+romaine
+arugula
+rocket
+mixed salad
+salad greens
+cucumber
+tomatoes
+cherry tomatoes
+bell peppers
+red pepper
+green pepper
+chili peppers
+zucchini
+courgettes
+eggplant
+aubergine
+mushrooms
+button mushrooms
+portobello mushrooms
+green beans
+peas
+frozen peas
+sweet corn
+corn on the cob
+celery
+fennel
+leeks
+parsnips
+beetroot
+beets
+asparagus
+radishes
+pumpkin
+butternut squash
+bok choy
+bean sprouts
+stir fry vegetables
+frozen vegetables
+avocados
+fresh herbs
+parsley
+basil
+cilantro
+coriander
+mint
+dill
+chives
+rosemary
+thyme
+apples
+pears
+bananas
+oranges
+clementines
+lemons
+limes
+grapes
+strawberries
+raspberries
+blueberries
+blackberries
+cherries
+kiwis
+mangoes
+pineapple
+melon
+watermelon
+peaches
+plums
+apricots
+pomegranate
+figs
+dates
+raisins
+dried cranberries
+frozen berries
+applesauce
+
+# english dairy and eggs
+milk
+whole milk
+semi-skimmed milk
+skimmed milk
+skim milk
+2% milk
+lactose-free milk
+buttermilk
+chocolate milk
+oat milk
+almond milk
+soy milk
+heavy cream
+double cream
+single cream
+whipping cream
+sour cream
+creme fraiche
+cream cheese
+cottage cheese
+yogurt
+yoghurt
+greek yogurt
+plain yogurt
+vanilla yogurt
+strawberry yogurt
+low fat yogurt
+quark
+butter
+unsalted butter
+salted butter
+margarine
+cheese
+grated cheese
+shredded cheese
+sliced cheese
+cheddar cheese
+mature cheddar
+mozzarella
+parmesan
+feta
+goat cheese
+brie
+blue cheese
+halloumi
+eggs
+a dozen eggs
+free range eggs
+organic eggs
+egg whites
+custard
+pudding
+
+# english meat and fish
+ground beef
+minced beef
+mince
+beef mince
+ground pork
+ground turkey
+chicken breast
+chicken breasts
+chicken thighs
+chicken drumsticks
+chicken wings
+whole chicken
+chicken nuggets
+steak
+sirloin steak
+beef steak
+stewing beef
+beef stew meat
+pork chops
+pork tenderloin
+pork loin
+bacon
+streaky bacon
+back bacon
+ham
+sliced ham
+sausages
+pork sausages
+smoked sausage
+hot dogs
+salami
+pepperoni
+chorizo
+roast beef
+turkey slices
+deli meat
+lamb
+lamb chops
+minced lamb
+burgers
+meatballs
+fish
+salmon
+salmon fillets
+smoked salmon
+cod
+haddock
+tuna
+canned tuna
+tinned tuna
+mackerel
+herring
+sardines
+anchovies
+shrimp
+prawns
+king prawns
+mussels
+squid
+fish sticks
+crab sticks
+tofu
+veggie burgers
+plant-based mince
+meat substitute
+
+# english bakery and breakfast
+bread
+white bread
+brown bread
+wholemeal bread
+whole wheat bread
+sourdough
+sourdough bread
+rye bread
+baguette
+rolls
+bread rolls
+buns
+burger buns
+hot dog buns
+croissants
+bagels
+tortillas
+wraps
+pita bread
+naan bread
+crackers
+rice cakes
+crispbread
+toast
+peanut butter
+jam
+strawberry jam
+marmalade
+honey
+maple syrup
+chocolate spread
+cereal
+cornflakes
+oats
+porridge oats
+rolled oats
+granola
+muesli
+chocolate sprinkles
+
+# english pantry
+rice
+white rice
+brown rice
+basmati rice
+jasmine rice
+risotto rice
+pasta
+spaghetti
+penne
+macaroni
+lasagna sheets
+noodles
+egg noodles
+rice noodles
+couscous
+quinoa
+lentils
+red lentils
+chickpeas
+kidney beans
+black beans
+baked beans
+canned tomatoes
+chopped tomatoes
+tinned tomatoes
+tomato paste
+tomato puree
+passata
+pasta sauce
+pesto
+ketchup
+mayonnaise
+mustard
+dijon mustard
+soy sauce
+hot sauce
+sweet chili sauce
+bbq sauce
+barbecue sauce
+curry sauce
+curry paste
+coconut milk
+stock cubes
+chicken stock
+vegetable stock
+beef stock
+gravy
+olive oil
+vegetable oil
+sunflower oil
+sesame oil
+coconut oil
+vinegar
+balsamic vinegar
+salt
+pepper
+black pepper
+paprika powder
+cumin
+cinnamon
+turmeric
+oregano
+mixed herbs
+curry powder
+chili flakes
+sugar
+brown sugar
+icing sugar
+powdered sugar
+sweetener
+flour
+plain flour
+self-raising flour
+cornstarch
+cornflour
+breadcrumbs
+baking powder
+baking soda
+yeast
+cocoa powder
+chocolate chips
+vanilla extract
+pancake mix
+nuts
+walnuts
+cashews
+almonds
+peanuts
+pine nuts
+sunflower seeds
+pumpkin seeds
+sesame seeds
+olives
+pickles
+gherkins
+capers
+sun-dried tomatoes
+soup
+tomato soup
+pea soup
+chicken soup
+canned soup
+instant noodles
+hummus
+salsa
+guacamole
+tortilla chips
+
+# english frozen, snacks and drinks
+frozen pizza
+pizza
+fries
+french fries
+oven chips
+frozen fries
+croquettes
+spring rolls
+ice cream
+vanilla ice cream
+ice lollies
+popsicles
+sorbet
+puff pastry
+pizza dough
+frozen fish
+chips
+crisps
+potato chips
+salt and vinegar crisps
+cheese and onion crisps
+paprika crisps
+popcorn
+prawn crackers
+pretzels
+licorice
+liquorice
+candy
+sweets
+gummy bears
+marshmallows
+chewing gum
+gum
+mints
+chocolate
+dark chocolate
+milk chocolate
+white chocolate
+chocolate bar
+cookies
+biscuits
+digestives
+stroopwafels
+gingerbread
+speculoos
+cake
+muffins
+brownies
+donuts
+waffles
+cereal bars
+granola bars
+protein bars
+coffee
+coffee beans
+ground coffee
+instant coffee
+coffee pods
+tea
+tea bags
+green tea
+herbal tea
+peppermint tea
+iced tea
+water
+sparkling water
+mineral water
+coke
+diet coke
+coke zero
+cola
+lemonade
+orange juice
+apple juice
+cranberry juice
+fruit juice
+smoothies
+squash
+cordial
+energy drinks
+sports drinks
+beer
+lager
+non-alcoholic beer
+alcohol-free beer
+wine
+red wine
+white wine
+cider
+baby food
+baby formula
+cat food
+dog food
