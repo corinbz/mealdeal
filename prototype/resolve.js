@@ -10,16 +10,18 @@
 // within the Variant and Preferences, fresh unless a Preference allows
 // otherwise, cheapest per unit first. An item the vocabulary does not know is
 // still resolved, by the old word matching on Product names, and says so.
+// Every language the vocabulary has names in is read, whatever the page's
+// language (#25): "500 g ground beef" is rundergehakt.
 (function (global) {
   const W = global.MealdealWords;
 
   /** Words that set a Preference, removed before the Ingredient is read. */
   const PREFERENCES = [
-    [/\b(bio|biologisch|biologische)\b/g, "biologisch"],
-    [/\bhuismerk\b/g, "huismerk"],
-    [/\ba-?merk\b/g, "amerk"],
-    [/\b(diepvries|bevroren)\b/g, "diepvries"],
-    [/\b(uit (blik|pot)|blik|pot|conserven)\b/g, "conserven"],
+    [/\b(bio|biologisch|biologische|organic)\b/g, "biologisch"],
+    [/\b(huismerk|(store|own|house)[ -]brand)\b/g, "huismerk"],
+    [/\b(a-?merk|name[ -]brand|brand[ -]name)\b/g, "amerk"],
+    [/\b(diepvries|bevroren|frozen)\b/g, "diepvries"],
+    [/\b(uit (blik|pot)|blik|pot|conserven|canned|tinned|jarred)\b/g, "conserven"],
   ];
 
   /** `prices` is window.PRICES (scripts/daily-prices.ts), or nothing when there is no history. */
@@ -52,12 +54,23 @@
     }
 
     // Every name a shopper may type for an Ingredient or one of its Variants,
-    // stemmed, so "kruimige aardappelen" and "aardappel" both read.
+    // stemmed, so "kruimige aardappelen" and "aardappel" both read, and in
+    // which language. Dutch first; another language never takes a Dutch name.
     const names = new Map();
     const key = (text) => W.wordsOf(text).join(" ");
     for (const d of vocabulary.values()) {
-      for (const n of [d.name, d.id, ...d.also]) if (!names.has(key(n))) names.set(key(n), { ingredient: d.id, variant: null });
-      for (const v of d.variants) names.set(key(v.name), { ingredient: d.id, variant: v.id });
+      for (const n of [d.name, d.id, ...d.also]) if (!names.has(key(n))) names.set(key(n), { ingredient: d.id, variant: null, lang: "nl" });
+      for (const v of d.variants) names.set(key(v.name), { ingredient: d.id, variant: v.id, lang: "nl" });
+    }
+    for (const d of vocabulary.values()) for (const [lang, ns] of Object.entries(d.names || {})) {
+      for (const v of d.variants) for (const n of (v.names && v.names[lang]) || []) if (!names.has(key(n))) names.set(key(n), { ingredient: d.id, variant: v.id, lang });
+      for (const n of ns) if (!names.has(key(n))) names.set(key(n), { ingredient: d.id, variant: null, lang });
+    }
+    /** What the page calls an Ingredient, or one of its Variants, in a language; Dutch where it has no name in that one. */
+    function label(ingredient, variant, lang) {
+      const d = vocabulary.get(ingredient); if (!d) return null;
+      const v = variant && d.variants.find((x) => x.id === variant), own = v || d;
+      return (lang !== "nl" && own.names && own.names[lang] && own.names[lang][0]) || own.name;
     }
 
     /**
@@ -70,6 +83,9 @@
     for (const d of vocabulary.values()) {
       for (const n of [d.name, ...d.also]) if (!display.has(key(n))) display.set(key(n), n);
       for (const v of d.variants) display.set(key(v.name), v.name);
+    }
+    for (const d of vocabulary.values()) for (const [lang, ns] of Object.entries(d.names || {})) {
+      for (const n of [...ns, ...d.variants.flatMap((v) => (v.names && v.names[lang]) || [])]) if (!display.has(key(n))) display.set(key(n), n);
     }
     function suggest(noun) {
       const typed = W.wordsOf(noun).join(" ");
@@ -87,6 +103,12 @@
     const matching = (chainId, unit, words) => searchable[chainId].filter((p) =>
       (unit === null || p.unit === unit) && W.matches(words, p.words));
     const tally = (words) => {
+      // Product names are Dutch: a name in another language counts the
+      // Products of its Ingredient's Dutch name.
+      for (let i = 0; i < words.length; i++) {
+        const found = names.get(words.slice(i).join(" "));
+        if (found && found.lang !== "nl") { words = W.wordsOf(vocabulary.get(found.ingredient).name); break; }
+      }
       const counts = { kg: 0, l: 0, piece: 0 };
       for (const c of data.chains) for (const p of matching(c.id, null, words)) counts[p.unit]++;
       return counts;
@@ -124,7 +146,7 @@
       }
       // Read from its last words only ("halfvole melk" as melk), a misspelt
       // Variant would be dropped without a word: suggest it.
-      return { ...base, noun: found.variant ? def.variants.find((v) => v.id === found.variant).name : item.noun,
+      return { ...base, noun: found.variant ? label(def.id, found.variant, found.lang) : item.noun,
         quantity, unit, guessed, ingredient: def.id, variant: found.variant, ...(found.partial ? { suggestion: suggest(item.noun) } : {}) };
     }
 
@@ -481,7 +503,7 @@
       return { at, best: at[0], complete: !!at[0] && at[0].missing === 0 };
     }
 
-    return { products, vocabulary, parse, suggest, candidates, satisfies, packsFor, unitPrice, correctionKey, dailyPrices, priceDropAt,
+    return { products, vocabulary, parse, suggest, label, candidates, satisfies, packsFor, unitPrice, correctionKey, dailyPrices, priceDropAt,
       exact, exactIdOf, exactProduct, likelyProduct, exactMatches, spreads,
       isOnOffer, nextStarts, offerFor, packCents, verdict, correctedProduct, line, compare, priceRecipe, usedCents };
   }
