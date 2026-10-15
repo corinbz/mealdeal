@@ -40,10 +40,10 @@ if (argv.length && !opinions) {
 const db = connect();
 const source = await readCatalogueSource(db);
 await db.end();
-const { catalogue, counts, conflicts, shelves, labelled } = buildCatalogue(source);
+const { catalogue, counts, conflicts, shelves, labelled, checks, stale } = buildCatalogue(source);
 await writeFile(OUT, catalogueScript(catalogue, "scripts/catalogue-from-db.ts"));
 const chainName = (id: string) => catalogue.chains.find((c) => c.id === id)?.name ?? id;
-if (opinions) await writeFile(opinions, opinionsMarkdown(conflicts, shelves, assessClassifier(labelled), chainName));
+if (opinions) await writeFile(opinions, opinionsMarkdown({ conflicts, shelves, classifier: assessClassifier(labelled), checks, stale }, chainName));
 
 const chains = catalogue.chains;
 console.error(`wrote ${OUT.pathname}: ${chains.map((c) => `${c.name} ${counts[c.id]!.total} (${counts[c.id]!.upcoming} with an upcoming Offer)`).join(", ")} comparable products`);
@@ -59,6 +59,8 @@ console.error(`  ${conflicts.length} twins whose Chains map them to different In
 for (const k of conflicts) {
   console.error(`    ${k.name} (${k.id}): ${Object.entries(k.ingredients).map(([c, i]) => `${chainName(c)} ${i ?? "none"}`).join(", ")}${k.settled ? ` → ${k.settled}` : ""}`);
 }
+// What people looking found (verdicts.ts), and those to look at again.
+console.error(`  ${checks.length} Verdicts hold, ${checks.filter((c) => c.from === "sample").length} of them the Gold Set; ${stale.length} no longer hold`);
 const exact = catalogue.exact ?? [];
 const likely = exact.filter((g) => Object.keys(g.likely).length).length;
 console.error(`  ${exact.length} Exact Products shared by EAN, ${likely} with a Product likely the same where no EAN is published`);

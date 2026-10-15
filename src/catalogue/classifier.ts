@@ -16,6 +16,10 @@
  * places somewhere. Learnt from the vocabulary's own mappings, it repeats
  * the vocabulary's habits; what it adds is noticing a Product unlike the
  * rest of its Ingredient, and like another one.
+ *
+ * A Product with a Verdict (verdicts.ts) is learnt with the Verdict's answer,
+ * since that is what the catalogue holds, and never listed again. On the
+ * Gold Set, the Verdicts drawn at random, its answers are measured.
  */
 
 import { words as reading } from "../page.ts";
@@ -29,6 +33,8 @@ export interface LabelledProduct {
   readonly unit: string;
   /** The Ingredient the vocabulary maps it to, or null. */
   readonly ingredient: string | null;
+  /** It has a Verdict: learnt from, never listed. */
+  readonly checked?: boolean;
 }
 
 export interface Prediction {
@@ -140,6 +146,8 @@ export interface ClassifierOpinion {
   readonly disagree: readonly Prediction[];
   /** Unmapped, and the model is sure of an Ingredient. */
   readonly suggest: readonly Prediction[];
+  /** What it says a Product is, by a model that never saw it: an Ingredient, or null for none. */
+  label(chainId: string, ref: string): string | null;
 }
 
 /**
@@ -155,10 +163,17 @@ export function assessClassifier(products: readonly LabelledProduct[], minMargin
   const mapped = predictions.filter((x) => x.product.ingredient !== null);
   const agreement = mapped.length ? mapped.filter((x) => x.label === x.product.ingredient).length / mapped.length : 1;
   const byMargin = (a: Prediction, b: Prediction) => b.margin - a.margin || a.product.name.localeCompare(b.product.name);
+  const open = predictions.filter((x) => !x.product.checked);
+  const labels = new Map(predictions.map((x) => [x.product.chainId + "\u0000" + x.product.ref, x.label]));
   return {
     agreement,
     // A mapped Product it places nowhere is mostly a rare one, not a wrong one: only another Ingredient counts.
-    disagree: mapped.filter((x) => x.label !== null && x.label !== x.product.ingredient && x.margin >= minMargin).sort(byMargin),
-    suggest: predictions.filter((x) => x.product.ingredient === null && x.label !== null && x.margin >= minMargin).sort(byMargin),
+    disagree: open.filter((x) => x.product.ingredient !== null && x.label !== null && x.label !== x.product.ingredient && x.margin >= minMargin).sort(byMargin),
+    suggest: open.filter((x) => x.product.ingredient === null && x.label !== null && x.margin >= minMargin).sort(byMargin),
+    label(chainId, ref) {
+      const l = labels.get(chainId + "\u0000" + ref);
+      if (l === undefined) throw new Error(`no Product ${chainId} ${ref} was judged`);
+      return l;
+    },
   };
 }

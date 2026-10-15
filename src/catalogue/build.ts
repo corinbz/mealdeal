@@ -5,8 +5,8 @@
  * (source-db.ts), and the tests hand them in.
  *
  * Everything decided on the way is here: which Ingredient each Product is,
- * as mapping.ts decides it (by name, from its twins, #34, or none for too
- * small a pack); its Unit Price and pack in that Ingredient's own unit;
+ * as mapping.ts decides it (by name, from its twins, #34, none for too
+ * small a pack, or as a person looking found it: verdicts.ts); its Unit Price and pack in that Ingredient's own unit;
  * which Products are one Exact Product (#15); and what the page is told
  * about each Chain: the Store priced, whether it has Offers or EANs, whether
  * it is offers-only, which card it assumes.
@@ -28,6 +28,7 @@ import { inIngredientUnit, mapProducts } from "./mapping.ts";
 import { CHECKED_SPREADS } from "./checked-spreads.ts";
 import { groupExactProducts, type ExactCandidate } from "./exact.ts";
 import { excluded, type Excluded } from "./food.ts";
+import { VERDICTS, type Verdict, type VerdictSource } from "./verdicts.ts";
 import { COLUMNS, toRow, type Catalogue, type CatalogueIngredient, type CatalogueProduct, type Row } from "./format.ts";
 
 /**
@@ -106,6 +107,18 @@ export interface ChainCounts {
   readonly upcoming: number;
 }
 
+/** A Verdict that holds, beside what the vocabulary alone made of its Product. */
+export interface Check {
+  readonly chainId: string;
+  readonly ref: string;
+  readonly name: string;
+  readonly from: VerdictSource;
+  /** The Ingredient the Verdict says, or null for none. */
+  readonly is: string | null;
+  /** What the Product would be without it: by name, from its twins, or none. */
+  readonly unchecked: string | null;
+}
+
 export interface Built {
   readonly catalogue: Catalogue;
   /** Reported every run (#14): how much of each Chain maps, and compares. */
@@ -116,6 +129,10 @@ export interface Built {
   readonly shelves: readonly ShelfOpinion[];
   /** Every Product with its shelves and Ingredient, for the classifier's opinion (classifier.ts). */
   readonly labelled: readonly LabelledProduct[];
+  /** Every Verdict that holds (verdicts.ts); those drawn at random are the Gold Set. */
+  readonly checks: readonly Check[];
+  /** Verdicts whose Product is gone from the catalogue, or named otherwise now: to look at again, or drop. */
+  readonly stale: readonly { readonly verdict: Verdict; readonly nameNow: string | null }[];
 }
 
 /**
@@ -141,7 +158,7 @@ export function pageVocabulary(vocabulary: readonly IngredientDef[] = VOCABULARY
   }));
 }
 
-export function buildCatalogue(source: CatalogueSource, { now = new Date(), vocabulary = VOCABULARY }: { now?: Date; vocabulary?: readonly IngredientDef[] } = {}): Built {
+export function buildCatalogue(source: CatalogueSource, { now = new Date(), vocabulary = VOCABULARY, verdicts = VERDICTS }: { now?: Date; vocabulary?: readonly IngredientDef[]; verdicts?: readonly Verdict[] } = {}): Built {
   const defs = new Map(vocabulary.map((d) => [d.id, d]));
   // Left out before anything else, so no Exact Product or borrowed mapping
   // leads to a Product the page never shows.
@@ -185,14 +202,19 @@ export function buildCatalogue(source: CatalogueSource, { now = new Date(), voca
   const mapped = mapProducts(source.chains.flatMap((chain) => productsAt(chain.id).map((p) => ({
     chainId: chain.id, ref: p.ref, name: p.name, brand: p.brand, categories: p.categories, eans: p.eans,
     packQuantity: p.packQuantity, packUnit: p.packUnit, pack: packOf(p),
-  }))), vocabulary);
+  }))), vocabulary, verdicts);
 
   const counts: Record<string, ChainCounts> = {};
+  const checks: Check[] = [];
   const products: Record<string, Omit<CatalogueProduct, "referenceLowCents" | "referenceDays">[]> = {};
   for (const chain of source.chains) {
     const c = { total: 0, excluded: left[chain.id]!, mapped: 0, borrowed: 0, overruled: 0, comparable: 0, upcoming: 0 };
     products[chain.id] = productsAt(chain.id).map((p) => {
-      const { mapping: m, how, pack: iPack } = mapped.decision(chain.id, p.ref);
+      const { mapping: m, how, pack: iPack, unchecked } = mapped.decision(chain.id, p.ref);
+      if (how === "verdict") {
+        const v = verdicts.find((x) => x.chain === chain.id && x.ref === p.ref)!;
+        checks.push({ chainId: chain.id, ref: p.ref, name: p.name, from: v.from, is: m?.ingredient ?? null, unchecked: unchecked.mapping?.ingredient ?? null });
+      }
       const def = m ? defs.get(m.ingredient)! : null;
       const iPrice = def ? inIngredientUnit(def, p.comparisonUnit, p.unitPriceCents, "price") : null;
       c.total++;
@@ -263,7 +285,8 @@ export function buildCatalogue(source: CatalogueSource, { now = new Date(), voca
   const labelled: LabelledProduct[] = source.chains.flatMap((chain) => productsAt(chain.id).map((p, i) => ({
     chainId: chain.id, ref: p.ref, name: p.name, brand: p.brand, categories: p.categories, unit: p.comparisonUnit,
     ingredient: products[chain.id]![i]!.ingredient,
+    checked: mapped.decision(chain.id, p.ref).how === "verdict",
   })));
   const shelves = assessShelves(labelled.map((p) => ({ ...p, shelf: p.categories[0] ?? "" })));
-  return { catalogue, counts, conflicts: mapped.conflicts, shelves, labelled };
+  return { catalogue, counts, conflicts: mapped.conflicts, shelves, labelled, checks, stale: mapped.stale };
 }

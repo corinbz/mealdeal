@@ -4,11 +4,25 @@
  * Chain's own shelf (shelves.ts), and a classifier learnt from the
  * vocabulary's own mappings (classifier.ts). Each names a mapping rule to
  * look at; nothing here changes the catalogue.
+ *
+ * First, what people looking found (verdicts.ts): how often the vocabulary
+ * and the classifier are right on the Gold Set, where the vocabulary was
+ * wrong, and Verdicts that no longer hold.
  */
 
 import type { Conflict } from "./borrow.ts";
 import type { ClassifierOpinion } from "./classifier.ts";
+import type { Check } from "./build.ts";
 import type { ShelfOpinion } from "./shelves.ts";
+import type { Verdict } from "./verdicts.ts";
+
+export interface Opinions {
+  readonly conflicts: readonly Conflict[];
+  readonly shelves: readonly ShelfOpinion[];
+  readonly classifier: ClassifierOpinion | null;
+  readonly checks: readonly Check[];
+  readonly stale: readonly { readonly verdict: Verdict; readonly nameNow: string | null }[];
+}
 
 export interface OpinionLimits {
   /** Shelves listed per section, the most telling first. */
@@ -24,8 +38,35 @@ const LIMITS: OpinionLimits = { shelves: 40, names: 5, predictions: 60 };
 const pct = (x: number) => `${Math.round(x * 100)}%`;
 const more = (n: number, shown: number) => (n > shown ? ` and ${n - shown} more` : "");
 
-export function opinionsMarkdown(conflicts: readonly Conflict[], shelves: readonly ShelfOpinion[], classifier: ClassifierOpinion | null, chainName: (id: string) => string, limits: OpinionLimits = LIMITS): string {
+/** Below this many, a share measured on the Gold Set can be ten points off. */
+export const GOLD_ENOUGH = 100;
+
+export function opinionsMarkdown({ conflicts, shelves, classifier, checks, stale }: Opinions, chainName: (id: string) => string, limits: OpinionLimits = LIMITS): string {
   const out: string[] = ["## Second opinions on mapping", ""];
+  const none = (i: string | null) => i ?? "none";
+
+  const gold = checks.filter((c) => c.from === "sample");
+  out.push(`### Checked by hand (${checks.length}, ${gold.length} drawn at random)`, "");
+  if (gold.length) {
+    const right = (say: (c: Check) => string | null) => gold.filter((c) => say(c) === c.is).length;
+    const share = (n: number) => `${n} of ${gold.length} (${pct(n / gold.length)})`;
+    const byClassifier = classifier ? `, the classifier on ${share(right((c) => classifier.label(c.chainId, c.ref)))}` : "";
+    out.push(`The Gold Set: Products drawn at random and looked at. The vocabulary alone is right on ${share(right((c) => c.unchecked))}${byClassifier}.${gold.length < GOLD_ENOUGH ? ` Under ${GOLD_ENOUGH}, a share can be ten points off.` : ""}`, "");
+  } else {
+    out.push("No Gold Set yet: `node scripts/check-mappings.ts sample` draws Products at random to look at.", "");
+  }
+  const wrong = checks.filter((c) => c.unchecked !== c.is);
+  if (wrong.length) {
+    out.push(`Where the vocabulary was wrong (${wrong.length}). Each Verdict holds already; a rule fixed puts its like right too.`, "");
+    for (const c of wrong.slice(0, limits.predictions)) out.push(`- ${chainName(c.chainId)} · ${c.name}: *${none(c.unchecked)}*, is **${none(c.is)}**`);
+    if (wrong.length > limits.predictions) out.push(`- and ${wrong.length - limits.predictions} more`);
+    out.push("");
+  }
+  if (stale.length) {
+    out.push(`Verdicts that no longer hold (${stale.length}): look again, or remove them from \`src/catalogue/verdicts.json\`.`, "");
+    for (const { verdict: v, nameNow } of stale) out.push(`- ${chainName(v.chain)} · ${v.name} (${v.ref}): ${nameNow === null ? "gone" : `now "${nameNow}"`}`);
+    out.push("");
+  }
   const copies = (c: Conflict) => Object.entries(c.ingredients).map(([id, i]) => `${chainName(id)} ${i ?? "none"}`).join(", ");
 
   const settled = conflicts.filter((c) => c.settled);
