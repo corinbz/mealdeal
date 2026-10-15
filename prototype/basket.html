@@ -270,7 +270,7 @@
   .ci .nm { font-weight: 900; font-size: 17px; line-height: 1.15; }
   .ci .nm .q { font-weight: 700; color: var(--ink-3); font-size: 15px; margin-left: 4px; }
   .ci .g { grid-column: 2; font-size: 14px; color: var(--ink-2); font-weight: 600; }
-  .ci .g .w { color: var(--bad); font-weight: 800; }
+  .over { color: var(--bad); font-weight: 800; }
   .ci .v { grid-column: 3; grid-row: 1 / 3; font-weight: 900; font-size: 18px; font-variant-numeric: tabular-nums; }
   .ci.done { opacity: .5; }
   .ci.done .tick { background: var(--ink); color: var(--card); }
@@ -654,8 +654,8 @@
   const credit = (rc) => rc.source === "own" ? "" : '<p class="credit">Bewerkt naar <a href="' + esc(rc.source.url) + '" target="_blank" rel="noopener"><i>' +
     esc(rc.source.title) + '</i></a> op Wikibooks, <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.nl" target="_blank" rel="noopener">CC BY-SA 4.0</a></p>';
   const ingText = (g) => qtyText(g) + " " + g.noun;
-  /** The cheapest way to buy one ingredient at one chain, Offers included; a Correction holds here too. */
-  const ingLine = (chainId, g, w) => R.line(chainId, g, { week: w, corrections, choose: "pack" });
+  /** One ingredient at one chain, resolved as on the list, Offers included; a Correction holds here too. */
+  const ingLine = (chainId, g, w) => R.line(chainId, g, { week: w, corrections });
   /** Complete where at least one Chain sells every ingredient (resolve.js priceRecipe). */
   const priceRecipe = (rc, w = week) => ({ rc, ...R.priceRecipe(rc.ingredients, { week: w, corrections }) });
   // This week, the most saved first. Next week no Offer that has yet to start
@@ -676,11 +676,19 @@
     added.add(id);
     hint = n ? rc.name + ": " + n + " ingrediënt" + (n === 1 ? "" : "en") + " op je lijst gezet" : rc.name + ": alles stond al op je lijst";
   }
+  /**
+   * " · je koopt 2× wat je nodig hebt", wherever a line is shown: the
+   * cheapest per unit can be a pack far larger than needed (owner's decision,
+   * 2026-10-15), and that is the shopper's call, not ours. Not for an amount
+   * we guessed, which would only flag our own guess.
+   */
+  const overNote = (l, item) => !l || item.guessed || !(l.over >= 1.5) ? "" :
+    ' · <span class="over">je koopt ' + (l.over < 10 ? (Math.round(l.over * 10) / 10).toLocaleString("nl-NL") : Math.round(l.over)) + "× wat je nodig hebt</span>";
   const ingRow = (g, l, chain) => !l
     ? '<li class="miss"><span class="l">' + esc(ingText(g)) + '</span><span class="p">—</span><span class="d">niet bij ' + esc(chain.name) + "</span></li>"
-    : '<li><span class="l">' + esc(ingText(g)) + '</span><span class="p">' + euro(l.cost) + '</span><span class="d">' +
-      (l.onOffer ? offerChip(l.p, l.o) + " " : "") + (l.was ? '<span class="was">' + euro(l.was) + "</span> " : "") +
-      esc((l.packs > 1 ? l.packs + "× " : "") + l.p.name) + "</span></li>";
+    : '<li><span class="l">' + esc(ingText(g)) + '</span><span class="p">' + euro(R.usedCents(l)) + '</span><span class="d">' +
+      (l.onOffer ? offerChip(l.p, l.o) + " " : "") + (l.was && l.share === 1 ? '<span class="was">' + euro(l.was) + "</span> " : "") +
+      esc((l.packs > 1 ? l.packs + "× " : "") + l.p.name) + (l.share < 1 ? " · " + (l.packs > 1 ? "samen " : "hele pak ") + euro(l.cost) : "") + overNote(l, g) + "</span></li>";
 
   // ── Bladeren: what is cheap where, with no list (#36) ─────────────────
   // Per Ingredient, each Chain's cheapest Product of it per kg, liter or
@@ -850,7 +858,7 @@
       const card = (r) => {
         const cheapest = r.avail[0];
         const best = cheapest
-          ? "<span>goedkoopst " + tag(cheapest) + " <b>" + euro(r.min) + "</b></span>" +
+          ? "<span>goedkoopst " + tag(cheapest) + " <b>" + euro(r.min) + "</b>" + overNote(r.by[cheapest.id], r.item) + "</span>" +
             (r.avail.length > 1 && r.max > r.min ? '<span class="delta">tot +' + euro(r.max - r.min) + " elders</span>"
               : r.avail.length > 1 ? '<span class="delta zero">overal even duur</span>' : "")
           : '<span class="none">nergens te koop</span>';
@@ -937,7 +945,7 @@
           (open ? '<div class="open">' + chains.map((c) => {
             const l = r.by[c.id], fixed = correctionKey(c.id, r.item) in corrections;
             if (!l) return '<div class="pr">' + tag(c) + '<span class="pn">' + (c.offersOnly ? "niet in de aanbieding" : "niet te koop") + '</span><span class="v">—</span><span></span><span></span></div>';
-            return '<div class="pr">' + tag(c) + '<span class="pn" title="' + esc(l.p.name) + '">' + (l.offer ? offerChip(l.p, l.o) + " " : "") + esc(l.p.name) + "</span>" +
+            return '<div class="pr">' + tag(c) + '<span class="pn" title="' + esc(l.p.name) + '">' + (l.offer ? offerChip(l.p, l.o) + " " : "") + esc(l.p.name) + overNote(l, r.item) + "</span>" +
               '<span class="v">' + euro(l.cost) + "</span>" + (l.cost > r.min ? '<span class="delta">+' + euro(l.cost - r.min) + "</span>" : '<span class="delta zero">laagst</span>') +
               '<button class="fix" data-act="fix" data-id="' + r.item.id + '" data-chain="' + c.id + '">' + (fixed ? "gecorrigeerd" : "ander product") + "</button></div>";
           }).join("") + "</div>" : "") + "</div>";
@@ -982,7 +990,7 @@
           return '<button class="ci' + (d ? " done" : "") + '" data-act="tick" data-id="' + r.item.id + '" aria-pressed="' + d + '"><span class="tick">' + (d ? "✓" : "") + "</span>" +
             '<span class="nm">' + pic(r.item) + esc(r.item.noun) + '<span class="q">' + qtyText(r.item) + "</span></span>" +
             '<span class="g">' + (l.offer ? offerChip(l.p, l.o) + " " : "") + (l.packs > 1 ? l.packs + "× " : "") + esc(l.p.name) +
-            (l.p.packaging ? " · " + esc(l.p.packaging) : "") + (l.over >= 2 ? ' · <span class="w">pak is ' + Math.round(l.over * 10) / 10 + "× wat je nodig hebt</span>" : "") + "</span>" +
+            (l.p.packaging ? " · " + esc(l.p.packaging) : "") + overNote(l, r.item) + "</span>" +
             '<span class="v">' + euro(l.cost) + "</span></button>";
         }).join("") + "</div></section>").join("");
       const pct = count ? Math.round(ticked / count * 100) : 0;

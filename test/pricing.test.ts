@@ -65,12 +65,12 @@ const R = context.MealdealResolve.createResolver(data);
 const plain = (x: unknown) => JSON.parse(JSON.stringify(x));
 const item = (text: string, id = text) => ({ id, staple: false, ...R.parse(text) });
 
-test("the list takes the cheapest per kilo; a Recipe the cheapest for the quantity it needs", () => {
+test("the cheapest per kilo is chosen, even when a smaller pack would cost less for the quantity", () => {
   const kaas = item("100 g kaas");
   assert.equal(R.line("dirk", kaas).p.name, "Kaas blok 1 kg");
   assert.equal(R.line("dirk", kaas).cost, 900);
-  assert.equal(R.line("dirk", kaas, { choose: "pack" }).p.name, "Kaas plakken 150 g");
-  assert.equal(R.line("dirk", kaas, { choose: "pack" }).cost, 199);
+  // A Recipe resolves its Requirements the same way.
+  assert.equal(R.priceRecipe([kaas]).at.find((x: { chain: { id: string } }) => x.chain.id === "dirk").lines[0].p.name, "Kaas blok 1 kg");
 });
 
 test("whole packs are bought, and an oversized pack says by how much", () => {
@@ -78,13 +78,15 @@ test("whole packs are bought, and an oversized pack says by how much", () => {
   assert.equal(l.packs, 3);
   assert.equal(l.cost, 1500);
   assert.equal(R.line("dirk", item("100 g kaas")).over, 10);
+  // Three packs of 500 g for 1200 g: 1.25 times what was asked for.
+  assert.equal(l.over, 1.25);
 });
 
 test("a Correction wins over the Resolution, for the list and for Recipes", () => {
   const gehakt = item("500 g gehakt"), corrections = { [R.correctionKey("jumbo", gehakt)]: "jumbo-g2" };
   assert.equal(R.line("jumbo", gehakt).p.name, "Jumbo Gehakt 500 g");
   assert.equal(R.line("jumbo", gehakt, { corrections }).p.name, "Jumbo Gehakt bio 500 g");
-  assert.equal(R.line("jumbo", gehakt, { corrections, choose: "pack" }).p.name, "Jumbo Gehakt bio 500 g");
+  assert.equal(R.priceRecipe([gehakt], { corrections }).at.find((x: { chain: { id: string } }) => x.chain.id === "jumbo").lines[0].p.name, "Jumbo Gehakt bio 500 g");
   // A Correction to a Product no longer sold falls back to the Resolution.
   assert.equal(R.line("jumbo", gehakt, { corrections: { [R.correctionKey("jumbo", gehakt)]: "jumbo-gone" } }).p.name, "Jumbo Gehakt 500 g");
 });
@@ -145,7 +147,13 @@ test("an item a bag lacks makes it partial, its total a floor", () => {
 test("a Recipe is complete where one Chain sells every ingredient, and ranks the Chains missing least first", () => {
   const r = R.priceRecipe([R.parse("500 g gehakt"), R.parse("100 g kaas")]);
   assert.equal(r.complete, true);
-  assert.deepEqual(plain(r.at.map((x: any) => [x.chain.id, x.cost, x.missing, x.deals, x.saving])), [["jumbo", 1000, 0, 1, 200], ["dirk", 699, 0, 0, 0]].sort((a, b) => (a[1] as number) - (b[1] as number)));
+  assert.deepEqual(plain(r.at.map((x: any) => [x.chain.id, x.cost, x.missing, x.deals, x.saving])), [["jumbo", 520, 0, 1, 200], ["dirk", 590, 0, 0, 0]]);
+  // Dirk's kaas is its 1 kg block, the cheapest per kilo, though only 100 g is
+  // needed: bought whole, shown as 10 times the need, and costed at a tenth.
+  const kaas = r.at[1].lines[1];
+  assert.equal(kaas.cost, 900);
+  assert.equal(kaas.over, 10);
+  assert.equal(R.usedCents(kaas), 90);
   assert.ok(!r.at.some((x: any) => x.chain.id === "lidl"), "an offers-only Chain prices no whole Recipe");
   const partial = R.priceRecipe([R.parse("1 g saffraan")]);
   assert.equal(partial.complete, false);
