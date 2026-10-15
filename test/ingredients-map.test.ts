@@ -300,7 +300,7 @@ test("how a Product is sold, or the flavour of stock, is not a second thing", ()
 
 test("a Variant word may end the name: Yoghurt Vol", () => {
   const m = map({ chainId: "vomar", name: "Campina Yoghurt Vol", brand: null, categories: ["Vers > Zuivel, Boter & Eieren > Yoghurt"] });
-  assert.deepEqual([m?.ingredient, m?.variant], ["yoghurt", "vol"]);
+  assert.deepEqual([m?.ingredient, m?.variant], ["yoghurt", "gewoon+vol+naturel"]);
 });
 
 test("Dirk's and DekaMarkt's halal shelf is cold cuts: Wahid's 125 g kipfilet is sliced, not fresh", () => {

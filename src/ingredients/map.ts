@@ -6,7 +6,7 @@
 
 import { words as reading } from "../words.ts";
 import { aisleOf, formOf, type Aisle, type Form } from "./aisles.ts";
-import { VOCABULARY, type IngredientDef } from "./vocabulary.ts";
+import { ASPECTS, VOCABULARY, type IngredientDef, type VariantDef } from "./vocabulary.ts";
 
 export interface MappableProduct {
   readonly chainId: string;
@@ -17,6 +17,7 @@ export interface MappableProduct {
 
 export interface Mapping {
   readonly ingredient: string;
+  /** Its Variant in each aspect it names one in, joined by "+" in aspect order ("grieks+10%+aardbei"). */
   readonly variant: string | null;
   readonly form: Form | null;
   readonly biologisch: boolean;
@@ -107,6 +108,32 @@ const ANY_FOOD: ReadonlySet<Aisle> = new Set<Aisle>(["produce", "meat", "fish", 
 const JOINER = /\s(?:met|with|in|op|zonder|minder)\s/;
 const JOINERS = new RegExp(JOINER.source, "g");
 
+/**
+ * A Product's Variants, one per aspect. Spaces around the name, so a word
+ * written "vol " also ends one ("Yoghurt Vol") and " ui " starts one.
+ */
+export function variantOf(def: IngredientDef, lower: string): string | null {
+  const text = " " + lower + " ";
+  // Where a Variant's word first occurs; a flavour's only at the start of a
+  // word, so "sinaasappel" is not appel, though "perzikyoghurt" is perzik.
+  const first = (w: string, start: boolean) => {
+    for (let i = text.indexOf(w); i >= 0; i = text.indexOf(w, i + 1)) if (!start || w.startsWith(" ") || !/\p{L}/u.test(text[i - 1]!)) return i;
+    return Infinity;
+  };
+  const at = (v: VariantDef) => Math.min(...v.words.map((w) => first(w.toLowerCase(), v.aspect === "smaak")));
+  const ids = ASPECTS.flatMap((a) => {
+    const vs = def.variants.filter((v) => (v.aspect ?? "soort") === a);
+    // A flavour is the one named first ("perzik passievrucht" is perzik);
+    // otherwise the first in the vocabulary's order that the name gives.
+    const named = a === "smaak"
+      ? vs.filter((v) => at(v) < Infinity).sort((x, y) => at(x) - at(y))[0]
+      : vs.find((v) => at(v) < Infinity);
+    const v = named ?? vs.find((x) => x.fallback);
+    return v ? [v.id] : [];
+  });
+  return ids.length ? ids.join("+") : null;
+}
+
 export function createMapper(vocabulary: readonly IngredientDef[] = VOCABULARY) {
   const compiled = compile(vocabulary);
   const joined = vocabulary.flatMap((d) => d.words).map((w) => w.toLowerCase()).filter((w) => JOINER.test(w));
@@ -171,27 +198,38 @@ export function createMapper(vocabulary: readonly IngredientDef[] = VOCABULARY) 
     const raw = lower.replace(BRAND_NOT_FOOD, "").split(/[^\p{L}0-9%']+/u).filter(Boolean);
 
     const owned = owners(head, names, written);
+    const fits = (c: Compiled) => [...aisles].some((a) => c.aisles.has(a))
+      // Filed with ready meals, baby food or pet food anywhere, a Product
+      // is that, whatever other aisle it also sits in.
+      && [...aisles].every((a) => !ELSEWHERE.has(a) || c.aisles.has(a))
+      && !c.def.not.some((n) => excludes(n, lower, raw));
+    // A food other things are named after that this Product is not, such as
+    // chocolade in "Vla chocolade", is only its flavour, so names no second thing.
+    const flavour = (cs: Compiled[]) => cs.every((c) => c.def.wins && !fits(c));
     // Words owned by the same Ingredients are one thing named twice ("Kanzi
     // Appels"); words owned by different ones name a mix, which maps to a mix
     // Ingredient if it names one, and otherwise to no single Ingredient.
-    const things = [...new Map(owned.filter((cs) => cs.length).map((cs) => [cs.map((c) => c.def.id).sort().join("|"), cs])).values()];
+    const things = [...new Map(owned.filter((cs) => cs.length && !flavour(cs)).map((cs) => [cs.map((c) => c.def.id).sort().join("|"), cs])).values()];
     const named = things.flat();
-    const candidates = things.length > 1 ? named.filter((c) => c.def.mix) : named;
+    // "Pizza salami" is a pizza, not a mix of pizza and salami.
+    const winners = named.filter((c) => c.def.wins && fits(c));
+    // "Skyr perzik", "Yoghurt kers": a word naming one of its own flavours is
+    // that flavour, though perzik or kersen are Ingredients too.
+    const tastes = (c: Compiled, i: number) => c.def.variants.some((v) => v.aspect === "smaak" && v.words.some((w) => written[i]!.includes(w.trim().toLowerCase())));
+    const flavoured = things.length > 1 ? named.filter((c) => fits(c) && owned.every((cs, i) => !cs.length || cs.includes(c) || tastes(c, i))) : [];
+    const candidates = winners.length ? winners : flavoured.length ? flavoured : things.length > 1 ? named.filter((c) => c.def.mix) : named;
     // The rightmost word names the kind in Dutch.
     const at = (c: Compiled) => owned.findLastIndex((cs) => cs.includes(c));
-    const chosen = candidates
-      .sort((a, b) => at(b) - at(a))
-      .find((c) => [...aisles].some((a) => c.aisles.has(a))
-        // Filed with ready meals, baby food or pet food anywhere, a Product
-        // is that, whatever other aisle it also sits in.
-        && [...aisles].every((a) => !ELSEWHERE.has(a) || c.aisles.has(a))
-        && !c.def.not.some((n) => excludes(n, lower, raw)));
+    const byName = candidates.sort((a, b) => at(b) - at(a)).find(fits);
+    // A shelf that holds one thing outranks a name that gives only a flavour
+    // or nothing at all, but not a name that says what kind of thing it is.
+    const shelves = product.categories.flatMap((c) => c.split(/\s*>\s*/).slice(1));
+    const shelved = byName?.def.wins ? undefined : compiled.find((c) => c.def.shelf && shelves.some((s) => c.def.shelf!.test(s)) && fits(c));
+    const chosen = shelved ?? byName;
     if (!chosen) return null;
 
     const def = chosen.def;
-    // A trailing space, so a variant word written "vol " also ends a name ("Yoghurt Vol").
-    const variant = def.variants.find((v) => v.words.some((w) => (lower + " ").includes(w.toLowerCase())))
-      ?? def.variants.find((v) => v.fallback) ?? null;
+    const variant = variantOf(def, lower);
     // Filed under several aisles, the kept one decides the form: Hak's
     // carrots sit in Groente too, but they are in a jar.
     const kept = uncategorized ? [[...chosen.aisles][0]!] : [...aisles].filter((a) => chosen.aisles.has(a));
@@ -204,7 +242,7 @@ export function createMapper(vocabulary: readonly IngredientDef[] = VOCABULARY) 
     if (uncategorized && !said && /^all seasons$/i.test(product.brand ?? "")) return null;
     return {
       ingredient: def.id,
-      variant: variant?.id ?? null,
+      variant,
       form: said ?? formOf(aisle),
       biologisch: /\bbio(logisch|logische)?\b/.test(lower) || product.categories.some((c) => /biologisch/i.test(c)),
       huismerk: isOwnBrand(product.chainId, product.brand, product.name),

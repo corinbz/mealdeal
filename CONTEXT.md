@@ -43,12 +43,16 @@ one food, such as a ready meal, maps to none.
 _Avoid_: Food, category, product type, grocery
 
 **Variant**:
-A kind of an Ingredient that differs in what the food is: its fat level, meat,
-texture or cut, such as halfvolle melk or rundergehakt. A Requirement may name
-one; one that names only the Ingredient is satisfied by any of its Variants.
-A Basket Item that names no Variant is asked which one until the shopper picks
-one or answers "any", which is then its choice.
-_Avoid_: Subtype, flavour, sort
+A kind of an Ingredient, in one of three aspects: its type (meat, texture,
+cut: rundergehakt, griekse yoghurt), its fat (halfvolle melk, yoghurt 10%) or
+its flavour (yoghurt aardbei, paprikachips). A Product has at most one Variant
+in each aspect, so Griekse yoghurt 10% aardbei has three; one that names no
+flavour is naturel. A Requirement may name Variants in any of the aspects and
+is satisfied by any Product that has them all, whatever its others.
+A Basket Item that leaves an aspect unnamed is asked about it, offered only the
+Variants sold with what it already names, until the shopper picks one or
+answers that the rest is "any", which is then its choice.
+_Avoid_: Subtype, sort
 
 **Exact Product**:
 One branded item at one Pack Size, as sold by several Chains: the same

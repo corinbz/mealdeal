@@ -66,11 +66,34 @@
       for (const v of d.variants) for (const n of (v.names && v.names[lang]) || []) if (!names.has(key(n))) names.set(key(n), { ingredient: d.id, variant: v.id, lang });
       for (const n of ns) if (!names.has(key(n))) names.set(key(n), { ingredient: d.id, variant: null, lang });
     }
-    /** What the page calls an Ingredient, or one of its Variants, in a language; Dutch where it has no name in that one. */
+    /**
+     * What the page calls an Ingredient, or its Variants, in a language; Dutch
+     * where it has none in that one. Several Variants ("grieks+mager+aardbei")
+     * share the Ingredient's name: what comes before it in each Variant's name
+     * goes before it, what comes after after, "magere griekse yoghurt aardbei";
+     * a Variant named without it (skyr) takes its place.
+     */
     function label(ingredient, variant, lang) {
       const d = vocabulary.get(ingredient); if (!d) return null;
-      const v = variant && d.variants.find((x) => x.id === variant), own = v || d;
-      return (lang !== "nl" && own.names && own.names[lang] && own.names[lang][0]) || own.name;
+      const nameOf = (own) => (lang !== "nl" && own.names && own.names[lang] && own.names[lang][0]) || own.name;
+      const vs = variantsOf(variant).map((id) => d.variants.find((x) => x.id === id)).filter(Boolean);
+      if (vs.length < 2) return nameOf(vs[0] || d);
+      const base = nameOf(d), before = [], after = [];
+      let head = base;
+      for (const v of vs) {
+        const n = nameOf(v), i = n.indexOf(base);
+        if (i < 0) { head = n; continue; }
+        if (n.slice(0, i).trim()) before.unshift(n.slice(0, i).trim());
+        if (n.slice(i + base.length).trim()) after.push(n.slice(i + base.length).trim());
+      }
+      return [...before, head, ...after].join(" ");
+    }
+    /** The Variants a Product or Requirement names, one per aspect. */
+    function variantsOf(variant) { return variant ? String(variant).split("+") : []; }
+    /** Variants in the order of their aspects, joined as a Product's are. */
+    function joinVariants(ingredient, ids) {
+      const d = vocabulary.get(ingredient), order = (id) => d.variants.findIndex((v) => v.id === id);
+      return ids.length ? [...ids].sort((a, b) => order(a) - order(b)).join("+") : null;
     }
 
     /**
@@ -114,14 +137,56 @@
       return counts;
     };
 
-    /** The Ingredient and Variant a noun names: the whole of it, or its last words ("verse spinazie"). */
+    /**
+     * The Ingredient and Variants a noun names: the whole of it, several
+     * Variants' names together ("griekse yoghurt 10% aardbei"), or its last
+     * words ("verse spinazie").
+     */
     function lookup(noun) {
       const words = W.wordsOf(noun);
-      for (let i = 0; i < words.length; i++) {
+      const whole = names.get(words.join(" "));
+      if (whole) return { ...whole, partial: false };
+      const several = combined(words);
+      if (several) return several;
+      for (let i = 1; i < words.length; i++) {
         const found = names.get(words.slice(i).join(" "));
-        if (found) return { ...found, partial: i > 0 };
+        if (found) return { ...found, partial: true };
       }
       return null;
+    }
+    /**
+     * Every word read as the name of an Ingredient and its Variants in
+     * different aspects, or null: the Ingredient's longest name among the
+     * words, and for each aspect the Variant whose own words are all there.
+     */
+    function combined(words) {
+      const typed = new Set(words);
+      let base = null;
+      for (const [k, f] of names) {
+        const ws = k.split(" ");
+        if (ws.every((w) => typed.has(w)) && (!base || ws.length > base.ws.length)) base = { f, ws };
+      }
+      if (!base) return null;
+      const d = vocabulary.get(base.f.ingredient), picked = {};
+      const aspectOf = (id) => (d.variants.find((v) => v.id === id) || {}).aspect || "soort";
+      if (base.f.variant) picked[aspectOf(base.f.variant)] = { id: base.f.variant, n: base.ws.length };
+      // A Variant's own words: its name without the Ingredient's ("aardbei" of "yoghurt aardbei").
+      const plain = new Set([...names].filter(([, f]) => f.ingredient === d.id && !f.variant).flatMap(([k]) => k.split(" ")));
+      for (const [k, f] of names) {
+        if (f.ingredient !== d.id || !f.variant || f.variant === base.f.variant) continue;
+        const own = k.split(" ").filter((w) => !plain.has(w));
+        if (!own.length || !own.every((w) => typed.has(w))) continue;
+        const a = aspectOf(f.variant);
+        if (!picked[a] || own.length > picked[a].n) picked[a] = { id: f.variant, n: own.length };
+      }
+      const ids = Object.values(picked).map((p) => p.id);
+      // Only worth it for more than one Variant: one is read by its whole name above.
+      if (ids.length < 2) return null;
+      // Every typed word must be accounted for, or it is a dish named after them.
+      const covered = new Set(base.ws);
+      for (const id of ids) for (const [k, f] of names) if (f.ingredient === d.id && f.variant === id) k.split(" ").forEach((w) => covered.add(w));
+      if (!words.every((w) => covered.has(w))) return null;
+      return { ingredient: d.id, variant: joinVariants(d.id, ids), lang: base.f.lang, partial: false };
     }
 
     /** "500 g bio rundergehakt" -> a Requirement with its Ingredient, Variant and Preferences. */
@@ -161,7 +226,8 @@
     /** Whether a Product may satisfy a Requirement. */
     function satisfies(p, item) {
       if (p.ingredient !== item.ingredient || p.ingredientUnitPriceCents === null) return false;
-      if (item.variant && p.variant !== item.variant) return false;
+      // Every Variant asked for, in whichever aspects it names: "grieks" is any Greek yoghurt.
+      if (item.variant) { const has = variantsOf(p.variant); if (!variantsOf(item.variant).every((v) => has.includes(v))) return false; }
       const prefs = item.preferences || {}, def = vocabulary.get(item.ingredient);
       // Fresh is assumed where an Ingredient is sold fresh.
       if (def && def.fresh && (p.form === "diepvries" ? !prefs.diepvries : p.form === "conserven" ? !prefs.conserven : false)) return false;
@@ -512,7 +578,17 @@
       return { at, best: at[0], complete: !!at[0] && at[0].missing === 0 };
     }
 
-    return { products, vocabulary, parse, suggest, label, candidates, satisfies, packsFor, unitPrice, correctionKey, dailyPrices, priceDropAt,
+    /**
+     * How many Products of an Ingredient are sold with each set of Variants,
+     * across every Chain: which kinds there are to choose from.
+     */
+    function kindsSold(ingredient) {
+      const sold = new Map();
+      for (const c of data.chains) for (const p of byIngredient[c.id][ingredient] || []) sold.set(p.variant, (sold.get(p.variant) || 0) + 1);
+      return sold;
+    }
+
+    return { products, vocabulary, parse, suggest, label, variantsOf, joinVariants, kindsSold, candidates, satisfies, packsFor, unitPrice, correctionKey, dailyPrices, priceDropAt,
       exact, exactIdOf, exactProduct, likelyProduct, exactMatches, spreads,
       isOnOffer, nextStarts, offerFor, packCents, verdict, correctedProduct, line, compare, priceRecipe, usedCents };
   }

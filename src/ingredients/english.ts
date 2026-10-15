@@ -12,6 +12,8 @@
  * here and that none of them reads as another Ingredient or Variant.
  */
 
+import { FLAVOURS, VOCABULARY } from "./vocabulary.ts";
+
 /** [shown, ...also read]. */
 type Names = readonly [string, ...string[]];
 export type Translation = Names | { readonly names: Names; readonly variants: Readonly<Record<string, Names>> };
@@ -193,8 +195,9 @@ export const ENGLISH: Readonly<Record<string, Translation>> = {
   amandelmelk: ["almond milk", "almond drink"],
   kokosmelk: ["coconut milk"],
   yoghurt: { names: ["yogurt"], variants: {
-    grieks: ["greek yogurt", "greek yoghurt"], skyr: ["skyr"], mager: ["nonfat yogurt", "fat-free yogurt", "fat-free yoghurt"],
-    halfvol: ["low-fat yogurt", "low-fat yoghurt"], vol: ["whole milk yogurt", "full-fat yogurt", "full-fat yoghurt"] } },
+    grieks: ["greek yogurt", "greek yoghurt"], skyr: ["skyr"], gewoon: ["regular yogurt"], mager: ["nonfat yogurt", "fat-free yogurt", "fat-free yoghurt"],
+    halfvol: ["low-fat yogurt", "low-fat yoghurt"], vol: ["whole milk yogurt", "full-fat yogurt", "full-fat yoghurt"],
+    "10%": ["yogurt 10%", "10% yogurt"], "5%": ["yogurt 5%", "5% yogurt"], "2%": ["yogurt 2%", "2% yogurt"] } },
   kwark: { names: ["quark"], variants: { mager: ["nonfat quark", "fat-free quark"], half: ["low-fat quark"], vol: ["full-fat quark"] } },
   vla: ["custard"],
   slagroom: ["whipping cream", "heavy cream", "double cream", "whipped cream"],
@@ -228,6 +231,9 @@ export const ENGLISH: Readonly<Record<string, Translation>> = {
   "filet americain": ["filet americain", "steak tartare spread"],
   leverworst: ["liverwurst", "liver sausage"],
   hummus: ["hummus"],
+  knakworst: ["hot dogs", "hot dog sausages", "frankfurters", "wieners"],
+  grillworst: ["grill sausage"],
+  boterhamworst: ["luncheon meat", "bologna"],
 
   // ── Bread
   brood: { names: ["bread"], variants: {
@@ -299,6 +305,8 @@ export const ENGLISH: Readonly<Record<string, Translation>> = {
   kerrie: ["curry powder"],
   paprikapoeder: ["paprika powder", "ground paprika"],
   kaneel: ["cinnamon"],
+  sambal: ["sambal", "chili paste", "sambal oelek"],
+  appelstroop: ["apple syrup", "apple butter"],
 
   // ── Drinks
   koffie: { names: ["coffee"], variants: {
@@ -307,12 +315,42 @@ export const ENGLISH: Readonly<Record<string, Translation>> = {
   thee: ["tea"],
   sinaasappelsap: ["orange juice"],
   appelsap: ["apple juice"],
+  drinkyoghurt: ["drinking yogurt", "yogurt drink"],
+  ijsthee: ["iced tea"],
+  cola: { names: ["cola", "coke"], variants: { zero: ["diet cola", "diet coke", "coke zero"], regular: ["regular cola", "regular coke"] } },
+  limonadesiroop: ["lemonade syrup", "cordial"],
+  bier: { names: ["beer"], variants: { alcoholvrij: ["alcohol-free beer", "non-alcoholic beer"], pils: ["lager", "pilsner"] } },
   water: ["water"],
+
+  // ── Snacks, biscuits and sweets
+  chips: { names: ["chips", "crisps", "potato chips"], variants: { paprika: ["paprika chips"], naturel: ["salted chips", "plain chips", "ready salted crisps"] } },
+  popcorn: ["popcorn"],
+  kroepoek: ["prawn crackers", "shrimp chips", "krupuk"],
+  drop: ["licorice", "liquorice"],
+  chocolade: { names: ["chocolate", "chocolate bar"], variants: { puur: ["dark chocolate"], wit: ["white chocolate"], melk: ["milk chocolate"] } },
+  koekjes: ["cookies", "biscuits", "cookie"],
+  stroopwafels: ["stroopwafels", "syrup waffles", "caramel waffles"],
+  speculaas: ["speculoos", "windmill cookies"],
+  ontbijtkoek: ["breakfast cake", "dutch spice cake", "gingerbread"],
+
+  // ── Ready to heat
+  pizza: ["pizza", "pizzas"],
+  soep: { names: ["soup"], variants: { tomaat: ["tomato soup"], kip: ["chicken soup"], erwten: ["pea soup", "split pea soup"],
+    champignon: ["mushroom soup"], uien: ["onion soup"], groente: ["vegetable soup"] } },
+  frikandellen: ["frikandel", "frikandellen", "frikandel sausages"],
+  ijs: ["ice cream"],
 };
 
-/** An Ingredient's names in English, and each of its Variants', or null where none is given. */
+/**
+ * An Ingredient's names in English, and each of its Variants', or null where
+ * none is given. A flavour named nowhere above is its flavour's English word
+ * before the Ingredient's name: "strawberry yogurt".
+ */
 export function englishOf(id: string): { names: Names; variants: Readonly<Record<string, Names>> } | null {
   const t = ENGLISH[id];
   if (!t) return null;
-  return "names" in t ? t : { names: t as Names, variants: {} };
+  const own = "names" in t ? t : { names: t as Names, variants: {} };
+  const flavours = (VOCABULARY.find((d) => d.id === id)?.variants ?? []).filter((v) => v.aspect === "smaak" && !own.variants[v.id]);
+  if (!flavours.length) return own;
+  return { names: own.names, variants: { ...own.variants, ...Object.fromEntries(flavours.map((v) => [v.id, [`${FLAVOURS[v.id]!.en} ${own.names[0]}`] as Names])) } };
 }
