@@ -665,6 +665,80 @@
       '<path class="a" d="M10 37c0-6 10-10 22-10s22 4 22 10z"/><path class="e" d="M18 33c6-3 12-3 18-1"/>' +
       '<circle class="c" cx="36" cy="31" r="3"/><circle class="d" cx="22" cy="31" r="1.2"/><circle class="d" cx="28" cy="34" r="1.2"/><circle class="d" cx="44" cy="33" r="1.2"/>' +
       '<path class="b" d="M6 36h52c0 11-11 20-26 20S6 47 6 36z"/>'],
+    stokbrood: ["--a:#d9a05a",
+      '<g transform="rotate(-40 32 32)"><rect class="a" x="2" y="25" width="60" height="14" rx="7"/><path class="e" d="M12 28l5 8M22 28l5 8M32 28l5 8M42 28l5 8M52 28l4 7"/></g>'],
+    afbakbroodjes: ["--a:#f0dcb0;--d:#fbefd6",
+      '<g transform="translate(32 32) scale(0.86) translate(-32 -32)"><g transform="rotate(-20 20 26)"><path class="a" d="M3 26c0-7 8-11 17-11s17 4 17 11-8 10-17 10-17-3-17-10z"/><path class="e" d="M10 25c6-2 14-2 20 0"/><ellipse class="d" cx="14" cy="20" rx="5" ry="1.5"/></g>' +
+      '<g transform="rotate(-20 40 42)"><path class="a" d="M23 42c0-7 8-11 17-11s17 4 17 11-8 10-17 10-17-3-17-10z"/><path class="e" d="M30 41c6-2 14-2 20 0"/><ellipse class="d" cx="34" cy="36" rx="5" ry="1.5"/></g></g>'],
+    bolletjes: ["--a:#c98b4a;--d:#f6e6c0",
+      '<path class="a" d="M8 46c0-10 5-15 12-15s12 5 12 15c0 3-5 5-12 5s-12-2-12-5z"/><ellipse class="d" cx="16" cy="38" rx=".8" ry="1.4" transform="rotate(30 16 38)"/><ellipse class="d" cx="22" cy="36" rx=".8" ry="1.4" transform="rotate(30 22 36)"/><ellipse class="d" cx="25" cy="41" rx=".8" ry="1.4" transform="rotate(30 25 41)"/><ellipse class="d" cx="19" cy="42" rx=".8" ry="1.4" transform="rotate(30 19 42)"/><ellipse class="d" cx="14" cy="43" rx=".8" ry="1.4" transform="rotate(30 14 43)"/>' +
+      '<path class="a" d="M32 46c0-10 5-15 12-15s12 5 12 15c0 3-5 5-12 5s-12-2-12-5z"/><ellipse class="d" cx="40" cy="38" rx=".8" ry="1.4" transform="rotate(30 40 38)"/><ellipse class="d" cx="46" cy="36" rx=".8" ry="1.4" transform="rotate(30 46 36)"/><ellipse class="d" cx="49" cy="41" rx=".8" ry="1.4" transform="rotate(30 49 41)"/><ellipse class="d" cx="43" cy="42" rx=".8" ry="1.4" transform="rotate(30 43 42)"/><ellipse class="d" cx="38" cy="43" rx=".8" ry="1.4" transform="rotate(30 38 43)"/>' +
+      '<path class="a" d="M20 28c0-10 5-15 12-15s12 5 12 15c0 3-5 5-12 5s-12-2-12-5z"/><ellipse class="d" cx="28" cy="20" rx=".8" ry="1.4" transform="rotate(30 28 20)"/><ellipse class="d" cx="34" cy="18" rx=".8" ry="1.4" transform="rotate(30 34 18)"/><ellipse class="d" cx="37" cy="23" rx=".8" ry="1.4" transform="rotate(30 37 23)"/><ellipse class="d" cx="31" cy="24" rx=".8" ry="1.4" transform="rotate(30 31 24)"/><ellipse class="d" cx="26" cy="25" rx=".8" ry="1.4" transform="rotate(30 26 25)"/>'],
+    "tortilla's": ["--a:#f2deaa;--b:#6cb33f;--c:#d93a2f;--d:#d9b06a",
+      '<g transform="translate(32 32) scale(0.9) translate(-32 -32)"><g transform="rotate(-35 32 32)"><path class="b" d="M20 14c2-6 22-6 24 0l-2 4H22z"/><circle class="c" cx="28" cy="15" r="3"/><circle class="c" cx="37" cy="14" r="3"/>' +
+      '<path class="a" d="M19 16h26l-3 40c-1 3-19 3-20 0z"/><path class="a" d="M19 16c8 6 18 14 23 40-6-2-14-10-20-20z"/>' +
+      '<circle class="d" cx="26" cy="30" r="1.4"/><circle class="d" cx="38" cy="26" r="1.4"/><circle class="d" cx="34" cy="44" r="1.4"/><circle class="d" cx="26" cy="46" r="1.4"/></g></g>'],
+    pitabroodjes: ["--a:#ecd2a0;--c:#c9a46a;--d:#d9b06a",
+      '<g transform="translate(32 30) scale(0.9) translate(-32 -32)"><ellipse class="a" cx="36" cy="26" rx="22" ry="14" transform="rotate(-15 36 26)"/>' +
+      '<path class="a" d="M6 50a22 18 0 0 1 44 0z"/><path class="c" d="M10 50c4-3 10-4 18-4s14 1 18 4z"/>' +
+      '<circle class="d" cx="30" cy="20" r="1.3"/><circle class="d" cx="42" cy="24" r="1.3"/><circle class="d" cx="22" cy="40" r="1.3"/><circle class="d" cx="34" cy="38" r="1.3"/></g>'],
+    croissants: ["--a:#dc9a48;--d:#f2c27a",
+      '<path class="a" d="M6 42c0-4 4-6 8-5l4-10c6-6 22-6 28 0l4 10c4-1 8 1 8 5-2 6-8 8-12 6-6 4-24 4-28 0-4 2-10 0-12-6z"/>' +
+      '<path class="e" d="M18 27c0 8 2 14 6 20M32 24v24M46 27c0 8-2 14-6 20M10 42c2 2 4 3 6 3M54 42c-2 2-4 3-6 3"/>' +
+      '<ellipse class="d" cx="32" cy="30" rx="4" ry="2"/>'],
+    beschuit: ["--a:#e8c07a;--b:#c98b4a;--d:#c98b4a",
+      '<path class="a" d="M10 44v4c0 4 10 7 22 7s22-3 22-7v-4z"/><path class="a" d="M10 36v4c0 4 10 7 22 7s22-3 22-7v-4z"/><path class="a" d="M10 28v4c0 4 10 7 22 7s22-3 22-7v-4z"/><path class="a" d="M10 20v4c0 4 10 7 22 7s22-3 22-7v-4z"/><ellipse class="b" cx="32" cy="20" rx="22" ry="7"/>' +
+      '<circle class="e" cx="22" cy="20" r="1.1"/><circle class="e" cx="30" cy="18" r="1.1"/><circle class="e" cx="38" cy="21" r="1.1"/><circle class="e" cx="44" cy="19" r="1.1"/><circle class="e" cx="28" cy="22" r="1.1"/>'],
+    crackers: ["--a:#e8c88a;--d:#b8904a",
+      '<g transform="rotate(-10 23 29)"><rect class="a" x="8" y="14" width="30" height="30" rx="3"/><circle class="d" cx="15" cy="21" r="1.4"/><circle class="d" cx="15" cy="29" r="1.4"/><circle class="d" cx="15" cy="37" r="1.4"/><circle class="d" cx="23" cy="21" r="1.4"/><circle class="d" cx="23" cy="29" r="1.4"/><circle class="d" cx="23" cy="37" r="1.4"/><circle class="d" cx="31" cy="21" r="1.4"/><circle class="d" cx="31" cy="29" r="1.4"/><circle class="d" cx="31" cy="37" r="1.4"/></g>' +
+      '<g transform="rotate(8 37 41)"><rect class="a" x="22" y="26" width="30" height="30" rx="3"/><circle class="d" cx="29" cy="33" r="1.4"/><circle class="d" cx="29" cy="41" r="1.4"/><circle class="d" cx="29" cy="49" r="1.4"/><circle class="d" cx="37" cy="33" r="1.4"/><circle class="d" cx="37" cy="41" r="1.4"/><circle class="d" cx="37" cy="49" r="1.4"/><circle class="d" cx="45" cy="33" r="1.4"/><circle class="d" cx="45" cy="41" r="1.4"/><circle class="d" cx="45" cy="49" r="1.4"/></g>'],
+    rijst: ["--a:#fbfaf4;--b:#e8dcc0;--c:#7fb24e;--d:#cfc6ae",
+      '<path class="b" d="M14 14c4-3 32-3 36 0l-2 40c0 3-4 4-16 4s-16-1-16-4z"/><rect class="c" x="15" y="18" width="34" height="10"/>' +
+      '<ellipse class="a" cx="32" cy="42" rx="11" ry="9"/>' +
+      '<ellipse class="d" cx="28" cy="39" rx="2.2" ry="1" transform="rotate(30 28 39)"/><ellipse class="d" cx="34" cy="38" rx="2.2" ry="1" transform="rotate(-20 34 38)"/><ellipse class="d" cx="30" cy="45" rx="2.2" ry="1" transform="rotate(-40 30 45)"/><ellipse class="d" cx="36" cy="44" rx="2.2" ry="1" transform="rotate(10 36 44)"/><ellipse class="d" cx="26" cy="44" rx="2.2" ry="1" transform="rotate(70 26 44)"/>'],
+    mie: ["--a:#f2c860;--b:#c9ced2",
+      '<ellipse class="b" cx="32" cy="44" rx="26" ry="10"/>' +
+      '<path class="a" d="M10 38c0-10 10-18 22-18s22 8 22 18c0 6-10 10-22 10s-22-4-22-10z"/>' +
+      '<path class="e" d="M14 36c3-4 5 4 8 0s5 4 8 0 5 4 8 0 5 4 8 0M16 30c3-4 5 4 8 0s5 4 8 0 5 4 8 0 5 4 6 0M22 24c3-3 5 3 8 0s5 3 8 0 4 3 6 0M14 42c3-4 5 4 8 0s5 4 8 0 5 4 8 0 5 4 8 0"/>'],
+    couscous: ["--a:#f2d27a;--b:#c8743a;--d:#d9a83a",
+      '<path class="b" d="M4 46c0-4 12-6 28-6s28 2 28 6-12 8-28 8S4 50 4 46z"/>' +
+      '<path class="a" d="M12 44c2-14 10-22 20-22s18 8 20 22z"/>' +
+      '<circle class="d" cx="22" cy="36" r="1"/><circle class="d" cx="28" cy="32" r="1"/><circle class="d" cx="34" cy="28" r="1"/><circle class="d" cx="40" cy="36" r="1"/><circle class="d" cx="30" cy="40" r="1"/><circle class="d" cx="36" cy="42" r="1"/><circle class="d" cx="24" cy="42" r="1"/><circle class="d" cx="44" cy="42" r="1"/><circle class="d" cx="32" cy="34" r="1"/><circle class="d" cx="26" cy="26" r="1"/><circle class="d" cx="38" cy="31" r="1"/><circle class="d" cx="18" cy="40" r="1"/>'],
+    quinoa: ["--a:#e8d6a8;--b:#b07a4a;--d:#a8423a;--c:#f6efe0",
+      '<g transform="translate(32 32) scale(0.9) translate(-32 -32)"><path class="b" d="M44 36l14-16c2-2 5 1 3 3L48 40z"/>' +
+      '<path class="b" d="M6 36c0 12 10 20 22 20s22-8 22-20z"/><ellipse class="a" cx="28" cy="36" rx="22" ry="7"/>' +
+      '<circle class="d" cx="14" cy="35" r="1.6"/><circle class="c" cx="20" cy="33" r="1.6"/><circle class="d" cx="26" cy="35" r="1.6"/><circle class="c" cx="32" cy="33" r="1.6"/><circle class="d" cx="38" cy="35" r="1.6"/><circle class="c" cx="18" cy="38" r="1.6"/><circle class="d" cx="30" cy="38" r="1.6"/><circle class="c" cx="42" cy="37" r="1.6"/><circle class="d" cx="24" cy="31" r="1.6"/><circle class="c" cx="36" cy="31" r="1.6"/></g>'],
+    havermout: ["--a:#e8a04a;--b:#f3e6c4;--c:#c98b4a;--d:#c8a25a",
+      '<path class="a" d="M14 16v36c0 3 8 5 18 5s18-2 18-5V16z"/><ellipse class="c" cx="32" cy="16" rx="18" ry="5"/>' +
+      '<rect class="b" x="14" y="26" width="36" height="20"/>' +
+      '<path class="s" d="M32 44v-12"/><path class="d" d="M32 36C32.4 33.7 31 32 28.8 32.2C28.2 34.3 29.7 36 32 36z"/><path class="d" d="M32 36C34.3 36 35.8 34.3 35.2 32.2C33 32 31.6 33.7 32 36z"/><path class="d" d="M32 32C32.4 29.7 31 28 28.8 28.2C28.2 30.3 29.7 32 32 32z"/><path class="d" d="M32 32C34.3 32 35.8 30.3 35.2 28.2C33 28 31.6 29.7 32 32z"/><path class="d" d="M32 30C33.8 28.5 33.8 26.3 32 25C30.2 26.3 30.2 28.5 32 30z"/>'],
+    muesli: ["--a:#e6c88a;--b:#7fa6c4;--c:#7a4a3a;--d:#c98b4a",
+      '<path class="a" d="M10 37c0-6 10-10 22-10s22 4 22 10z"/>' +
+      '<ellipse class="d" cx="18" cy="33" rx="2.4" ry="1.5" transform="rotate(126 18 33)"/><ellipse class="d" cx="26" cy="31" rx="2.4" ry="1.5" transform="rotate(182 26 31)"/><ellipse class="d" cx="34" cy="30" rx="2.4" ry="1.5" transform="rotate(238 34 30)"/><ellipse class="d" cx="40" cy="33" rx="2.4" ry="1.5" transform="rotate(280 40 33)"/><ellipse class="d" cx="30" cy="34" rx="2.4" ry="1.5" transform="rotate(210 30 34)"/><ellipse class="d" cx="46" cy="35" rx="2.4" ry="1.5" transform="rotate(322 46 35)"/><ellipse class="d" cx="22" cy="35" rx="2.4" ry="1.5" transform="rotate(154 22 35)"/>' +
+      '<circle class="c" cx="28" cy="31" r="2"/><circle class="c" cx="40" cy="30" r="2"/><circle class="c" cx="20" cy="35" r="1.8"/>' +
+      '<path class="b" d="M6 36h52c0 11-11 20-26 20S6 47 6 36z"/>'],
+    cornflakes: ["--a:#f2a63a;--b:#c87a2a;--c:#f7d06a;--d:#f7d06a",
+      '<path class="b" d="M42 12l8-4v42l-8 6z"/><path class="b" d="M14 12l8-4h28l-8 4z"/><rect class="a" x="14" y="12" width="28" height="44" rx="1"/>' +
+      '<ellipse class="b" cx="28" cy="40" rx="9" ry="5"/>' +
+      '<path class="c" d="M20 32c2-4 8-5 11-2 3-3 7-1 7 3-1 4-7 6-11 5-4 0-8-2-7-6z"/><path class="c" d="M24 26c3-3 7-2 8 1-2 3-6 3-8-1z"/>'],
+    bloem: ["--a:#f6f2e8;--b:#e8dcc0;--d:#d9a83a",
+      '<path class="a" d="M14 18l2-8h32l2 8v34c0 3-2 5-5 5H19c-3 0-5-2-5-5z"/><path class="e" d="M16 14h32M14 18h36"/>' +
+      '<path class="s" d="M32 42v-12"/><path class="d" d="M32 34C32.4 31.7 31 30 28.8 30.2C28.2 32.3 29.7 34 32 34z"/><path class="d" d="M32 34C34.3 34 35.8 32.3 35.2 30.2C33 30 31.6 31.7 32 34z"/><path class="d" d="M32 30C32.4 27.7 31 26 28.8 26.2C28.2 28.3 29.7 30 32 30z"/><path class="d" d="M32 30C34.3 30 35.8 28.3 35.2 26.2C33 26 31.6 27.7 32 30z"/><path class="d" d="M32 28C33.8 26.5 33.8 24.3 32 23C30.2 24.3 30.2 26.5 32 28z"/>'],
+    "zelfrijzend bakmeel": ["--a:#dbe8f2;--b:#f6f2e8;--c:#c98b4a;--d:#e8c07a",
+      '<path class="a" d="M14 18l2-8h32l2 8v34c0 3-2 5-5 5H19c-3 0-5-2-5-5z"/><path class="e" d="M16 14h32M14 18h36"/>' +
+      '<path class="c" d="M24 46h16l-2 6H26z"/><path class="d" d="M22 46c0-8 4-12 10-12s10 4 10 12z"/><path class="e" d="M32 30v-6M29 26l3-3 3 3"/>'],
+    pannenkoekmix: ["--a:#f2c870;--b:#f2efe6;--c:#8a4a1a;--d:#fbe9a0",
+      '<ellipse class="b" cx="32" cy="48" rx="28" ry="9"/>' +
+      '<ellipse class="a" cx="32" cy="42" rx="22" ry="7"/><ellipse class="a" cx="32" cy="36" rx="22" ry="7"/><ellipse class="a" cx="32" cy="30" rx="22" ry="7"/>' +
+      '<path class="c" d="M20 28c4-3 20-3 24 0 2 2 0 4-3 3l-1 6c0 2-2 2-2 0v-5c-4 1-10 1-14 0l-1 4c0 2-2 2-2 0z"/>' +
+      '<rect class="d" x="28" y="23" width="8" height="5" rx="1"/>'],
+    maizena: ["--a:#f2efe6;--b:#d9b04a;--c:#f5cf3c;--d:#7fae4a",
+      '<path class="b" d="M42 12l8-4v42l-8 6z"/><path class="b" d="M14 12l8-4h28l-8 4z"/><rect class="a" x="14" y="12" width="28" height="44" rx="1"/>' +
+      '<g transform="rotate(25 28 36)"><ellipse class="c" cx="28" cy="36" rx="5" ry="11"/><path class="e" d="M24 30h8M23 36h10M24 42h8"/><path class="d" d="M28 48c-3-2-6-8-5-14 1 4 3 7 5 9z"/></g>'],
+    paneermeel: ["--a:#d9944a;--b:#e8c07a;--d:#a8642a",
+      '<g transform="translate(32 32) scale(0.9) translate(-32 -32)"><path class="b" d="M38 12h16c4 0 6 4 4 8v14H40V20c-2-4-1-8-2-8z" transform="rotate(10 48 24)"/>' +
+      '<path class="a" d="M6 52c2-14 12-24 26-24s24 10 26 24z"/>' +
+      '<circle class="d" cx="16" cy="46" r="1.3"/><circle class="d" cx="22" cy="40" r="1.3"/><circle class="d" cx="28" cy="36" r="1.3"/><circle class="d" cx="34" cy="34" r="1.3"/><circle class="d" cx="40" cy="38" r="1.3"/><circle class="d" cx="46" cy="44" r="1.3"/><circle class="d" cx="24" cy="48" r="1.3"/><circle class="d" cx="32" cy="44" r="1.3"/><circle class="d" cx="40" cy="48" r="1.3"/><circle class="d" cx="50" cy="50" r="1.3"/><circle class="d" cx="14" cy="52" r="1.3"/><circle class="d" cx="30" cy="52" r="1.3"/></g>'],
   };
 
   // Where an Ingredient has no drawing of its own, its aisle stands in.
