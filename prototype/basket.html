@@ -293,6 +293,7 @@
   .aisle-h { font-size: 15px; font-weight: 900; margin: 14px 6px 6px; color: var(--ink-2); }
   .shop .aisle-h { color: inherit; opacity: .9; text-transform: uppercase; letter-spacing: .04em; font-size: 13px; }
   .shop > .aisle-h:first-of-type, .xshop > .aisle-h:first-of-type { margin-top: 2px; }
+  .aisle-h.ticked { margin-top: 22px; padding-top: 12px; border-top: 2px dashed currentColor; }
   .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 6px; }
   .tile { position: relative; background: var(--card-deep); color: var(--ink); border: 0; border-radius: 12px; padding: 12px 6px 10px; cursor: pointer;
     display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; font: inherit; min-height: 118px; }
@@ -769,20 +770,21 @@
     ["cheese", "Kaas"], ["deli", "Vleeswaren & beleg"], ["bakery", "Brood"], ["pantry", "Voorraadkast"], ["conserves", "Conserven"],
     ["frozen", "Diepvries"], ["readymeal", "Kant-en-klaar"], ["snacks", "Snacks & noten"], ["drinks", "Dranken"]];
   // Winkelen (#41): a bag's items under their aisle, in AISLES order, so
-  // groente comes first at every Chain; ticked ones sink to the bottom of
-  // theirs. A frozen or tinned Product is found in the freezer or with the
-  // tins, whatever its Ingredient's main aisle; an item the list did not
-  // recognise takes the aisle of the Product picked for it, and one with
-  // none at all goes under Overig.
+  // groente comes first at every Chain; ticked ones leave their aisle for
+  // "Afgevinkt", last in the bag, where a tap puts one back. A frozen or
+  // tinned Product is found in the freezer or with the tins, whatever its
+  // Ingredient's main aisle; an item the list did not recognise takes the
+  // aisle of the Product picked for it, and one with none at all goes under
+  // Overig.
   const shelfOf = (item, p) => p.form === "diepvries" ? "frozen" : p.form === "conserven" ? "conserves" :
     AISLE_OF.get(item.ingredient) || AISLE_OF.get(p.ingredient);
   function aisleGroups(rows, aisleOf, render) {
     const groups = [...AISLES, ["overig", "Overig"]].map(([id, label]) => ({ id, label, rows: [] }));
-    for (const r of rows) (groups.find((g) => g.id === aisleOf(r)) || groups[groups.length - 1]).rows.push(r);
-    return groups.filter((g) => g.rows.length).map((g) => {
-      const sorted = g.rows.slice().sort((a, b) => done.has(a.item.id) - done.has(b.item.id));
-      return '<h3 class="aisle-h">' + esc(g.label) + "</h3>" + '<div class="' + (shopView === "tegels" ? 'tiles" lang="nl' : "chk") + '">' + sorted.map(render).join("") + "</div>";
-    }).join("");
+    const ticked = { id: "afgevinkt", label: "Afgevinkt", rows: [] };
+    for (const r of rows) (done.has(r.item.id) ? ticked : groups.find((g) => g.id === aisleOf(r)) || groups[groups.length - 1]).rows.push(r);
+    return [...groups, ticked].filter((g) => g.rows.length).map((g) =>
+      '<h3 class="aisle-h' + (g === ticked ? " ticked" : "") + '">' + esc(g.label) + (g === ticked ? " · " + g.rows.length : "") + "</h3>" +
+      '<div class="' + (shopView === "tegels" ? 'tiles" lang="nl' : "chk") + '">' + g.rows.map(render).join("") + "</div>").join("");
   }
   // A tile, as in Bring!: sticker, name, how much and what it costs; a tap ticks it.
   const tile = (item, stickerOf, qty, l) => {
