@@ -1,0 +1,263 @@
+[
+  {
+    "nbHits": 5,
+    "page": 0,
+    "nbPages": 1,
+    "hitsPerPage": 1000,
+    "exhaustiveNbHits": true,
+    "exhaustiveTypo": true,
+    "exhaustive": {
+      "nbHits": true,
+      "typo": true
+    },
+    "query": "",
+    "params": "page=0&hitsPerPage=1000&attributesToRetrieve=%5B%22objectID%22%2C%22name%22%2C%22brandName%22%2C%22salesUnit%22%2C%22shortDescription%22%2C%22isAvailable%22%2C%22categoryIDs%22%2C%22mainCategoryID%22%2C%22hierarchicalCategories%22%2C%22productReferences%22%2C%22currentPrice%22%2C%22promotionPrices%22%5D&attributesToHighlight=%5B%5D",
+    "renderingContent": {},
+    "processingTimeMS": 3,
+    "processingTimingsMS": {
+      "_request": {
+        "roundTrip": 15
+      },
+      "afterFetch": {
+        "format": {
+          "total": 4
+        },
+        "merge": {
+          "entries": {
+            "parse": 1,
+            "total": 1
+          },
+          "mergeLoop": {
+            "total": 1
+          },
+          "total": 1
+        },
+        "total": 1
+      },
+      "extensions": 1,
+      "total": 3
+    },
+    "serverTimeMS": 8,
+    "hits": [
+      {
+        "isAvailable": true,
+        "brandName": "CHOCEUR",
+        "categoryIDs": [
+          "chocolade",
+          "choceur",
+          "fairtrade"
+        ],
+        "salesUnit": "200 g",
+        "productReferences": [
+          {
+            "type": "KVArticleNumber",
+            "value": "2000277"
+          }
+        ],
+        "name": "Melkchocolade alpenroom",
+        "currentPrice": {
+          "priceValue": 1.95,
+          "basePrice": [
+            {
+              "basePriceValue": 1950,
+              "basePriceScale": "kg"
+            }
+          ],
+          "validFrom": 1791324000,
+          "validUntil": 1793228399
+        },
+        "shortDescription": "Choceur Alpenroom chocolade bij ALDI. Romige melkchocolade met Fairtrade keurmerk. Ontdek de heerlijke smaak van alpenmelk. Ontdek in jouw ALDI winkel!",
+        "mainCategoryID": "chocolade",
+        "hierarchicalCategories": {
+          "lvl0": [
+            "Snoep, koek en chocolade",
+            "Speciaal assortiment",
+            "ALDI merken"
+          ],
+          "lvl1": [
+            "Snoep, koek en chocolade > Chocolade",
+            "Speciaal assortiment > Fairtrade",
+            "ALDI merken > Choceur"
+          ]
+        },
+        "objectID": "1225372"
+      },
+      {
+        "isAvailable": true,
+        "categoryIDs": [
+          "varkensvlees"
+        ],
+        "salesUnit": "Ca. 500 g",
+        "productReferences": [
+          {
+            "type": "KVArticleNumber",
+            "value": "2100421"
+          }
+        ],
+        "name": "Varkenshaas",
+        "currentPrice": {
+          "priceValue": 6,
+          "basePrice": [
+            {
+              "basePriceValue": 6,
+              "basePriceScale": "kg"
+            }
+          ],
+          "validFrom": 1789336800,
+          "validUntil": 1798844399
+        },
+        "shortDescription": "Malse varkenshaas van ca. 500 g bij ALDI. Perfecte prijs-kwaliteit verhouding voor heerlijke vleesgerechten.",
+        "mainCategoryID": "varkensvlees",
+        "hierarchicalCategories": {
+          "lvl0": [
+            "Vlees, vis en vega"
+          ],
+          "lvl1": [
+            "Vlees, vis en vega > Varkensvlees"
+          ]
+        },
+        "objectID": "1224343"
+      },
+      {
+        "isAvailable": true,
+        "categoryIDs": [
+          "fruit"
+        ],
+        "salesUnit": "400 g",
+        "productReferences": [
+          {
+            "type": "KVArticleNumber",
+            "value": "0002838"
+          }
+        ],
+        "name": "Nederlandse aardbeien",
+        "currentPrice": {
+          "priceValue": 2.99,
+          "basePrice": [
+            {
+              "basePriceValue": 11.96,
+              "basePriceScale": "kg"
+            }
+          ],
+          "priceTagLabels": {
+            "promoText1": "-20%"
+          },
+          "validFrom": 1791756000,
+          "validUntil": 1792101599
+        },
+        "shortDescription": "Verse Nederlandse aardbeien 400 g bij ALDI. Zoete, sappige Nederlandse aardbeien van topkwaliteit. Koop nu bij je favoriete ALDI winkel!",
+        "mainCategoryID": "fruit",
+        "hierarchicalCategories": {
+          "lvl0": [
+            "Aardappels, groente en fruit"
+          ],
+          "lvl1": [
+            "Aardappels, groente en fruit > Fruit"
+          ]
+        },
+        "promotionPrices": [
+          {
+            "validFrom": 1792101600,
+            "validUntil": 1792360799,
+            "priceValue": 2.49,
+            "strikePrice": {
+              "strikePriceValue": 2.99
+            },
+            "basePrice": [
+              {
+                "basePriceValue": 9.96,
+                "basePriceScale": "kg"
+              }
+            ],
+            "priceTagLabels": {
+              "promoText1": "-16%"
+            },
+            "validFromLocalDate": "2026-10-16",
+            "validUntilLocalDate": "2026-10-18"
+          }
+        ],
+        "objectID": "1219201"
+      },
+      {
+        "isAvailable": true,
+        "brandName": "SUN SNACKS",
+        "categoryIDs": [
+          "beschuit-toast-crackers",
+          "sun-snacks"
+        ],
+        "salesUnit": "3x75 g",
+        "productReferences": [
+          {
+            "type": "KVArticleNumber",
+            "value": "2101185"
+          }
+        ],
+        "name": "3-pack crackers",
+        "currentPrice": {
+          "priceValue": 1.39,
+          "basePrice": [
+            {
+              "basePriceValue": 18.53,
+              "basePriceScale": "kg"
+            }
+          ],
+          "validFrom": 1791324000,
+          "validUntil": 1793228399
+        },
+        "shortDescription": "Sun Snacks Crackers bij ALDI. Classic & Paprika smaak 75 g verpakking.  Bezoek je ALDI winkel.",
+        "mainCategoryID": "beschuit-toast-crackers",
+        "hierarchicalCategories": {
+          "lvl0": [
+            "Brood, bakkerij en bakken",
+            "ALDI merken"
+          ],
+          "lvl1": [
+            "Brood, bakkerij en bakken > Beschuit, toast en crackers",
+            "ALDI merken > Sun snacks"
+          ]
+        },
+        "objectID": "1225177"
+      },
+      {
+        "isAvailable": true,
+        "brandName": "BBQ",
+        "categoryIDs": [
+          "zomerassortiment",
+          "bbq-vlees"
+        ],
+        "salesUnit": "Ca. 600 g",
+        "productReferences": [
+          {
+            "type": "KVArticleNumber",
+            "value": "0002694"
+          }
+        ],
+        "name": "Verse spareribs",
+        "currentPrice": {
+          "priceValue": 4.99,
+          "basePrice": [
+            {
+              "basePriceValue": 9.98,
+              "basePriceScale": "kg"
+            }
+          ],
+          "validFrom": 1777240800,
+          "validUntil": 4070991599
+        },
+        "shortDescription": "BBQ Verse Spareribs bij ALDI - gemarineerde varkensspareribs van ca. 500 g. Perfect voor thuis bereiden. Ontdek in jouw ALDI winkel!",
+        "mainCategoryID": "zomerassortiment",
+        "hierarchicalCategories": {
+          "lvl0": [
+            "Vlees, vis en vega",
+            "Speciaal assortiment"
+          ],
+          "lvl1": [
+            "Vlees, vis en vega > BBQ vlees",
+            "Speciaal assortiment > Zomerassortiment"
+          ]
+        },
+        "objectID": "1226434"
+      }
+    ]
+  }
+]

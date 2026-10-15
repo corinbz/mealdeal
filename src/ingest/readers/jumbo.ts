@@ -1,12 +1,12 @@
 import { readStep, payloadOf } from "../archive.ts";
 import {
   centsFrom,
-  deriveUnitPrice,
   parseInstant,
   parsePackSize,
   type ComparisonUnit,
   type PackSize,
 } from "../normalise.ts";
+import { unitPriceOf } from "../unit-price.ts";
 import type { ChainReader, ChainReading, OfferReading, PriceReading } from "./types.ts";
 
 /**
@@ -18,7 +18,7 @@ import type { ChainReader, ChainReading, OfferReading, PriceReading } from "./ty
  * that figure is what the Chain legally represents at the shelf. One rule
  * outranks that: compare by weight whenever a weight is known (issue #3). So a
  * Product Jumbo prices per piece but whose title states a weight is compared
- * on a weight price we derive, marked as ours; see unitPriceFor.
+ * on a weight price we derive, marked as ours; see src/ingest/unit-price.ts.
  *
  * Exercised on the real catalogue: 17,104 Products from a full 1134-category
  * walk on 2026-10-13, of which 17,072 carried an EAN and 16,938 a Unit Price
@@ -99,42 +99,18 @@ function comparisonUnit(unit: unknown): ComparisonUnit | null {
 }
 
 /**
- * Which Unit Price a Jumbo Product is compared on: by weight or volume
- * whenever one is known, by the piece only when none is (the owner's rule,
- * issue #3). In order:
- *
- *   1. Jumbo's own figure, when it is per kg or per litre.
- *   2. One derived from the pack, when the title states a weight or volume.
- *      Jumbo prices "Tortilla Wraps 8 Stuks 320 g" per piece; by weight it
- *      compares with every other wrap sold by the gram.
- *   3. Jumbo's own per-piece figure.
- *   4. One derived per piece from a count in the title.
- *
- * Derived figures use the price paid, the Offer price when there is one, as
- * Jumbo's own do, and are marked as ours.
+ * The pack as sold, when Jumbo sells a whole case under one unit's title
+ * (#37). "Arla Bio Halfvolle Melk 1 L" with sku 47868DSL costs €10.74 at
+ * €1.79 a litre: a box of six, though its title names one. Jumbo's own unit
+ * price is right, so a pack whose price over that unit price is a whole
+ * multiple of the title's, two or more, is that many. Anything else is left
+ * as titled: a jar priced per drained kilo is less than its title, not more.
  */
-function unitPriceFor(
-  chainCents: number | null,
-  chainUnit: ComparisonUnit | null,
-  pack: PackSize | null,
-  paidCents: number,
-): Pick<PriceReading, "unitPriceCents" | "comparisonUnit" | "unitPriceSource"> {
-  const byMeasure = (u: ComparisonUnit | null | undefined) => u === "kg" || u === "l";
-  if (chainCents !== null && byMeasure(chainUnit)) {
-    return { unitPriceCents: chainCents, comparisonUnit: chainUnit, unitPriceSource: "chain" };
-  }
-  if (pack && byMeasure(pack.unit)) {
-    return { unitPriceCents: deriveUnitPrice(paidCents, pack), comparisonUnit: pack.unit, unitPriceSource: "derived" };
-  }
-  if (chainCents !== null) {
-    // A figure whose unit Jumbo left out stays unmapped: guessing "piece"
-    // would let a per-something price be compared with a per-piece one.
-    return { unitPriceCents: chainCents, comparisonUnit: chainUnit, unitPriceSource: "chain" };
-  }
-  if (pack) {
-    return { unitPriceCents: deriveUnitPrice(paidCents, pack), comparisonUnit: pack.unit, unitPriceSource: "derived" };
-  }
-  return { unitPriceCents: null, comparisonUnit: chainUnit, unitPriceSource: null };
+export function wholeCase(pack: PackSize | null, chainCents: number | null, chainUnit: ComparisonUnit | null, paidCents: number): PackSize | null {
+  if (!pack || !chainCents || chainUnit !== pack.unit) return pack;
+  const times = paidCents / chainCents / pack.quantity, n = Math.round(times);
+  if (n < 2 || Math.abs(times - n) > 0.05 * n) return pack;
+  return { quantity: Math.round(pack.quantity * n * 1000) / 1000, unit: pack.unit };
 }
 
 export const jumboReader: ChainReader = {
@@ -201,8 +177,10 @@ export const jumboReader: ChainReader = {
         // Jumbo exposes no separate pack field in the selection set we
         // archive, so the pack wording available to us is the title itself.
         // Kept verbatim rather than re-written into a tidier form.
-        const pack = parsePackSize(name);
-        const unit = unitPriceFor(chainUnitCents, chainUnit, pack, promo ?? shelf);
+        const pack = wholeCase(parsePackSize(name), chainUnitCents, chainUnit, promo ?? shelf);
+        // Jumbo's own figure is on the price shown, Offer or not (src/ingest/unit-price.ts).
+        const unit = unitPriceOf(promo ?? shelf, pack, chainUnitCents !== null ? { cents: chainUnitCents, unit: chainUnit, ofCents: promo ?? shelf } : null,
+          { packFromTitle: true });
         if (unit.unitPriceCents === null) withoutUnitPrice++;
 
         const ean = text(row.ean);

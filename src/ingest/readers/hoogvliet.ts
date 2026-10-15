@@ -1,5 +1,6 @@
 import { readStep, jsonOf } from "../archive.ts";
-import { deriveUnitPrice, parseInstant, parsePackSize, type ComparisonUnit } from "../normalise.ts";
+import { parseInstant, parsePackSize, type ComparisonUnit } from "../normalise.ts";
+import { isApproximate, unitPriceOf } from "../unit-price.ts";
 import { amsterdamDay } from "./plus.ts";
 import type { ChainReader, ChainReading, OfferReading, PriceReading } from "./types.ts";
 
@@ -198,14 +199,9 @@ export const hoogvlietReader: ChainReader = {
 
         const chainUnit = unitOf(item.volume_eenheid?.value);
         const chainCents = cents(item.prijs_per_volume_eenheid?.value);
-        let unitPriceCents: number | null = null;
-        let comparisonUnit: ComparisonUnit | null = null;
-        let unitPriceSource: PriceReading["unitPriceSource"] = null;
-        if (offerCents === null && chainCents !== null && chainUnit) {
-          [unitPriceCents, comparisonUnit, unitPriceSource] = [chainCents, chainUnit, "chain"];
-        } else if (pack) {
-          [unitPriceCents, comparisonUnit, unitPriceSource] = [deriveUnitPrice(offerCents ?? shelf, pack), pack.unit, "derived"];
-        }
+        // Hoogvliet's own figure is on the Shelf Price, so an Offer price paid scales it (src/ingest/unit-price.ts).
+        const { unitPriceCents, comparisonUnit, unitPriceSource } = unitPriceOf(offerCents ?? shelf, pack,
+          chainCents !== null && chainUnit ? { cents: chainCents, unit: chainUnit, ofCents: shelf } : null, { approximate: isApproximate(packText) });
         if (unitPriceCents === null) withoutUnitPrice++;
 
         const ean = text(item.ean?.value);

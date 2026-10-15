@@ -60,7 +60,8 @@ export function realDeals(data: DigestCatalogue, staples: readonly string[]): { 
     const deals = data.chains
       .flatMap((c) => resolver.candidates(c.id, item))
       .filter((p) => item.ingredient || DISH.test(item.noun) || !DISH.test(p.name))
-      .filter((p) => p.offerPriceCents !== null && p.referenceLowCents !== null && p.referenceDays !== null && p.offerPriceCents < p.referenceLowCents)
+      // The page's own real-low rule (#18): "laagste prijs in N dagen".
+      .filter((p) => resolver.verdict(p)?.kind === "lowest")
       .sort((a, b) => resolver.unitPrice(a, item) - resolver.unitPrice(b, item))
       .slice(0, PER_STAPLE)
       .map((p) => ({

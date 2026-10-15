@@ -14,7 +14,7 @@ const CACHE = "mealdeal-v5";
 const NETWORK_TIMEOUT_MS = 3000;
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(["./", "catalogue.js", "prices.js", "words.js", "resolve.js", "images.js"])));
+  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(["./", "catalogue.js", "prices.js", "words.js", "resolve.js", "images.js", "recipes.js"])));
   self.skipWaiting();
 });
 

@@ -13,7 +13,7 @@
  */
 
 import { readFile, writeFile } from "node:fs/promises";
-import { parseCatalogueScript } from "../src/catalogue/assess.ts";
+import { catalogueScript, HISTORY_COLUMNS, parseCatalogueScript, productsOf, withColumns } from "../src/catalogue/format.ts";
 import { recordDay, reference, type PriceHistory, type PricedRow } from "../src/catalogue/history.ts";
 
 function usage(): never {
@@ -36,22 +36,16 @@ for (let i = 0; i < argv.length; i++) {
 if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !cataloguePath || !outHistory) usage();
 
 const text = await readFile(cataloguePath, "utf8");
-const data = parseCatalogueScript(text) as unknown as { columns: string[]; catalogue: Record<string, unknown[][]> };
-const col = (name: string) => {
-  const i = data.columns.indexOf(name);
-  if (i < 0) throw new Error(`catalogue has no ${name} column`);
-  return i;
-};
+const data = parseCatalogueScript(text);
 const before = historyPath ? (JSON.parse(await readFile(historyPath, "utf8")) as PriceHistory) : null;
 
-const [REF, SHELF, OFFER, WORDING] = ["ref", "shelfPriceCents", "offerPriceCents", "offerWording"].map(col) as [number, number, number, number];
 const priced: Record<string, PricedRow[]> = {};
-for (const [chainId, rows] of Object.entries(data.catalogue)) {
-  priced[chainId] = rows.map((r) => ({
-    ref: r[REF] as string,
-    shelfPriceCents: r[SHELF] as number,
-    offerPriceCents: r[OFFER] as number | null,
-    offerWording: r[WORDING] as string | null,
+for (const chainId of Object.keys(data.catalogue)) {
+  priced[chainId] = productsOf(data, chainId).map((p) => ({
+    ref: p.ref,
+    shelfPriceCents: p.shelfPriceCents,
+    offerPriceCents: p.offerPriceCents,
+    offerWording: p.offerWording,
     // The row's Offer is the running one; the upcoming one is kept apart.
     offerUpcoming: false,
   }));
@@ -59,19 +53,16 @@ for (const [chainId, rows] of Object.entries(data.catalogue)) {
 
 const history = recordDay(before, date, priced);
 
-for (const [chainId, rows] of Object.entries(data.catalogue)) {
-  let onOffer = 0, judged = 0;
-  for (const row of rows) {
-    const ref = reference(history, chainId, row[REF] as string);
-    if (Array.isArray(history.chains[chainId]?.[row[REF] as string]?.at(-1))) onOffer++;
-    if (ref) judged++;
-    row.push(ref?.lowCents ?? null, ref?.days ?? null);
-  }
-  console.log(`${chainId}: ${onOffer} Products on Offer, ${judged} with history to judge them against`);
-}
-data.columns.push("referenceLowCents", "referenceDays");
+const counts: Record<string, { onOffer: number; judged: number }> = {};
+const withHistory = withColumns(data, HISTORY_COLUMNS, (p, chainId) => {
+  const c = (counts[chainId] ??= { onOffer: 0, judged: 0 });
+  const ref = reference(history, chainId, p.ref);
+  if (Array.isArray(history.chains[chainId]?.[p.ref]?.at(-1))) c.onOffer++;
+  if (ref) c.judged++;
+  return [ref?.lowCents ?? null, ref?.days ?? null];
+});
+for (const [chainId, c] of Object.entries(counts)) console.log(`${chainId}: ${c.onOffer} Products on Offer, ${c.judged} with history to judge them against`);
 console.log(`history: ${history.dates.length} day(s), ${history.dates[0]} to ${history.dates.at(-1)}`);
 
-const header = text.slice(0, text.indexOf("window.CATALOGUE"));
-await writeFile(cataloguePath, `${header}window.CATALOGUE = ${JSON.stringify(data)};\n`);
+await writeFile(cataloguePath, catalogueScript(withHistory, "scripts/catalogue-from-db.ts"));
 await writeFile(outHistory, JSON.stringify(history));

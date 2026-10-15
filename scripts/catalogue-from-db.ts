@@ -21,9 +21,12 @@
 import { writeFile } from "node:fs/promises";
 import { connect } from "../src/ingest/db.ts";
 import { formOf } from "../src/ingredients/aisles.ts";
-import { createMapper, isOwnBrand } from "../src/ingredients/map.ts";
+import { createMapper, isOwnBrand, type Mapping } from "../src/ingredients/map.ts";
+import { borrowMappings, productKey } from "../src/catalogue/borrow.ts";
+import { CHECKED_SPREADS } from "../src/catalogue/checked-spreads.ts";
 import { groupExactProducts, type ExactCandidate } from "../src/catalogue/exact.ts";
 import { VOCABULARY, type ComparisonUnit } from "../src/ingredients/vocabulary.ts";
+import { catalogueScript, COLUMNS, toRow, type Catalogue, type CatalogueProduct, type Row } from "../src/catalogue/format.ts";
 
 const OUT = new URL("../prototype/catalogue.js", import.meta.url);
 
@@ -41,64 +44,6 @@ const OFFERS_ONLY = new Set(["lidl"]);
  */
 const CARDS: Readonly<Record<string, string>> = { lidl: "Lidl Plus" };
 
-/**
- * One Product, as a positional row: 24,000 objects with repeated keys would
- * roughly double the file. The page reads them by these indices.
- */
-type Row = [
-  ref: string,
-  name: string,
-  /** Null when the Chain states none, or only repeats the name (Jumbo). */
-  packaging: string | null,
-  packQuantity: number | null,
-  /**
-   * What packQuantity counts. Not always the Comparison Unit: Jumbo prices
-   * "Champignon Soep 3 Stuks" per kg, and 3 is pieces.
-   */
-  packUnit: string | null,
-  comparisonUnit: string,
-  shelfPriceCents: number,
-  offerPriceCents: number | null,
-  unitPriceCents: number,
-  /** The Offer running on the day swept; offerPriceCents is its price, if it has one. */
-  offerWording: string | null,
-  /** The day it ends, in Amsterdam; null when open-ended or not stated. */
-  offerEndsOn: string | null,
-  /**
-   * The next Offer announced but not yet started (#8). Kept apart from the
-   * running one so the two are never mixed silently. It has no price here:
-   * a price is only observed once an Offer runs, and none is derived from
-   * its wording (ADR-0002).
-   */
-  nextWording: string | null,
-  nextStartsOn: string | null,
-  /** Which Ingredient the Product is (#14), or null when it is no single one. */
-  ingredient: string | null,
-  variant: string | null,
-  form: string | null,
-  /** 1 biologisch, 2 huismerk: what the Preferences select on. */
-  flags: number,
-  /**
-   * The Unit Price in the Ingredient's own Comparison Unit, converted where
-   * the vocabulary states how (a courgette is about 0.3 kg); null when it
-   * cannot be, and then the Product is no comparison candidate for it.
-   */
-  ingredientUnitPriceCents: number | null,
-  /** The pack in the Ingredient's Comparison Unit, likewise. */
-  ingredientPack: number | null,
-  // scripts/apply-history.ts appends referenceLowCents and referenceDays.
-];
-
-/**
- * The name of each position in a Row. Readers look a field up by name, so a
- * field added later does not shift every reader's numbers.
- */
-const COLUMNS = [
-  "ref", "name", "packaging", "packQuantity", "packUnit", "comparisonUnit", "shelfPriceCents", "offerPriceCents",
-  "unitPriceCents", "offerWording", "offerEndsOn", "nextWording", "nextStartsOn", "ingredient", "variant", "form",
-  "flags", "ingredientUnitPriceCents", "ingredientPack",
-] as const;
-
 /** One Ingredient's quantity in another unit: courgette 1 piece = 0.3 kg. */
 function inIngredientUnit(perUnitOf: ComparisonUnit, quantity: number, ingredientUnit: ComparisonUnit, equals: Partial<Record<ComparisonUnit, number>>, price: boolean): number | null {
   if (perUnitOf === ingredientUnit) return quantity;
@@ -111,7 +56,7 @@ function inIngredientUnit(perUnitOf: ComparisonUnit, quantity: number, ingredien
 
 const map = createMapper();
 const vocabulary = new Map(VOCABULARY.map((d) => [d.id, d]));
-const mappedCount: Record<string, { mapped: number; comparable: number; total: number }> = {};
+const mappedCount: Record<string, { mapped: number; borrowed: number; comparable: number; total: number }> = {};
 
 const db = connect();
 
@@ -132,17 +77,24 @@ const { rows: chains } = await db.query<{
     ORDER BY c.name`,
 );
 
-const catalogue: Record<string, Row[]> = {};
+/** One Product's latest Observation, as the query below reads it. */
+interface ProductRow {
+  chain_product_ref: string; name: string; pack_text: string | null; pack_quantity: string | null;
+  pack_unit: string | null; comparison_unit: string; shelf_price_cents: number; offer_price_cents: number | null;
+  unit_price_cents: number; wording: string | null; ends_on: string | null;
+  next_wording: string | null; next_starts_on: string | null; has_next: boolean;
+  brand: string | null; categories: string[]; eans: string[];
+}
+
+/** Each Chain's Products, as written; the catalogue holds them as rows (src/catalogue/format.ts). */
+const products: Record<string, Omit<CatalogueProduct, "referenceLowCents" | "referenceDays">[]> = {};
 const exactCandidates: ExactCandidate[] = [];
+/** Each Chain's rows as read, and each Product's own Mapping, until EAN twins have lent theirs. */
+const pending: Record<string, ProductRow[]> = {};
+const own = new Map<string, Mapping | null>();
 
 for (const chain of chains) {
-  const { rows } = await db.query<{
-    chain_product_ref: string; name: string; pack_text: string | null; pack_quantity: string | null;
-    pack_unit: string | null; comparison_unit: string; shelf_price_cents: number; offer_price_cents: number | null;
-    unit_price_cents: number; wording: string | null; ends_on: string | null;
-    next_wording: string | null; next_starts_on: string | null; has_next: boolean;
-    brand: string | null; categories: string[]; eans: string[];
-  }>(
+  const { rows } = await db.query<ProductRow>(
     // The latest Observation per Product, joined to the running Offer naming
     // it and, separately, the next upcoming one. All from the same run: a day
     // can be re-ingested after a parser fix, its runs share an observed_at,
@@ -189,44 +141,15 @@ for (const chain of chains) {
     [chain.id, OFFERS_ONLY.has(chain.id) ? chain.run_id : null],
   );
 
-  const counts = (mappedCount[chain.id] = { mapped: 0, comparable: 0, total: rows.length });
-  catalogue[chain.id] = rows.map<Row>((r) => {
+  pending[chain.id] = rows.map((r) => {
     const m = map({ chainId: chain.id, name: r.name, brand: r.brand, categories: r.categories });
-    const def = m ? vocabulary.get(m.ingredient)! : null;
-    const unit = r.comparison_unit as ComparisonUnit;
-    const iPrice = def ? inIngredientUnit(unit, r.unit_price_cents, def.unit, def.equals, true) : null;
+    own.set(productKey(chain.id, r.chain_product_ref), m);
     const packQuantity = r.pack_quantity === null ? null : Number(r.pack_quantity);
-    const iPack = def && packQuantity !== null && r.pack_unit
-      ? inIngredientUnit(r.pack_unit as ComparisonUnit, packQuantity, def.unit, def.equals, false)
-      : null;
-    if (m) counts.mapped++;
     exactCandidates.push({
       chainId: chain.id, ref: r.chain_product_ref, name: r.name, brand: r.brand, eans: r.eans,
       packQuantity, packUnit: r.pack_unit, huismerk: isOwnBrand(chain.id, r.brand, r.name),
     });
-    if (iPrice !== null) counts.comparable++;
-    return [
-      r.chain_product_ref,
-      r.name,
-      r.pack_text && r.pack_text !== r.name ? r.pack_text : null,
-      packQuantity,
-      r.pack_unit,
-      r.comparison_unit,
-      r.shelf_price_cents,
-      r.offer_price_cents,
-      r.unit_price_cents,
-      r.wording,
-      r.ends_on,
-      // An upcoming Offer with no tags still exists; the page names it generically.
-      r.has_next ? (r.next_wording ?? "") : null,
-      r.next_starts_on,
-      m?.ingredient ?? null,
-      m?.variant ?? null,
-      m?.form ?? null,
-      (m?.biologisch ? 1 : 0) | (m?.huismerk ? 2 : 0),
-      iPrice,
-      iPack,
-    ];
+    return r;
   });
 }
 
@@ -236,9 +159,59 @@ for (const chain of chains) {
  * EANs. Members are refs into each Chain's rows above. See src/catalogue/exact.ts.
  */
 const exact = groupExactProducts(exactCandidates);
+
+/**
+ * A Product mapping to nothing borrows its EAN twin's Ingredient (#34); see
+ * src/catalogue/borrow.ts. Twins that disagree are listed, to be fixed.
+ */
+const borrowed = borrowMappings(exact, own);
+
+for (const chain of chains) {
+  const rows = pending[chain.id]!;
+  const counts = (mappedCount[chain.id] = { mapped: 0, borrowed: 0, comparable: 0, total: rows.length });
+  products[chain.id] = rows.map((r) => {
+    const key = productKey(chain.id, r.chain_product_ref);
+    const lent = borrowed.mappings.get(key);
+    const m = own.get(key) ?? lent ?? null;
+    const def = m ? vocabulary.get(m.ingredient)! : null;
+    const unit = r.comparison_unit as ComparisonUnit;
+    const iPrice = def ? inIngredientUnit(unit, r.unit_price_cents, def.unit, def.equals, true) : null;
+    const packQuantity = r.pack_quantity === null ? null : Number(r.pack_quantity);
+    const iPack = def && packQuantity !== null && r.pack_unit
+      ? inIngredientUnit(r.pack_unit as ComparisonUnit, packQuantity, def.unit, def.equals, false)
+      : null;
+    if (m) counts.mapped++;
+    if (lent) counts.borrowed++;
+    if (iPrice !== null) counts.comparable++;
+    return {
+      ref: r.chain_product_ref,
+      name: r.name,
+      packaging: r.pack_text && r.pack_text !== r.name ? r.pack_text : null,
+      packQuantity,
+      packUnit: r.pack_unit,
+      comparisonUnit: unit,
+      shelfPriceCents: r.shelf_price_cents,
+      offerPriceCents: r.offer_price_cents,
+      unitPriceCents: r.unit_price_cents,
+      offerWording: r.wording,
+      offerEndsOn: r.ends_on,
+      // An upcoming Offer with no tags still exists; the page names it generically.
+      nextWording: r.has_next ? (r.next_wording ?? "") : null,
+      nextStartsOn: r.next_starts_on,
+      ingredient: m?.ingredient ?? null,
+      variant: m?.variant ?? null,
+      form: m?.form ?? null,
+      flags: (m?.biologisch ? 1 : 0) | (m?.huismerk ? 2 : 0),
+      ingredientUnitPriceCents: iPrice,
+      ingredientPack: iPack,
+    };
+  });
+}
+/** The page reads each Product as a row, by column name (src/catalogue/format.ts). */
+const catalogue: Record<string, Row[]> = Object.fromEntries(Object.entries(products).map(([id, ps]) => [id, ps.map((p) => toRow(p))]));
 const withEans = new Set(exactCandidates.filter((c) => c.eans.length).map((c) => c.chainId));
 
-const data = {
+const data: Catalogue = {
   generatedAt: new Date().toISOString(),
   chains: chains.map((c) => ({
     id: c.id,
@@ -258,35 +231,44 @@ const data = {
     /** True for a Chain whose only prices online are its Offers (Lidl): never a bag of its own. */
     offersOnly: OFFERS_ONLY.has(c.id),
     /** The card counted as held, when any Offer today needs it; null otherwise. */
-    card: CARDS[c.id] && catalogue[c.id]!.some((r) => [r[9], r[11]].some((w) => typeof w === "string" && w.includes(CARDS[c.id]!))) ? CARDS[c.id] : null,
+    card: CARDS[c.id] && products[c.id]!.some((p) => [p.offerWording, p.nextWording].some((w) => w?.includes(CARDS[c.id]!))) ? CARDS[c.id]! : null,
   })),
   columns: [...COLUMNS],
   /**
    * What the page reads a typed item against. `fresh`: the Ingredient is sold
    * fresh, so frozen, tinned and jarred count only when a Preference allows.
-   * `aisle`: where it is mainly sold, whose sticker stands in for its own.
+   * `aisle`: where it is mainly sold, which Bladeren groups it under (#36)
+   * and whose sticker stands in for its own.
    */
   vocabulary: VOCABULARY.map((d) => ({
     id: d.id, name: d.name, unit: d.unit, also: d.also, equals: d.equals,
     variants: d.variants.map((v) => ({ id: v.id, name: v.name })),
-    fresh: d.aisles.some((a) => formOf(a) === "vers"),
+    fresh: !d.anyForm && d.aisles.some((a) => formOf(a) === "vers"),
     aisle: d.aisles[0],
   })),
   catalogue,
   exact,
+  /** Differences over 70% looked at and found real, which Bladeren then shows as any other (#36). */
+  checked: CHECKED_SPREADS.map(({ chain, ref, ingredient }) => ({ chain, ref, ingredient })),
 };
 
-await writeFile(OUT, `// Generated by scripts/catalogue-from-db.ts. Do not edit.\nwindow.CATALOGUE = ${JSON.stringify(data)};\n`);
+await writeFile(OUT, catalogueScript(data, "scripts/catalogue-from-db.ts"));
 const counts = chains.map((c) => {
-  const rows = catalogue[c.id]!;
-  return `${c.name} ${rows.length} (${rows.filter((r) => r[11] !== null).length} with an upcoming Offer)`;
+  const ps = products[c.id]!;
+  return `${c.name} ${ps.length} (${ps.filter((p) => p.nextWording !== null).length} with an upcoming Offer)`;
 }).join(", ");
 console.error(`wrote ${OUT.pathname}: ${counts} comparable products`);
 // Reported every run (#14): how much of each Chain maps to an Ingredient, and
 // how much of that compares in the Ingredient's own unit.
 for (const c of chains) {
   const n = mappedCount[c.id]!;
-  console.error(`  ${c.name}: ${n.mapped} mapped to an Ingredient, ${n.total - n.mapped} unmapped; ${n.comparable} comparable in the Ingredient's unit`);
+  console.error(`  ${c.name}: ${n.mapped} mapped to an Ingredient (${n.borrowed} borrowed from an EAN twin), ${n.total - n.mapped} unmapped; ${n.comparable} comparable in the Ingredient's unit`);
+}
+// EAN twins mapped to different Ingredients: one of them is wrong (#34).
+const names = Object.fromEntries(chains.map((c) => [c.id, c.name]));
+console.error(`  ${borrowed.conflicts.length} Exact Products whose Chains map them to different Ingredients${borrowed.conflicts.length ? ":" : ""}`);
+for (const k of borrowed.conflicts) {
+  console.error(`    ${k.name} (${k.id}): ${Object.entries(k.ingredients).map(([c, i]) => `${names[c]} ${i ?? "none"}`).join(", ")}`);
 }
 const likely = exact.filter((g) => Object.keys(g.likely).length).length;
 console.error(`  ${exact.length} Exact Products shared by EAN, ${likely} with a Product likely the same where no EAN is published`);

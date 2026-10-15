@@ -1,5 +1,6 @@
 import { readStep, jsonOf } from "../archive.ts";
-import { deriveUnitPrice, parseInstant, parsePackSize } from "../normalise.ts";
+import { parseInstant, parsePackSize } from "../normalise.ts";
+import { unitPriceOf } from "../unit-price.ts";
 import type { ChainReader, ChainReading, OfferReading, PriceReading } from "./types.ts";
 
 /**
@@ -123,9 +124,7 @@ export const plusReader: ChainReader = {
           observedAt,
           shelfPriceCents: shelf,
           offerPriceCents: offerCents,
-          unitPriceCents: pack ? deriveUnitPrice(paid, pack) : null,
-          comparisonUnit: pack?.unit ?? null,
-          unitPriceSource: pack ? "derived" : null,
+          ...unitPriceOf(paid, pack, null),
         });
 
         if (offer) {

@@ -340,6 +340,68 @@ It publishes nothing unless all of these hold, and goes red otherwise:
   throwaway database: there, every run is a Chain's first.
   `scripts/check-catalogue.ts` does this check and the two above.
 
+Before that check it writes an **Ingredient coverage** report to the run's job
+summary, holding back nothing (#35). The report lists three things. The first
+is each Ingredient, or variant, that every Chain but one or two sells
+comparably. A missing one is either a real gap in that Chain's range or a
+Product the mapper misses there. The second is any Chain whose mapped Products
+fell below 90% of yesterday's, which also raises a warning annotation. The
+third is EAN twins that their Chains map to different Ingredients (#34). Lidl
+lists only its Offers and is left out of the gaps. A gap found to be real goes
+in `src/catalogue/known-gaps.ts` with the reason, and is not reported again.
+If the Chain later sells that Ingredient after all, the report says the entry
+can go. `scripts/check-coverage.ts` writes the report.
+
+The same report then lists every **difference over 70%** between Chains that
+nobody has checked yet (#36): an Ingredient whose cheapest Chain is that far
+below the middle one, or a priced Offer that far below every other Chain.
+Each such difference examined so far was a wrong match, a frozen or tinned
+form, or a unit the Chain itself got wrong, not a bargain. So Bladeren holds
+them back at the foot of the page under "Nog niet gecontroleerd". One found
+real goes in `src/catalogue/checked-spreads.ts`, naming the cheapest Product
+rather than the Ingredient, so a different Product undercutting later is
+checked afresh. The catalogue carries the list as `checked`. Both the page and
+the report read it through `spreads()` in `prototype/resolve.js`, and the
+threshold is `SPREAD_CHECK` there.
+
+Last come three **self-checks** (#37), each a class of mistakes that would
+otherwise be found by chance while shopping. The thresholds sit together in
+`SELF_CHECK_LIMITS` in `src/catalogue/self-checks.ts`.
+
+- **Overnight jumps:** a shelf price up or down 40% or more since yesterday,
+  with no Offer either day.
+- **Split mappings:** the same name and pack at two Chains or more, mapped to
+  different Ingredients or at one Chain only. Two different Ingredients are
+  listed first.
+- **Unit prices that do not follow from the pack:** listed in full for mapped
+  Products and only counted for the rest. A tin or jar of something in liquid
+  whose unit price is up to three times the pack's is counted apart, as a
+  likely drained-weight price (uitlekgewicht). Jumbo states those for tins and
+  jars, and the fix there is one rule, not one Product.
+
+Anything found right as it is goes in `src/catalogue/known-slips.ts` with the
+reason. A split entry naming any one member quietens the whole group, and the
+report names entries it no longer finds.
+
+The first run on 2026-10-14 found Jumbo selling whole cases under one unit's
+title: sku 47868DSL, "Arla Bio Halfvolle Melk 1 L", is a box of six at
+€10.74. The Jumbo reader now takes such a pack as the multiple its price over
+Jumbo's own unit price gives (`wholeCase`), which cut Jumbo's unit slips from
+652 to 455.
+
+Jumbo also prices a tin or jar of something in liquid per drained kilo, where
+the other Chains price the whole pack, so its tins looked half as dear again
+as they were. The owner chose the whole pack for every Chain, so the Jumbo
+reader takes the pack's figure over Jumbo's when Jumbo's is 1.05 to 3 times
+it. That took 171 mapped Products off the list.
+
+Which Unit Price a Product is compared on, the Chain's or the pack's, is one
+rule for every reader, in `src/ingest/unit-price.ts`, and the unit check
+above measures with the same yardstick. A Chain's figure that does not follow
+from a pack the Chain states in a field of its own (Aldi, Hoogvliet) gives way
+to the pack's arithmetic. A pack read out of a title (Jumbo) is our reading,
+often of the wrong number, so there only a drained-kilo figure gives way.
+
 It also judges every Offer against its Product's **Reference Price**, the
 lowest price of the 30 days before the reduction began (#18). The refresh's
 database holds only one day, so `catalogue/history.json` carries each
