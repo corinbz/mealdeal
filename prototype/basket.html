@@ -543,11 +543,12 @@
   /** "500 g bio rundergehakt" -> a Requirement: Ingredient, Variant, Preferences; see resolve.js. */
   const parse = (text) => R.parse(text);
   /**
-   * What an item is called on the page. One the shopper typed reads as typed;
-   * one the page wrote itself (`byApp`: the first list, a Recipe's, one added
-   * from Bladeren) is named in the page's language, and switches with it.
+   * What an item is called on the page. In Dutch, as it was typed; in another
+   * language, an item the vocabulary recognised is named in that language,
+   * however it was typed or added, and switches with it (#25). One it did
+   * not recognise has no other name, so it reads as typed.
    */
-  const nounOf = (item) => item.byApp && item.ingredient && lang !== "nl" ? R.label(item.ingredient, item.variant, lang) : item.noun;
+  const nounOf = (item) => item.ingredient && lang !== "nl" ? R.label(item.ingredient, item.variant, lang) || item.noun : item.noun;
   const qtyText = (i) => i.unit === "piece" ? i.quantity + "×"
     : i.unit === "kg" && i.quantity < 1 ? Math.round(i.quantity * 1000) + " g"
     : i.unit === "l" && i.quantity < 1 ? Math.round(i.quantity * 1000) + " ml" : i.quantity + " " + i.unit;
@@ -558,7 +559,7 @@
   let nextId = 0;
   const newId = () => "i" + Date.now().toString(36) + (nextId++).toString(36);
   let list = load("mealdeal.list.v1", null);
-  if (!Array.isArray(list)) list = SEED.map((t) => ({ id: newId(), staple: false, byApp: true, ...parse(t) }));
+  if (!Array.isArray(list)) list = SEED.map((t) => ({ id: newId(), staple: false, ...parse(t) }));
   // An item saved before Ingredients (#14) is read again from its own text,
   // keeping its place on the list and whether it is a staple.
   list = list.map((i) => ("ingredient" in i || i.exact ? i : { id: i.id, staple: i.staple, ...(parse(i.text || "") || i) }));
@@ -758,7 +759,7 @@
   // type it, read through the same vocabulary as the list, so a Correction
   // made on the list holds in every recipe that needs that Ingredient.
   // The recipes themselves are data, in recipes.js (#20, ADR-0007).
-  const RECIPES = (window.RECIPES || []).map((r) => ({ ...r, ingredients: r.requirements.map((text) => ({ byApp: true, ...parse(text) })) }));
+  const RECIPES = (window.RECIPES || []).map((r) => ({ ...r, ingredients: r.requirements.map((text) => parse(text)) }));
   /** A recipe's name, steps and pantry in the page's language (#25), Dutch where it has none. */
   const inLang = (rc) => (lang !== "nl" && rc[lang]) || rc;
   /** The credit line a recipe adapted from Wikibooks carries wherever it is shown. */
@@ -873,7 +874,7 @@
       "A difference that large is more often a wrongly matched product or a wrong unit than a bargain. We check it first; until then it stays here, not at the top.") + "</p>" + body : "";
   const pct = (share) => Math.round(share * 100) + "%";
   /** "1 kg aardappelen": an Ingredient as a list item, in the unit it compares by. */
-  const ingredientItem = (d) => ({ byApp: true, ...parse((d.unit === "piece" ? "1 " : "1 " + d.unit + " ") + d.name) });
+  const ingredientItem = (d) => parse((d.unit === "piece" ? "1 " : "1 " + d.unit + " ") + d.name);
   /** An Ingredient's name in the page's language. */
   const ingName = (d) => R.label(d.id, null, lang) || d.name;
   const onList = (d) => list.some((i) => i.ingredient === d.id);
@@ -1127,7 +1128,7 @@
           tr("grootste verschil bovenaan · tik voor alle prijzen en om een product te corrigeren", "biggest difference first · tap for every price and to correct a product") + "</span></div>" +
         '<div class="legend">' + chains.map(tag).join("") + "<span>" + tr("· omcirkeld = goedkoopst", "· circled = cheapest") + "</span></div>" +
         '<div class="diffs">' + diffs + "</div>" + exactSection +
-        '<p class="note">' + tr("Prijzen van ", "Prices from ") + andList(chains.map((c) => esc(c.name) + " (" + esc(c.store || tr("landelijk", "national")) + ", " + esc(c.observedAt || "?") + ")")) + ". " +
+        '<p class="note">' + tr("Prijzen van ", "Prices from ") + andList(chains.map((c) => esc(c.name) + " (" + esc(c.store || tr("landelijk", "national")) + ", " + (c.observedAt ? dateText(new Date(c.observedAt + "T12:00:00")) : "?") + ")")) + ". " +
         (noOffers.length ? andList(noOffers.map((c) => esc(c.name))) + tr((many(noOffers) ? " zetten hun" : " zet zijn") + " aanbiedingen alleen in een folder, niet als prijzen online; daar telt de gewone prijs. ",
           (many(noOffers) ? " put their" : " puts its") + " offers only in a flyer, not as prices online; there the regular price counts. ") : "") +
         (offersOnly.length ? andList(offersOnly.map((c) => esc(c.name))) + tr(" zet alleen " + (many(offersOnly) ? "hun" : "zijn") +
