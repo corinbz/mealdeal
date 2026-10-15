@@ -497,6 +497,80 @@
       '<g transform="rotate(25 20 34)"><rect class="c" x="17" y="8" width="6" height="28" rx="3"/></g><g transform="rotate(25 31 34)"><rect class="c" x="28" y="8" width="6" height="28" rx="3"/></g><g transform="rotate(25 42 34)"><rect class="c" x="39" y="8" width="6" height="28" rx="3"/></g>' +
       '<path class="a" d="M8 44c0-8 6-14 14-14h22c7 0 12 5 12 11v4c0 7-5 11-12 11H20c-7 0-12-4-12-12z"/>' +
       '<path class="c" d="M9 40c1-6 6-10 13-10h22c7 0 12 4 12 10-4-3-8-4-12-4H22c-6 0-10 1-13 4z"/><ellipse class="d" cx="22" cy="46" rx="6" ry="3"/>'],
+    kabeljauw: ["--a:#f6f1e6;--b:#a8a090",
+      '<path class="b" d="M6 38c2 8 12 12 24 12 12 0 22-6 28-14l-2-2c-8 8-16 12-26 12-10 0-18-4-24-8z"/>' +
+      '<path class="a" d="M6 34c0-12 12-18 26-18 12 0 20 6 26 16-6 8-14 14-28 14-14 0-24-4-24-12z"/>' +
+      '<path class="e" d="M12 32c6-5 12-5 18 0M22 40c6-5 12-5 18 0M28 25c6-4 12-4 18 0M38 34c5-4 10-4 14 0"/>'],
+    pangasius: ["--a:#8a929a;--b:#c9ced2;--d:#2b2118",
+      '<path class="b" d="M44 32l13-10c1 0 2 1 2 2l-4 8 4 8c0 1-1 2-2 2z"/><path class="a" d="M5 32c6-10 18-14 30-12 6 1 10 5 12 12-2 7-6 11-12 12-12 2-24-2-30-12z"/><circle class="d" cx="13" cy="30" r="1.8"/>' +
+      '<path class="b" d="M14 38c6 4 14 5 22 4-6-1-14-2-22-4z"/><path class="s" d="M9 34c-3 2-5 6-6 10M10 35c0 4-1 8-2 11"/>'],
+    koolvis: ["--a:#4e5a5a;--b:#cdd3d0;--d:#f2f0e6",
+      '<path class="a" d="M44 32l13-10c1 0 2 1 2 2l-4 8 4 8c0 1-1 2-2 2z"/><path class="a" d="M5 32c6-10 18-14 30-12 6 1 10 5 12 12-2 7-6 11-12 12-12 2-24-2-30-12z"/><circle class="d" cx="13" cy="30" r="1.8"/>' +
+      '<path class="b" d="M8 34c8 6 18 9 28 9 5 0 9-3 11-7-12 2-26 2-39-2z"/><path class="e" d="M16 33c8 1 18 1 28-1"/>'],
+    tilapia: ["--a:#b88a8a;--b:#d9b0aa;--d:#2b2118",
+      '<path class="b" d="M16 22c4-8 18-10 26-4l-2 4z"/>' +
+      '<path class="b" d="M44 32l13-10c1 0 2 1 2 2l-4 8 4 8c0 1-1 2-2 2z"/><path class="a" d="M5 32c6-10 18-14 30-12 6 1 10 5 12 12-2 7-6 11-12 12-12 2-24-2-30-12z"/><circle class="d" cx="13" cy="30" r="1.8"/>' +
+      '<path class="e" d="M22 22v20M30 21v22M38 23v18"/>'],
+    vissticks: ["--a:#e8a23a;--d:#c47a1a",
+      '<rect class="a" x="10" y="18" width="30" height="10" rx="2"/><circle class="d" cx="16" cy="22.5" r="1.1"/><circle class="d" cx="22" cy="22.5" r="1.1"/><circle class="d" cx="28" cy="22.5" r="1.1"/><circle class="d" cx="34" cy="22.5" r="1.1"/>' +
+      '<rect class="a" x="18" y="30" width="30" height="10" rx="2"/><circle class="d" cx="24" cy="34.5" r="1.1"/><circle class="d" cx="30" cy="34.5" r="1.1"/><circle class="d" cx="36" cy="34.5" r="1.1"/><circle class="d" cx="42" cy="34.5" r="1.1"/>' +
+      '<rect class="a" x="26" y="42" width="30" height="10" rx="2"/><circle class="d" cx="32" cy="46.5" r="1.1"/><circle class="d" cx="38" cy="46.5" r="1.1"/><circle class="d" cx="44" cy="46.5" r="1.1"/><circle class="d" cx="50" cy="46.5" r="1.1"/>'],
+    garnalen: ["--a:#f08a6a;--b:#e05a3a;--d:#f8c0a8",
+      '<path class="b" d="M44 46l10 6-2-10z"/>' +
+      '<path class="a" d="M14 30c0-12 10-20 22-20s20 8 20 18c0 8-5 14-12 18-3-5-3-11 2-14 1-6-4-10-10-10-8 0-12 6-12 12 0 3 1 5 3 7-5 3-13 1-13-11z"/>' +
+      '<path class="e" d="M22 20l4 5M32 14v6M42 16l-3 6M50 26h-6"/><path class="s" d="M14 30c-4 2-8 2-10 0M16 24c-4-1-7-4-8-7"/><circle class="d" cx="18" cy="26" r="1.6"/>'],
+    mosselen: ["--a:#2f3550;--b:#f2a65a;--d:#5a6290;--c:#e8e2d6",
+      '<path class="a" d="M8 44c2-14 12-26 24-30 6-2 10 2 8 8-4 12-14 22-26 26-4 1-6-1-6-4z"/><path class="d" d="M18 38c4-8 10-14 16-18-2 6-8 14-16 18z"/>' +
+      '<path class="c" d="M28 54c4-12 14-22 26-24 4 0 6 3 4 7-4 10-14 18-26 20-3 1-5-1-4-3z"/><path class="b" d="M32 51c4-8 12-14 21-16-3 8-12 14-21 16z"/>'],
+    haring: ["--a:#9fb4c4;--b:#5a7a94;--d:#2b2118;--c:#f6f2e8",
+      '<g transform="translate(32 31) scale(0.9) translate(-32 -32)"><g transform="rotate(-30 32 32)"><path class="b" d="M44 32l13-10c1 0 2 1 2 2l-4 8 4 8c0 1-1 2-2 2z"/><path class="a" d="M5 32c6-10 18-14 30-12 6 1 10 5 12 12-2 7-6 11-12 12-12 2-24-2-30-12z"/><circle class="d" cx="13" cy="30" r="1.8"/><path class="b" d="M10 28c8-6 20-8 32-4-12 0-22 2-32 4z"/></g>' +
+      '<rect class="c" x="16" y="50" width="5" height="5" rx="1"/><rect class="c" x="24" y="54" width="5" height="5" rx="1"/><rect class="c" x="30" y="48" width="5" height="5" rx="1"/><rect class="c" x="40" y="54" width="5" height="5" rx="1"/><rect class="c" x="46" y="48" width="5" height="5" rx="1"/></g>'],
+    makreel: ["--a:#4f8a8a;--b:#dfe6e6;--d:#2b2118",
+      '<path class="a" d="M44 32l13-10c1 0 2 1 2 2l-4 8 4 8c0 1-1 2-2 2z"/><path class="a" d="M5 32c6-10 18-14 30-12 6 1 10 5 12 12-2 7-6 11-12 12-12 2-24-2-30-12z"/><circle class="d" cx="13" cy="30" r="1.8"/>' +
+      '<path class="b" d="M8 34c8 6 18 9 28 9 5 0 9-3 11-7-12 2-26 2-39-2z"/><path class="e" d="M18 22c2 3 0 6 2 9M24 21c2 3 0 6 2 9M30 20c2 3 0 6 2 9M36 21c2 3 0 6 2 9M42 24c1 2 0 4 1 6"/>'],
+    tonijn: ["--a:#3a6fb8;--c:#b9bfc4;--b:#f2b0a0;--d:#e88a7a",
+      '<path class="c" d="M8 30v14c0 5 11 9 24 9s24-4 24-9V30z"/><rect class="a" x="8" y="34" width="48" height="10"/>' +
+      '<ellipse class="c" cx="32" cy="30" rx="24" ry="9"/><ellipse class="b" cx="32" cy="30" rx="18" ry="6"/>' +
+      '<path class="e" d="M22 28c4 2 8 2 12 0M30 32c4 1 8 0 10-2"/>'],
+    sardines: ["--a:#c9ced2;--c:#b9bfc4;--b:#d9a05a;--d:#8a9aa8",
+      '<rect class="c" x="6" y="22" width="44" height="30" rx="8"/>' +
+      '<rect class="b" x="9" y="25" width="38" height="24" rx="6"/>' +
+      '<path class="a" d="M12 29c6-4 22-4 30 0l4-3v8l-4-3c-8 4-24 4-30 0z" transform="translate(0 -1)"/><path class="a" d="M12 37c6-4 22-4 30 0l4-3v8l-4-3c-8 4-24 4-30 0z" transform="translate(0 -1)"/><path class="a" d="M12 45c6-4 22-4 30 0l4-3v8l-4-3c-8 4-24 4-30 0z" transform="translate(0 -1)"/>' +
+      '<path class="c" d="M44 22c4-10 12-14 16-12l-2 6c-4 0-8 4-10 8z"/><circle class="c" cx="56" cy="13" r="3"/>'],
+    tofu: ["--a:#f4efdc;--b:#e3dcc4;--c:#d8d0b4",
+      '<path class="a" d="M8 30l20-10 26 8-20 10z"/><path class="b" d="M8 30l26 8v18L8 48z"/><path class="c" d="M34 38l20-10v18L34 56z"/>'],
+    tempeh: ["--a:#d8b874;--b:#b8944a;--d:#f4e6c0",
+      '<path class="b" d="M8 32l22-10 26 8v10L32 50 8 42z"/><path class="a" d="M8 32l22-10 26 8-24 10z"/>' +
+      '<ellipse class="d" cx="16" cy="31" rx="2.2" ry="1.4"/><ellipse class="d" cx="22" cy="29" rx="2.2" ry="1.4"/><ellipse class="d" cx="28" cy="27" rx="2.2" ry="1.4"/><ellipse class="d" cx="34" cy="25" rx="2.2" ry="1.4"/><ellipse class="d" cx="22" cy="34" rx="2.2" ry="1.4"/><ellipse class="d" cx="28" cy="32" rx="2.2" ry="1.4"/><ellipse class="d" cx="34" cy="30" rx="2.2" ry="1.4"/><ellipse class="d" cx="40" cy="28" rx="2.2" ry="1.4"/><ellipse class="d" cx="28" cy="37" rx="2.2" ry="1.4"/><ellipse class="d" cx="34" cy="35" rx="2.2" ry="1.4"/><ellipse class="d" cx="40" cy="33" rx="2.2" ry="1.4"/><ellipse class="d" cx="46" cy="31" rx="2.2" ry="1.4"/><ellipse class="d" cx="20" cy="26" rx="2.2" ry="1.4"/><ellipse class="d" cx="26" cy="24" rx="2.2" ry="1.4"/>' +
+      '<path class="e" d="M12 40l18 6M36 44l16-8"/>'],
+    "vegetarisch gehakt": ["--a:#a8744a;--b:#9cc768;--c:#5c9e3a;--d:#d9a87a",
+      '<rect class="b" x="7" y="33" width="50" height="19" rx="7"/>' +
+      '<path class="a" d="M11 37c-2-7 4-12 10-10 1-6 10-8 13-2 3-5 12-3 13 3 6-1 10 5 7 9z"/>' +
+      '<circle class="d" cx="20" cy="31" r="1.7"/><circle class="d" cx="30" cy="28" r="1.7"/><circle class="d" cx="25" cy="34" r="1.5"/><circle class="d" cx="45" cy="34" r="1.5"/>' +
+      '<path class="c" d="M36 24C44.1 23.7 49.3 17.5 47.6 10.2C40.1 9.8 34.9 16 36 24z"/>'],
+    karnemelk: ["--a:#f7f4ec;--b:#e8c84a;--c:#e2dccd;--d:#f7f4ec",
+      '<rect class="c" x="26" y="8" width="12" height="5" rx="1"/><path class="c" d="M20 23l6-10h12l6 10z"/><rect class="a" x="20" y="23" width="24" height="33" rx="2"/>' +
+      '<rect class="b" x="20" y="35" width="24" height="12"/><circle class="d" cx="27" cy="41" r="2"/><circle class="d" cx="33" cy="40" r="1.5"/><circle class="d" cx="38" cy="42" r="2"/>'],
+    chocolademelk: ["--a:#7a4a2e;--b:#f2e6d0;--c:#5c3420;--d:#7a4a2e",
+      '<rect class="c" x="26" y="8" width="12" height="5" rx="1"/><path class="c" d="M20 23l6-10h12l6 10z"/><rect class="a" x="20" y="23" width="24" height="33" rx="2"/>' +
+      '<rect class="b" x="20" y="35" width="24" height="12"/><path class="d" d="M28 38h8v6h-8z"/><path class="e" d="M32 38v6M28 41h8"/>'],
+    koffiemelk: ["--a:#f7f4ec;--b:#8a5a32;--c:#d9b98a;--d:#5c3420",
+      '<rect class="b" x="25" y="9" width="14" height="7" rx="2"/><path class="a" d="M27 16h10v5c6 3 9 7 9 13v18c0 3-2 5-5 5H23c-3 0-5-2-5-5V34c0-6 3-10 9-13z"/>' +
+      '<rect class="c" x="18" y="36" width="28" height="12"/><ellipse class="d" cx="32" cy="42" rx="4" ry="3"/><path class="e" d="M32 39.5c-1 1.5-1 3.5 0 5"/>'],
+    havermelk: ["--a:#f3ead2;--b:#d9b45a;--c:#c8a24a",
+      '<rect class="c" x="34" y="7" width="7" height="5" rx="1"/><path class="c" d="M19 14l2-4h22l2 4z"/><rect class="a" x="19" y="14" width="26" height="42" rx="2"/>' +
+      '<path class="s" d="M32 52V28"/>' +
+      '<path class="b" d="M32 30C32.4 26.6 30.1 23.8 26.9 23.9C26.2 27 28.5 29.8 32 30z"/><path class="b" d="M32 30C35.5 29.8 37.8 27 37.1 23.9C33.9 23.8 31.6 26.6 32 30z"/><path class="b" d="M32 36C32.4 32.6 30.1 29.8 26.9 29.9C26.2 33 28.5 35.8 32 36z"/><path class="b" d="M32 36C35.5 35.8 37.8 33 37.1 29.9C33.9 29.8 31.6 32.6 32 36z"/><path class="b" d="M32 42C32.4 38.6 30.1 35.8 26.9 35.9C26.2 39 28.5 41.8 32 42z"/><path class="b" d="M32 42C35.5 41.8 37.8 39 37.1 35.9C33.9 35.8 31.6 38.6 32 42z"/><path class="b" d="M32 26C34.5 23.9 34.5 20.8 32 19C29.5 20.8 29.5 23.9 32 26z"/>'],
+    sojamelk: ["--a:#eef3dc;--b:#7fae4a;--c:#5c9e3a;--d:#d9e8a8",
+      '<rect class="c" x="34" y="7" width="7" height="5" rx="1"/><path class="c" d="M19 14l2-4h22l2 4z"/><rect class="a" x="19" y="14" width="26" height="42" rx="2"/>' +
+      '<path class="b" d="M22 46c4-10 12-16 22-18 0 8-8 16-20 20z"/><circle class="d" cx="29" cy="41" r="2.2"/><circle class="d" cx="34" cy="37" r="2.2"/><circle class="d" cx="39" cy="33" r="2.2"/>'],
+    amandelmelk: ["--a:#f5ece0;--b:#b07a4a;--c:#8a5a32",
+      '<rect class="c" x="34" y="7" width="7" height="5" rx="1"/><path class="c" d="M19 14l2-4h22l2 4z"/><rect class="a" x="19" y="14" width="26" height="42" rx="2"/>' +
+      '<path class="b" d="M32 24c6 4 9 11 7 18-1 4-4 6-7 6s-6-2-7-6c-2-7 1-14 7-18z"/><path class="e" d="M30 32c-1 3-1 6 0 9M34 30c1 4 1 7 0 10"/>'],
+    kokosmelk: ["--a:#6a4a32;--c:#f7f4ec;--b:#8a6a4a;--d:#3a2a1e",
+      '<circle class="b" cx="40" cy="24" r="16"/><path class="e" d="M30 14l4 3M44 10l-1 4M52 20l-4 1M48 32l-3-2"/><circle class="d" cx="36" cy="22" r="1.8"/><circle class="d" cx="42" cy="22" r="1.8"/><circle class="d" cx="39" cy="27" r="1.8"/>' +
+      '<path class="a" d="M6 36c0 12 10 20 22 20s22-8 22-20z"/><path class="c" d="M10 36c0 9 8 16 18 16s18-7 18-16z"/>' +
+      '<ellipse class="c" cx="28" cy="36" rx="22" ry="5"/>'],
   };
 
   // Where an Ingredient has no drawing of its own, its aisle stands in.
