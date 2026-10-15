@@ -341,6 +341,8 @@ ing("eieren", "piece", ["dairy"], ["eier", "eieren", "scharreleier", "scharrelei
   variants: [["bio", "biologische eieren", ["biologisch", "bio+", "bio "]], ["scharrel", "scharreleieren", ["scharrel"]], ["vrije uitloop", "vrije-uitloopeieren", ["vrije uitloop", "uitloop"]]],
   also: ["ei", "eitjes"],
 });
+// Egg white, sold liquid. "Eiwit" alone is also protein, on every bar and shake, so only as a phrase.
+ing("eiwit", "kg", ["dairy"], ["vloeibaar eiwit", "vloeibare eiwit", "kippeneiwit"], { also: ["eiwitten", "vloeibaar eiwit"] });
 
 // ── Cheese ──────────────────────────────────────────────────────────────
 ing("kaas", "kg", ["cheese", "dairy"], ["kaas", "gouda", "leerdammer", "maasdammer", "edammer", "beemster", "old amsterdam", "milner"], {
