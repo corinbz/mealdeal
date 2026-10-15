@@ -58,6 +58,12 @@ export interface IngredientDef {
    * naming several Ingredients maps here if it names this, or to nothing.
    */
   readonly mix: boolean;
+  /**
+   * The smallest pack, in this Ingredient's unit, that still counts as it: a
+   * Product sold smaller is something else to a shopper, as a party bread or a
+   * 400 g roggebrood is not a loaf. None when any size will do.
+   */
+  readonly smallest?: number;
 }
 
 interface Options {
@@ -68,6 +74,7 @@ interface Options {
   name?: string;
   mix?: boolean;
   anyForm?: boolean;
+  smallest?: number;
 }
 
 const defs: IngredientDef[] = [];
@@ -78,6 +85,7 @@ function ing(id: string, unit: ComparisonUnit, aisles: Aisle[], words: string[],
     equals: o.equals ?? {},
     mix: o.mix ?? false,
     anyForm: o.anyForm ?? false,
+    ...(o.smallest ? { smallest: o.smallest } : {}),
   });
 }
 
@@ -358,9 +366,11 @@ ing("leverworst", "kg", ["deli"], ["leverworst", "pate", "paté", "roompate", "r
 ing("hummus", "kg", ["deli", "pantry", "readymeal"], ["hummus", "houmous"], { not: ["bowl", "chips", "topping", "eat real"] });
 
 // ── Bread ───────────────────────────────────────────────────────────────
+// A loaf: anything under 600 g, or a "kleintje", is not what a shopper means by brood.
 ing("brood", "piece", ["bakery", "frozen"], ["=brood", "=broden", "boterham"], {
   equals: { kg: 0.8 },
-  not: ["bananen", "stok", "krenten", "rozijn", "libanees", "shoarma", "half", "mini", "suiker", "kruiden", "knoflook", "pita", "naan", "afbak", "kaas", "mais", "beleg", "pudding", "rijst", "kruimel", "paneer", "chips", "ontbijtkoek", "pistolet", "bol", "croissant", "bagel", "tortilla", "wrap", "beschuit", "cracker", "toast", "mix", "meel", "kokos"],
+  smallest: 0.75,
+  not: ["kleintje", "breekbrood", "turks", "bananen", "stok", "krenten", "rozijn", "libanees", "shoarma", "half", "mini", "suiker", "kruiden", "knoflook", "pita", "naan", "afbak", "kaas", "mais", "beleg", "pudding", "rijst", "kruimel", "paneer", "chips", "ontbijtkoek", "pistolet", "bol", "croissant", "bagel", "tortilla", "wrap", "beschuit", "cracker", "toast", "mix", "meel", "kokos"],
   variants: [["volkoren", "volkorenbrood", ["volkoren"]], ["meergranen", "meergranenbrood", ["meergranen", "granen", "zaden", "spelt"]],
     ["bruin", "bruinbrood", ["bruin", "tarwe"]], ["wit", "witbrood", ["wit", "casino"]]],
 });

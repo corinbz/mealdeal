@@ -135,7 +135,12 @@
       const base = { ...item, text: text.trim().replace(/\s+/g, " "), preferences };
       if (!def) return { ...base, ingredient: null, variant: null, suggestion: suggest(item.noun) };
       let { quantity, unit, guessed } = item;
-      if (unit !== def.unit) {
+      if (guessed && def.unit === "piece" && unit !== "piece") {
+        // No unit written for an Ingredient counted in pieces: the number counts
+        // them, so "brood" is one loaf and "2 brood" two, never 1.25 loaves'
+        // worth of the kilo most bread is priced by.
+        unit = "piece"; guessed = !/\d/.test(rest);
+      } else if (unit !== def.unit) {
         // Written in another unit than the Ingredient compares by: convert
         // where the vocabulary says how ("500 g courgette" is about 1.7), and
         // otherwise keep the number in the Ingredient's unit, marked a guess.

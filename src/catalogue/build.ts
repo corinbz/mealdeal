@@ -148,8 +148,11 @@ export function buildCatalogue(source: CatalogueSource, { now = new Date(), voca
     products[chain.id] = productsAt(chain.id).map((p) => {
       const key = productKey(chain.id, p.ref);
       const lent = borrowed.mappings.get(key);
-      const m = own.get(key) ?? lent ?? null;
-      const def = m ? defs.get(m.ingredient)! : null;
+      let m = own.get(key) ?? lent ?? null;
+      let def = m ? defs.get(m.ingredient)! : null;
+      // Too small a pack to be what the Ingredient means (a party bread is not a loaf): not it at all.
+      if (def?.smallest && p.packQuantity !== null && p.packUnit
+        && (inIngredientUnit(p.packUnit as ComparisonUnit, p.packQuantity, def.unit, def.equals, false) ?? Infinity) < def.smallest) m = def = null;
       const iPrice = def ? inIngredientUnit(p.comparisonUnit, p.unitPriceCents, def.unit, def.equals, true) : null;
       const iPack = def && p.packQuantity !== null && p.packUnit
         ? inIngredientUnit(p.packUnit as ComparisonUnit, p.packQuantity, def.unit, def.equals, false)
