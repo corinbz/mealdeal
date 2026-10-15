@@ -237,7 +237,8 @@ const data: Catalogue = {
   /**
    * What the page reads a typed item against. `fresh`: the Ingredient is sold
    * fresh, so frozen, tinned and jarred count only when a Preference allows.
-   * `aisle`: where it is mainly sold, which Bladeren groups it under (#36).
+   * `aisle`: where it is mainly sold, which Bladeren groups it under (#36)
+   * and whose sticker stands in for its own.
    */
   vocabulary: VOCABULARY.map((d) => ({
     id: d.id, name: d.name, unit: d.unit, also: d.also, equals: d.equals,
