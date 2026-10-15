@@ -1,0 +1,1339 @@
+aardappelen	aardappelen
+kruimige aardappelen	aardappelen/kruimig
+vastkokende aardappelen	aardappelen/vastkokend
+krieltjes	aardappelen/kriel
+zoete aardappel	zoete aardappelen
+1 kg aardappelen	aardappelen
+2 kg aardappelen	aardappelen
+uien	uien
+rode uien	uien/rode
+sjalotten	sjalotten
+lente-ui	bosui
+bosui	bosui
+prei	prei
+knoflook	knoflook
+2 bollen knoflook	knoflook
+gember	gember
+wortels	wortelen
+winterpeen	wortelen
+bospeen	wortelen
+worteltjes	wortelen
+waspeen	wortelen
+broccoli	broccoli
+bloemkool	bloemkool
+spruitjes	spruiten
+witte kool	witte kool
+rode kool	rode kool
+savooiekool	-
+spitskool	spitskool
+boerenkool	boerenkool
+zuurkool	zuurkool
+andijvie	andijvie
+spinazie	spinazie
+verse spinazie	spinazie
+wilde spinazie	spinazie
+sla	sla
+ijsbergsla	ijsbergsla
+kropsla	kropsla
+rucola	rucola
+veldsla	veldsla
+romaine sla	sla
+little gem	-
+komkommer	komkommer
+2 komkommers	komkommer
+tomaten	tomaten
+cherrytomaatjes	-
+trostomaten	tomaten/tros
+pomodori	-
+vleestomaat	-
+paprika	paprika
+rode paprika	paprika/rood
+groene paprika	paprika/groen
+gele paprika	paprika/geel
+puntpaprika	puntpaprika
+courgette	courgette
+aubergine	aubergine
+champignons	champignons
+kastanjechampignons	champignons/kastanje
+oesterzwammen	paddenstoelen
+shiitake	paddenstoelen
+paddenstoelen	paddenstoelen
+sperziebonen	sperziebonen
+snijbonen	snijbonen
+tuinbonen	-
+peultjes	peultjes
+sugarsnaps	peultjes
+doperwten	doperwten
+mais	mais
+maiskolf	mais
+venkel	venkel
+selderij	-
+bleekselderij	bleekselderij
+knolselderij	knolselderij
+pastinaak	pastinaak
+koolrabi	koolrabi
+radijs	radijs
+rode biet	rode bieten
+gekookte bieten	rode bieten
+asperges	asperges
+witte asperges	asperges
+groene asperges	asperges
+witlof	witlof
+pompoen	pompoen
+flespompoen	pompoen
+pak choi	paksoi
+chinese kool	chinese kool
+taugé	taugé
+groentemix	-
+roerbakgroente	roerbakgroente
+wokgroente	roerbakgroente
+soepgroente	soepgroente
+andijviestamppot	-
+hutspot	stamppotgroente
+diepvriesspinazie	-
+diepvries erwten	doperwten
+diepvriesgroente	-
+gesneden groente	-
+rauwkost	rauwkost
+coleslaw	rauwkost
+avocado	avocado
+2 avocado's	avocado
+chilipeper	rode peper
+rode peper	rode peper
+jalapeño	-
+verse kruiden	-
+peterselie	peterselie
+platte peterselie	peterselie
+basilicum	basilicum
+koriander	koriander
+munt	munt
+dille	dille
+bieslook	bieslook
+rozemarijn	rozemarijn
+tijm	tijm
+salie	-
+citroengras	-
+appels	appels
+elstar	appels
+jonagold	appels
+granny smith	appels/granny
+peren	peren
+conference peren	peren
+bananen	bananen
+1 tros bananen	bananen
+sinaasappels	sinaasappels
+handsinaasappels	-
+mandarijnen	mandarijnen
+clementines	mandarijnen
+citroenen	citroenen
+limoenen	limoenen
+grapefruit	grapefruit
+druiven	druiven
+witte druiven	druiven
+blauwe druiven	druiven
+aardbeien	aardbeien
+frambozen	frambozen
+blauwe bessen	blauwe bessen
+bramen	-
+rode bessen	-
+kersen	kersen
+kiwi	kiwi's
+mango	mango
+ananas	ananas
+meloen	meloen
+watermeloen	meloen
+galiameloen	meloen
+perziken	nectarines
+nectarines	nectarines
+pruimen	pruimen
+abrikozen	-
+granaatappel	granaatappel
+passievrucht	-
+vijgen	-
+dadels	dadels
+lychees	-
+fruitsalade	fruitsalade
+appelmoes	appelmoes
+rozijnen	rozijnen
+krenten	rozijnen
+gedroogde abrikozen	-
+gedroogde vijgen	-
+gedroogde cranberries	-
+diepvries fruit	-
+diepvries frambozen	frambozen
+bevroren bosvruchten	-
+rood fruit	-
+kokosnoot	-
+melk	melk
+halfvolle melk	melk/halfvol
+volle melk	melk/vol
+magere melk	melk/mager
+1 l halfvolle melk	melk/halfvol
+2 l melk	melk
+lactosevrije melk	melk/lactosevrij
+karnemelk	karnemelk
+chocolademelk	chocolademelk
+koffiemelk	koffiemelk
+koffieroom	koffiemelk
+slagroom	slagroom
+kookroom	kookroom
+zure room	zure room
+creme fraiche	crème fraîche
+crème fraîche	crème fraîche
+mascarpone	roomkaas
+ricotta	ricotta
+cottage cheese	kaas
+hüttenkäse	-
+yoghurt	yoghurt
+griekse yoghurt	yoghurt/grieks
+volle yoghurt	yoghurt/vol
+magere yoghurt	yoghurt/mager
+halfvolle yoghurt	yoghurt/halfvol
+skyr	yoghurt/skyr
+kwark	kwark
+magere kwark	kwark/mager
+vla	vla
+vanillevla	vla
+chocoladevla	vla
+pap	-
+griesmeelpudding	-
+rijstepap	-
+custard	vla
+toetjes	-
+pudding	-
+boter	roomboter
+roomboter	roomboter
+ongezouten roomboter	roomboter/ongezouten
+halvarine	margarine
+margarine	margarine
+bakboter	bak- en braadboter
+blue band	margarine
+kaas	kaas
+jonge kaas	kaas/jong
+jong belegen kaas	kaas/jong belegen
+belegen kaas	kaas/belegen
+oude kaas	kaas/oud
+extra belegen kaas	kaas/extra belegen
+geraspte kaas	geraspte kaas
+plakken kaas	kaas
+kaas plakjes	-
+smeerkaas	roomkaas
+roomkaas	roomkaas
+philadelphia	roomkaas
+boursin	-
+geitenkaas	geitenkaas
+feta	feta
+mozzarella	mozzarella
+burrata	mozzarella
+parmezaanse kaas	parmezaanse kaas
+parmezaan	parmezaanse kaas
+grana padano	parmezaanse kaas
+pecorino	-
+brie	brie
+camembert	brie
+gorgonzola	-
+blauwe kaas	kaas
+cheddar	-
+gouda	kaas
+edammer	kaas
+leerdammer	kaas
+maasdammer	kaas
+emmentaler	-
+gruyère	-
+halloumi	halloumi
+paneer	-
+eieren	eieren
+6 eieren	eieren
+10 eieren	eieren
+12 eieren	eieren
+scharreleieren	eieren/scharrel
+vrije uitloop eieren	eieren
+biologische eieren	eieren/bio
+eiwit	eiwit
+eidooiers	-
+hardgekookte eieren	eieren
+drinkyoghurt	drinkyoghurt
+yakult	-
+actimel	-
+optimel	-
+chocomel	chocolademelk
+fristi	-
+havermelk	havermelk
+amandelmelk	amandelmelk
+sojamelk	sojamelk
+haverdrank	-
+sojadrank	-
+kokosmelk	kokosmelk
+plantaardige yoghurt	-
+sojayoghurt	-
+alpro	-
+vegan kaas	-
+gehakt	gehakt
+rundergehakt	gehakt/rund
+half om half gehakt	gehakt/half-om-half
+kipgehakt	gehakt/kip
+varkensgehakt	gehakt/varken
+500 g gehakt	gehakt
+kipfilet	kipfilet
+kippendijen	kipdijfilet
+kippenpoten	kippenpoten
+drumsticks	kippenpoten
+kippenvleugels	kipvleugels
+hele kip	hele kip
+kipreepjes	kipfilet
+kipdijfilet	kipdijfilet
+kipschnitzel	-
+kipnuggets	-
+shoarma	shoarma
+gyros	shoarma
+kebab	shoarma
+biefstuk	biefstuk
+entrecote	biefstuk
+ossenhaas	-
+riblappen	stoofvlees
+sukadelappen	stoofvlees
+stoofvlees	stoofvlees
+rundvlees	-
+draadjesvlees	stoofvlees
+runderlappen	stoofvlees
+hamburgers	hamburgers
+burgers	hamburgers
+slavinken	gehaktballen
+blinde vinken	-
+gehaktballen	gehaktballen
+balletjes	gehaktballen
+speklappen	speklappen
+spek	spekblokjes
+spekjes	spekblokjes
+ontbijtspek	ontbijtspek
+bacon	ontbijtspek
+varkenshaas	varkenshaas
+karbonades	karbonade
+schnitzel	schnitzels
+varkensschnitzel	-
+procureur	varkensvlees
+spareribs	varkensvlees
+saucijzen	braadworst
+braadworst	braadworst
+rookworst	rookworst
+unox rookworst	rookworst
+knakworstjes	knakworst
+frankfurters	knakworst
+hotdogs	-
+worstjes	-
+chorizo	salami
+salami	salami
+cervelaat	cervelaat
+ham	ham
+achterham	ham
+beenham	ham
+gekookte ham	ham/gekookt
+rauwe ham	ham/rauw
+parmaham	ham
+serranoham	ham
+filet americain	filet americain
+rosbief	-
+pastrami	-
+kipfilet beleg	kipfilet beleg
+gerookte kipfilet	kipfilet
+kalkoen	kalkoenfilet
+kalkoenfilet	kalkoenfilet
+lamsvlees	lamsvlees
+lamskoteletten	-
+lamsgehakt	lamsvlees
+eend	-
+konijn	-
+wild	-
+vleeswaren	-
+boterhamworst	boterhamworst
+leverworst	leverworst
+smeerleverworst	-
+paté	leverworst
+grillworst	grillworst
+zult	-
+vis	-
+zalm	zalm
+zalmfilet	zalm/vers
+gerookte zalm	zalm/gerookt
+kabeljauw	kabeljauw
+koolvis	koolvis
+pangasius	pangasius
+tilapia	tilapia
+tonijn	tonijn
+tonijn in blik	-
+makreel	makreel
+gerookte makreel	makreel
+haring	haring
+hollandse nieuwe	-
+zure haring	haring
+rolmops	-
+sardines	sardines
+ansjovis	-
+garnalen	garnalen
+grote garnalen	garnalen
+hollandse garnalen	garnalen
+gamba's	garnalen
+mosselen	mosselen
+inktvis	-
+calamares	-
+kibbeling	kibbeling
+lekkerbekjes	-
+vissticks	vissticks
+fish fingers	vissticks
+surimi	surimi
+krab	-
+kreeft	-
+forel	-
+schollefilet	-
+schol	-
+tong	-
+heilbot	-
+paling	-
+vegetarische burger	-
+vegaburger	-
+vegetarisch gehakt	vegetarisch gehakt
+vega gehakt	vegetarisch gehakt
+tofu	tofu
+tempeh	tempeh
+seitan	-
+vegetarische kipstukjes	-
+falafel	falafel
+vegetarische schnitzel	-
+vleesvervanger	-
+brood	brood
+volkorenbrood	brood/volkoren
+witbrood	brood/wit
+bruinbrood	brood/bruin
+meergranenbrood	brood/meergranen
+tijgerbrood	-
+casino brood	brood
+desembrood	-
+speltbrood	-
+roggebrood	roggebrood
+krentenbrood	-
+krentenbollen	-
+suikerbrood	-
+stokbrood	stokbrood
+afbakbrood	afbakbroodjes
+afbakbroodjes	afbakbroodjes
+pistolets	afbakbroodjes
+bolletjes	bolletjes
+kaiserbroodjes	-
+witte bollen	bolletjes
+bruine bollen	bolletjes
+croissants	croissants
+pains au chocolat	-
+broodjes	brood
+pita broodjes	pitabroodjes
+wraps	tortilla's
+tortilla's	tortilla's
+naan	pitabroodjes
+ciabatta	-
+focaccia	-
+bagels	-
+english muffins	-
+beschuit	beschuit
+crackers	crackers
+knäckebröd	crackers
+rijstwafels	crackers
+cracottes	-
+toast	-
+toastjes	-
+ontbijtkoek	ontbijtkoek
+peperkoek	ontbijtkoek
+hagelslag	hagelslag
+chocoladehagelslag	-
+vlokken	-
+muisjes	-
+roze muisjes	-
+gestampte muisjes	-
+pindakaas	pindakaas
+jam	jam
+aardbeienjam	-
+abrikozenjam	-
+confiture	jam
+honing	honing
+appelstroop	appelstroop
+chocoladepasta	chocoladepasta
+nutella	chocoladepasta
+speculoospasta	-
+cornflakes	cornflakes
+muesli	muesli
+granola	muesli
+cruesli	muesli
+havermout	havermout
+brinta	-
+ontbijtgranen	cornflakes
+weetabix	-
+special k	-
+oatmeal	havermout
+tarwezemelen	-
+lijnzaad	-
+chiazaad	-
+rijst	rijst
+basmatirijst	rijst/basmati
+zilvervliesrijst	rijst/zilvervlies
+pandanrijst	rijst/pandan
+risottorijst	rijst/risotto
+sushirijst	-
+wilde rijst	rijst
+pasta	pasta
+spaghetti	pasta/spaghetti
+penne	pasta/penne
+macaroni	pasta/macaroni
+fusilli	pasta/fusilli
+farfalle	pasta
+tagliatelle	pasta/tagliatelle
+lasagnebladen	pasta/lasagne
+lasagne	pasta
+ravioli	pasta
+tortellini	pasta/tortellini
+gnocchi	gnocchi
+noedels	mie
+mie	mie
+mihoen	-
+rijstnoedels	mie
+udon	-
+couscous	couscous
+bulgur	couscous
+quinoa	quinoa
+linzen	linzen
+rode linzen	linzen
+kikkererwten	kikkererwten
+kidneybonen	kidneybonen
+bruine bonen	bruine bonen
+witte bonen	witte bonen
+witte bonen in tomatensaus	-
+zwarte bonen	zwarte bonen
+capucijners	-
+mais in blik	-
+erwten in blik	-
+doperwten en wortelen	doperwten en wortelen
+tomatenpuree	tomatenpuree
+passata	passata
+gezeefde tomaten	passata
+tomatenblokjes	tomatenblokjes
+tomaten in blik	-
+pastasaus	pastasaus
+pesto	pesto
+groene pesto	pesto
+rode pesto	pesto
+ketchup	ketchup
+mayonaise	mayonaise
+mayo	mayonaise
+fritessaus	mayonaise
+mosterd	mosterd
+grove mosterd	mosterd
+currysaus	currysaus
+sambal	sambal
+sambal oelek	sambal
+ketjap	sojasaus
+ketjap manis	sojasaus
+sojasaus	sojasaus
+sweet chili saus	-
+sriracha	sriracha
+tabasco	-
+worcestershiresaus	-
+barbecuesaus	-
+bbq saus	-
+knoflooksaus	knoflooksaus
+cocktailsaus	-
+satésaus	pindasaus
+pindasaus	pindasaus
+hoisinsaus	-
+oestersaus	-
+vissaus	-
+teriyakisaus	-
+kokosmelk in blik	-
+currypasta	-
+rode currypasta	-
+groene currypasta	-
+boemboe	-
+nasi kruiden	-
+bami kruiden	-
+taco kruiden	-
+mix voor nasi	-
+mix voor spaghetti	-
+mix voor chili con carne	-
+bouillon	bouillon
+bouillonblokjes	bouillon
+groentebouillon	-
+kippenbouillon	-
+runderbouillon	-
+jus	-
+juspoeder	-
+olie	-
+olijfolie	olijfolie
+extra vierge olijfolie	olijfolie/extra vierge
+zonnebloemolie	zonnebloemolie
+frituurolie	zonnebloemolie
+frituurvet	-
+arachideolie	zonnebloemolie
+sesamolie	-
+kokosolie	-
+azijn	azijn
+witte azijn	azijn
+balsamico azijn	azijn
+appelazijn	-
+zout	zout
+zeezout	zout
+peper	rode peper
+zwarte peper	zwarte peper
+paprikapoeder	paprikapoeder
+gerookte paprikapoeder	paprikapoeder
+kerrie	kerrie
+kerriepoeder	kerrie
+komijn	-
+kurkuma	-
+kaneel	kaneel
+nootmuskaat	nootmuskaat
+oregano	oregano
+italiaanse kruiden	-
+laurierblaadjes	-
+chilivlokken	-
+cayennepeper	-
+gemberpoeder	-
+knoflookpoeder	-
+vanillesuiker	vanillesuiker
+suiker	suiker
+kristalsuiker	suiker/kristal
+basterdsuiker	suiker/basterd
+poedersuiker	suiker/poeder
+rietsuiker	suiker/riet
+zoetjes	-
+stevia	-
+bloem	bloem
+tarwebloem	bloem
+zelfrijzend bakmeel	zelfrijzend bakmeel
+volkorenmeel	bloem
+maizena	maizena
+paneermeel	paneermeel
+bakpoeder	bakpoeder
+gist	gist
+gedroogde gist	gist
+cacaopoeder	-
+chocoladestukjes	-
+pure chocolade	chocolade/puur
+puddingpoeder	-
+gelatine	-
+cakemix	-
+pannenkoekenmix	pannenkoekmix
+poffertjesmix	-
+wafelmix	-
+pannenkoeken	pannenkoeken
+poffertjes	poffertjes
+stroop	-
+pannenkoekenstroop	-
+ahornsiroop	-
+noten	noten
+walnoten	noten
+cashewnoten	noten
+amandelen	noten
+pinda's	pinda's
+pistachenoten	-
+hazelnoten	noten
+pecannoten	-
+pijnboompitten	-
+zonnebloempitten	-
+pompoenpitten	-
+sesamzaad	sesamzaad
+studentenhaver	noten
+nootjes	-
+borrelnootjes	-
+olijven	olijven
+groene olijven	olijven
+zwarte olijven	olijven
+augurken	augurken
+zilveruitjes	zilveruitjes
+kappertjes	-
+zongedroogde tomaten	tomaten
+ingelegde paprika	paprika
+rode kool uit pot	rode kool
+appelmoes uit pot	appelmoes
+soep	soep
+tomatensoep	soep/tomaat
+erwtensoep	soep/erwten
+kippensoep	soep/kip
+groentesoep	soep/groente
+champignonsoep	soep/champignon
+uiensoep	soep/uien
+soep in blik	-
+cup a soup	soep
+noodle soup	soep
+instant noedels	mie
+knakworst in blik	-
+ravioli in blik	-
+corned beef	-
+smac	-
+tonijnsalade	-
+zalmsalade	-
+eiersalade	-
+kip kerrie salade	-
+huzarensalade	-
+aardappelsalade	-
+macaronisalade	-
+hummus	hummus
+tzatziki	-
+guacamole	-
+salsa	-
+tortillachips	chips
+taco's	-
+taco schelpen	-
+tortilla wraps	tortilla's
+kokosrasp	-
+rozijnen in pakje	-
+diepvriespizza	-
+pizza	pizza
+pizza margherita	-
+patat	friet
+friet	friet
+frieten	friet
+diepvriesfriet	-
+oven friet	friet
+kroketten	kroketten
+bitterballen	bitterballen
+frikandellen	frikandellen
+kaassoufflés	-
+loempia's	loempia's
+mini loempia's	mini loempia's
+nasi	-
+bami	-
+diepvriesmaaltijd	-
+kant-en-klaar maaltijd	-
+maaltijdsalade	-
+ijs	ijs
+vanille-ijs	ijs
+roomijs	ijs
+magnum	-
+ijsjes	ijs
+waterijsjes	ijs
+sorbet	-
+bladerdeeg	bladerdeeg
+diepvries bladerdeeg	bladerdeeg
+pizzadeeg	-
+taartdeeg	-
+diepvries kruiden	-
+diepvries vis	-
+ijsblokjes	-
+chips	chips
+paprikachips	chips
+naturel chips	chips
+ribbelchips	chips
+pringles	-
+nacho's	chips
+popcorn	popcorn
+zoute popcorn	popcorn
+kroepoek	kroepoek
+cassave chips	chips
+zoutjes	-
+tuc	-
+pretzels	-
+zoute stokjes	-
+drop	drop
+dropjes	drop
+zoute drop	drop
+zoete drop	drop
+snoep	-
+winegums	winegums
+schuimpjes	-
+pepermunt	-
+kauwgom	kauwgom
+chocolade	chocolade
+chocoladereep	chocolade
+melkchocolade	chocolade/melk
+witte chocolade	chocolade/wit
+tony's	-
+tony chocolonely	-
+m&m's	-
+mars	-
+snickers	-
+twix	-
+bounty	-
+kitkat	-
+paaseitjes	-
+chocoladeletters	-
+pepernoten	-
+kruidnoten	-
+speculaas	speculaas
+speculaasjes	speculaas
+koekjes	koekjes
+biscuits	koekjes
+mariakaakjes	-
+bastognekoeken	-
+stroopwafels	stroopwafels
+eierkoeken	-
+gevulde koeken	koekjes
+roze koeken	koekjes
+tompouce	-
+appeltaart	-
+cake	-
+marmercake	-
+muffins	-
+brownies	-
+donuts	-
+oliebollen	-
+wafels	-
+luikse wafels	-
+mergpijpjes	-
+krakelingen	-
+eierkoek	-
+rijstwafels met chocolade	-
+mueslirepen	-
+proteinerepen	-
+eiwitrepen	-
+energierepen	-
+dadelrepen	-
+koffie	koffie
+koffiebonen	koffie/bonen
+gemalen koffie	koffie
+filterkoffie	koffie/filter
+koffiecups	koffie/cups
+koffiepads	koffie/pads
+senseo pads	-
+nespresso cups	-
+dolce gusto cups	-
+oploskoffie	koffie/oplos
+cappuccino	-
+thee	thee
+zwarte thee	thee
+groene thee	thee
+pepermuntthee	-
+kamillethee	-
+rooibos	thee
+theezakjes	thee
+ijsthee	ijsthee
+lipton ice tea	ijsthee
+water	water
+bronwater	water
+mineraalwater	water
+spa rood	-
+spa blauw	-
+bruiswater	-
+sodawater	-
+cola	cola
+cola zero	cola/zero
+pepsi	-
+pepsi max	-
+fanta	-
+sprite	-
+7up	-
+seven up	-
+frisdrank	-
+tonic	tonic
+ginger ale	-
+cassis	-
+sinas	-
+dubbelfris	-
+appelsap	appelsap
+sinaasappelsap	sinaasappelsap
+jus d'orange	sinaasappelsap
+verse jus	-
+multivruchtensap	-
+tomatensap	-
+druivensap	-
+cranberrysap	-
+smoothie	-
+limonade	limonadesiroop
+limonadesiroop	limonadesiroop
+ranja	limonadesiroop
+siroop	limonadesiroop
+diksap	limonadesiroop
+energiedrank	-
+red bull	-
+monster	-
+sportdrank	-
+aquarius	-
+bier	bier
+pils	bier/pils
+blikjes bier	bier
+krat bier	bier
+heineken	-
+grolsch	-
+hertog jan	-
+alcoholvrij bier	bier/alcoholvrij
+0.0 bier	bier/alcoholvrij
+radler	-
+speciaalbier	-
+weizen	-
+ipa	-
+wijn	-
+rode wijn	-
+witte wijn	-
+rosé	-
+prosecco	-
+champagne	-
+cava	-
+port	-
+sherry	-
+jenever	-
+whisky	-
+wodka	-
+rum	-
+gin	-
+likeur	-
+advocaat	-
+cider	-
+babyvoeding	-
+babymelk	-
+opvolgmelk	-
+fruithapje	-
+groentehapje	-
+babykoekjes	-
+kattenvoer	-
+hondenvoer	-
+brokjes	-
+kattenbrokken	-
+hondenbrokken	-
+natvoer	-
+kattensnoepjes	-
+hondensnoepjes	-
+vogelzaad	-
+wc-papier	-
+toiletpapier	-
+keukenrol	-
+tissues	-
+zakdoekjes	-
+afwasmiddel	-
+vaatwastabletten	-
+vaatwasmiddel	-
+wasmiddel	-
+wasverzachter	-
+allesreiniger	-
+schoonmaakazijn	-
+bleek	-
+chloor	-
+ontkalker	-
+sponsjes	-
+vaatdoekjes	-
+vuilniszakken	-
+afvalzakken	-
+diepvrieszakjes	-
+boterhamzakjes	-
+aluminiumfolie	-
+huishoudfolie	-
+bakpapier	-
+tandpasta	-
+tandenborstel	-
+shampoo	-
+conditioner	-
+douchegel	-
+zeep	-
+handzeep	-
+deodorant	-
+scheermesjes	-
+maandverband	-
+tampons	-
+luiers	-
+billendoekjes	-
+watjes	-
+wattenstaafjes	-
+pleisters	-
+paracetamol	-
+ibuprofen	-
+batterijen	-
+lampjes	-
+kaarsen	-
+waxinelichtjes	-
+lucifers	-
+aanstekers	-
+bloemen	bloem
+plantenvoeding	-
+krant	-
+potatoes	aardappelen
+baby potatoes	aardappelen/kriel
+sweet potatoes	zoete aardappelen
+onions	uien
+red onions	uien/rode
+shallots	sjalotten
+spring onions	bosui
+scallions	bosui
+garlic	knoflook
+ginger	gember
+carrots	wortelen
+cauliflower	bloemkool
+brussels sprouts	spruiten
+cabbage	-
+red cabbage	rode kool
+kale	boerenkool
+spinach	spinazie
+baby spinach	spinazie
+lettuce	sla
+iceberg lettuce	ijsbergsla
+romaine	sla
+arugula	rucola
+rocket	rucola
+mixed salad	-
+salad greens	sla
+cucumber	komkommer
+tomatoes	tomaten
+cherry tomatoes	tomaten/snoep
+bell peppers	paprika
+red pepper	paprika/rood
+green pepper	paprika/groen
+chili peppers	rode peper
+zucchini	courgette
+courgettes	courgette
+eggplant	aubergine
+mushrooms	champignons
+button mushrooms	champignons/wit
+portobello mushrooms	champignons
+green beans	sperziebonen
+peas	doperwten
+frozen peas	doperwten
+sweet corn	mais
+corn on the cob	mais
+celery	bleekselderij
+fennel	venkel
+leeks	prei
+parsnips	pastinaak
+beetroot	rode bieten
+beets	rode bieten
+asparagus	asperges
+radishes	radijs
+pumpkin	pompoen
+butternut squash	pompoen
+bok choy	paksoi
+bean sprouts	taugé
+stir fry vegetables	roerbakgroente
+frozen vegetables	-
+avocados	avocado
+fresh herbs	-
+parsley	peterselie
+basil	basilicum
+cilantro	koriander
+coriander	koriander
+mint	munt
+dill	dille
+chives	bieslook
+rosemary	rozemarijn
+thyme	tijm
+apples	appels
+pears	peren
+bananas	bananen
+oranges	sinaasappels
+lemons	citroenen
+limes	limoenen
+grapes	druiven
+strawberries	aardbeien
+raspberries	frambozen
+blueberries	blauwe bessen
+blackberries	-
+cherries	kersen
+kiwis	kiwi's
+mangoes	mango
+pineapple	ananas
+melon	meloen
+watermelon	-
+peaches	-
+plums	pruimen
+apricots	-
+pomegranate	granaatappel
+figs	-
+dates	dadels
+raisins	rozijnen
+dried cranberries	-
+frozen berries	-
+applesauce	appelmoes
+milk	melk
+whole milk	melk/vol
+semi-skimmed milk	melk/halfvol
+skimmed milk	melk/mager
+skim milk	melk/mager
+2% milk	melk
+lactose-free milk	melk/lactosevrij
+buttermilk	karnemelk
+chocolate milk	chocolademelk
+oat milk	havermelk
+almond milk	amandelmelk
+soy milk	sojamelk
+heavy cream	slagroom
+double cream	slagroom
+single cream	-
+whipping cream	slagroom
+sour cream	zure room
+cream cheese	roomkaas
+yogurt	yoghurt
+greek yogurt	yoghurt/grieks
+plain yogurt	yoghurt/naturel
+vanilla yogurt	yoghurt/vanille
+strawberry yogurt	yoghurt/aardbei
+low fat yogurt	yoghurt/halfvol
+quark	kwark
+butter	roomboter
+unsalted butter	roomboter/ongezouten
+salted butter	roomboter/gezouten
+cheese	kaas
+grated cheese	geraspte kaas
+shredded cheese	geraspte kaas
+sliced cheese	kaas
+cheddar cheese	kaas
+mature cheddar	-
+parmesan	parmezaanse kaas
+goat cheese	geitenkaas
+blue cheese	kaas
+eggs	eieren
+a dozen eggs	eieren
+free range eggs	eieren/vrije uitloop
+organic eggs	eieren/bio
+egg whites	eiwit
+ground beef	gehakt/rund
+minced beef	gehakt/rund
+mince	gehakt
+beef mince	gehakt/rund
+ground pork	gehakt/varken
+ground turkey	-
+chicken breast	kipfilet
+chicken breasts	kipfilet
+chicken thighs	kipdijfilet
+chicken drumsticks	kippenpoten
+chicken wings	kipvleugels
+whole chicken	hele kip
+chicken nuggets	-
+steak	biefstuk
+sirloin steak	biefstuk
+beef steak	biefstuk
+stewing beef	stoofvlees
+beef stew meat	stoofvlees
+pork chops	karbonade
+pork tenderloin	varkenshaas
+pork loin	-
+streaky bacon	ontbijtspek
+back bacon	ontbijtspek
+sliced ham	ham
+sausages	-
+pork sausages	-
+smoked sausage	rookworst
+hot dogs	knakworst
+pepperoni	salami
+roast beef	-
+turkey slices	-
+deli meat	-
+lamb	lamsvlees
+lamb chops	-
+minced lamb	lamsvlees
+meatballs	gehaktballen
+fish	-
+salmon	zalm
+salmon fillets	zalm/vers
+smoked salmon	zalm/gerookt
+cod	kabeljauw
+haddock	-
+tuna	tonijn
+canned tuna	tonijn
+tinned tuna	tonijn
+mackerel	makreel
+herring	haring
+anchovies	-
+shrimp	garnalen
+prawns	garnalen
+king prawns	garnalen
+mussels	mosselen
+squid	-
+fish sticks	vissticks
+crab sticks	surimi
+veggie burgers	-
+plant-based mince	-
+meat substitute	-
+bread	brood
+white bread	brood/wit
+brown bread	brood/bruin
+wholemeal bread	brood/volkoren
+whole wheat bread	brood/volkoren
+sourdough	-
+sourdough bread	brood
+rye bread	roggebrood
+baguette	stokbrood
+rolls	bolletjes
+bread rolls	bolletjes
+buns	bolletjes
+burger buns	bolletjes
+hot dog buns	bolletjes
+tortillas	tortilla's
+pita bread	pitabroodjes
+naan bread	pitabroodjes
+rice cakes	-
+crispbread	-
+peanut butter	pindakaas
+strawberry jam	jam
+marmalade	-
+honey	honing
+maple syrup	-
+chocolate spread	chocoladepasta
+cereal	-
+oats	havermout
+porridge oats	havermout
+rolled oats	havermout
+chocolate sprinkles	hagelslag
+rice	rijst
+white rice	rijst
+brown rice	rijst/zilvervlies
+basmati rice	rijst/basmati
+jasmine rice	rijst/pandan
+risotto rice	rijst/risotto
+lasagna sheets	pasta/lasagne
+noodles	mie
+egg noodles	mie
+rice noodles	mie
+lentils	linzen
+red lentils	linzen
+chickpeas	kikkererwten
+kidney beans	kidneybonen
+black beans	zwarte bonen
+baked beans	-
+canned tomatoes	tomaten
+chopped tomatoes	tomatenblokjes
+tinned tomatoes	tomaten
+tomato paste	tomatenpuree
+tomato puree	tomatenpuree
+pasta sauce	pastasaus
+mayonnaise	mayonaise
+mustard	mosterd
+dijon mustard	mosterd
+soy sauce	sojasaus
+hot sauce	-
+sweet chili sauce	-
+bbq sauce	-
+barbecue sauce	-
+curry sauce	currysaus
+curry paste	-
+coconut milk	kokosmelk
+stock cubes	bouillon
+chicken stock	bouillon
+vegetable stock	bouillon
+beef stock	bouillon
+gravy	-
+olive oil	olijfolie
+vegetable oil	-
+sunflower oil	zonnebloemolie
+sesame oil	-
+coconut oil	-
+vinegar	azijn
+balsamic vinegar	azijn
+salt	zout
+pepper	-
+black pepper	zwarte peper
+paprika powder	paprikapoeder
+cumin	-
+cinnamon	kaneel
+turmeric	-
+mixed herbs	-
+curry powder	kerrie
+chili flakes	-
+sugar	suiker
+brown sugar	suiker/basterd
+icing sugar	suiker/poeder
+powdered sugar	suiker/poeder
+sweetener	-
+flour	bloem
+plain flour	bloem
+self-raising flour	zelfrijzend bakmeel
+cornstarch	maizena
+cornflour	maizena
+breadcrumbs	paneermeel
+baking powder	bakpoeder
+baking soda	-
+yeast	gist
+cocoa powder	-
+chocolate chips	chips
+vanilla extract	-
+pancake mix	pannenkoekmix
+nuts	noten
+walnuts	-
+cashews	noten
+almonds	-
+peanuts	pinda's
+pine nuts	noten
+sunflower seeds	-
+pumpkin seeds	-
+sesame seeds	sesamzaad
+olives	olijven
+pickles	augurken
+gherkins	augurken
+capers	-
+sun-dried tomatoes	tomaten
+soup	soep
+tomato soup	soep/tomaat
+pea soup	soep/erwten
+chicken soup	soep/kip
+canned soup	soep
+instant noodles	mie
+tortilla chips	chips
+frozen pizza	pizza
+fries	friet
+french fries	friet
+oven chips	chips
+frozen fries	friet
+croquettes	kroketten
+spring rolls	loempia's
+ice cream	ijs
+vanilla ice cream	ijs/vanille
+ice lollies	-
+popsicles	-
+puff pastry	bladerdeeg
+pizza dough	-
+frozen fish	-
+crisps	chips
+potato chips	chips
+salt and vinegar crisps	chips
+cheese and onion crisps	chips
+paprika crisps	chips
+prawn crackers	kroepoek
+licorice	drop
+liquorice	drop
+candy	-
+sweets	-
+gummy bears	-
+marshmallows	-
+chewing gum	kauwgom
+gum	kauwgom
+mints	munt
+chocolate	chocolade
+dark chocolate	chocolade/puur
+milk chocolate	chocolade/melk
+white chocolate	chocolade/wit
+chocolate bar	chocolade
+cookies	koekjes
+digestives	-
+gingerbread	ontbijtkoek
+speculoos	speculaas
+waffles	-
+cereal bars	-
+granola bars	-
+protein bars	-
+coffee	koffie
+coffee beans	koffie/bonen
+ground coffee	koffie/filter
+instant coffee	koffie/oplos
+coffee pods	koffie/cups
+tea	thee
+tea bags	-
+green tea	thee
+herbal tea	thee
+peppermint tea	thee
+iced tea	ijsthee
+sparkling water	water
+mineral water	water
+coke	cola
+diet coke	cola/zero
+coke zero	cola/zero
+lemonade	-
+orange juice	sinaasappelsap
+apple juice	appelsap
+cranberry juice	-
+fruit juice	-
+smoothies	-
+squash	pompoen
+cordial	limonadesiroop
+energy drinks	-
+sports drinks	-
+beer	bier
+lager	bier/pils
+non-alcoholic beer	bier/alcoholvrij
+alcohol-free beer	bier/alcoholvrij
+wine	-
+red wine	-
+white wine	-
+baby food	-
+baby formula	-
+cat food	-
+dog food	-

@@ -45,7 +45,7 @@ const R: Record<string, Omit<MappableProduct, "name">> = {
   "PLUS Achterham": product("plus", "PLUS", ["Kaas, vleeswaren, tapas > Vleeswaren > Ham"]),
   "PLUS Spaghetti": product("plus", "PLUS", ["Pasta, rijst, internationale keuken > Pasta > Spaghetti, linguine, tagliatelle"]),
   "PLUS Houdbare Halfvolle Melk": product("plus", "PLUS", ["Zuivel, eieren, boter > Houdbare zuivel > Houdbare melk"]),
-  "Uit de keuken van PLUS Verse Loempia": product("plus", "Uit de keuken van", ["Verse kant-en-klaarmaaltijden > Oosterse maaltijden"]),
+  "Uit de keuken van PLUS Verse Nasi goreng": product("plus", "Uit de keuken van", ["Verse kant-en-klaarmaaltijden > Oosterse maaltijden"]),
   "MILBONA Jong belegen plakken Goudse 48+ kaas": product("lidl", "MILBONA", ["Eten en dichtbij voedsel > Kaas, zuivelproducten & eieren > Kaas"]),
   "COMBINO Spaghetti": product("lidl", "COMBINO", ["Eten en dichtbij voedsel > Voedselvoorraad > Rijst, pasta & peulvruchten"]),
   "Extra mager rundergehakt": product("lidl", null, ["Eten en dichtbij voedsel > Vlees & gevogelte > rundvlees"]),
@@ -159,7 +159,7 @@ test("reads Plus's category tree, and its own brands", () => {
   assert.equal(aisleOf("Aardappelen, groente, fruit > Groente > Slaschotels, salades, dressings, slaversierders"), "produce");
   assert.equal(mapped("PLUS Spaghetti")?.huismerk, true);
   // A ready meal, not an Ingredient; but its brand is Plus's own line.
-  assert.equal(ingredient("Uit de keuken van PLUS Verse Loempia"), null);
+  assert.equal(ingredient("Uit de keuken van PLUS Verse Nasi goreng"), null);
 });
 
 test("reads Lidl's category tree, and its own brands", () => {

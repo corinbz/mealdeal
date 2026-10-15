@@ -125,7 +125,7 @@ const RULES: [RegExp, Aisle][] = [
 /** The aisle of one category path, or null when no rule claims it. */
 export function aisleOf(path: string): Aisle | null {
   // Fish has its own aisle, even where a Chain files it under meat.
-  if (/(^|> )(verse )?vis($| >)|zalm|schaal- en schelp/i.test(path) && !/conserven|diepvries|tapas/i.test(path)) return "fish";
+  if (/(^|> )(verse )?vis($| >)|zalm|schaal- en schelp|schaaldieren/i.test(path) && !/conserven|diepvries|tapas/i.test(path)) return "fish";
   for (const [rule, aisle] of RULES) if (rule.test(path)) return aisle;
   return null;
 }

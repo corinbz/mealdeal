@@ -48,7 +48,7 @@ const vocabulary: any[] = data.vocabulary;
 
 // Every stem any name of an Ingredient uses, in any language.
 const stemsOf = (d: any) => {
-  const texts = [d.id, d.name, ...(d.also || []), ...Object.values(d.names || {}).flat(),
+  const texts = [d.id, d.name, ...(d.also || []), ...(d.words || []), ...Object.values(d.names || {}).flat(),
     ...d.variants.flatMap((v: any) => [v.id, v.name, ...Object.values(v.names || {}).flat()])] as string[];
   return new Set(texts.flatMap((t) => W.wordsOf(t)));
 };

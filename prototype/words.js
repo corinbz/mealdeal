@@ -36,7 +36,8 @@
    * a unit nobody wrote.
    */
   function parse(text, tally) {
-    const t = text.trim().replace(/\s+/g, " ");
+    // "0.0" names a drink without alcohol, not none of it.
+    const t = text.trim().replace(/\s+/g, " ").replace(/(^|\s)0[.,]0%?(?=\s|$)/i, "$1alcoholvrij");
     if (!t) return null;
     let quantity = null, unit = null, noun = t;
     // Not a percentage: "2% yoghurt" is a kind of yoghurt, not two of them.

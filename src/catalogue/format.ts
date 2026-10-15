@@ -103,6 +103,8 @@ export interface CatalogueIngredient {
   readonly name: string;
   readonly unit: ComparisonUnit;
   readonly also: readonly string[];
+  /** The words its Products are named by, read as it too where no other Ingredient's are the same. */
+  readonly words?: readonly string[];
   readonly equals: Readonly<Partial<Record<ComparisonUnit, number>>>;
   /** `aspect`: what the Variant differs in, "soort" where absent. */
   readonly variants: readonly { readonly id: string; readonly name: string; readonly aspect?: string; readonly names?: Translated }[];

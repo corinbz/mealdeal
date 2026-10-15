@@ -204,8 +204,11 @@ export function createMapper(vocabulary: readonly IngredientDef[] = VOCABULARY) 
       && [...aisles].every((a) => !ELSEWHERE.has(a) || c.aisles.has(a))
       && !c.def.not.some((n) => excludes(n, lower, raw));
     // A food other things are named after that this Product is not, such as
-    // chocolade in "Vla chocolade", is only its flavour, so names no second thing.
-    const flavour = (cs: Compiled[]) => cs.every((c) => c.def.wins && !fits(c));
+    // chocolade in "Vla chocolade", is only its flavour, so names no second
+    // thing; nor does one whose own words rule this Product out ("Pastasaus
+    // ricotta", "Sriracha mayonaise").
+    const ruledOut = (c: Compiled) => c.def.not.some((n) => excludes(n, lower, raw));
+    const flavour = (cs: Compiled[]) => cs.every((c) => (c.def.wins && !fits(c)) || ruledOut(c));
     // Words owned by the same Ingredients are one thing named twice ("Kanzi
     // Appels"); words owned by different ones name a mix, which maps to a mix
     // Ingredient if it names one, and otherwise to no single Ingredient.
