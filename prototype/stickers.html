@@ -1,0 +1,70 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ingredient stickers</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+  /* A contact sheet of every sticker in images.js (#32), grouped by each
+     Ingredient's main aisle, for checking the set by eye. Open it straight
+     from disk. The sticker rules are copied from basket.html. */
+  :root { --paper: #f3e7d6; --card: #fffaf2; --ink: #2b2118; --ink-2: #6b5a48; --line: #dcc8ab; }
+  body { margin: 0; padding: 16px; background: var(--paper); color: var(--ink); font: 14px/1.3 Nunito, ui-rounded, system-ui, sans-serif; }
+  h1 { font-size: 22px; margin: 0 0 4px; } .lede { margin: 0 0 16px; color: var(--ink-2); }
+  h2 { font-size: 17px; margin: 24px 0 8px; display: flex; align-items: center; gap: 8px; }
+  h2 .pic { width: 40px; height: 40px; margin: 0; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(124px, 1fr)); gap: 8px; }
+  figure { margin: 0; background: var(--card); border-radius: 12px; padding: 10px 6px 8px; box-shadow: 0 2px 0 var(--line); text-align: center; }
+  figure .big .pic { width: 64px; height: 64px; margin: 0; }
+  figure .small .pic { width: 30px; height: 30px; margin: 0; }
+  figcaption { font-weight: 800; font-size: 13px; margin-top: 4px; overflow-wrap: break-word; }
+  .none { color: #b8432f; }
+  /* Stickers (#32), as in basket.html. */
+  .pic { width: 36px; height: 36px; vertical-align: middle; flex: none; }
+  .pic .art { filter: url(#sticker-edge); }
+  .pic .a { fill: var(--a); } .pic .b { fill: var(--b); } .pic .c { fill: var(--c, var(--b)); } .pic .d { fill: var(--d); }
+  .pic .a, .pic .b, .pic .c { stroke: #2b2118; stroke-width: 2.4; stroke-linejoin: round; }
+  .pic .e { fill: none; stroke: #2b2118; stroke-width: 1.5; stroke-linecap: round; }
+  .pic .s { fill: none; stroke: #2b2118; stroke-width: 2.6; stroke-linecap: round; }
+  .sticker-flood { flood-color: #fffaf2; }
+</style>
+<h1>Ingredient stickers</h1>
+<p class="lede" id="lede"></p>
+<main id="main"></main>
+<script src="images.js"></script>
+<script>
+  // Each Ingredient's main aisle, the first of its aisles in
+  // src/ingredients/vocabulary.ts, so this page needs no catalogue.js.
+  const GROUPS = [
+    ["produce", ["aardappelen","zoete aardappelen","aardappelpuree","wortelen","uien","bosui","sjalotten","knoflook","prei","courgette","komkommer","snoepkomkommers","paprika","puntpaprika","tomaten","broccoli","bloemkool","spinazie","andijvie","boerenkool","zuurkool","spruiten","sperziebonen","snijbonen","peultjes","champignons","paddenstoelen","aubergine","pompoen","knolselderij","bleekselderij","venkel","rode kool","witte kool","spitskool","chinese kool","paksoi","witlof","koolrabi","rode bieten","radijs","pastinaak","asperges","avocado","taugé","ijsbergsla","kropsla","sla","rucola","veldsla","rauwkost","roerbakgroente","soepgroente","stamppotgroente","gember","rode peper","peterselie","koriander","basilicum","bieslook","dille","munt","tijm","rozemarijn","appels","peren","bananen","sinaasappels","mandarijnen","citroenen","limoenen","grapefruit","druiven","aardbeien","blauwe bessen","frambozen","kersen","kiwi's","mango","ananas","meloen","pruimen","nectarines","granaatappel","fruitsalade"]],
+    ["meat", ["gehakt","gehaktballen","hamburgers","kipfilet","kipdijfilet","kippenpoten","kipvleugels","hele kip","kalkoenfilet","speklappen","spekblokjes","ontbijtspek","varkenshaas","karbonade","schnitzels","varkensvlees","biefstuk","stoofvlees","rundvlees reepjes","rookworst","braadworst","shoarma","lamsvlees"]],
+    ["fish", ["zalm","kabeljauw","pangasius","koolvis","tilapia","garnalen","mosselen","haring","makreel"]],
+    ["vega", ["tofu","tempeh","vegetarisch gehakt","havermelk","sojamelk","amandelmelk"]],
+    ["dairy", ["melk","karnemelk","chocolademelk","koffiemelk","yoghurt","kwark","vla","slagroom","kookroom","crème fraîche","zure room","roomboter","margarine","bak- en braadboter","eieren"]],
+    ["cheese", ["kaas","geraspte kaas","geitenkaas","mozzarella","feta","parmezaanse kaas","roomkaas","brie","halloumi"]],
+    ["deli", ["ham","kipfilet beleg","salami","filet americain","leverworst","hummus"]],
+    ["bakery", ["brood","stokbrood","afbakbroodjes","bolletjes","tortilla's","pitabroodjes","croissants","beschuit","crackers"]],
+    ["pantry", ["rozijnen","dadels","kokosmelk","rijst","pasta","mie","couscous","quinoa","havermout","muesli","cornflakes","bloem","zelfrijzend bakmeel","pannenkoekmix","maizena","paneermeel","suiker","vanillesuiker","bakpoeder","gist","olijfolie","zonnebloemolie","azijn","mayonaise","ketchup","mosterd","sojasaus","pindasaus","pesto","pastasaus","bouillon","zout","zwarte peper","pindakaas","jam","hagelslag","honing","chocoladepasta","currysaus","kerrie","paprikapoeder","kaneel"]],
+    ["conserves", ["zilveruitjes","tomatenblokjes","gepelde tomaten","passata","tomatenpuree","appelmoes","tonijn","sardines","kidneybonen","bruine bonen","witte bonen","kikkererwten","linzen","augurken","olijven"]],
+    ["frozen", ["friet","doperwten","doperwten en wortelen","mais","vissticks"]],
+    ["readymeal", []],
+    ["drinks", ["koffie","thee","sinaasappelsap","appelsap","water"]],
+    ["snacks", ["pinda's","noten"]],
+    ["baby", []],
+    ["pet", []],
+    ["nonfood", []],
+  ];
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+  const drawn = new Set(window.IMAGES.drawn);
+  let count = 0;
+  document.getElementById("main").innerHTML = GROUPS.map(([aisle, ids]) => {
+    const own = window.IMAGES.aisles.includes(aisle);
+    return "<section><h2>" + window.IMAGES.sticker("?", aisle) + esc(aisle) + (own ? "" : ' <span class="none">(no aisle sticker)</span>') + "</h2>" +
+      (ids.length ? '<div class="grid">' + ids.map((id) => {
+        count++;
+        return '<figure><div class="big">' + window.IMAGES.sticker(id, aisle) + '</div><div class="small">' + window.IMAGES.sticker(id, aisle) +
+          "</div><figcaption" + (drawn.has(id) ? "" : ' class="none"') + ">" + esc(id) + "</figcaption></figure>";
+      }).join("") + "</div>" : "<p class=\"lede\">No Ingredient has this as its main aisle; its sticker stands in for items found only here.</p>") + "</section>";
+  }).join("");
+  document.getElementById("lede").textContent = count + " Ingredients, " + drawn.size + " with their own sticker; " +
+    window.IMAGES.aisles.length + " aisle stickers. Each shown at 64 px and 30 px.";
+</script>
