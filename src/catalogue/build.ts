@@ -27,7 +27,7 @@ import { groupTwins } from "./twins.ts";
 import { CHECKED_SPREADS } from "./checked-spreads.ts";
 import { groupExactProducts, type ExactCandidate } from "./exact.ts";
 import { excluded, type Excluded } from "./food.ts";
-import { COLUMNS, toRow, type Catalogue, type CatalogueProduct, type Row } from "./format.ts";
+import { COLUMNS, toRow, type Catalogue, type CatalogueIngredient, type CatalogueProduct, type Row } from "./format.ts";
 
 /**
  * Chains that put only their Offers online (Lidl, #28). A Product of theirs
@@ -125,6 +125,29 @@ function inIngredientUnit(perUnitOf: ComparisonUnit, quantity: number, ingredien
   // A price per kg times 0.3 kg is the price of one courgette; a pack of
   // 0.6 kg divided by 0.3 kg is two courgettes.
   return price ? Math.round(quantity * x) : Math.round((quantity / x) * 1000) / 1000;
+}
+
+/**
+ * What the page reads a typed item against. `fresh`: the Ingredient is sold
+ * fresh, so frozen, tinned and jarred count only when a Preference allows.
+ * `aisle`: where it is mainly sold, which Bladeren groups it under (#36)
+ * and whose sticker stands in for its own. `names`: its names in other
+ * languages, read whatever the page's language, the first one shown (#25).
+ * `words`: the words its Products are named by, which read as it too
+ * where no other Ingredient's are the same.
+ */
+export function pageVocabulary(vocabulary: readonly IngredientDef[] = VOCABULARY): CatalogueIngredient[] {
+  return vocabulary.map((d) => ({
+    id: d.id, name: d.name, unit: d.unit, also: d.also, equals: d.equals,
+    words: d.words.filter((w) => !w.startsWith("=") && w.trim() === w && !TOO_GENERAL.has(w)),
+    variants: d.variants.map((v) => {
+      const en = englishOf(d.id)?.variants[v.id];
+      return { id: v.id, name: v.name, ...(v.aspect && v.aspect !== "soort" ? { aspect: v.aspect } : {}), ...(en ? { names: { en } } : {}) };
+    }),
+    fresh: !d.anyForm && d.aisles.some((a) => formOf(a) === "vers"),
+    aisle: d.aisles[0],
+    ...(englishOf(d.id) ? { names: { en: englishOf(d.id)!.names } } : {}),
+  }));
 }
 
 export function buildCatalogue(source: CatalogueSource, { now = new Date(), vocabulary = VOCABULARY }: { now?: Date; vocabulary?: readonly IngredientDef[] } = {}): Built {
@@ -251,26 +274,7 @@ export function buildCatalogue(source: CatalogueSource, { now = new Date(), voca
       card: card(c.id),
     })),
     columns: [...COLUMNS],
-    /**
-     * What the page reads a typed item against. `fresh`: the Ingredient is sold
-     * fresh, so frozen, tinned and jarred count only when a Preference allows.
-     * `aisle`: where it is mainly sold, which Bladeren groups it under (#36)
-     * and whose sticker stands in for its own. `names`: its names in other
-     * languages, read whatever the page's language, the first one shown (#25).
-     * `words`: the words its Products are named by, which read as it too
-     * where no other Ingredient's are the same.
-     */
-    vocabulary: vocabulary.map((d) => ({
-      id: d.id, name: d.name, unit: d.unit, also: d.also, equals: d.equals,
-      words: d.words.filter((w) => !w.startsWith("=") && w.trim() === w && !TOO_GENERAL.has(w)),
-      variants: d.variants.map((v) => {
-        const en = englishOf(d.id)?.variants[v.id];
-        return { id: v.id, name: v.name, ...(v.aspect && v.aspect !== "soort" ? { aspect: v.aspect } : {}), ...(en ? { names: { en } } : {}) };
-      }),
-      fresh: !d.anyForm && d.aisles.some((a) => formOf(a) === "vers"),
-      aisle: d.aisles[0],
-      ...(englishOf(d.id) ? { names: { en: englishOf(d.id)!.names } } : {}),
-    })),
+    vocabulary: pageVocabulary(vocabulary),
     catalogue: Object.fromEntries(Object.entries(products).map(([id, ps]) => [id, ps.map((p): Row => toRow(p))])),
     exact,
     /** Differences over 70% looked at and found real, which Bladeren then shows as any other (#36). */

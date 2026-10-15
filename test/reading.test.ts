@@ -1,7 +1,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, writeFileSync } from "node:fs";
-import { runInNewContext } from "node:vm";
+import { createResolver } from "../src/page.ts";
+import { must } from "./helpers/page.ts";
 import { createMapper } from "../src/ingredients/map.ts";
 import { buildCatalogue } from "../src/catalogue/build.ts";
 
@@ -14,10 +15,8 @@ import { buildCatalogue } from "../src/catalogue/build.ts";
  *   UPDATE_READINGS=1 node --test test/reading.test.ts   rewrites the file after a change meant to.
  */
 
-const context: Record<string, any> = {};
-for (const f of ["words.js", "resolve.js"]) runInNewContext(readFileSync(`prototype/${f}`, "utf8"), context);
 const { catalogue } = buildCatalogue({ chains: [], products: {} });
-const R = context.MealdealResolve.createResolver({ ...catalogue, chains: [] });
+const R = createResolver({ ...catalogue, chains: [] });
 const read = (text: string) => { const r = R.parse(text); return r?.ingredient ? r.ingredient + (r.variant ? "/" + r.variant : "") : "-"; };
 
 test("a word its Products are named by reads as that Ingredient, unless it says too little", () => {
@@ -36,14 +35,14 @@ test("a name is not read from its last words past a word that makes it something
 
 test("0.0 is a drink without alcohol, not none of one", () => {
   assert.equal(read("0.0 bier"), "bier/alcoholvrij");
-  assert.equal(R.parse("0,0 bier").quantity, 1);
+  assert.equal(R.parse("0,0 bier")?.quantity, 1);
 });
 
 test("a name with no word to search on finds nothing, not everything", () => {
   const data = { ...catalogue, chains: [{ id: "dirk" }], catalogue: { dirk: [["1", "Dirk Halfvolle melk", "1 l", 1, "l", "l", 99, null, 99, null, null, null, null, null, null, null, 0, null, null]] } };
-  const one = context.MealdealResolve.createResolver(data);
-  assert.equal(one.candidates("dirk", one.parse("m&m's")).length, 0);
-  assert.equal(one.candidates("dirk", one.parse("halfvolle met melk")).length, 1);
+  const one = createResolver(data);
+  assert.equal(one.candidates("dirk", must(one.parse("m&m's"))).length, 0);
+  assert.equal(one.candidates("dirk", must(one.parse("halfvolle met melk"))).length, 1);
 });
 
 const map = createMapper();

@@ -10,7 +10,7 @@
  * (prototype/resolve.js), so they agree on what is held back.
  */
 
-import { createResolver, SPREAD_CHECK } from "../words.ts";
+import { createResolver, SPREAD_CHECK, type ResolvedProduct } from "../page.ts";
 
 export interface CheckedSpread {
   readonly chain: string;
@@ -41,15 +41,8 @@ export interface Spreads {
   readonly threshold: number;
 }
 
-interface Product { readonly id: string; readonly chainId: string; readonly name: string; readonly ingredient: string; readonly ingredientUnitPriceCents: number }
-interface Resolved {
-  spreads(): {
-    ingredients: { d: { id: string }; by: Record<string, { p: Product; cost: number }>; avail: { id: string }[]; mid: number | null; share: number; unchecked: boolean }[];
-    worth: { p: Product; rivalCost: number; share: number; unchecked: boolean }[];
-  };
-}
-
-const refOf = (p: Product) => p.id.slice(p.chainId.length + 1);
+// Only Products of an Ingredient priced in its unit are in a spread, so neither is null there.
+const refOf = (p: ResolvedProduct) => p.id.slice(p.chainId.length + 1);
 
 /**
  * `catalogue` as the page loads it; `checked` is checked-spreads.ts, which the
@@ -57,16 +50,16 @@ const refOf = (p: Product) => p.id.slice(p.chainId.length + 1);
  */
 export function assessSpreads(catalogue: object, checked: readonly CheckedSpread[]): Spreads {
   const threshold = SPREAD_CHECK;
-  const s = (createResolver({ ...catalogue, checked }) as unknown as Resolved).spreads();
+  const s = createResolver({ ...catalogue, checked }).spreads();
   const big: (UncheckedSpread & { unchecked: boolean })[] = [];
   for (const g of s.ingredients) {
     if (g.share <= threshold || !g.avail.length) continue;
     const p = g.by[g.avail[0]!.id]!.p;
-    big.push({ kind: "spread", ingredient: g.d.id, chain: p.chainId, ref: refOf(p), name: p.name, cents: p.ingredientUnitPriceCents, againstCents: g.mid!, share: g.share, unchecked: g.unchecked });
+    big.push({ kind: "spread", ingredient: g.d.id, chain: p.chainId, ref: refOf(p), name: p.name, cents: p.ingredientUnitPriceCents!, againstCents: g.mid!, share: g.share, unchecked: g.unchecked });
   }
   for (const w of s.worth) {
     if (w.share <= threshold) continue;
-    big.push({ kind: "offer", ingredient: w.p.ingredient, chain: w.p.chainId, ref: refOf(w.p), name: w.p.name, cents: w.p.ingredientUnitPriceCents, againstCents: w.rivalCost, share: w.share, unchecked: w.unchecked });
+    big.push({ kind: "offer", ingredient: w.p.ingredient!, chain: w.p.chainId, ref: refOf(w.p), name: w.p.name, cents: w.p.ingredientUnitPriceCents!, againstCents: w.rivalCost, share: w.share, unchecked: w.unchecked });
   }
   const stale = checked.filter((k) => !big.some((b) => b.chain === k.chain && b.ref === k.ref && b.ingredient === k.ingredient));
   return { unchecked: big.filter((b) => b.unchecked).map(({ unchecked: _, ...b }) => b), stale, threshold };

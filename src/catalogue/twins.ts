@@ -16,7 +16,7 @@
  * besides its pack says too little to join on.
  */
 
-import { words as reading } from "../words.ts";
+import { words as reading } from "../page.ts";
 import { globalEan } from "./exact.ts";
 
 export interface TwinCandidate {

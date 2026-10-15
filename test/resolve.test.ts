@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
-import { runInNewContext } from "node:vm";
+import { createResolver, priceDrop, USUAL_MIN_DAYS } from "../src/page.ts";
+import { must } from "./helpers/page.ts";
 import { buildCatalogue } from "../src/catalogue/build.ts";
 
 /**
@@ -12,8 +12,6 @@ import { buildCatalogue } from "../src/catalogue/build.ts";
  * unit first.
  */
 
-const context: Record<string, any> = {};
-for (const f of ["words.js", "resolve.js"]) runInNewContext(readFileSync(`prototype/${f}`, "utf8"), context);
 
 const COLUMNS = ["ref", "name", "comparisonUnit", "shelfPriceCents", "unitPriceCents", "packQuantity", "packUnit",
   "ingredient", "variant", "form", "flags", "ingredientUnitPriceCents", "ingredientPack"];
@@ -24,7 +22,7 @@ const PRICES = {
   dates: ["2026-10-12", "2026-10-13", "2026-10-14"],
   series: { dirk: { "3": [90, 95, 95], "4": [[89], null, 99], "5": [130, 139, 139], "1": [500, null, 498] } },
 };
-const resolver = context.MealdealResolve.createResolver({
+const resolver = createResolver({
   chains: [{ id: "dirk", name: "Dirk" }, { id: "jumbo", name: "Jumbo" }],
   columns: COLUMNS,
   vocabulary: [
@@ -52,10 +50,10 @@ const resolver = context.MealdealResolve.createResolver({
     ] satisfies Row[],
   },
 }, PRICES);
-const first = (chain: string, text: string) => resolver.candidates(chain, resolver.parse(text))[0]?.name ?? null;
+const first = (chain: string, text: string) => resolver.candidates(chain, must(resolver.parse(text)))[0]?.name ?? null;
 
 test("a Correction is kept per Chain and Ingredient, so it applies to every item needing it", () => {
-  const key = (chain: string, text: string) => resolver.correctionKey(chain, resolver.parse(text));
+  const key = (chain: string, text: string) => resolver.correctionKey(chain, must(resolver.parse(text)));
   assert.equal(key("dirk", "500 g rundergehakt"), key("dirk", "1 kg rundergehakt"));
   assert.equal(key("dirk", "500 g rundergehakt"), key("dirk", "bio rundergehakt"));
   assert.notEqual(key("dirk", "500 g rundergehakt"), key("jumbo", "500 g rundergehakt"));
@@ -76,17 +74,17 @@ test("biologisch, huismerk and A-merk are Preferences that narrow the candidates
   assert.equal(first("dirk", "1 l bio halfvolle melk"), "Bio halfvolle melk");
   assert.equal(first("dirk", "huismerk pindakaas"), "1 de Beste Pindakaas");
   assert.equal(first("dirk", "a-merk pindakaas"), "Calvé Pindakaas");
-  assert.deepEqual({ ...resolver.parse("1 l bio halfvolle melk").preferences }, { biologisch: true });
+  assert.deepEqual({ ...resolver.parse("1 l bio halfvolle melk")?.preferences }, { biologisch: true });
 });
 
 test("a quantity in another unit converts where the vocabulary says how", () => {
-  const item = resolver.parse("600 g courgette");
+  const item = must(resolver.parse("600 g courgette"));
   assert.deepEqual([item.ingredient, item.quantity, item.unit, item.guessed], ["courgette", 2, "piece", false]);
-  assert.equal(resolver.packsFor(resolver.candidates("dirk", item)[0], item).packs, 2);
+  assert.equal(resolver.packsFor(must(resolver.candidates("dirk", item)[0]), item).packs, 2);
 });
 
 test("an item the vocabulary does not know resolves by Product name, and says so", () => {
-  const item = resolver.parse("1 kg kattenvoer");
+  const item = must(resolver.parse("1 kg kattenvoer"));
   assert.equal(item.ingredient, null);
   assert.equal(first("dirk", "1 kg kattenvoer"), "Kattenvoer zalm");
 });
@@ -96,7 +94,7 @@ test("a Chain without the Ingredient has no candidate, which Coverage then shows
 });
 
 test("the Daily Price is the lowest per day among the Products that satisfy the item", () => {
-  const plain = (text: string) => resolver.dailyPrices("dirk", resolver.parse(text)).days.map((d: any) => d && [d.cents, d.offer]);
+  const plain = (text: string) => resolver.dailyPrices("dirk", must(resolver.parse(text))).days.map((d: any) => d && [d.cents, d.offer]);
   // Any melk: volle on most days, but halfvolle while it was on Offer.
   assert.deepEqual(plain("1 l melk"), [[89, true], [95, false], [95, false]]);
   // Halfvolle only: the Bio carton fills the day the cheaper one was not observed.
@@ -106,15 +104,15 @@ test("the Daily Price is the lowest per day among the Products that satisfy the 
 });
 
 test("a typo of a known Ingredient gets a suggestion; an unknown word gets none", () => {
-  assert.equal(resolver.parse("500 g spinzaie").suggestion, "spinazie");
-  assert.equal(resolver.parse("1 l halfvole melk").suggestion, "halfvolle melk");
-  assert.equal(resolver.parse("pindaksa").suggestion, "pindakaas");
-  assert.equal(resolver.parse("1 kg kattenvoer").suggestion, null);
-  assert.equal(resolver.parse("400 g spinazie").suggestion, undefined, "a recognised item needs none");
+  assert.equal(resolver.parse("500 g spinzaie")?.suggestion, "spinazie");
+  assert.equal(resolver.parse("1 l halfvole melk")?.suggestion, "halfvolle melk");
+  assert.equal(resolver.parse("pindaksa")?.suggestion, "pindakaas");
+  assert.equal(resolver.parse("1 kg kattenvoer")?.suggestion, null);
+  assert.equal(resolver.parse("400 g spinazie")?.suggestion, undefined, "a recognised item needs none");
 });
 
 /** Exact Products (#15), as scripts/catalogue-from-db.ts writes them. */
-const exactResolver = context.MealdealResolve.createResolver({
+const exactResolver = createResolver({
   chains: [{ id: "dirk", name: "Dirk" }, { id: "jumbo", name: "Jumbo" }, { id: "vomar", name: "Vomar" }],
   columns: COLUMNS,
   vocabulary: [{ id: "pindakaas", name: "pindakaas", unit: "kg", also: [], equals: {}, fresh: false, variants: [] }],
@@ -151,11 +149,10 @@ test("an Exact Product resolves to each Chain's own one, and only likely where n
   assert.equal(exactResolver.exactProduct("vomar", id)?.name, "Calve Pindakaas");
   assert.equal(exactResolver.exactProduct("dirk", id), null);
   assert.equal(exactResolver.likelyProduct("dirk", id)?.name, "Calvé Pindakaas");
-  assert.equal(exactResolver.exactIdOf(exactResolver.products.vomar["vomar-v2"]), "8711200431632");
+  assert.equal(exactResolver.exactIdOf(must(exactResolver.products.vomar?.["vomar-v2"])), "8711200431632");
 });
 
 test("a staple alerts when today is clearly below its Usual Price, and only with enough history", () => {
-  const { priceDrop, USUAL_MIN_DAYS } = context.MealdealResolve;
   const days = (cents: (number | null)[], offerToday = false) =>
     cents.map((c, i) => c === null ? null : { cents: c, offer: offerToday && i === cents.length - 1, product: "Melk" });
   const steady = Array.from({ length: USUAL_MIN_DAYS }, (_, i) => (i % 2 ? 100 : 104));
@@ -176,25 +173,25 @@ test("a staple alerts when today is clearly below its Usual Price, and only with
 });
 
 test("three days of history are too few for any staple to alert", () => {
-  for (const text of ["1 l melk", "400 g spinazie"]) assert.equal(resolver.priceDropAt("dirk", resolver.parse(text)), null);
+  for (const text of ["1 l melk", "400 g spinazie"]) assert.equal(resolver.priceDropAt("dirk", must(resolver.parse(text))), null);
 });
 
 test("the real vocabulary reads plain boter as roomboter, and margarine as itself", () => {
   const { catalogue } = buildCatalogue({ chains: [], products: {} });
-  const real = context.MealdealResolve.createResolver({ ...catalogue, chains: [] });
-  assert.equal(real.parse("250 g boter").ingredient, "roomboter");
-  assert.equal(real.parse("boter").ingredient, "roomboter");
-  assert.equal(real.parse("margarine").ingredient, "margarine");
-  assert.equal(real.parse("ongezouten roomboter").variant, "ongezouten");
+  const real = createResolver({ ...catalogue, chains: [] });
+  assert.equal(real.parse("250 g boter")?.ingredient, "roomboter");
+  assert.equal(real.parse("boter")?.ingredient, "roomboter");
+  assert.equal(real.parse("margarine")?.ingredient, "margarine");
+  assert.equal(real.parse("ongezouten roomboter")?.variant, "ongezouten");
 });
 
 test("an Ingredient counted in pieces, typed without a unit, is counted in pieces: one loaf, not 1.25", () => {
   // Bread is mostly priced per kilo, so the words alone would read "brood" as a kilo.
   const loaf = (ref: string): Row => [ref, "Volkorenbrood heel", "kg", 229, 286, 0.8, "kg", "brood", null, "vers", 0, 229, 1];
-  const R = context.MealdealResolve.createResolver({ chains: [{ id: "dirk", name: "Dirk" }], columns: COLUMNS,
+  const R = createResolver({ chains: [{ id: "dirk", name: "Dirk" }], columns: COLUMNS,
     vocabulary: [{ id: "brood", name: "brood", unit: "piece", also: [], equals: { kg: 0.8 }, variants: [], fresh: true }],
     catalogue: { dirk: [loaf("1"), loaf("2")] } });
-  const read = (t: string) => { const g = R.parse(t); return [g.quantity, g.unit, g.guessed]; };
+  const read = (t: string) => { const g = must(R.parse(t)); return [g.quantity, g.unit, g.guessed]; };
   assert.deepEqual(read("brood"), [1, "piece", true]);
   assert.deepEqual(read("2 brood"), [2, "piece", false]);
   assert.deepEqual(read("400 g brood"), [0.5, "piece", false]);
