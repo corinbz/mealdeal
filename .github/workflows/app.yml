@@ -14,7 +14,7 @@ on:
     branches: [main]
   push:
     branches: [main]
-    paths: ["prototype/basket.html", "prototype/sw.js", "prototype/words.js", "prototype/resolve.js", "prototype/images.js", "prototype/recipes.js", ".github/workflows/app.yml"]
+    paths: ["prototype/basket.html", "prototype/sw.js", "prototype/words.js", "prototype/resolve.js", "prototype/images.js", "prototype/recipes.js", "functions/**", ".github/workflows/app.yml"]
   workflow_dispatch:
 
 concurrency:
@@ -64,6 +64,17 @@ jobs:
           # prices while today's are published.
           printf '/*\n  X-Robots-Tag: noindex, nofollow\n  Cache-Control: no-cache\n' > site/_headers
           ls -la site
+          # "Klopt niet" reports (#38): functions/api/report.ts, deployed with
+          # the site, stores each in the archive's bucket under reports/. The
+          # bucket's name stays a secret, so the binding is written here.
+          {
+            echo 'name = "${{ vars.PAGES_PROJECT }}"'
+            echo 'pages_build_output_dir = "site"'
+            echo 'compatibility_date = "2026-09-01"'
+            echo '[[r2_buckets]]'
+            echo 'binding = "REPORTS"'
+            echo 'bucket_name = "${{ secrets.R2_BUCKET }}"'
+          } > wrangler.toml
 
       - name: Deploy to Cloudflare Pages
         run: npx --yes wrangler@4.151.0 pages deploy site --project-name "${{ vars.PAGES_PROJECT }}" --branch main
@@ -77,4 +88,6 @@ jobs:
           sleep 10
           curl -fsS "$url/" | grep -q 'src="catalogue.js"'
           curl -fsS "$url/catalogue.js" | grep -o '"observedAt":"[0-9-]*"' | sort -u
+          # The report function answers, and refuses what is not a report: nothing is stored.
+          test "$(curl -s -o /dev/null -w '%{http_code}' -X POST "$url/api/report" -d '{}')" = 400
           echo "Live at $url"

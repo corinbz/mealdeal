@@ -19,6 +19,12 @@ improved later can be re-run over every day already captured.
 `npm run db:up && npm run db:migrate && npm run ingest -- --chain dirk`.
 Dirk and Jumbo are verified on real data swept 2026-10-13, Vomar, Plus, Lidl, Hoogvliet, DekaMarkt and Aldi on 2026-10-14. See `docs/ingest.md`.
 
+## Klopt niet reports
+
+The app's ⚑ sends a report of a wrong price or match to a Pages Function
+(`functions/api/report.ts`) that stores it in R2 under `reports/`; the
+morning refresh lists them grouped by Product. See `docs/reports.md`.
+
 ## Agent skills
 
 ### Issue tracker

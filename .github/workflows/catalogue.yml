@@ -141,6 +141,14 @@ jobs:
           [ -n "${published:-}" ] && args="$args --published $published"
           node scripts/check-coverage.ts $args >> "$GITHUB_STEP_SUMMARY"
 
+      - name: List "Klopt niet" reports
+        # From the app (#38), grouped by Product, the last seven days. Never fails the refresh.
+        continue-on-error: true
+        run: |
+          since=$(date -u -d '7 days ago' +%F)
+          aws s3 sync "$R2/reports/" reports/ --only-show-errors --exclude "*" $(for i in $(seq 0 7); do echo --include "$(date -u -d "$i days ago" +%F)/*"; done)
+          node scripts/reports.ts reports --since "$since" >> "$GITHUB_STEP_SUMMARY"
+
       - name: Check it may replace the published one
         run: |
           args="--date ${{ steps.day.outputs.date }} --built prototype/catalogue.js"
