@@ -94,6 +94,8 @@ const RULES: [RegExp, Aisle][] = [
   [/^brood, gebak, bakproducten > bakproducten/i, "pantry"],
   // Soup, but not soup meat ("Soepballetjes en soepvlees"); gourmetten is raw
   // meat for the table grill.
+  // Plus files fruit salad as "Gesneden fruit, fruitsalades": fruit, not a dish.
+  [/fruitsalade/i, "produce"],
   [/maaltijd|verspakket|> (verse )?soep(en)?$|houdbare soepen|quiche|pannenkoek|sushi|sandwich|pizza|ovenschotel|salades|slaatjes|borrelhapjes/i, "readymeal"],
   [/verse sappen/i, "drinks"],
   [/gedroogd fruit|pitten en zuidvruchten/i, "pantry"],

@@ -92,9 +92,16 @@ const BRAND_NOT_FOOD = /^gouda's glorie\b/;
  * beside fresh fish, and Jumbo its tinned mackerel among the tapas.
  */
 const FROZEN = /\b(diepvries|bevroren|vis marine)\b/;
-const TINNED = /\bin [\p{L} ]*?(olie|olijfolie|zonnebloemolie|water|tomatensaus|pekel)\b|\bgebroken\b/u;
+const TINNED = /\bin [\p{L} ]*?(olie|olijfolie|zonnebloemolie|water|tomatensaus|pekel)\b|\bgebroken\b|\bop [\p{L} ]*?siroop\b/u;
 
 const ELSEWHERE: ReadonlySet<Aisle> = new Set(["readymeal", "baby", "pet", "nonfood"]);
+/**
+ * Where a Product with no category at all may be: any food aisle but those.
+ * Aldi files its weekly action articles under "offer" alone (over a thousand
+ * of them, mostly food), so the name decides, and its form is the
+ * Ingredient's main aisle unless the name says frozen or tinned.
+ */
+const ANY_FOOD: ReadonlySet<Aisle> = new Set<Aisle>(["produce", "meat", "fish", "vega", "dairy", "cheese", "deli", "bakery", "pantry", "conserves", "frozen", "drinks", "snacks"]);
 
 /** Words after which a name goes on about something else: "X met Y". */
 const JOINER = /\s(?:met|with|in|op|zonder|minder)\s/;
@@ -138,7 +145,8 @@ export function createMapper(vocabulary: readonly IngredientDef[] = VOCABULARY) 
   }
 
   return function map(product: MappableProduct): Mapping | null {
-    const aisles = new Set(product.categories.map(aisleOf).filter((a): a is Aisle => a !== null));
+    const uncategorized = !product.categories.length;
+    const aisles = uncategorized ? ANY_FOOD : new Set(product.categories.map(aisleOf).filter((a): a is Aisle => a !== null));
     if (!aisles.size) return null;
     const lower = product.name.toLowerCase();
     // "X met Y", "X in olijfolie", "X op siroop": only what comes before can
@@ -148,7 +156,8 @@ export function createMapper(vocabulary: readonly IngredientDef[] = VOCABULARY) 
     // A brand that names a food it is not: Gouda's Glorie makes margarine.
     // A vocabulary phrase spanning one of those words ("doperwtjes met
     // worteltjes") names one thing, so the name is not cut inside it.
-    let text = lower.replace(BRAND_NOT_FOOD, "").trim();
+    // How it is sold ("per bak", "per stuk") names nothing: "bak" is not a thing.
+    let text = lower.replace(BRAND_NOT_FOOD, "").replace(/\bper (bak|bakje|stuk|stuks|kilo|kg|doos|zak|bos|pot|tros|schaal)\b/g, "").trim();
     for (const p of joined) text = text.replaceAll(p, p.replace(JOINERS, " "));
     const head = text.split(JOINER)[0]!;
     const written = head.split(/\s+/);
@@ -176,15 +185,19 @@ export function createMapper(vocabulary: readonly IngredientDef[] = VOCABULARY) 
     if (!chosen) return null;
 
     const def = chosen.def;
-    const variant = def.variants.find((v) => v.words.some((w) => lower.includes(w.toLowerCase())))
+    // A trailing space, so a variant word written "vol " also ends a name ("Yoghurt Vol").
+    const variant = def.variants.find((v) => v.words.some((w) => (lower + " ").includes(w.toLowerCase())))
       ?? def.variants.find((v) => v.fallback) ?? null;
     // Filed under several aisles, the kept one decides the form: Hak's
     // carrots sit in Groente too, but they are in a jar.
-    const kept = [...aisles].filter((a) => chosen.aisles.has(a));
+    const kept = uncategorized ? [[...chosen.aisles][0]!] : [...aisles].filter((a) => chosen.aisles.has(a));
     const aisle = kept.find((a) => formOf(a) === "conserven" || formOf(a) === "diepvries") ?? kept[0]!;
     // Only for an Ingredient that is sold tinned at all: mozzarella in water is fresh.
     const said = FROZEN.test(lower) || FROZEN.test((product.brand ?? "").toLowerCase()) ? "diepvries"
       : chosen.aisles.has("conserves") && TINNED.test(lower) ? "conserven" : null;
+    // Aldi's All Seasons is frozen or tinned, never fresh: with no category to
+    // say which, only the name can.
+    if (uncategorized && !said && /^all seasons$/i.test(product.brand ?? "")) return null;
     return {
       ingredient: def.id,
       variant: variant?.id ?? null,

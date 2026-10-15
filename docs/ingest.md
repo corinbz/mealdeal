@@ -291,6 +291,11 @@ Ingredient's own unit.
   Babyvoeding not carrots at all. A Product filed with ready meals, baby food
   or pet food anywhere is that, whatever else it is filed under. This, not a
   list of excluded words, is what rules out the misfires.
+- **A Product with no category at all may be in any food aisle.** Aldi files
+  over a thousand weekly action articles under "offer" alone, so the name
+  decides, and the form is the Ingredient's main aisle unless the name says
+  frozen or tinned ("op siroop"). Aldi's All Seasons, frozen or tinned but
+  never fresh, maps only when the name says which.
 - **A name word belongs to the longest Ingredient word it ends with**, across
   the whole vocabulary: "aardappel" is aardappelen even where only appels are
   sold. Words of three letters or fewer must match whole, since "ui" ends
