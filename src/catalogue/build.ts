@@ -127,6 +127,21 @@ export function buildCatalogue(source: CatalogueSource, { now = new Date(), voca
   }
   const productsAt = (id: string) => kept[id] ?? [];
 
+  /**
+   * How much one pack holds, as stated, or else as its price says: Jumbo
+   * states no size for its loaves, but €0.93 at €1.16 a kilo is 800 g. Only
+   * for counting packs; the Exact Product join keeps to stated sizes.
+   */
+  const packOf = (p: SourceProduct): { quantity: number; unit: ComparisonUnit } | null => {
+    if (p.packQuantity !== null && p.packUnit) return { quantity: p.packQuantity, unit: p.packUnit as ComparisonUnit };
+    const paid = p.offerPriceCents ?? p.shelfPriceCents;
+    if (!(paid > 0 && p.unitPriceCents > 0)) return null;
+    const x = paid / p.unitPriceCents;
+    // Unit prices are rounded to the cent, so only two figures of it are real.
+    const quantity = p.comparisonUnit === "piece" && Math.abs(x - Math.round(x)) < 0.1 ? Math.round(x) : Number(x.toPrecision(2));
+    return quantity > 0 ? { quantity, unit: p.comparisonUnit } : null;
+  };
+
   const own = new Map<string, Mapping | null>();
   const candidates: ExactCandidate[] = [];
   for (const chain of source.chains) for (const p of productsAt(chain.id)) {
@@ -150,13 +165,11 @@ export function buildCatalogue(source: CatalogueSource, { now = new Date(), voca
       const lent = borrowed.mappings.get(key);
       let m = own.get(key) ?? lent ?? null;
       let def = m ? defs.get(m.ingredient)! : null;
+      const pack = packOf(p);
       // Too small a pack to be what the Ingredient means (a party bread is not a loaf): not it at all.
-      if (def?.smallest && p.packQuantity !== null && p.packUnit
-        && (inIngredientUnit(p.packUnit as ComparisonUnit, p.packQuantity, def.unit, def.equals, false) ?? Infinity) < def.smallest) m = def = null;
+      if (def?.smallest && pack && (inIngredientUnit(pack.unit, pack.quantity, def.unit, def.equals, false) ?? Infinity) < def.smallest) m = def = null;
       const iPrice = def ? inIngredientUnit(p.comparisonUnit, p.unitPriceCents, def.unit, def.equals, true) : null;
-      const iPack = def && p.packQuantity !== null && p.packUnit
-        ? inIngredientUnit(p.packUnit as ComparisonUnit, p.packQuantity, def.unit, def.equals, false)
-        : null;
+      const iPack = def && pack ? inIngredientUnit(pack.unit, pack.quantity, def.unit, def.equals, false) : null;
       c.total++;
       if (m) c.mapped++;
       if (lent) c.borrowed++;

@@ -111,3 +111,20 @@ test("a pack smaller than its Ingredient's smallest is not that Ingredient: a pa
   assert.deepEqual(productsOf(catalogue, "jumbo").map((p) => [p.ref, p.ingredient, p.ingredientUnitPriceCents !== null]),
     [["b1", "brood", true], ["b2", null, false], ["b3", null, false], ["b4", "brood", true]]);
 });
+
+test("a pack whose size is not stated is sized by its price, so two loaves cost two", () => {
+  const BREAD = ["Brood, beleg > Brood"];
+  const { catalogue } = buildCatalogue({
+    chains: [chain("jumbo", "Jumbo")],
+    products: { jumbo: [
+      // €0.93 at €1.16 a kilo: 800 g, one loaf.
+      product({ ref: "w", name: "Witbrood", categories: BREAD, packQuantity: null, packUnit: null, shelfPriceCents: 93, unitPriceCents: 116 }),
+      // On Offer, the unit price is the Offer's: €1.04 at €1.30 a kilo.
+      product({ ref: "v", name: "Volkorenbrood", categories: BREAD, packQuantity: null, packUnit: null, shelfPriceCents: 129, offerPriceCents: 104, unitPriceCents: 130 }),
+      // Too small, once sized: 200 g.
+      product({ ref: "p", name: "Partybrood wit", categories: BREAD, packQuantity: null, packUnit: null, shelfPriceCents: 199, unitPriceCents: 995 }),
+    ] },
+  }, { now: new Date("2026-10-14T05:00:00Z") });
+  assert.deepEqual(productsOf(catalogue, "jumbo").map((p) => [p.ref, p.ingredient, p.ingredientPack, p.packQuantity]),
+    [["w", "brood", 1, null], ["v", "brood", 1, null], ["p", null, null, null]]);
+});
