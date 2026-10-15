@@ -1,11 +1,13 @@
 /**
  * Second opinions on which Ingredient a Product is, as the morning refresh
- * reports them: twins at other Chains that disagree (borrow.ts), and the
- * Chain's own shelf (shelves.ts). Each names a mapping rule to look at;
- * nothing here changes the catalogue.
+ * reports them: twins at other Chains that disagree (borrow.ts), the
+ * Chain's own shelf (shelves.ts), and a classifier learnt from the
+ * vocabulary's own mappings (classifier.ts). Each names a mapping rule to
+ * look at; nothing here changes the catalogue.
  */
 
 import type { Conflict } from "./borrow.ts";
+import type { ClassifierOpinion } from "./classifier.ts";
 import type { ShelfOpinion } from "./shelves.ts";
 
 export interface OpinionLimits {
@@ -13,14 +15,16 @@ export interface OpinionLimits {
   readonly shelves: number;
   /** Product names listed per shelf. */
   readonly names: number;
+  /** Products listed per classifier section, the most certain first. */
+  readonly predictions: number;
 }
 
-const LIMITS: OpinionLimits = { shelves: 40, names: 5 };
+const LIMITS: OpinionLimits = { shelves: 40, names: 5, predictions: 60 };
 
 const pct = (x: number) => `${Math.round(x * 100)}%`;
 const more = (n: number, shown: number) => (n > shown ? ` and ${n - shown} more` : "");
 
-export function opinionsMarkdown(conflicts: readonly Conflict[], shelves: readonly ShelfOpinion[], chainName: (id: string) => string, limits: OpinionLimits = LIMITS): string {
+export function opinionsMarkdown(conflicts: readonly Conflict[], shelves: readonly ShelfOpinion[], classifier: ClassifierOpinion | null, chainName: (id: string) => string, limits: OpinionLimits = LIMITS): string {
   const out: string[] = ["## Second opinions on mapping", ""];
   const copies = (c: Conflict) => Object.entries(c.ingredients).map(([id, i]) => `${chainName(id)} ${i ?? "none"}`).join(", ");
 
@@ -59,5 +63,21 @@ export function opinionsMarkdown(conflicts: readonly Conflict[], shelves: readon
   }
   if (suggested.length > limits.shelves) out.push(`- and ${suggested.length - limits.shelves} more shelves`);
   out.push("");
+
+  if (classifier) {
+    const shown = (n: number) => (n > limits.predictions ? `, the ${limits.predictions} most certain` : "");
+    out.push(`### The classifier places elsewhere (${classifier.disagree.length}${shown(classifier.disagree.length)})`, "");
+    out.push(`Learnt from the vocabulary's own mappings, it agrees on ${pct(classifier.agreement)} of them; where it is far surer of another Ingredient, the vocabulary is often wrong.`, "");
+    if (!classifier.disagree.length) out.push("None.");
+    for (const x of classifier.disagree.slice(0, limits.predictions)) {
+      out.push(`- ${chainName(x.product.chainId)} · ${x.product.name}: *${x.product.ingredient}*, it says **${x.label}**`);
+    }
+    out.push("");
+    out.push(`### The classifier would map (${classifier.suggest.length}${shown(classifier.suggest.length)})`, "");
+    out.push("Unmapped, and far likelier one Ingredient than none: a word or shelf the vocabulary lacks.", "");
+    if (!classifier.suggest.length) out.push("None.");
+    for (const x of classifier.suggest.slice(0, limits.predictions)) out.push(`- ${chainName(x.product.chainId)} · ${x.product.name}: **${x.label}**`);
+    out.push("");
+  }
   return out.join("\n");
 }

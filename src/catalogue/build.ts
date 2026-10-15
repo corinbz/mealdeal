@@ -21,6 +21,7 @@ import { createAllows, createMapper, isOwnBrand, type Mapping, type MappableProd
 import { englishOf } from "../ingredients/english.ts";
 import { VOCABULARY, type ComparisonUnit, type IngredientDef } from "../ingredients/vocabulary.ts";
 import { borrowMappings, productKey, type Conflict } from "./borrow.ts";
+import type { LabelledProduct } from "./classifier.ts";
 import { assessShelves, type ShelfOpinion } from "./shelves.ts";
 import { groupTwins } from "./twins.ts";
 import { CHECKED_SPREADS } from "./checked-spreads.ts";
@@ -112,6 +113,8 @@ export interface Built {
   readonly conflicts: readonly Conflict[];
   /** The Chains' own shelves as a second opinion: odd ones out, and unmapped Products a shelf suggests. */
   readonly shelves: readonly ShelfOpinion[];
+  /** Every Product with its shelves and Ingredient, for the classifier's opinion (classifier.ts). */
+  readonly labelled: readonly LabelledProduct[];
 }
 
 /** One Ingredient's quantity in another unit: courgette 1 piece = 0.3 kg. */
@@ -273,8 +276,10 @@ export function buildCatalogue(source: CatalogueSource, { now = new Date(), voca
     /** Differences over 70% looked at and found real, which Bladeren then shows as any other (#36). */
     checked: CHECKED_SPREADS.map(({ chain, ref, ingredient }) => ({ chain, ref, ingredient })),
   };
-  const shelves = assessShelves(source.chains.flatMap((chain) => productsAt(chain.id).map((p, i) => ({
-    chainId: chain.id, ref: p.ref, name: p.name, shelf: p.categories[0] ?? "", ingredient: products[chain.id]![i]!.ingredient,
-  }))));
-  return { catalogue, counts, conflicts: borrowed.conflicts, shelves };
+  const labelled: LabelledProduct[] = source.chains.flatMap((chain) => productsAt(chain.id).map((p, i) => ({
+    chainId: chain.id, ref: p.ref, name: p.name, brand: p.brand, categories: p.categories, unit: p.comparisonUnit,
+    ingredient: products[chain.id]![i]!.ingredient,
+  })));
+  const shelves = assessShelves(labelled.map((p) => ({ ...p, shelf: p.categories[0] ?? "" })));
+  return { catalogue, counts, conflicts: borrowed.conflicts, shelves, labelled };
 }
