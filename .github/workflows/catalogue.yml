@@ -25,8 +25,33 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # A backup or catch-up archive run that found the day already archived
+  # sweeps no Chain, and leaves nothing new to build.
+  archived:
+    if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: read
+    outputs:
+      chains: ${{ steps.jobs.outputs.chains }}
+    steps:
+      - name: Count the Chains the archive run swept
+        id: jobs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          n=$(gh api "repos/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}/jobs" \
+            --jq '[.jobs[] | select(.name | startswith("archive (")) | select(.conclusion == "success")] | length')
+          echo "chains=$n" >> "$GITHUB_OUTPUT"
+          echo "The archive run swept $n Chain(s)"
+
   refresh:
-    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    needs: archived
+    if: >-
+      !cancelled() &&
+      (github.event_name == 'workflow_dispatch' ||
+       (github.event.workflow_run.conclusion == 'success' && needs.archived.outputs.chains != '0'))
     runs-on: ubuntu-latest
     timeout-minutes: 30
 

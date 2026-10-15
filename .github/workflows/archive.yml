@@ -4,18 +4,22 @@
 name: Archive chain prices
 
 on:
+  # The morning's run is started at 04:30 UTC by the scheduler Worker
+  # (scheduler/dispatch.ts), because GitHub's own cron started it 5 hours late on
+  # 2026-10-14 and 2026-10-15. 04:30 UTC is 06:30 in Amsterdam in summer, 05:30
+  # in winter: both after Dirk's own ~04:01 local refresh. This cron is only
+  # the backup for a Worker that did not fire. It archives just the Chains not
+  # yet done today, so when the Worker did its job it costs about a minute.
   schedule:
-    # 04:30 UTC daily — 06:30 in Amsterdam in summer, 05:30 in winter. Both
-    # are after Dirk's own ~04:01 local refresh, and well before anyone would
-    # be shopping. GitHub cron is UTC only, so this drifts with the seasons by
-    # design rather than by accident.
-    - cron: "30 4 * * *"
+    - cron: "17 6 * * *"
   workflow_dispatch:
     inputs:
       chain:
         description: Chain to archive
         type: choice
-        options: [aldi, dekamarkt, dirk, hoogvliet, jumbo, lidl, plus, vomar, all]
+        # missing: only the Chains whose archive for today is absent from R2
+        # or fails archive:check, as a scheduled run does.
+        options: [aldi, dekamarkt, dirk, hoogvliet, jumbo, lidl, plus, vomar, all, missing]
         default: dirk
       max_product_steps:
         description: Limit product steps (leave empty for a full run)
@@ -29,16 +33,69 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Which Chains this run archives. A manual run names one, or all. A scheduled
+  # run, or chain=missing, takes every Chain whose manifest for today is absent
+  # from R2 or fails archive:check, so a backup that fires after the morning's
+  # run went well archives nothing.
+  plan:
+    runs-on: ${{ fromJSON(vars.ARCHIVE_RUNNER || '"ubuntu-latest"') }}
+    timeout-minutes: 5
+    outputs:
+      chains: ${{ steps.plan.outputs.chains }}
+    env:
+      AWS_REQUEST_CHECKSUM_CALCULATION: when_required
+      AWS_RESPONSE_CHECKSUM_VALIDATION: when_required
+      AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: auto
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      # The list must match the archive watch's (archive-watch.yml).
+      - name: Choose the Chains
+        id: plan
+        env:
+          CHOICE: ${{ inputs.chain || 'missing' }}
+        run: |
+          all="aldi dekamarkt dirk hoogvliet jumbo lidl plus vomar"
+          case "$CHOICE" in
+            all) chains="$all" ;;
+            missing)
+              date=$(date -u +%F)
+              chains=""
+              for chain in $all; do
+                if aws s3 cp "s3://${{ secrets.R2_BUCKET }}/$date/$chain/manifest.json" "manifest-$chain.json" \
+                     --endpoint-url "https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com" --only-show-errors 2>/dev/null \
+                   && npm run --silent archive:check -- --manifest "manifest-$chain.json" >/dev/null 2>&1; then
+                  echo "$chain: already archived for $date"
+                else
+                  echo "$chain: missing or incomplete for $date"
+                  chains="$chains $chain"
+                fi
+              done ;;
+            *) chains="$CHOICE" ;;
+          esac
+          json=$(printf '%s\n' $chains | jq -R . | jq -sc 'map(select(. != ""))')
+          echo "chains=$json" >> "$GITHUB_OUTPUT"
+          echo "Archiving: $json"
+
   archive:
+    needs: plan
+    if: needs.plan.outputs.chains != '[]'
+
     # One job per Chain, in parallel. A full Sweep of Dirk, Jumbo or Plus takes
     # most of an hour, so back to back they would overrun the timeout, and a Chain
     # whose edge refuses us must not cost another its day. Vomar takes about
     # two minutes, Hoogvliet three, DekaMarkt about ten, Aldi four requests,
-    # Lidl one. A scheduled run has no inputs and archives every Chain.
+    # Lidl one. The plan job above picks the Chains.
     strategy:
       fail-fast: false
       matrix:
-        chain: ${{ fromJSON((!inputs.chain || inputs.chain == 'all') && '["aldi","dekamarkt","dirk","hoogvliet","jumbo","lidl","plus","vomar"]' || format('["{0}"]', inputs.chain)) }}
+        chain: ${{ fromJSON(needs.plan.outputs.chains) }}
 
     # GitHub's own runners, unless the repository variable ARCHIVE_RUNNER names
     # others, such as ["self-hosted","pi"] for the owner's Raspberry Pi. A full

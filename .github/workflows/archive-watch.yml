@@ -1,27 +1,34 @@
-# Goes red when a morning's archive is missing or incomplete in R2.
+# Goes red when a morning's archive is missing or incomplete in R2, and
+# starts a run for the Chains concerned while they still serve today's prices.
 #
-# The archive run cannot report its own absence. GitHub started its first
-# scheduled run 5 hours 10 minutes late (2026-10-14: due 04:30, created
-# 09:40 UTC), and once it runs on the owner's Pi (#24), a Pi that is off leaves
-# the job queued with no runner, silently, until GitHub drops it. Either way a day of prices is lost for good unless
-# someone notices the same day, while the Chains still serve those prices.
-# This runs on GitHub's own runners, so it does not depend on the Pi, and a
-# failed scheduled run emails the owner.
+# The archive run cannot report its own absence. GitHub started its scheduled
+# run 5 hours late on 2026-10-14 and 2026-10-15, and never fired this watch's
+# own 08:00 cron at all; once the archive runs on the owner's Pi (#24), a Pi
+# that is off leaves the job queued with no runner, silently, until GitHub
+# drops it. Either way a day of prices is lost for good unless something acts
+# the same day. This runs on GitHub's own runners, so it does not depend on the
+# Pi, and a failed run emails the owner.
 name: Check this morning's archive
 
 on:
+  # Started at 08:00 UTC by the scheduler Worker (scheduler/dispatch.ts): the
+  # archive starts at 04:30 and takes up to about an hour and a half when one
+  # runner sweeps the Chains in turn. This cron is only the backup for a
+  # Worker that did not fire.
   schedule:
-    # 08:00 UTC: the archive starts at 04:30 and takes up to about an hour
-    # and a half when one runner sweeps the Chains in turn, and GitHub may
-    # start it late. This still leaves the rest of the day to capture by hand:
-    # gh workflow run archive.yml -f chain=all
-    - cron: "0 8 * * *"
+    - cron: "43 9 * * *"
   workflow_dispatch:
 
 jobs:
   check:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+
+    # To start the catch-up run. A workflow_dispatch started with this token
+    # does run, unlike most events it causes.
+    permissions:
+      actions: write
+      contents: read
 
     env:
       AWS_REQUEST_CHECKSUM_CALCULATION: when_required
@@ -37,8 +44,9 @@ jobs:
         with:
           node-version: "24"
 
-      # The Chains here must match the archive workflow's scheduled matrix.
+      # The Chains here must match the archive workflow's plan job.
       - name: Check today's manifest for each Chain
+        id: check
         run: |
           date=$(date -u +%F)
           status=0
@@ -48,13 +56,25 @@ jobs:
                 "manifest-$chain.json" \
                 --endpoint-url "https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com" \
                 --only-show-errors; then
-              echo "::error::No $chain archive for $date in R2. The scheduled run may be late or queued; a run by hand is safe either way, since runs queue and resume: gh workflow run archive.yml -f chain=$chain"
+              echo "::error::No $chain archive for $date in R2."
               status=1
               continue
             fi
             if ! npm run --silent archive:check -- --manifest "manifest-$chain.json"; then
-              echo "::error::The $chain archive for $date is incomplete. Re-running resumes it: gh workflow run archive.yml -f chain=$chain"
+              echo "::error::The $chain archive for $date is incomplete."
               status=1
             fi
           done
           exit $status
+
+      # Runs queue behind each other, and chain=missing chooses its Chains only
+      # when it starts, so this is safe even with a run already going: it
+      # waits, then archives whatever that run left missing, resuming from what
+      # is in R2. It replaces a run still pending, which it covers.
+      - name: Start a run for the missing Chains
+        if: failure() && steps.check.conclusion == 'failure'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run archive.yml --repo "${{ github.repository }}" -f chain=missing
+          echo "::warning::Started a catch-up run for the missing Chains: gh run list --workflow archive.yml"
