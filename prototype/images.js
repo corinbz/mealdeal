@@ -739,6 +739,81 @@
       '<g transform="translate(32 32) scale(0.9) translate(-32 -32)"><path class="b" d="M38 12h16c4 0 6 4 4 8v14H40V20c-2-4-1-8-2-8z" transform="rotate(10 48 24)"/>' +
       '<path class="a" d="M6 52c2-14 12-24 26-24s24 10 26 24z"/>' +
       '<circle class="d" cx="16" cy="46" r="1.3"/><circle class="d" cx="22" cy="40" r="1.3"/><circle class="d" cx="28" cy="36" r="1.3"/><circle class="d" cx="34" cy="34" r="1.3"/><circle class="d" cx="40" cy="38" r="1.3"/><circle class="d" cx="46" cy="44" r="1.3"/><circle class="d" cx="24" cy="48" r="1.3"/><circle class="d" cx="32" cy="44" r="1.3"/><circle class="d" cx="40" cy="48" r="1.3"/><circle class="d" cx="50" cy="50" r="1.3"/><circle class="d" cx="14" cy="52" r="1.3"/><circle class="d" cx="30" cy="52" r="1.3"/></g>'],
+    suiker: ["--a:#fbfaf4;--b:#e8e6dc;--c:#d8d4c8",
+      '<path class="a" d="M8 36l11 -5.5l11 5.5l-11 5.5z"/><path class="b" d="M8 36l11 5.5v11l-11 -5.5z"/><path class="c" d="M30 36l-11 5.5v11l11 -5.5z"/>' +
+      '<path class="a" d="M30 40l11 -5.5l11 5.5l-11 5.5z"/><path class="b" d="M30 40l11 5.5v11l-11 -5.5z"/><path class="c" d="M52 40l-11 5.5v11l11 -5.5z"/>' +
+      '<path class="a" d="M20 20l11 -5.5l11 5.5l-11 5.5z"/><path class="b" d="M20 20l11 5.5v11l-11 -5.5z"/><path class="c" d="M42 20l-11 5.5v11l11 -5.5z"/>'],
+    vanillesuiker: ["--a:#f6e6a8;--b:#5a3a24;--c:#f2efe6;--d:#e8d080",
+      '<path class="a" d="M10 12h36l4 4v36l-4 4H10l-4-4V16z"/><path class="e" d="M10 16h36M10 52h36"/>' +
+      '<path class="b" d="M14 46C24 34 36 26 54 22l2 3C40 30 28 38 17 49z"/><path class="b" d="M18 50C30 40 42 34 58 32l1 3C44 38 32 44 21 53z"/>' +
+      '<path class="c" d="M30 28A4.6 4.6 0 0 1 25.9 33.7A4.6 4.6 0 0 1 19.1 31.5A4.6 4.6 0 0 1 19.1 24.5A4.6 4.6 0 0 1 25.9 22.3A4.6 4.6 0 0 1 30 28z"/><circle class="d" cx="24" cy="28" r="2"/>'],
+    bakpoeder: ["--a:#e8603a;--b:#fbfaf4;--c:#f6d0c0",
+      '<g transform="rotate(-12 26 30)"><rect class="a" x="10" y="12" width="28" height="36" rx="2"/><path class="e" d="M10 18h28M10 42h28"/><circle class="c" cx="24" cy="30" r="6"/></g>' +
+      '<path class="b" d="M30 56c2-8 8-12 14-12s12 4 14 12z"/><path class="e" d="M48 34v-4M52 36l3-3M44 36l-3-3"/>'],
+    gist: ["--a:#e6cc90;--b:#cfb070;--c:#bc9a5a;--d:#a8844a",
+      '<g transform="translate(32 30) scale(0.88) translate(-32 -32)"><path class="a" d="M10 30l21 -10.5l21 10.5l-21 10.5z"/><path class="b" d="M10 30l21 10.5v21l-21 -10.5z"/><path class="c" d="M52 30l-21 10.5v21l21 -10.5z"/>' +
+      '<circle class="d" cx="26" cy="28" r="1.3"/><circle class="d" cx="34" cy="24" r="1.3"/><circle class="d" cx="38" cy="30" r="1.3"/><circle class="d" cx="28" cy="34" r="1.1"/>' +
+      '<path class="e" d="M18 40l3 2M44 44l3-2M22 48l2 1"/></g>'],
+    olijfolie: ["--a:#5a7a2a;--b:#c9a24a;--c:#f2ead0;--d:#3f6a2a",
+      '<rect class="b" x="27" y="4" width="10" height="7" rx="1.5"/><path class="a" d="M28 11h8v8c0 2 6 4 6 10v24c0 2-2 4-4 4H26c-2 0-4-2-4-4V29c0-6 6-8 6-10z"/>' +
+      '<rect class="c" x="22" y="32" width="20" height="16"/><path class="d" d="M27 44C31.2 43.6 34.1 40.2 33.4 36.3C29.5 36.3 26.6 39.8 27 44z"/><ellipse class="d" cx="36" cy="38" rx="2.4" ry="3"/>'],
+    zonnebloemolie: ["--a:#f5d65a;--b:#e8a03a;--c:#f2efe6;--d:#7a4a22",
+      '<rect class="b" x="26" y="5" width="10" height="6" rx="1.5"/><path class="a" d="M27 11h8v5c8 3 12 8 12 14v22c0 3-2 5-5 5H20c-3 0-5-2-5-5V30c0-6 4-11 12-14z"/>' +
+      '<path class="b" d="M40 38A3.9 3.9 0 0 1 38.3 43.3A3.9 3.9 0 0 1 33.8 46.6A3.9 3.9 0 0 1 28.2 46.6A3.9 3.9 0 0 1 23.7 43.3A3.9 3.9 0 0 1 22 38A3.9 3.9 0 0 1 23.7 32.7A3.9 3.9 0 0 1 28.2 29.4A3.9 3.9 0 0 1 33.8 29.4A3.9 3.9 0 0 1 38.3 32.7A3.9 3.9 0 0 1 40 38z"/><circle class="d" cx="31" cy="38" r="4.5"/>'],
+    azijn: ["--a:#eef0dc;--b:#c8303a;--c:#d8dcc0",
+      '<rect class="b" x="27" y="4" width="10" height="8" rx="2"/><path class="a" d="M28 12h8v6c4 2 8 6 8 12v23c0 2-2 4-4 4H24c-2 0-4-2-4-4V30c0-6 4-10 8-12z"/>' +
+      '<path class="c" d="M20 36h24v17c0 2-2 4-4 4H24c-2 0-4-2-4-4z"/><path class="e" d="M24 26c0-3 2-5 4-6"/>'],
+    mayonaise: ["--a:#fbf3d6;--b:#3a6fb8;--c:#f2e6b0",
+      '<path class="a" d="M16 10h32c2 0 4 2 4 4 0 14-4 26-8 32H20c-4-6-8-18-8-32 0-2 2-4 4-4z"/>' +
+      '<rect class="b" x="22" y="46" width="20" height="8" rx="2"/><path class="b" d="M29 54h6l-1 4h-4z"/>' +
+      '<path class="c" d="M18 22h28c-1 6-2 11-3 14H21c-1-3-2-8-3-14z"/>'],
+    ketchup: ["--a:#c8202a;--b:#f2efe6;--d:#f07a6a",
+      '<path class="b" d="M29 4h6l2 6H27z"/><rect class="b" x="23" y="9" width="18" height="7" rx="2"/>' +
+      '<path class="a" d="M24 16h16c6 4 10 10 10 18v18c0 3-2 5-5 5H19c-3 0-5-2-5-5V34c0-8 4-14 10-18z"/>' +
+      '<ellipse class="d" cx="22" cy="34" rx="2.5" ry="7"/>'],
+    mosterd: ["--a:#e8b82a;--b:#f2efe6;--c:#b07a4a;--d:#d9a01a",
+      '<path class="c" d="M38 34l12-28c1-2 4-1 3 1L42 36z"/>' +
+      '<path class="b" d="M12 28h40l-4 26c0 2-2 3-4 3H20c-2 0-4-1-4-3z"/><path class="a" d="M14 28c4-6 32-6 36 0-4 4-32 4-36 0z"/>' +
+      '<path class="d" d="M18 40h28v8H18z"/>'],
+    sojasaus: ["--a:#3a2418;--b:#c8303a;--c:#f2efe6",
+      '<path class="b" d="M26 6h12l2 8H24z"/><path class="b" d="M38 9l8-2v3l-8 2z"/>' +
+      '<path class="a" d="M24 14h16c0 4 6 8 6 16v22c0 3-2 5-5 5H23c-3 0-5-2-5-5V30c0-8 6-12 6-16z"/>' +
+      '<rect class="c" x="18" y="34" width="28" height="12"/><path class="b" d="M28 37h8l-4 6z"/>'],
+    pindasaus: ["--a:#b8743a;--b:#f2efe6;--c:#d9a05a",
+      '<path class="s" d="M30 30L52 6M38 32L58 12"/><path class="c" d="M44 15l4-4 5 4-4 5zM50 9l4-4 4 4-4 4zM48 21l4-4 4 4-4 4z"/>' +
+      '<path class="a" d="M10 37c0-6 10-10 22-10s22 4 22 10z"/><path class="e" d="M18 33c6-3 12-2 16 0"/>' +
+      '<path class="b" d="M6 36h52c0 11-11 20-26 20S6 47 6 36z"/>'],
+    pesto: ["--a:#5a8a2a;--b:#c9a24a;--c:#f2ead0;--d:#4caa3e",
+      '<rect class="a" x="14" y="20" width="36" height="36" rx="7"/><rect class="b" x="16" y="11" width="32" height="10" rx="2"/><rect class="c" x="14" y="31" width="36" height="16"/>' +
+      '<path class="d" d="M22 42C28.1 44.2 33.6 41.1 34.1 35C28.6 32.4 23.1 35.6 22 42z"/><ellipse class="b" cx="40" cy="38" rx="2" ry="3" transform="rotate(20 40 38)"/><ellipse class="b" cx="37" cy="42" rx="2" ry="3" transform="rotate(-20 37 42)"/>'],
+    pastasaus: ["--a:#c8402a;--b:#c9a24a;--c:#f2ead0;--d:#d93a2f",
+      '<rect class="a" x="14" y="20" width="36" height="36" rx="7"/><rect class="b" x="16" y="11" width="32" height="10" rx="2"/><rect class="c" x="14" y="31" width="36" height="16"/>' +
+      '<circle class="d" cx="28" cy="39" r="5"/><path class="e" d="M26 35c1 1 3 1 4 0"/><path class="d" d="M36 34c3 2 6 6 6 10-3-1-6-5-6-10z"/>'],
+    bouillon: ["--a:#d9b04a;--b:#b8902a;--c:#a8742a;--d:#7a4a22",
+      '<path class="a" d="M6 38l10 -5l10 5l-10 5z"/><path class="b" d="M6 38l10 5v10l-10 -5z"/><path class="c" d="M26 38l-10 5v10l10 -5z"/>' +
+      '<path class="a" d="M36 40l10 -5l10 5l-10 5z"/><path class="b" d="M36 40l10 5v10l-10 -5z"/><path class="c" d="M56 40l-10 5v10l10 -5z"/>' +
+      '<path class="c" d="M22 22l10 -5l10 5l-10 5z"/><path class="c" d="M22 22l10 5v10l-10 -5z"/><path class="c" d="M42 22l-10 5v10l10 -5z"/>' +
+      '<path class="e" d="M16 33l10 5M46 35l10 5"/>'],
+    zout: ["--a:#f7f4ec;--b:#c9ced2;--d:#2b2118",
+      '<path class="b" d="M20 22c0-8 5-12 12-12s12 4 12 12z"/>' +
+      '<path class="a" d="M18 22h28l-2 32c0 2-2 3-4 3H24c-2 0-4-1-4-3z"/>' +
+      '<circle class="d" cx="28" cy="15" r="1.1"/><circle class="d" cx="32" cy="13" r="1.1"/><circle class="d" cx="36" cy="15" r="1.1"/><circle class="d" cx="32" cy="17" r="1.1"/>'],
+    "zwarte peper": ["--a:#a8743a;--b:#7a4a22;--c:#2b2118;--d:#5a5a5a",
+      '<circle class="b" cx="28" cy="9" r="4"/><path class="a" d="M22 14h12v6c4 4 4 10 0 14v16c4 2 4 6 0 6H22c-4 0-4-4 0-6V34c-4-4-4-10 0-14z"/>' +
+      '<path class="e" d="M22 20h12M22 34h12"/>' +
+      '<circle class="c" cx="44" cy="48" r="3"/><circle class="c" cx="50" cy="44" r="3"/><circle class="c" cx="48" cy="52" r="3"/><circle class="c" cx="54" cy="50" r="3"/><circle class="c" cx="42" cy="54" r="3"/>'],
+    jam: ["--a:#a81f3a;--b:#f2efe6;--c:#e84a4a;--d:#f6c0c8",
+      '<rect class="a" x="14" y="20" width="36" height="36" rx="7"/>' +
+      '<path class="b" d="M12 20l4-10h32l4 10c-6 3-34 3-40 0z"/><path class="c" d="M18 10h6l-2 11h-6zM30 10h6l1 11h-6zM42 10h6l4 10c-2 1-4 1-6 1z"/>' +
+      '<path class="s" d="M14 20h36"/><ellipse class="d" cx="22" cy="34" rx="2.5" ry="6"/>'],
+    hagelslag: ["--a:#e8c07a;--b:#f6e6c0;--d:#5a3420",
+      '<path class="a" d="M10 22c-4-6 0-14 8-14 4 0 6 2 8 4 2-3 6-4 10-4h10c8 0 12 8 8 14v32H10z"/>' +
+      '<path class="b" d="M14 24c-3-4 0-10 5-10 4 0 6 3 7 5 2-3 5-5 9-5h9c6 0 8 6 6 10v26H14z"/>' +
+      '<rect class="d" x="17.4" y="20.9" width="5.2" height="2.2" rx="1.1" transform="rotate(30 20 22)" /><rect class="d" x="29.4" y="24.9" width="5.2" height="2.2" rx="1.1" transform="rotate(45 32 26)" /><rect class="d" x="13.4" y="40.9" width="5.2" height="2.2" rx="1.1" transform="rotate(-35 16 42)" /><rect class="d" x="43.4" y="30.9" width="5.2" height="2.2" rx="1.1" transform="rotate(15 46 32)" /><rect class="d" x="35.4" y="50.9" width="5.2" height="2.2" rx="1.1" transform="rotate(-15 38 52)" /><rect class="d" x="23.4" y="50.9" width="5.2" height="2.2" rx="1.1" transform="rotate(60 26 52)" /><rect class="d" x="25.4" y="18.9" width="5.2" height="2.2" rx="1.1" transform="rotate(-40 28 20)" /><rect class="d" x="33.4" y="20.9" width="5.2" height="2.2" rx="1.1" transform="rotate(60 36 22)" /><rect class="d" x="41.4" y="22.9" width="5.2" height="2.2" rx="1.1" transform="rotate(10 44 24)" /><rect class="d" x="15.4" y="28.9" width="5.2" height="2.2" rx="1.1" transform="rotate(-20 18 30)" /><rect class="d" x="23.4" y="26.9" width="5.2" height="2.2" rx="1.1" transform="rotate(80 26 28)" /><rect class="d" x="31.4" y="28.9" width="5.2" height="2.2" rx="1.1" transform="rotate(20 34 30)" /><rect class="d" x="39.4" y="30.9" width="5.2" height="2.2" rx="1.1" transform="rotate(-60 42 32)" /><rect class="d" x="17.4" y="36.9" width="5.2" height="2.2" rx="1.1" transform="rotate(50 20 38)" /><rect class="d" x="25.4" y="34.9" width="5.2" height="2.2" rx="1.1" transform="rotate(-10 28 36)" /><rect class="d" x="33.4" y="36.9" width="5.2" height="2.2" rx="1.1" transform="rotate(40 36 38)" /><rect class="d" x="41.4" y="38.9" width="5.2" height="2.2" rx="1.1" transform="rotate(-30 44 40)" /><rect class="d" x="19.4" y="44.9" width="5.2" height="2.2" rx="1.1" transform="rotate(10 22 46)" /><rect class="d" x="27.4" y="42.9" width="5.2" height="2.2" rx="1.1" transform="rotate(70 30 44)" /><rect class="d" x="35.4" y="44.9" width="5.2" height="2.2" rx="1.1" transform="rotate(-50 38 46)" /><rect class="d" x="41.4" y="46.9" width="5.2" height="2.2" rx="1.1" transform="rotate(20 44 48)" /><rect class="d" x="21.4" y="32.9" width="5.2" height="2.2" rx="1.1" transform="rotate(0 24 34)" /><rect class="d" x="37.4" y="24.9" width="5.2" height="2.2" rx="1.1" transform="rotate(-80 40 26)" />'],
+    honing: ["--a:#f0b030;--b:#8a5a2a;--c:#f8d070;--d:#fbe08a",
+      '<path class="s" d="M40 26L54 8"/><ellipse class="b" cx="38" cy="29" rx="4" ry="6" transform="rotate(40 38 29)"/>' +
+      '<path class="a" d="M16 26c-4 4-6 10-6 16 0 10 8 16 22 16s22-6 22-16c0-6-2-12-6-16z"/><rect class="c" x="14" y="20" width="36" height="7" rx="3"/>' +
+      '<path class="d" d="M18 40c2-6 6-8 10-8"/><path class="c" d="M14 27c0 4 2 6 4 6s2-3 4-3 2 6 5 6 2-6 5-6 3 4 6 4 3-7 4-7z"/>'],
   };
 
   // Where an Ingredient has no drawing of its own, its aisle stands in.
