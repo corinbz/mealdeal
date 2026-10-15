@@ -107,3 +107,17 @@ test("says which card prices it counted, and only when one applies", () => {
   assert.match(digest.text, /Gerekend alsof je Lidl Plus hebt/);
   assert.match(digest.html, /Gerekend alsof je Lidl Plus hebt/);
 });
+
+test("in English, the digest says the same in English, with prices written as €1.50 (#25)", () => {
+  const vocabulary = VOCABULARY.map((d) => (d.id === "gehakt"
+    ? { ...d, names: { en: ["ground meat"] }, variants: [{ id: "rund", name: "rundergehakt", names: { en: ["ground beef"] } }] }
+    : d));
+  const digest = composeDigest({ ...DATA, vocabulary }, ["500 g ground beef", "1 l halfvolle melk"], "https://e/", "https://g/", "en");
+  assert.equal(digest.subject, "1 real discount on your staples");
+  assert.match(digest.text, /prices from Wednesday, 21 October/);
+  assert.match(digest.text, /\nground beef\n {2}Dirk: Rundergehakt, €3\.99 instead of €4\.49 \(1 euro korting\)\. Lowest price in 12 days; before that at least €4\.49\./);
+  assert.match(digest.text, /No real discount this week on: halfvolle melk\./);
+  assert.match(digest.html, /<html lang="en">/);
+  assert.doesNotMatch(digest.text, /Gerekend|Recepten|Afmelden/);
+  assert.equal(composeDigest(DATA, ["1 l halfvolle melk"], "https://e/", "https://g/", "en").subject, "No real discounts on your staples this week");
+});

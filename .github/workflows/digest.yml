@@ -4,7 +4,8 @@
 #
 # For one owner until there are accounts (#21), and off until it is opted
 # into: scripts/setup-digest.sh sets DIGEST_TO, DIGEST_STAPLES and the
-# RESEND_API_KEY secret. Unsubscribing is one click: "Disable workflow" on
+# RESEND_API_KEY secret. A DIGEST_LANG variable of "en" writes it in English
+# (#25); Dutch otherwise. Unsubscribing is one click: "Disable workflow" on
 # this workflow's page, which every digest links to.
 name: Weekly digest
 
@@ -78,12 +79,14 @@ jobs:
         env:
           DIGEST_STAPLES: ${{ vars.DIGEST_STAPLES }}
           STAPLES_INPUT: ${{ inputs.staples }}
+          DIGEST_LANG: ${{ vars.DIGEST_LANG || 'nl' }}
         run: |
           [ -n "$STAPLES_INPUT" ] && export DIGEST_STAPLES="$(tr ',' '\n' <<<"$STAPLES_INPUT")"
           aws s3 cp "$R2/catalogue/latest.js" catalogue.js --only-show-errors
           node scripts/digest.ts --catalogue catalogue.js \
             --site "https://${{ vars.PAGES_PROJECT }}.pages.dev/" \
             --disable-url "https://github.com/${{ github.repository }}/actions/workflows/digest.yml" \
+            --lang "$DIGEST_LANG" \
             --out digest.json
 
       - name: Show it instead of sending (dry run)

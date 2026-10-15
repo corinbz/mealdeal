@@ -6,7 +6,9 @@ sheet: the person picks what is wrong (*verkeerd product*, *prijs klopt
 niet*, *niet in de winkel*, *anders*) and may add a note. Everything else is
 filled in by the page: the Chain, the Product's ref and name, the Ingredient
 and Variant it was matched to, the price shown, the day its prices are from,
-and where in the app the person was.
+where in the app the person was, and the page's language (`lang`, #25). The
+page fills the context in that language, so the morning summary marks a
+report not made in Dutch with `[EN]`.
 
 **Sending.** A report waits in the browser's localStorage until the server
 has taken it, so one made in a shop with no signal goes on the next visit or

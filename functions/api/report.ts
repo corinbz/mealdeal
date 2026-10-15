@@ -40,6 +40,8 @@ export interface Report {
   /** What the person was doing: the page and view, and the typed item if any. */
   readonly context: string;
   readonly note: string;
+  /** The page's language (#25), which `context` and `note` are written in; "nl" from a page that predates it. */
+  readonly lang: string;
 }
 
 export const MAX_BODY = 4096;
@@ -67,6 +69,7 @@ export function readReport(body: unknown): Report | string {
     variant: strOrNull(b["variant"], 60),
     context: str(b["context"], 300) ?? "",
     note: str(b["note"], 500) ?? "",
+    lang: /^[a-z]{2}$/.test(String(b["lang"] ?? "")) ? String(b["lang"]) : "nl",
   };
 }
 
