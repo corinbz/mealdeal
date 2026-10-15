@@ -109,7 +109,9 @@ const RULES: [RegExp, Aisle][] = [
   [/vegetarisch|vleesvervanger|plantaardig/i, "vega"],
   // Not /kaas/: Dirk's dairy department is called "Zuivel & kaas".
   [/kaas gesneden|kaas stuk|overige kazen|kaas voor|^vers > kaas|^kaas, vleeswaren, tapas > kaas/i, "cheese"],
-  [/^vleeswaren|vleeswaren$|filet americain|^vers > verse tapas|^kaas, vleeswaren, tapas > (vleeswaren|tapas)/i, "deli"],
+  // Dirk's and DekaMarkt's halal shelf sits under "Vlees & vis" but holds
+  // only cold cuts and sausage: Wahid's 125 g kipfilet is sliced, not fresh.
+  [/^vleeswaren|vleeswaren$|filet americain|^vers > verse tapas|^kaas, vleeswaren, tapas > (vleeswaren|tapas)|^vlees & vis > halal vlees & kip$/i, "deli"],
   [/^vers > vlees > sauzen/i, "pantry"],
   [/^vlees|^vers > (vlees|kip & kalkoen)/i, "meat"],
   [/^zuivel|eieren|houdbare zuivel|koffiemelk/i, "dairy"],
