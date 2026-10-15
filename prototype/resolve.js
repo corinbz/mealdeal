@@ -370,8 +370,10 @@
       const { known, packs, pack } = packsFor(p, item);
       return {
         p, o, offer: o ? o.wording : null, onOffer: !!o, packs, cost: packs * price,
-        // How many times the pack is what was asked for: "pak is 2× wat je nodig hebt".
-        over: known ? pack / item.quantity : 1,
+        // How many times what was asked for is bought, in whole packs: "je koopt 2× wat je nodig hebt". null where the pack is in another unit.
+        over: known ? (packs * pack) / item.quantity : null,
+        // The part of what is bought that is used, which a Recipe is costed on. All of it where the pack is in another unit.
+        share: known ? Math.min(1, item.quantity / (packs * pack)) : 1,
         // The packs at the Shelf Price, where the Offer price is below it.
         was: o && o.priceCents && o.priceCents < p.shelfPriceCents ? packs * p.shelfPriceCents : null,
       };
@@ -379,18 +381,17 @@
 
     const lines = new Map();
     /**
-     * A Requirement at one Chain, or null where it has no candidate. A
-     * Correction wins. Otherwise `choose` says which candidate:
-     *   "unit"  the Resolution, the cheapest per unit (the list)
-     *   "pack"  the cheapest for the quantity asked, in whole packs (recipes)
+     * A Requirement at one Chain, or null where it has no candidate: the
+     * Resolution, the cheapest per unit, for the list and recipes alike
+     * (owner's decision, 2026-10-15), bought in whole packs. A larger pack
+     * than needed is not avoided but shown (`over`). A Correction wins.
      */
-    function line(chainId, item, { week = "nu", corrections = null, choose = "unit" } = {}) {
+    function line(chainId, item, { week = "nu", corrections = null } = {}) {
       const fixed = correctedProduct(chainId, item, corrections);
-      const key = [chainId, week, choose, fixed ? fixed.id : "", correctionKey(chainId, item), item.unit, item.quantity, JSON.stringify(item.preferences || {})].join("|");
+      const key = [chainId, week, fixed ? fixed.id : "", correctionKey(chainId, item), item.unit, item.quantity, JSON.stringify(item.preferences || {})].join("|");
       if (lines.has(key)) return lines.get(key);
       let out = null;
       if (fixed) out = buy(fixed, item, week);
-      else if (choose === "pack") out = candidates(chainId, item).map((p) => buy(p, item, week)).sort((a, b) => a.cost - b.cost)[0] || null;
       else { const p = candidates(chainId, item)[0]; out = p ? buy(p, item, week) : null; }
       lines.set(key, out);
       return out;
@@ -461,24 +462,28 @@
     }
 
     /**
-     * A Recipe's ingredients priced at each Chain that is a bag, each bought
-     * the cheapest way for the quantity it needs. The Chains missing least,
+     * A Recipe's ingredients priced at each Chain that is a bag, each
+     * resolved as a list item would be, and costed on what the Recipe uses
+     * of the packs bought (owner's decision, 2026-10-15): 100 g from a 1 kg
+     * block is a tenth of it. The list, which is what is paid, buys whole packs. The Chains missing least,
      * then cheapest, first; complete where one sells every ingredient. One
      * that does not is never ranked as if the missing part were free.
      *   at  per Chain: lines, cost, missing, deals (ingredients on Offer), saving
      */
+    /** What a line costs for the part of it that is used. */
+    const usedCents = (l) => Math.round(l.cost * l.share);
     function priceRecipe(requirements, { week = "nu", corrections = null } = {}) {
       const at = data.chains.filter((c) => !c.offersOnly).map((c) => {
-        const ls = requirements.map((g) => line(c.id, g, { week, corrections, choose: "pack" })), have = ls.filter(Boolean);
-        return { chain: c, lines: ls, cost: have.reduce((n, l) => n + l.cost, 0), missing: ls.length - have.length,
-          deals: have.filter((l) => l.onOffer).length, saving: have.reduce((n, l) => n + (l.was ? l.was - l.cost : 0), 0) };
+        const ls = requirements.map((g) => line(c.id, g, { week, corrections })), have = ls.filter(Boolean);
+        return { chain: c, lines: ls, cost: have.reduce((n, l) => n + usedCents(l), 0), missing: ls.length - have.length,
+          deals: have.filter((l) => l.onOffer).length, saving: have.reduce((n, l) => n + (l.was ? Math.round((l.was - l.cost) * l.share) : 0), 0) };
       }).sort((a, b) => a.missing - b.missing || a.cost - b.cost);
       return { at, best: at[0], complete: !!at[0] && at[0].missing === 0 };
     }
 
     return { products, vocabulary, parse, suggest, candidates, satisfies, packsFor, unitPrice, correctionKey, dailyPrices, priceDropAt,
       exact, exactIdOf, exactProduct, likelyProduct, exactMatches, spreads,
-      isOnOffer, nextStarts, offerFor, packCents, verdict, correctedProduct, line, compare, priceRecipe };
+      isOnOffer, nextStarts, offerFor, packCents, verdict, correctedProduct, line, compare, priceRecipe, usedCents };
   }
 
   /**
