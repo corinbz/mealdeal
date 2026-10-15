@@ -94,6 +94,12 @@ const RULES: [RegExp, Aisle][] = [
   [/^brood, gebak, bakproducten > bakproducten/i, "pantry"],
   // Soup, but not soup meat ("Soepballetjes en soepvlees"); gourmetten is raw
   // meat for the table grill.
+  // Dirk and DekaMarkt keep olives and tapas beside the ready meals; they are not one.
+  [/^maaltijden, salades & tapas > tapas$/i, "deli"],
+  // Aldi's dips and spreads (hummus, roomkaas) are not snacks to serve.
+  [/^borrelhapjes > spreads/i, "deli"],
+  // Plus files roggebrood with the crackers; it is a loaf.
+  [/> roggebrood$/i, "bakery"],
   // Plus files fruit salad as "Gesneden fruit, fruitsalades": fruit, not a dish.
   [/fruitsalade/i, "produce"],
   [/maaltijd|verspakket|> (verse )?soep(en)?$|houdbare soepen|quiche|pannenkoek|sushi|sandwich|pizza|ovenschotel|salades|slaatjes|borrelhapjes/i, "readymeal"],
