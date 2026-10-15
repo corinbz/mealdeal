@@ -85,6 +85,12 @@ function excludes(term: string, lower: string, raw: readonly string[]): boolean 
   });
 }
 
+/** The parts of a Product's category paths but the first, which only names the department. */
+const shelvesOf = (categories: readonly string[]) => categories.flatMap((c) => c.split(/\s*>\s*/).slice(1));
+
+/** Whether a Product is filed on a shelf its Ingredient never is. */
+const offShelf = (def: IngredientDef, shelves: readonly string[]) => !!def.notShelf && shelves.some((s) => def.notShelf!.test(s));
+
 const BRAND_NOT_FOOD = /^(gouda's glorie|bolletje|kips)\b(?=\s+\S)/;
 
 /**
@@ -152,7 +158,7 @@ export function createAllows(vocabulary: readonly IngredientDef[] = VOCABULARY) 
     const lower = product.name.toLowerCase();
     const raw = lower.split(/[^\p{L}0-9%']+/u).filter(Boolean);
     return aisles.every((a) => !a || !NOT_FOOD.has(a) || def.aisles.includes(a))
-      && !def.not.some((n) => excludes(n, lower, raw));
+      && !def.not.some((n) => excludes(n, lower, raw)) && !offShelf(def, shelvesOf(product.categories));
   };
 }
 
@@ -220,16 +226,20 @@ export function createMapper(vocabulary: readonly IngredientDef[] = VOCABULARY) 
     const raw = lower.replace(BRAND_NOT_FOOD, "").split(/[^\p{L}0-9%']+/u).filter(Boolean);
 
     const owned = owners(head, names, written);
+    const shelves = shelvesOf(product.categories);
     const fits = (c: Compiled) => [...aisles].some((a) => c.aisles.has(a))
       // Filed with ready meals, baby food or pet food anywhere, a Product
       // is that, whatever other aisle it also sits in.
       && [...aisles].every((a) => !ELSEWHERE.has(a) || c.aisles.has(a))
-      && !c.def.not.some((n) => excludes(n, lower, raw));
+      && !ruledOut(c);
     // A food other things are named after that this Product is not, such as
     // chocolade in "Vla chocolade", is only its flavour, so names no second
     // thing; nor does one whose own words rule this Product out ("Pastasaus
-    // ricotta", "Sriracha mayonaise").
-    const ruledOut = (c: Compiled) => c.def.not.some((n) => excludes(n, lower, raw));
+    // ricotta", "Sriracha mayonaise"), or whose shelf does ("Twix Hazelnoot"
+    // among the chocolate).
+    function ruledOut(c: Compiled): boolean {
+      return c.def.not.some((n) => excludes(n, lower, raw)) || offShelf(c.def, shelves);
+    }
     const flavour = (cs: Compiled[]) => cs.every((c) => (c.def.wins && !fits(c)) || ruledOut(c));
     // Words owned by the same Ingredients are one thing named twice ("Kanzi
     // Appels"); words owned by different ones name a mix, which maps to a mix
@@ -248,7 +258,6 @@ export function createMapper(vocabulary: readonly IngredientDef[] = VOCABULARY) 
     const byName = candidates.sort((a, b) => at(b) - at(a)).find(fits);
     // A shelf that holds one thing outranks a name that gives only a flavour
     // or nothing at all, but not a name that says what kind of thing it is.
-    const shelves = product.categories.flatMap((c) => c.split(/\s*>\s*/).slice(1));
     const shelved = byName?.def.wins ? undefined : compiled.find((c) => c.def.shelf && shelves.some((s) => c.def.shelf!.test(s)) && fits(c));
     const chosen = shelved ?? byName;
     if (!chosen) return null;

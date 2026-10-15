@@ -87,6 +87,12 @@ export interface IngredientDef {
    * name gives only the flavour ("Ola Festini Peer" on "IJs > Handijs").
    */
   readonly shelf?: RegExp;
+  /**
+   * A Chain's shelf this never is, matched the same way: filed there, a
+   * Product naming it only tastes of it, as a hazelnut chocolate bar is not
+   * noten, nor a chocolate biscuit chocolade.
+   */
+  readonly notShelf?: RegExp;
 }
 
 /**
@@ -155,6 +161,7 @@ interface Options {
   smallest?: number;
   wins?: boolean;
   shelf?: RegExp;
+  notShelf?: RegExp;
 }
 
 const defs: IngredientDef[] = [];
@@ -171,6 +178,7 @@ function ing(id: string, unit: ComparisonUnit, aisles: Aisle[], words: string[],
     ...(o.smallest ? { smallest: o.smallest } : {}),
     ...(o.wins ? { wins: true } : {}),
     ...(o.shelf ? { shelf: o.shelf } : {}),
+    ...(o.notShelf ? { notShelf: o.notShelf } : {}),
   });
 }
 
@@ -191,16 +199,16 @@ ing("aardappelen", "kg", ["produce"], ["aardappel", "aardappelen", "kriel", "kri
     ["kruimig", "kruimige aardappelen", ["kruimig", "bloemig"]]],
   also: ["piepers"],
 });
-ing("zoete aardappelen", "kg", ["produce", "frozen"], ["zoete aardappel"], { also: ["zoete aardappel", "bataat"] });
+ing("zoete aardappelen", "kg", ["produce", "frozen"], ["zoete aardappel"], { also: ["zoete aardappel", "bataat"], not: ["friet", "frites"] });
 ing("friet", "kg", ["frozen", "produce"], ["friet", "patat", "frites"], { also: ["patat", "frites"] });
-ing("aardappelpuree", "kg", ["produce", "frozen", "pantry"], ["aardappelpuree", "puree", "aardappelpuree voor stamppot"], { not: ["tomaten", "appel", "chocolade"] });
+ing("aardappelpuree", "kg", ["produce", "frozen", "pantry"], ["aardappelpuree", "=puree", "aardappelpuree voor stamppot"], { not: ["tomaten", "appel", "chocolade", "tomato"] });
 
 // ── Vegetables ──────────────────────────────────────────────────────────
 ing("wortelen", "kg", VEG, ["wortel", "wortelen", "peen", "winterpeen", "bospeen", "waspeen", "worteltjes"], {
   not: ["sap", "taart", "cake", "salade", "mieriks"],
   also: ["wortels", "peen", "worteltjes"],
 });
-ing("uien", "kg", ["produce", "frozen"], ["uien", "ui"], {
+ing("uien", "kg", ["produce", "frozen"], ["uien", "ui", "=uien"], {
   not: ["gebakken", "crispy", "soep", "lente", "bosui", "zilver", "chips", "ringen"],
   variants: [["rode", "rode uien", ["rode"]], ["gele", "gele uien", ["gele"], true]],
   equals: { piece: 7 },
@@ -208,10 +216,10 @@ ing("uien", "kg", ["produce", "frozen"], ["uien", "ui"], {
 });
 ing("bosui", "kg", FRESH_VEG, ["bosui", "lenteui", "bosuitje"], { also: ["lente-ui"] });
 ing("sjalotten", "kg", FRESH_VEG, ["sjalot", "sjalotje"], { also: ["sjalotjes"] });
-ing("zilveruitjes", "kg", TINNED, ["zilveruitje", "uitje"], { not: ["jus", "chips"] });
-ing("knoflook", "kg", ["produce", "pantry"], ["knoflook"], { equals: { piece: 20 }, not: ["saus", "olie", "boter", "brood", "poeder", "korrel", "pers"] });
+ing("zilveruitjes", "kg", TINNED, ["zilveruitje", "uitje"], { not: ["jus", "chips", "soup", "soep"] });
+ing("knoflook", "kg", ["produce", "pantry"], ["knoflook"], { equals: { piece: 20 }, not: ["saus", "olie", "boter", "brood", "poeder", "korrel", "pers", "friteslijn"], notShelf: /saus|mayonaise|tomaten/i });
 ing("prei", "kg", VEG, ["prei"], { not: ["soep"] });
-ing("courgette", "piece", VEG, ["courgette", "courgettes"], { equals: { kg: 0.3 }, not: ["spaghetti", "noedels", "linten"] });
+ing("courgette", "piece", VEG, ["courgette", "courgettes"], { equals: { kg: 0.3 }, not: ["spaghetti", "noedels", "linten", "groentemix"] });
 ing("komkommer", "piece", FRESH_VEG, ["komkommer"], { equals: { kg: 0.4 }, not: ["snoep", "mini"] });
 ing("snoepkomkommers", "kg", FRESH_VEG, ["snoepkomkommer", "minikomkommer"], { also: ["mini komkommers"] });
 ing("paprika", "piece", VEG, ["paprika", "paprikas"], {
@@ -229,7 +237,7 @@ ing("tomaten", "kg", ["produce"], ["tomaat", "tomaten", "tomaatjes"], {
 ing("tomatenblokjes", "kg", TINNED, ["tomatenblokje", "blokjestomaat"], { also: ["tomaten in blokjes"] });
 ing("gepelde tomaten", "kg", TINNED, ["gepelde tomaat", "gepelde tomaten"], { also: ["gepelde tomaten"] });
 ing("passata", "kg", TINNED, ["passata", "tomatenfrito", "gezeefde tomaten"], { equals: { l: 1 }, also: ["gezeefde tomaten"] });
-ing("tomatenpuree", "kg", TINNED, ["tomatenpuree"], {});
+ing("tomatenpuree", "kg", TINNED, ["tomatenpuree", "tomato puree"], {});
 ing("broccoli", "kg", VEG, ["broccoli"], { not: ["soep", "mix", "rijst", "gehaktbal"] });
 ing("bloemkool", "piece", VEG, ["bloemkool"], { equals: { kg: 0.8 }, not: ["rijst", "soep", "mix", "kaas", "puree"] });
 ing("spinazie", "kg", VEG, ["spinazie"], { not: ["soep", "pasta", "taart", "ravioli", "pizza", "crème", "creme"] });
@@ -240,9 +248,9 @@ ing("spruiten", "kg", VEG, ["spruit", "spruitjes"], { also: ["spruitjes"] });
 ing("sperziebonen", "kg", VEG, ["sperziebonen", "sperzieboon", "haricots verts"], { also: ["haricots verts"] });
 ing("snijbonen", "kg", VEG, ["snijbonen"], {});
 ing("peultjes", "kg", VEG, ["peultje", "peulen", "sugar snaps", "sugarsnaps"], { also: ["sugar snaps"] });
-ing("doperwten", "kg", ["frozen", "conserves"], ["doperwt", "erwt", "erwtjes"], { not: ["soep", "spliterwt", "kikkererwt", "wortel"] });
+ing("doperwten", "kg", ["frozen", "conserves"], ["doperwt", "erwt", "erwtjes", "=erwtjes"], { not: ["soep", "spliterwt", "kikkererwt", "wortel"] });
 ing("doperwten en wortelen", "kg", ["frozen", "conserves"], ["doperwten en wortel", "erwten en wortel", "erwtjes en wortel", "doperwten wortel", "doperwtjes & worteltjes", "doperwtjes met worteltjes", "doperwtjes worteltjes", "erwten & wortel", "tuinerwten wortel"], { not: ["soep"], mix: true });
-ing("mais", "kg", ["frozen", "conserves", "produce"], ["mais", "maïs", "maiskolf", "=maïskolven", "=maiskolven"], { not: ["chips", "zetmeel", "maizena", "olie", "wafel", "meel", "pop"] });
+ing("mais", "kg", ["frozen", "conserves", "produce"], ["mais", "maïs", "maiskolf", "=maïskolven", "=maiskolven", "suikermais", "suikermaïs"], { not: ["chips", "zetmeel", "maizena", "olie", "wafel", "meel", "pop", "insalatissime"] });
 ing("champignons", "kg", VEG, ["champignon", "champignons"], {
   not: ["soep", "saus", "roomsaus"],
   variants: [["kastanje", "kastanjechampignons", ["kastanje"]], ["wit", "witte champignons", ["wit"], true]],
@@ -273,11 +281,11 @@ ing("kropsla", "piece", FRESH_VEG, ["kropsla", "botersla"], { equals: { kg: 0.3 
 ing("sla", "kg", FRESH_VEG, ["sla", "slamelange", "melange", "romaine", "eikenblad"], { not: ["dressing", "saus", "ijsberg", "krop", "veld", "rucola", "maaltijd", "rauwkost"] });
 ing("rucola", "kg", FRESH_VEG, ["rucola"], {});
 ing("veldsla", "kg", FRESH_VEG, ["veldsla", "sla veldsla"], {});
-ing("rauwkost", "kg", FRESH_VEG, ["rauwkost", "koolsla", "julienne"], { mix: true });
+ing("rauwkost", "kg", FRESH_VEG, ["rauwkost", "koolsla", "julienne", "rauwkostsalade"], { mix: true });
 ing("roerbakgroente", "kg", ["produce", "frozen"], ["roerbakgroente", "wokgroente", "roerbakmix", "fijne roerbak", "italiaanse roerbak", "mexicaanse roerbak", "oosterse roerbak", "hollandse roerbak", "champignon roerbak", "wokmix", "nasigroente", "bamigroente", "ovengroente"], { also: ["wokgroente"], mix: true });
 ing("soepgroente", "kg", ["produce", "frozen"], ["soepgroente"], { mix: true });
-ing("stamppotgroente", "kg", ["produce", "frozen"], ["stamppotgroente", "hutspot", "stamppot"], { mix: true, not: ["boerenkoolstamppot", "puree", "aardappelpuree", "worst", "gehakt", "maaltijd"] });
-ing("gember", "kg", ["produce", "pantry"], ["gember", "gemberwortel"], { not: ["bier", "koek", "shot", "thee", "siroop", "drank", "ale", "poeder", "snoep"] });
+ing("stamppotgroente", "kg", ["produce", "frozen"], ["stamppotgroente", "hutspot", "stamppot"], { mix: true, not: ["boerenkoolstamppot", "puree", "aardappelpuree", "worst", "gehakt", "maaltijd", "kruimig", "aardappelen"] });
+ing("gember", "kg", ["produce", "pantry"], ["gember", "gemberwortel"], { not: ["bier", "koek", "shot", "thee", "siroop", "drank", "ale", "poeder", "snoep", "kombucha"] });
 ing("rode peper", "kg", FRESH_VEG, ["peper", "pepers", "chilipeper", "chili"], {
   not: ["zwarte", "witte", "gemalen", "molen", "saus", "korrel", "steak", "paprika", "zout", "salami", "poeder", "carne", "bonen", "padron", "knoflookchili", "kaas", "worst", "bami", "chow"],
   also: ["peper", "chilipeper", "chili pepers"],
@@ -299,7 +307,7 @@ ing("appels", "kg", ["produce", "frozen"], ["appel", "appels", "appeltjes", "els
     ["goudrenet", "goudrenetten", ["goudrenet"]], ["granny", "granny smith", ["granny"]], ["braeburn", "braeburn appels", ["braeburn"]]],
   also: ["appel"],
 });
-ing("peren", "kg", FRUIT, ["peer", "peren", "conference", "doyenné", "stoofpeer", "stoofperen"], {
+ing("peren", "kg", FRUIT, ["peer", "peren", "conference", "doyenné", "stoofpeer", "stoofperen", "=peren"], {
   not: ["sap", "siroop", "drank", "taart", "stroop"],
   variants: [["stoof", "stoofperen", ["stoof", "gieser"]], ["hand", "handperen", ["conference", "doyenn"], true]],
   also: ["peer"],
@@ -312,8 +320,8 @@ ing("limoenen", "piece", ["produce"], ["limoen", "limoenen", "limes"], { equals:
 ing("grapefruit", "piece", ["produce"], ["grapefruit"], { equals: { kg: 0.4 }, not: ["sap", "drank", "frisdrank"] });
 ing("druiven", "kg", FRUIT, ["druif", "druiven"], { not: ["sap", "suiker", "rozijn"] });
 ing("aardbeien", "kg", FRUIT, ["aardbei", "aardbeien"], { not: ["jam", "yoghurt", "kwark", "taart", "smoothie", "snoep", "limonade", "drink", "siroop", "chocolade", "cornet", "cornets", "ijs", "sorbet"] });
-ing("blauwe bessen", "kg", FRUIT, ["blauwe bes", "bosbes", "bosbessen", "blueberries"], { also: ["blauwe bessen", "bosbessen"], not: ["jam", "yoghurt", "muffin", "smoothie"] });
-ing("frambozen", "kg", FRUIT, ["framboos", "frambozen"], { not: ["bavarois", "jam", "yoghurt", "siroop", "limonade", "smoothie", "azijn"] });
+ing("blauwe bessen", "kg", FRUIT, ["blauwe bes", "bosbes", "bosbessen", "blueberries"], { also: ["blauwe bessen", "bosbessen"], not: ["jam", "yoghurt", "muffin", "smoothie", "cheesecake", "taart"] });
+ing("frambozen", "kg", FRUIT, ["framboos", "frambozen"], { not: ["bavarois", "jam", "yoghurt", "siroop", "limonade", "smoothie", "azijn", "chocolade"] });
 ing("kersen", "kg", FRUIT, ["kers", "kersen"], { not: ["tomaat", "tomaten", "bonbon", "likeur", "jam", "bier", "limonade", "siroop"] });
 ing("kiwi's", "piece", FRUIT, ["kiwi", "kiwis", "kiwifruit"], { equals: { kg: 0.1 }, not: ["bes"], also: ["kiwi"] });
 ing("mango", "piece", FRUIT, ["mango", "mangos"], { equals: { kg: 0.4 }, not: ["sap", "chutney", "smoothie", "drank", "gedroogd", "lassi", "yoghurt"] });
@@ -324,12 +332,12 @@ ing("nectarines", "kg", FRUIT, ["nectarine", "perzik", "perziken"], { not: ["sap
 ing("granaatappel", "piece", ["produce"], ["granaatappel", "=granaatappelpitjes"], { equals: { kg: 0.3 } });
 ing("fruitsalade", "kg", ["produce", "conserves"], ["fruitsalade", "fruitmix"], { mix: true });
 ing("appelmoes", "kg", TINNED, ["appelmoes", "appelcompote"], { not: ["knijp"], shelf: /^appelmoes/i });
-ing("rozijnen", "kg", PANTRY, ["rozijn", "rozijnen", "krenten", "sultana"], { not: ["brood", "bol", "koek"] });
-ing("dadels", "kg", ["pantry", "produce", "deli", "conserves"], ["dadel", "dadels"], {});
+ing("rozijnen", "kg", PANTRY, ["rozijn", "rozijnen", "krenten", "sultana"], { not: ["brood", "bol", "koek", "yofruit", "biscuit", "sticks"] });
+ing("dadels", "kg", ["pantry", "produce", "deli", "conserves"], ["dadel", "dadels"], { not: ["ontbijtmix", "gevuld"] });
 
 // ── Meat ────────────────────────────────────────────────────────────────
 ing("gehakt", "kg", MEAT, ["gehakt", "gehaktmix"], {
-  not: ["bal", "ballen", "schnitzel", "slavink", "brood", "kruiden", "mix voor", "vega", "speklap", "hamburger", "cordon"],
+  not: ["bal", "ballen", "schnitzel", "slavink", "brood", "kruiden", "mix voor", "vega", "speklap", "hamburger", "cordon", "spinazie"],
   // Half-om-half first: "Half-om-Half Gehakt Varken-Rund" names rund as well.
   variants: [["half-om-half", "half-om-half gehakt", ["half om half", "half-om-half", "h.o.h", "gemengd", "varken-rund"]],
     ["rund", "rundergehakt", ["runder", "rund"]], ["varken", "varkensgehakt", ["varkens"]], ["kip", "kipgehakt", ["kip"]]],
@@ -344,7 +352,7 @@ ing("kipfilet", "kg", MEAT, ["kipfilet", "kipfilets", "kippenfilet", "kipfiletre
 ing("kipdijfilet", "kg", MEAT, ["kipdijfilet", "dijfilet", "kippendij", "kipdij", "kipdijreepje", "kipdijblokje"], { not: ["vleeswaren", "spies", "sate"], also: ["kipdij", "kipdijen"] });
 ing("kippenpoten", "kg", MEAT, ["kippenpoot", "kippenpoten", "drumstick", "drumsticks", "kippenbout", "kippenbouten"], { also: ["drumsticks", "kippenbouten"] });
 ing("kipvleugels", "kg", MEAT, ["kipvleugel", "kippenvleugel", "wing", "wings"], {});
-ing("hele kip", "kg", MEAT, ["hele kip", "kip"], { not: ["loempia", "gyoza", "bapao", "filet", "dij", "poot", "vleugel", "gehakt", "schnitzel", "burger", "nugget", "blokje", "reep", "kerrie", "salade", "bouillon", "kruiden", "saus", "sate", "spies", "worst", "cordon", "gyros", "shoarma", "pastei", "vega", "soep", "ham", "doner", "tandoori", "pittige", "karaage"] });
+ing("hele kip", "kg", MEAT, ["hele kip", "kip"], { not: ["loempia", "gyoza", "bapao", "filet", "dij", "poot", "vleugel", "gehakt", "schnitzel", "burger", "nugget", "blokje", "reep", "kerrie", "salade", "bouillon", "kruiden", "saus", "sate", "spies", "worst", "cordon", "gyros", "shoarma", "pastei", "vega", "soep", "ham", "doner", "tandoori", "pittige", "karaage", "kebab", "kebap", "boomstam", "strips", "chipolata", "worstje"] });
 ing("kalkoenfilet", "kg", MEAT, ["kalkoenfilet", "kalkoen"], { not: ["tapas", "vleeswaren", "gerookt", "plakjes", "rollade", "salchichon", "worst"] });
 ing("speklappen", "kg", MEAT, ["speklap", "speklappen"], { not: ["kruiden", "vega"] });
 ing("spekblokjes", "kg", ["meat", "deli"], ["spekblokje", "spekreepje", "spekjes", "lardon"], { also: ["spekjes", "spekreepjes"] });
@@ -372,11 +380,11 @@ ing("koolvis", "kg", FISH, ["koolvis", "koolvisfilet", "alaskakoolvis"], {});
 // Sold frozen only.
 ing("tilapia", "kg", FISH, ["tilapia", "tilapiafilet"], { anyForm: true });
 ing("vissticks", "kg", ["frozen", "fish"], ["visstick", "vissticks", "fishsticks"], {});
-ing("garnalen", "kg", ["fish", "frozen"], ["garnaal", "garnalen", "gamba", "gambas", "scampi", "scampis"], { not: ["chips", "kroket", "salade", "kroepoek", "cocktail", "surimi"] });
+ing("garnalen", "kg", ["fish", "frozen"], ["garnaal", "garnalen", "gamba", "gambas", "scampi", "scampis", "vannamei"], { not: ["chips", "kroket", "salade", "kroepoek", "cocktail", "surimi"] });
 ing("mosselen", "kg", ["fish", "frozen", "conserves"], ["mossel", "mosselen"], { not: ["saus"] });
 ing("haring", "kg", ["fish", "deli", "conserves"], ["haring", "haringen", "maatjes", "maatjesharing"], { not: ["salade"] });
 ing("makreel", "kg", ["fish", "deli", "conserves"], ["makreel", "makreelfilet"], { not: ["salade", "spread"] });
-ing("tonijn", "kg", ["conserves", "fish", "frozen"], ["tonijn", "tonijnstukken", "tonijnfilet"], { anyForm: true, not: ["salade", "spread", "pizza", "sushi", "plantaardig"] });
+ing("tonijn", "kg", ["conserves", "fish", "frozen"], ["tonijn", "tonijnstukken", "tonijnfilet", "tonijnmoot"], { anyForm: true, not: ["salade", "spread", "pizza", "sushi", "plantaardig"] });
 ing("sardines", "kg", ["conserves"], ["sardine", "sardines", "sardientjes"], {});
 
 ing("kibbeling", "kg", FISH, ["kibbeling"], { not: ["saus"] });
@@ -396,7 +404,7 @@ ing("melk", "l", ["dairy", "drinks"], ["melk"], {
 });
 ing("karnemelk", "l", ["dairy", "drinks"], ["karnemelk"], {});
 ing("chocolademelk", "l", ["dairy", "drinks"], ["chocolademelk", "chocomel"], {});
-ing("koffiemelk", "l", ["dairy", "drinks"], ["koffiemelk", "koffiecreamer", "koffieroom", "becel lekker romig", "becel voor in de koffie"], {});
+ing("koffiemelk", "l", ["dairy", "drinks"], ["koffiemelk", "koffiecreamer", "koffieroom", "becel lekker romig", "becel voor in de koffie", "=halvamel", "=goudband"], {});
 ing("havermelk", "l", ["vega", "drinks", "dairy"], ["havermelk", "haverdrink", "oatdrink", "oatly"], { also: ["haverdrink"] });
 ing("sojamelk", "l", ["vega", "drinks", "dairy"], ["sojamelk", "sojadrink"], { also: ["sojadrink"] });
 ing("amandelmelk", "l", ["vega", "drinks", "dairy"], ["amandelmelk", "amandeldrink"], { also: ["amandeldrink"] });
@@ -442,24 +450,24 @@ ing("eieren", "piece", ["dairy"], ["eier", "eieren", "scharreleier", "scharrelei
 ing("eiwit", "kg", ["dairy"], ["vloeibaar eiwit", "vloeibare eiwit", "kippeneiwit"], { also: ["eiwitten", "vloeibaar eiwit"] });
 
 // ── Cheese ──────────────────────────────────────────────────────────────
-ing("kaas", "kg", ["cheese", "dairy"], ["kaas", "gouda", "leerdammer", "maasdammer", "edammer", "beemster", "old amsterdam", "milner"], {
-  not: ["smeer", "room", "geit", "schapen", "flavour", "vegan", "stengel", "mozzarella", "feta", "parmezaan", "brie", "camembert", "geraspt", "rasp", "strooi", "vega", "plantaardig", "saus", "fondue", "soufflé", "souffle", "chips", "cracker", "koek", "broodje", "stengel", "dip", "salade", "blokjes", "cottage", "hüttenkäse", "mascarpone", "ricotta", "halloumi"],
+ing("kaas", "kg", ["cheese", "dairy"], ["kaas", "gouda", "leerdammer", "maasdammer", "edammer", "beemster", "old amsterdam", "milner", "=kaas"], {
+  not: ["smeer", "room", "geit", "schapen", "flavour", "vegan", "stengel", "mozzarella", "feta", "parmezaan", "brie", "camembert", "geraspt", "rasp", "strooi", "vega", "plantaardig", "saus", "fondue", "soufflé", "souffle", "chips", "cracker", "koek", "broodje", "stengel", "dip", "salade", "blokjes", "cottage", "hüttenkäse", "mascarpone", "ricotta", "halloumi", "smelt", "heks"],
   variants: [["extra belegen", "extra belegen kaas", ["extra belegen"]], ["jong belegen", "jong belegen kaas", ["jong belegen"]],
     ["belegen", "belegen kaas", ["belegen"]], ["oud", "oude kaas", ["oude", "oud ", "overjarig"]], ["jong", "jonge kaas", ["jong"]]],
 });
 ing("geraspte kaas", "kg", ["cheese", "dairy"], ["geraspte", "geraspt", "strooikaas", "raspkaas", "geraspte kaas", "gratin kaas", "gratinkaas"], { not: ["parmezaan", "vega", "plantaardig"], also: ["strooikaas"] });
-ing("geitenkaas", "kg", ["cheese", "dairy"], ["geitenkaas"], {});
+ing("geitenkaas", "kg", ["cheese", "dairy"], ["geitenkaas", "=geitenbrie"], {});
 ing("mozzarella", "kg", ["cheese", "dairy"], ["mozzarella", "burrata"], { not: ["stick", "pizza"] });
 ing("feta", "kg", ["cheese", "dairy"], ["feta", "fetakaas", "witte kaas"], { not: ["salade", "spread", "dip"] });
 ing("parmezaanse kaas", "kg", ["cheese", "dairy"], ["parmezaan", "parmezaanse", "parmigiano", "grana", "padano", "parmezaanse kaas", "padano kaas", "reggiano kaas"], { also: ["parmezaan", "parmigiano"] });
 ing("roomkaas", "kg", ["cheese", "dairy", "deli"], ["roomkaas", "smeerkaas", "philadelphia", "mascarpone"], { not: ["rol", "rolletje", "rolletjes", "sweet peppers", "mexicaantjes", "chimichurri", "hot honey", "saus", "dip"],
   flavours: ["naturel", "kruiden", "knoflook", "bieslook", "sambal", "peper", "truffel", "honing"] });
-ing("brie", "kg", ["cheese", "dairy"], ["brie", "camembert"], {});
+ing("brie", "kg", ["cheese", "dairy"], ["brie", "camembert", "=brie"], {});
 ing("halloumi", "kg", ["cheese", "dairy"], ["halloumi", "grillkaas"], {});
 ing("ricotta", "kg", ["cheese", "dairy"], ["ricotta"], { not: ["ravioli", "pasta", "tortellini", "tortelloni", "rigatoni", "lasagne", "spinazie", "spinaci", "saus"] });
 
 // ── Deli ────────────────────────────────────────────────────────────────
-ing("ham", "kg", ["deli", "meat"], ["ham", "achterham", "beenham", "schouderham", "rauwe ham", "parmaham", "serranoham"], { not: ["hamburger", "kaas", "salade", "spread", "croissant", "tosti", "pizza", "lap"],
+ing("ham", "kg", ["deli", "meat"], ["ham", "achterham", "beenham", "schouderham", "rauwe ham", "parmaham", "serranoham"], { not: ["hamburger", "kaas", "salade", "spread", "croissant", "tosti", "pizza", "lap", "chips", "crisps"],
   variants: [["rauw", "rauwe ham", ["rauwe", "parma", "serrano", "prosciutto"]], ["gekookt", "gekookte ham", ["achter", "been", "schouder", "gekookt"], true]] });
 ing("kipfilet beleg", "kg", ["deli"], ["kipfilet", "kalkoenfilet"], { name: "kipfilet (beleg)", also: ["kipfilet beleg"] });
 ing("salami", "kg", ["deli"], ["salami", "chorizo", "pepperoni", "snijworst"], { not: ["rolletje", "pizza", "chips"] });
@@ -484,7 +492,7 @@ ing("brood", "piece", ["bakery", "frozen"], ["=brood", "=broden", "boterham"], {
 });
 ing("stokbrood", "piece", ["bakery", "frozen"], ["stokbrood", "baguette"], { equals: { kg: 0.25 }, not: ["kruiden", "knoflook", "pizza"] });
 ing("afbakbroodjes", "piece", ["bakery", "frozen"], ["afbakbroodje", "afbakbroodjes", "pistolet", "pistolets", "petit pain"], { equals: { kg: 0.06 } });
-ing("bolletjes", "piece", ["bakery", "frozen"], ["bolletje", "bolletjes", "=broodje", "=broodjes", "puntje", "puntjes"], { equals: { kg: 0.06 }, not: ["shoarma", "oerknack", "goed bezig", "kaneel", "burger", "bapao", "kruidenboter", "knoflook", "afbak", "krenten", "rozijn", "suiker", "hamburger", "kaas", "worst", "saucijz", "frikandel", "kroket", "pizza", "snack", "sandwich", "koffie", "chocolade", "croissant"] });
+ing("bolletjes", "piece", ["bakery", "frozen"], ["bolletje", "bolletjes", "=broodje", "=broodjes", "puntje", "puntjes", "=puntjes"], { equals: { kg: 0.06 }, not: ["shoarma", "oerknack", "goed bezig", "kaneel", "burger", "bapao", "kruidenboter", "knoflook", "afbak", "krenten", "rozijn", "suiker", "hamburger", "kaas", "worst", "saucijz", "frikandel", "kroket", "pizza", "snack", "sandwich", "koffie", "chocolade", "croissant"] });
 ing("tortilla's", "piece", ["bakery", "pantry"], ["tortilla", "tortillas", "wrap", "wraps"], { equals: { kg: 0.04 }, not: ["chips", "kit", "saus", "spaanse"], also: ["wraps", "tortilla"] });
 ing("pitabroodjes", "piece", ["bakery", "pantry", "frozen"], ["pita", "pitabroodje", "pitabroodjes", "naan"], { equals: { kg: 0.08 }, also: ["pita broodjes"] });
 ing("croissants", "piece", ["bakery", "frozen"], ["croissant", "croissants", "croissantjes"], { equals: { kg: 0.05 }, not: ["ham", "kaas", "chocolade"] });
@@ -495,31 +503,31 @@ ing("roggebrood", "kg", ["bakery", "pantry"], ["roggebrood"], {});
 // ── Snacks, biscuits and sweets ─────────────────────────────────────────
 ing("chips", "kg", ["snacks", "pantry"], ["chips", "ribbelchips", "naturelchips", "paprikachips", "tortillachips", "nachos"], {
   wins: true,
-  not: ["choc", "cookie", "koek", "banaan", "bananen", "appel", "kokos", "kroepoek", "groente", "vis"],
-  flavours: ["naturel", "paprika", "kaas-ui", "zout-azijn", "kaas", "chili", "bbq", "ui", "kruiden", "peper", "truffel"],
+  not: ["choc", "cookie", "koek", "banaan", "bananen", "appel", "kokos", "kroepoek", "groente", "vis", "dill chips"],
+  flavours: ["naturel", "paprika", "kaas-ui", "zout-azijn", "kaas", "chili", "bbq", "ui", "kruiden", "peper", "truffel"], notShelf: /augurk/i,
 });
-ing("popcorn", "kg", ["snacks", "pantry"], ["popcorn"], {});
+ing("popcorn", "kg", ["snacks", "pantry"], ["popcorn"], { not: ["wafel"] });
 ing("kroepoek", "kg", ["pantry", "snacks"], ["kroepoek", "krupuk"], { wins: true });
 ing("drop", "kg", ["snacks"], ["drop", "dropjes", "salmiak", "muntdrop"], { also: ["dropjes"] });
-ing("chocolade", "kg", ["snacks"], ["chocolade", "chocoladereep", "chocoladetablet", "melkchocolade"], {
+ing("chocolade", "kg", ["snacks"], ["chocolade", "chocoladereep", "chocoladetablet", "melkchocolade", "tablet"], {
   wins: true,
   shelf: /^(chocoladerepen|chocoladerepen, chocoladetabletten|repen, tabletten)$/i,
-  not: ["koek", "biscuit", "wafel", "cake", "cookie", "pinda", "rozijn", "hagelslag", "vlokken", "pasta", "drink", "muesli", "rijst", "ei", "paas", "sprits"],
+  not: ["koek", "biscuit", "wafel", "cake", "cookie", "pinda", "rozijn", "hagelslag", "vlokken", "pasta", "drink", "muesli", "rijst", "ei", "paas", "sprits", "kruidno", "kruidenoten"],
   variants: [["puur", "pure chocolade", ["puur", "pure", "dark"]], ["wit", "witte chocolade", ["witte", "white"]], ["melk", "melkchocolade", ["melk", "milk"], true]],
-  also: ["chocoladereep", "reep chocolade"],
+  also: ["chocoladereep", "reep chocolade"], notShelf: /^koek$|koekjes|koek met|kruidnoten|pepernoten|strooigoed|biscuit|verse koek|zachte koek|^cake$|tussendoorkoek|koekrepen|mueslirepen|luxe koek|alledaagse/i,
 });
 // "Chocolade koekjes" are biscuits: both win, and the last word names the kind.
 ing("koekjes", "kg", ["snacks", "pantry", "bakery"], ["koek", "koekje", "koekjes", "biscuit", "biscuits", "cookie", "cookies", "=sprits", "=spritsen"], {
   wins: true,
   shelf: /^(koekjes|koekjes, biscuits|biscuits?|mini koekjes|chocolade koekjes|koekjes met chocolade|alledaagse koek|alledaagse en trommelbiscuit)$/i,
-  not: ["pannenkoek", "ontbijtkoek", "peperkoek", "hond", "kat", "baby", "vla", "crackers", "cookies & cream", "cookies and cream", "cookie dough", "cruesli", "pudding", "powder", "protein", "reep", "repen", "muesli", "cake", "muffin", "brownie", "donut", "crunchers", "kaas"],
-  also: ["koek", "biscuits"],
+  not: ["pannenkoek", "ontbijtkoek", "peperkoek", "hond", "kat", "baby", "vla", "crackers", "cookies & cream", "cookies and cream", "cookie dough", "cruesli", "pudding", "powder", "protein", "reep", "repen", "muesli", "cake", "muffin", "brownie", "donut", "crunchers", "kaas", "bar", "mix voor"],
+  also: ["koek", "biscuits"], notShelf: /^chocolade$|chocoladerepen|candybars|chocolade ?snoepjes|uitdeelzakken|chocoladeletters/i,
 });
-ing("stroopwafels", "kg", ["snacks", "bakery", "pantry"], ["stroopwafel", "stroopwafels"], { wins: true, not: ["mix"], also: ["stroopwafel"] });
-ing("speculaas", "kg", ["snacks", "bakery", "pantry"], ["speculaas", "speculaasjes", "speculoos"], { wins: true, not: ["pasta", "spread", "kruiden", "vla", "ijs", "muesli", "granola", "donut", "hagelslag"] });
+ing("stroopwafels", "kg", ["snacks", "bakery", "pantry"], ["stroopwafel", "stroopwafels"], { wins: true, not: ["mix", "chocoladereep", "reep", "boterkoek"], also: ["stroopwafel"] });
+ing("speculaas", "kg", ["snacks", "bakery", "pantry"], ["speculaas", "speculaasjes", "speculoos"], { wins: true, not: ["pasta", "spread", "kruiden", "vla", "ijs", "muesli", "granola", "donut", "hagelslag", "mix voor"], notShelf: /ontbijtgranen|cereals|muesli|bonbon|chocoladerepen/i });
 // Kruidkoek, gemberkoek and Snelle Jelle's rozijnenkoek are ontbijtkoek, not koekjes.
 ing("ontbijtkoek", "kg", ["bakery", "pantry", "snacks"], ["ontbijtkoek", "peperkoek", "kruidkoek", "gemberkoek", "rozijnenkoek", "kruidkoekrepen", "ontbijtkoekrepen"], { wins: true, shelf: /^((on)?gesneden )?ontbijtkoek(repen| gesneden, ongesneden)?$/i });
-ing("kauwgom", "kg", ["snacks"], ["kauwgom", "kauwgum"], { also: ["kauwgum"] });
+ing("kauwgom", "kg", ["snacks"], ["kauwgom", "kauwgum", "gums"], { also: ["kauwgum"] });
 ing("winegums", "kg", ["snacks"], ["winegum", "winegums", "wine gums"], { also: ["winegum"] });
 
 // ── Ready to heat ───────────────────────────────────────────────────────
@@ -527,13 +535,13 @@ ing("pizza", "piece", ["frozen", "readymeal"], ["pizza", "pizzas"], {
   wins: true,
   shelf: /pizza('?s)?$/i,
   equals: { kg: 0.35 },
-  not: ["bodem", "deeg", "saus", "kruiden", "snack", "broodje", "baguette", "chips", "mini", "bites", "rolls", "breekbrood", "piadina", "flatbread"],
+  not: ["bodem", "deeg", "saus", "kruiden", "snack", "broodje", "baguette", "chips", "mini", "bites", "rolls", "breekbrood", "piadina", "flatbread", "noodle", "noedel", "salsa"],
   also: ["pizza's"],
 });
 ing("soep", "l", ["readymeal", "pantry"], ["soep"], {
   wins: true,
   equals: { kg: 1 },
-  not: ["soepgroente", "soepballetjes", "soepvlees", "bouillon", "cup", "instant", "bami", "yum yum", "vifon", "kom", "lepel", "pan", "bord", "verspakket"],
+  not: ["soepgroente", "soepballetjes", "soepvlees", "bouillon", "cup", "instant", "bami", "yum yum", "vifon", "kom", "lepel", "pan", "bord", "verspakket", "kruidenpasta"],
   variants: [["tomaat", "tomatensoep", ["tomaat", "tomaten"]], ["kip", "kippensoep", ["kip"]], ["erwten", "erwtensoep", ["erwten", "snert"]],
     ["champignon", "champignonsoep", ["champignon"]], ["uien", "uiensoep", ["uien"]], ["groente", "groentesoep", ["groente"]]],
 });
@@ -551,31 +559,31 @@ ing("poffertjes", "kg", ["bakery", "readymeal", "frozen"], ["poffertje", "poffer
 ing("gnocchi", "kg", ["pantry", "readymeal"], ["gnocchi"], { wins: true });
 
 // ── Pantry ──────────────────────────────────────────────────────────────
-ing("rijst", "kg", PANTRY, ["rijst", "basmati", "pandan", "zilvervliesrijst", "risottorijst", "risotto", "jasmijnrijst", "langgraan", "arborio"], {
-  not: ["wafel", "melk", "drink", "drank", "pap", "bloem", "noedel", "mie", "azijn", "papier", "kaas", "bloemkool", "salade", "maaltijd", "nasi", "bami"],
+ing("rijst", "kg", PANTRY, ["rijst", "basmati", "pandan", "zilvervliesrijst", "risottorijst", "risotto", "jasmijnrijst", "langgraan", "arborio", "zilvervlies"], {
+  not: ["wafel", "melk", "drink", "drank", "pap", "bloem", "noedel", "mie", "azijn", "papier", "kaas", "bloemkool", "salade", "maaltijd", "nasi", "bami", "gepofte"],
   variants: [["basmati", "basmatirijst", ["basmati"]], ["pandan", "pandanrijst", ["pandan", "jasmijn"]], ["zilvervlies", "zilvervliesrijst", ["zilvervlies"]],
     ["risotto", "risottorijst", ["risotto", "arborio"]], ["langgraan", "langgraanrijst", ["langgraan", "witte"], true]],
 });
-ing("pasta", "kg", ["pantry", "readymeal"], ["pasta", "spaghetti", "penne", "macaroni", "fusilli", "farfalle", "tagliatelle", "lasagne", "lasagnebladen", "rigatoni", "orzo", "tortellini", "ravioli", "conchiglie", "linguine", "spaghettini", "fettuccine", "vermicelli"], {
-  not: ["easy eats", "vanille", "boterham", "saus", "kruiden", "salade", "maaltijd", "mix", "courgette", "pompoen", "schotel", "groente", "curry", "penotti", "duopasta", "wereldgerecht", "wasabi", "chicken"],
+ing("pasta", "kg", ["pantry", "readymeal"], ["pasta", "spaghetti", "penne", "macaroni", "fusilli", "farfalle", "tagliatelle", "lasagne", "lasagnebladen", "rigatoni", "orzo", "tortellini", "ravioli", "conchiglie", "linguine", "spaghettini", "fettuccine", "vermicelli", "pipe rigate", "celentani", "casarecce", "farfelle"], {
+  not: ["easy eats", "vanille", "boterham", "saus", "kruiden", "salade", "maaltijd", "mix", "courgette", "pompoen", "schotel", "groente", "curry", "penotti", "duopasta", "wereldgerecht", "wasabi", "chicken", "notenpasta"],
   variants: [["spaghetti", "spaghetti", ["spaghetti"]], ["penne", "penne", ["penne"]], ["macaroni", "macaroni", ["macaroni"]],
     ["fusilli", "fusilli", ["fusilli"]], ["tagliatelle", "tagliatelle", ["tagliatelle"]], ["lasagne", "lasagnebladen", ["lasagne"]],
-    ["tortellini", "tortellini", ["tortellini", "ravioli"]]],
+    ["tortellini", "tortellini", ["tortellini", "ravioli"]]], notShelf: /broodbeleg|chocopasta|hazelnootpasta/i,
 });
-ing("mie", "kg", PANTRY, ["mie", "noedel", "noedels", "noodles", "rijstnoedel", "eiermie"], { not: ["soep", "saus", "kruiden", "maaltijd", "bami"], also: ["noedels", "noodles"] });
+ing("mie", "kg", PANTRY, ["mie", "noedel", "noedels", "noodles", "rijstnoedel", "eiermie", "noedles"], { not: ["soep", "saus", "kruiden", "maaltijd", "bami"], also: ["noedels", "noodles"] });
 ing("couscous", "kg", PANTRY, ["couscous", "bulgur", "parelcouscous"], {});
 ing("quinoa", "kg", PANTRY, ["quinoa"], {});
 ing("havermout", "kg", PANTRY, ["havermout", "havervlok", "havervlokken", "oats"], { not: ["koek", "reep", "drink", "melk"] });
 ing("muesli", "kg", PANTRY, ["muesli", "granola", "cruesli"], { not: ["reep", "repen", "yoghurt"] });
 ing("cornflakes", "kg", PANTRY, ["cornflakes", "ontbijtgranen"], { not: ["churros"] });
-ing("bloem", "kg", PANTRY, ["bloem", "tarwebloem", "patentbloem", "meel", "tarwemeel", "volkorenmeel"], { not: ["liga", "bakmeel", "zelfrijzend", "mais", "rijst", "kool", "pannenkoek", "mix", "zonnebloem"], also: ["meel", "tarwebloem"] });
+ing("bloem", "kg", PANTRY, ["bloem", "tarwebloem", "patentbloem", "meel", "tarwemeel", "volkorenmeel"], { not: ["liga", "bakmeel", "zelfrijzend", "mais", "rijst", "kool", "pannenkoek", "mix", "zonnebloem", "veldbloem"], also: ["meel", "tarwebloem"] });
 ing("zelfrijzend bakmeel", "kg", PANTRY, ["bakmeel", "zelfrijzend"], {});
 // Hoogvliet files its mixes beside the pancakes, under Hollandse keuken.
 ing("pannenkoekmix", "kg", [...PANTRY, "readymeal"], ["pannenkoekmix", "pannenkoekenmix", "pannenkoekmeel", "bakmix voor pannenkoeken", "schudfles"], {});
 ing("maizena", "kg", PANTRY, ["maizena", "maiszetmeel", "maïszetmeel", "binder"], {});
 ing("paneermeel", "kg", PANTRY, ["paneermeel", "panko"], {});
 ing("suiker", "kg", PANTRY, ["suiker", "kristalsuiker", "basterdsuiker", "poedersuiker", "rietsuiker"], {
-  not: ["vanille", "zoetje", "klontjes", "spek", "wafel", "brood", "vrij", "kaneel", "parels", "siroop", "stroop"],
+  not: ["vanille", "zoetje", "klontjes", "spek", "wafel", "brood", "vrij", "kaneel", "parels", "siroop", "stroop", "alternatief"],
   variants: [["kristal", "kristalsuiker", ["kristal"], true], ["basterd", "basterdsuiker", ["basterd", "bruine"]], ["poeder", "poedersuiker", ["poeder"]], ["riet", "rietsuiker", ["riet"]]],
 });
 ing("vanillesuiker", "kg", PANTRY, ["vanillesuiker"], {});
@@ -585,41 +593,41 @@ ing("olijfolie", "l", PANTRY, ["olijfolie"], { not: ["tonijn", "sardine", "spray
   variants: [["extra vierge", "extra vierge olijfolie", ["extra vierge", "extra virgin"]], ["mild", "milde olijfolie", ["mild", "puur", "pure", "classico"]]] });
 ing("zonnebloemolie", "l", PANTRY, ["zonnebloemolie", "frituurolie", "plantaardige olie", "arachideolie", "olie"], { not: ["olijf", "sesam", "kokos", "spray", "zonnebloempit", "massage", "baby", "tonijn", "sardine", "knoflook", "chili", "truffel", "etherische"] });
 ing("azijn", "l", PANTRY, ["azijn", "balsamico"], { not: ["schoonmaak", "chips", "augurk", "uitje"] });
-ing("mayonaise", "l", PANTRY, ["mayonaise", "fritessaus", "frietsaus", "yofresh"], { equals: { kg: 1 } });
+ing("mayonaise", "l", PANTRY, ["mayonaise", "fritessaus", "frietsaus", "yofresh", "mayonnaise"], { equals: { kg: 1 } });
 ing("ketchup", "l", PANTRY, ["ketchup", "tomatenketchup", "tomaten ketchup"], { equals: { kg: 1 } });
 ing("mosterd", "kg", PANTRY, ["mosterd"], { equals: { l: 1 }, not: ["salata", "soep", "saus", "dressing"] });
-ing("sojasaus", "l", PANTRY, ["sojasaus", "ketjap", "ketjap manis", "kecap manis", "tamari"], { not: ["mix", "babi", "kruidenmix"], also: ["ketjap"] });
+ing("sojasaus", "l", PANTRY, ["sojasaus", "ketjap", "ketjap manis", "kecap manis", "tamari", "soy sauce"], { not: ["mix", "babi", "kruidenmix"], also: ["ketjap"] });
 ing("pindasaus", "kg", PANTRY, ["pindasaus", "satésaus", "satesaus"], { equals: { l: 1 } });
-ing("pesto", "kg", ["pantry", "deli", "readymeal"], ["pesto"], { not: ["dip", "pasta", "verspakket", "crackers", "chips", "presto"] });
-ing("pastasaus", "kg", ["pantry", "readymeal"], ["pastasaus", "tomatensaus", "bolognese", "arrabiata", "napoletana", "carbonara"], { equals: { l: 1 }, not: ["lasagnette", "wereldgerecht", "mix", "kruiden", "maaltijd"] });
+ing("pesto", "kg", ["pantry", "deli", "readymeal"], ["pesto"], { not: ["dip", "pasta", "verspakket", "crackers", "chips", "presto", "mayo", "dressing"] });
+ing("pastasaus", "kg", ["pantry", "readymeal"], ["pastasaus", "tomatensaus", "bolognese", "arrabiata", "napoletana", "carbonara"], { equals: { l: 1 }, not: ["lasagnette", "wereldgerecht", "mix", "kruiden", "maaltijd", "noedel", "noodle", "ramen", "noedles"] });
 // Dirk files stock cubes with its long-life soups.
 ing("bouillon", "kg", [...PANTRY, "readymeal"], ["bouillon", "bouillonblokje", "bouillonblokjes", "fond", "fonds",
   // The flavour named after it is not a second thing: "Bouillon kip" is stock.
   ...["kip", "rund", "champignon", "vis"].flatMap((f) => [`bouillon ${f}`, `bouillonblokjes ${f}`, `bouillonblokje ${f}`])], { equals: { l: 1 }, not: ["soep", "tomaten"] });
-ing("zout", "kg", PANTRY, ["zout", "zeezout", "keukenzout"], { not: ["chips", "pinda", "noten", "ongezouten", "gezouten", "drop", "zoutjes", "karamel", "caramel", "boter", "kruidenzout", "selderij", "knoflook", "vaatwas", "regenereer", "popcorn"] });
-ing("zwarte peper", "kg", PANTRY, ["peper", "peperkorrel", "peperkorrels"], { not: ["rode", "chili", "groene", "paprika", "saus", "steak", "zout", "cayenne", "jalape", "pepers", "salami", "koek", "munt", "mini", "paste", "gochujang", "hot"], also: ["peper"] });
-ing("pindakaas", "kg", ["pantry"], ["pindakaas", "peanut butter", "fijngemalen pinda's", "gemalen pinda's"], { not: ["koek", "reep", "chocolade", "snoep", "bar"],
+ing("zout", "kg", PANTRY, ["zout", "zeezout", "keukenzout"], { not: ["chips", "pinda", "noten", "ongezouten", "gezouten", "drop", "zoutjes", "karamel", "caramel", "boter", "kruidenzout", "selderij", "knoflook", "vaatwas", "regenereer", "popcorn", "knäckebröd", "knackebrod", "wafel", "marinade", "seasoning", "kruidenmix", "geen zout"], notShelf: /crackers|rijstwafels|chips|noten|koek/i });
+ing("zwarte peper", "kg", PANTRY, ["peper", "peperkorrel", "peperkorrels", "pepermolen"], { not: ["rode", "chili", "groene", "paprika", "saus", "steak", "zout", "cayenne", "jalape", "pepers", "salami", "koek", "munt", "mini", "paste", "gochujang", "hot", "pepertjes", "dipmix"], also: ["peper"] });
+ing("pindakaas", "kg", ["pantry"], ["pindakaas", "peanut butter", "fijngemalen pinda's", "gemalen pinda's", "pindapasta", "pinda pasta"], { not: ["koek", "reep", "chocolade", "snoep", "bar"],
   variants: [["stukjes", "pindakaas met stukjes", ["stukjes", "crunchy"]], ["naturel", "pindakaas naturel", ["naturel", "100%"]]] });
-ing("jam", "kg", ["pantry"], ["jam", "confiture", "fruitbeleg", "marmelade"], { not: ["koek", "taart", "yoghurt", "cake"] });
-ing("hagelslag", "kg", ["pantry"], ["hagelslag", "vlokken", "chocoladevlokken"], { not: ["havervlok", "haver", "aardappel", "cornflakes", "kokos", "rogge", "spelt", "gerst", "tarwe", "granenvlokken", "boekweit", "quinoa", "rijst", "mais", "muesli"] });
-ing("honing", "kg", ["pantry"], ["honing"], { not: ["koek", "mosterd", "thee", "drop", "snoep", "yoghurt", "cereal", "haver", "reep", "repen"] });
+ing("jam", "kg", ["pantry"], ["jam", "confiture", "fruitbeleg", "marmelade"], { not: ["koek", "taart", "yoghurt", "cake"], wins: true });
+ing("hagelslag", "kg", ["pantry"], ["hagelslag", "vlokken", "chocoladevlokken"], { not: ["havervlok", "haver", "aardappel", "cornflakes", "kokos", "rogge", "spelt", "gerst", "tarwe", "granenvlokken", "boekweit", "quinoa", "rijst", "mais", "muesli", "zeezout", "chili", "peper", "geraspt"], wins: true });
+ing("honing", "kg", ["pantry"], ["honing"], { not: ["koek", "mosterd", "thee", "drop", "snoep", "yoghurt", "cereal", "haver", "reep", "repen", "woksaus", "teriyaki"] });
 ing("chocoladepasta", "kg", ["pantry"], ["chocoladepasta", "nutella", "hazelnootpasta", "chocopasta"], {});
-ing("currysaus", "l", PANTRY, ["curry", "currysaus"], { equals: { kg: 1 }, not: ["kerrie", "poeder", "pasta", "kruiden"] });
+ing("currysaus", "l", PANTRY, ["curry", "currysaus"], { equals: { kg: 1 }, not: ["kerrie", "poeder", "pasta", "kruiden", "strooier", "dipmix"] });
 ing("kidneybonen", "kg", TINNED, ["kidneyboon", "kidneybonen"], { not: ["chili", "mix", "salade"] });
 ing("bruine bonen", "kg", TINNED, ["bruine bonen", "bruine boon"], { also: ["bruine bonen"], not: ["soep"] });
 ing("witte bonen", "kg", TINNED, ["witte bonen", "witte boon"], { also: ["witte bonen"], not: ["tomatensaus"] });
 ing("kikkererwten", "kg", TINNED, ["kikkererwt", "kikkererwten"], { not: ["hummus", "chips"] });
-ing("linzen", "kg", TINNED, ["linze", "linzen", "linzen pure"], { not: ["soep", "salade"] });
-ing("augurken", "kg", TINNED, ["augurk", "augurken", "cornichon", "cornichons"], {});
+ing("linzen", "kg", TINNED, ["linze", "linzen", "linzen pure"], { not: ["soep", "salade", "insalatissime"] });
+ing("augurken", "kg", TINNED, ["augurk", "augurken", "cornichon", "cornichons", "dill chips"], {});
 ing("olijven", "kg", ["conserves", "deli", "pantry"], ["olijf", "olijven"], { not: ["olie", "tapenade"] });
-ing("pinda's", "kg", ["snacks", "pantry"], ["pinda", "pindas", "borrelnoot", "borrelnoten"], { not: ["pepsels", "kaas", "saus", "koek", "olie", "snoep", "chocolade", "rijst", "nougat", "reep"], also: ["pindas"] });
-ing("noten", "kg", ["snacks", "pantry", "produce"], ["noot", "noten", "cashew", "cashewnoten", "walnoot", "walnoten", "amandel", "amandelen", "hazelnoot", "hazelnoten", "pecan", "pistache", "notenmix", "studentenhaver"], { not: ["kruidnoot", "kruidnoten", "penotti", "pasta", "d'or", "penotti", "pudding", "pasta", "melk", "drink", "chocolade", "koek", "reep", "olie", "kokos", "spread", "pinda", "borrelnoot", "muskaat"] });
-ing("kerrie", "kg", PANTRY, ["kerrie", "kerriepoeder", "currypoeder"], { not: ["chicken tonight", "saus"] });
+ing("pinda's", "kg", ["snacks", "pantry"], ["pinda", "pindas", "borrelnoot", "borrelnoten"], { not: ["pepsels", "kaas", "saus", "koek", "olie", "snoep", "chocolade", "rijst", "nougat", "reep", "bar", "karamel", "pasta"], also: ["pindas"], notShelf: /^(chocolade|repen, tabletten|chocoladerepen.*|candybars)$/i });
+ing("noten", "kg", ["snacks", "pantry", "produce"], ["noot", "noten", "cashew", "cashewnoten", "walnoot", "walnoten", "amandel", "amandelen", "hazelnoot", "hazelnoten", "pecan", "pistache", "notenmix", "studentenhaver", "=noten"], { not: ["kruidnoot", "kruidnoten", "penotti", "pasta", "d'or", "penotti", "pudding", "pasta", "melk", "drink", "chocolade", "koek", "reep", "olie", "kokos", "spread", "pinda", "borrelnoot", "muskaat"], notShelf: /chocola|bonbon|chocopasta|hazelnootpasta|muesli|ontbijtgranen|cereals|^koek|koekjes|toppings/i });
+ing("kerrie", "kg", PANTRY, ["kerrie", "kerriepoeder", "currypoeder"], { not: ["chicken tonight", "saus", "wok"] });
 ing("paprikapoeder", "kg", PANTRY, ["paprikapoeder"], {});
 ing("sambal", "kg", PANTRY, ["sambal", "sambal oelek", "sambal badjak"], { wins: true, equals: { l: 1 }, not: ["kaas", "chips", "kroepoek", "pinda", "noten"] });
 ing("appelstroop", "kg", PANTRY, ["appelstroop"], {});
-ing("kaneel", "kg", PANTRY, ["kaneel"], { not: ["knappers", "thee", "koek", "brood", "bol", "rol", "suiker", "bakmix", "cake", "moes"] });
-ing("zwarte bonen", "kg", TINNED, ["zwarte bonen", "zwarte boon"], { also: ["zwarte bonen"] });
+ing("kaneel", "kg", PANTRY, ["kaneel"], { not: ["knappers", "thee", "koek", "brood", "bol", "rol", "suiker", "bakmix", "cake", "moes", "wafel"] });
+ing("zwarte bonen", "kg", TINNED, ["zwarte bonen", "zwarte boon"], { also: ["zwarte bonen"], not: ["spread"] });
 ing("sesamzaad", "kg", PANTRY, ["sesamzaad", "sesamzaadjes"], {});
 ing("oregano", "kg", PANTRY, ["oregano"], { not: ["cracker", "tomaat", "tomaten", "pizza", "saus", "olie", "chips", "kaas", "brood"] });
 ing("nootmuskaat", "kg", PANTRY, ["nootmuskaat", "foelie"], {});
@@ -628,25 +636,25 @@ ing("sriracha", "l", PANTRY, ["sriracha"], { equals: { kg: 1 }, not: ["mayo", "k
 ing("knoflooksaus", "l", PANTRY, ["knoflooksaus"], { equals: { kg: 1 } });
 
 // ── Drinks, coffee and tea ──────────────────────────────────────────────
-ing("koffie", "kg", ["drinks"], ["koffie", "koffiebonen", "filterkoffie", "snelfilter", "koffiepads", "koffiecups", "espresso", "oploskoffie"], {
+ing("koffie", "kg", ["drinks"], ["koffie", "koffiebonen", "filterkoffie", "snelfilter", "koffiepads", "koffiecups", "espresso", "oploskoffie", "koffiecapsules", "capsules", "lungo", "ristretto"], {
   not: ["nesquik", "granenkoffie", "melk", "creamer", "room", "filterzak", "machine", "ijskoffie", "koek", "chocolade", "likeur", "drink"],
   variants: [["bonen", "koffiebonen", ["bonen"]], ["pads", "koffiepads", ["pads", "senseo"]], ["cups", "koffiecups", ["cups", "capsule", "nespresso", "dolce"]],
     ["oplos", "oploskoffie", ["oplos", "instant"]], ["filter", "filterkoffie", ["filter", "snelfilter", "gemalen"], true]],
 });
-ing("thee", "piece", ["drinks"], ["thee", "theezakje", "theezakjes", "rooibos", "earl grey"], { equals: { kg: 0.002 }, not: ["ijsthee", "ice", "glas", "pot", "lepel", "koek", "drink", "biscuit", "licht", "kaars"] });
+ing("thee", "piece", ["drinks"], ["thee", "theezakje", "theezakjes", "rooibos", "earl grey", "=thee"], { equals: { kg: 0.002 }, not: ["ijsthee", "ice", "glas", "pot", "lepel", "koek", "drink", "biscuit", "licht", "kaars", "kombucha"] });
 ing("sinaasappelsap", "l", ["drinks"], ["sinaasappelsap", "jus d'orange"], {});
 ing("appelsap", "l", ["drinks"], ["appelsap"], {});
 ing("drinkyoghurt", "l", ["dairy", "drinks"], ["drinkyoghurt", "yoghurtdrank", "yoghurtdrink"], { flavours: ["naturel", "bosvruchten", "aardbei", "framboos", "perzik", "mango", "multivruchten"] });
-ing("ijsthee", "l", ["drinks"], ["ijsthee", "icetea", "ice tea"], { also: ["ice tea"] });
-ing("cola", "l", ["drinks"], ["cola"], {
-  not: ["rum", "bacardi", "whisky", "jack daniel", "pitu", "batida", "bourbon", "wodka", "vodka"],
+ing("ijsthee", "l", ["drinks"], ["ijsthee", "icetea", "ice tea"], { also: ["ice tea"], not: ["siroop"] });
+ing("cola", "l", ["drinks"], ["cola", "=pepsi"], {
+  not: ["rum", "bacardi", "whisky", "jack daniel", "pitu", "batida", "bourbon", "wodka", "vodka", "sodastream", "soda mix", "cream soda"],
   variants: [["zero", "cola zero", ["zero", "light", "suikervrij", "no sugar"]], ["regular", "gewone cola", ["regular", "original", "classic"], true]],
 });
-ing("limonadesiroop", "l", ["drinks"], ["siroop", "limonadesiroop", "ranja", "diksap"], { wins: true, not: ["op siroop", "ahorn", "agave", "maple", "dadel", "pannenkoek", "glucose", "koffie"], also: ["ranja", "siroop", "diksap", "limonade"],
+ing("limonadesiroop", "l", ["drinks"], ["siroop", "limonadesiroop", "ranja", "diksap", "=cevitam", "=cévitam"], { wins: true, not: ["op siroop", "ahorn", "agave", "maple", "dadel", "pannenkoek", "glucose", "koffie"], also: ["ranja", "siroop", "diksap", "limonade"],
   flavours: ["aardbei", "framboos", "sinaasappel", "appel", "bosvruchten", "grenadine", "cassis", "multivruchten", "perzik", "peer", "citroen", "limoen", "mango", "passievrucht", "kers"] });
 ing("bier", "l", ["drinks"], ["bier", "pils", "pilsener", "pilsner"], {
-  not: ["radler", "azijn", "glas", "worst", "pul", "opener", "kaas", "mosterd", "brood", "cadeau", "geschenk"],
-  variants: [["alcoholvrij", "alcoholvrij bier", ["0.0", "0,0", "alcoholvrij", "alcoholarm"]], ["pils", "pils", ["pils", "pilsener", "pilsner", "lager"]]],
+  not: ["radler", "azijn", "glas", "worst", "pul", "opener", "kaas", "mosterd", "brood", "cadeau", "geschenk", "gazeuse", "cider"],
+  variants: [["alcoholvrij", "alcoholvrij bier", ["0.0", "0,0", "alcoholvrij", "alcoholarm"]], ["pils", "pils", ["pils", "pilsener", "pilsner", "lager"]]], shelf: /^(bier|bier, pils|pilsener( bier)?|speciaal ?bier|alcoholvrij bier.*|bokbieren|mexicaans bier|pils 0\.0|speciaalbier 0\.0)$/i, notShelf: /^(cider.*|fruitbieren|fris en fruitig bier|radler( 0\.0)?|cider en fruitbier 0\.0)$/i,
 });
 ing("tonic", "l", ["drinks"], ["tonic"], { not: ["gin", "wodka", "vodka", "isotonic", "hyper", "sport"] });
 ing("water", "l", ["drinks"], ["water", "bronwater", "mineraalwater"], { not: ["kokos", "tonic", "sparkling flavour", "smaak", "drinkfles", "waterfles", "kraan", "watermeloen", "vitamin", "ijs", "rozen"] });

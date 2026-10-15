@@ -324,3 +324,38 @@ test("Becel's liquid is for frying and Lekker Romig is coffee milk, whatever she
   assert.equal(m("Becel Vlees & Jus 450 ml", ["Zuivel, boter en eieren > Boter en Margarine > Bak- en braadboter"]), "bak- en braadboter");
   assert.equal(m("Becel Lekker Romig 467 ml", ["Koffie en thee > Koffiemelk en creamer > Pak koffiemelk"]), "koffiemelk");
 });
+
+test("on a shelf an Ingredient is never on, its word is only a flavour: hazelnut chocolate, nut muesli, chocolate biscuits", () => {
+  const m = (chainId: string, name: string, categories: string[], brand: string | null = null) => map({ chainId, name, brand, categories })?.ingredient ?? null;
+  assert.equal(m("dirk", "Twix Hazelnoot 5-pack", ["Snacks & snoep > Chocolade"], "Twix"), null);
+  assert.equal(m("jumbo", "Quaker Cruesli Zero Sugar Added Noten 400 gr", ["Ontbijt, broodbeleg en bakproducten > Ontbijtgranen > Krokante muesli"]), "muesli");
+  // A candy bar among the chocolate is no biscuit, nor, with a biscuit in it, chocolade.
+  assert.equal(m("plus", "Twix Melk chocolade karamel koekje single", ["Snoep, koek, chocolade, chips, noten > Chocolade > Chocoladerepen, chocoladetabletten"], "Twix"), null);
+  assert.equal(m("jumbo", "Jumbo Lekker Vrij van Gluten Digestives Melkchocolade 165 g", ["Koek, snoep, chocolade en chips > Koek > Chocolade koekjes"]), "koekjes");
+  assert.equal(m("jumbo", "Lotus Biscoff speculoos pasta original 400 g", ["Ontbijt, broodbeleg en bakproducten > Zoet broodbeleg > Hazelnoot-, Chocoladepasta"]), null);
+  assert.equal(m("plus", "Mutti Polpa Knoflook", ["Pasta, rijst, internationale keuken > Pastasaus, tomatenpuree > Tomatenpuree, gepelde/gezeefde tomaten"], "Mutti"), null);
+});
+
+test("a beer shelf holds beer, named or not, but not its fruit beers", () => {
+  const m = (name: string, categories: string[]) => map({ chainId: "jumbo", name, brand: null, categories })?.ingredient ?? null;
+  assert.equal(m("Stella Artois Krat 24x330ML", ["Bier en wijn > Bier, pils > Krat"]), "bier");
+  assert.equal(m("Bavaria 0.0% Fruity Lemon & Lime 6x330ml", ["Bier en wijn > Alcoholvrij bier > Cider en fruitbier 0.0"]), null);
+});
+
+test("a compound the stemmer cuts short still ends with its Ingredient: roombrie, kruidenthee", () => {
+  const m = (chainId: string, name: string, categories: string[]) => map({ chainId, name, brand: null, categories })?.ingredient ?? null;
+  assert.equal(m("jumbo", "Jumbo Roombrie ca. 258 g", ["Vleeswaren, kaas en tapas > Kaas voor de borrel > Witte korst kaas, brie"]), "brie");
+  assert.equal(m("jumbo", "Localtea De Nacht Wacht Kruidenthee met Rooibos, Valeriaan, Kamille & Lavendel 18 x 1,5 g", ["Koffie en thee > Thee > Kruidenthee"]), "thee");
+  // "Pure" is not puree.
+  assert.equal(m("plus", "Pickwick Rooibos pure thee", ["Frisdrank, sappen, koffie, thee > Thee > Zwarte thee"]), "thee");
+});
+
+test("what the classifier found the vocabulary had wrong (2026-10-15)", () => {
+  const m = (chainId: string, name: string, categories: string[]) => map({ chainId, name, brand: null, categories })?.ingredient ?? null;
+  assert.equal(m("jumbo", "Kühne Dill Chips Zoetzuur 330 g", ["Conserven, soepen, sauzen, oliën > Augurken en uitjes > Augurken"]), "augurken");
+  assert.equal(m("jumbo", "Samyang Buldak Noedels Spicy Ramen Carbonara Flavour 130 g", ["Conserven, soepen, sauzen, oliën > Soep > Instant noedels en snack cups"]), "mie");
+  assert.equal(m("jumbo", "Bonne Maman Aardbeien Confiture 370 g", ["Ontbijt, broodbeleg en bakproducten > Zoet broodbeleg > Jam"]), "jam");
+  assert.equal(m("jumbo", "Leksands Knäckebröd Zaden en Zeezout 200g", ["Ontbijt, broodbeleg en bakproducten > Beschuit, crackers en rijstwafels > Crackers, knäckebröd"]), "crackers");
+  assert.equal(m("hoogvliet", "Weide & veldbloemen", ["Ontbijt, broodbeleg > Broodbeleg > Honing"]), null);
+  assert.equal(m("jumbo", "Heinz Tomato Puree 140 g", ["Wereldkeukens, kruiden, pasta en rijst > Mediterrane keuken > Tomatenblokjes en -puree"]), "tomatenpuree");
+});
