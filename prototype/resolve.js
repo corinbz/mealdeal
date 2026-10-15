@@ -151,8 +151,11 @@
       }
       // Read from its last words only ("halfvole melk" as melk), a misspelt
       // Variant would be dropped without a word: suggest it.
-      return { ...base, noun: found.variant ? label(def.id, found.variant, found.lang) : item.noun,
-        quantity, unit, guessed, ingredient: def.id, variant: found.variant, ...(found.partial ? { suggestion: suggest(item.noun) } : {}) };
+      // Where organic is a Variant of its own (eggs), "bio eieren" names it, not a Preference.
+      let variant = found.variant;
+      if (!variant && preferences.biologisch && def.variants.some((v) => v.id === "bio")) { variant = "bio"; delete preferences.biologisch; }
+      return { ...base, noun: variant ? label(def.id, variant, found.lang) : item.noun,
+        quantity, unit, guessed, ingredient: def.id, variant, ...(found.partial ? { suggestion: suggest(item.noun) } : {}) };
     }
 
     /** Whether a Product may satisfy a Requirement. */

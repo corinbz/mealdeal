@@ -798,6 +798,12 @@
   const credit = (rc) => rc.source === "own" ? "" : '<p class="credit">' + tr("Bewerkt naar ", "Adapted from ") + '<a href="' + esc(rc.source.url) + '" target="_blank" rel="noopener"><i>' +
     esc(rc.source.title) + "</i></a>" + tr(" op Wikibooks", " on Wikibooks") + ', <a href="https://creativecommons.org/licenses/by-sa/4.0/' + tr("deed.nl", "deed.en") + '" target="_blank" rel="noopener">CC BY-SA 4.0</a></p>';
   const ingText = (g) => qtyText(g) + " " + nounOf(g);
+  /**
+   * How much an item comes to. With no amount typed, the pack cheapest per
+   * piece (or kilo, or liter) is chosen, so what it holds is the amount:
+   * "30×" for a tray of eggs, never "1×".
+   */
+  const amountText = (item, l) => item.guessed && item.ingredient && l && l.over ? qtyText({ ...item, quantity: Math.round(l.over * item.quantity * 1000) / 1000 }) : qtyText(item);
   /** One ingredient at one chain, resolved as on the list, Offers included; a Correction holds here too. */
   const ingLine = (chainId, g, w) => R.line(chainId, g, { week: w, corrections });
   /** Complete where at least one Chain sells every ingredient (resolve.js priceRecipe). */
@@ -1058,11 +1064,11 @@
           ? '<button class="nmb" data-act="kind-open" data-id="' + r.item.id + '" aria-expanded="' + (kindOpen === r.item.id) + '" title="' + tr("Andere soort kiezen", "Choose another kind") + '">' + esc(nounOf(r.item)) + "</button>"
           : esc(nounOf(r.item));
         return '<div class="it"><div class="nm">' + pic(r.item) + name +
-          '<button class="q" data-act="unit" data-id="' + r.item.id + '" title="' + tr("Eenheid wisselen", "Change unit") + '">' + qtyText(r.item) + "</button></div>" +
+          '<button class="q" data-act="unit" data-id="' + r.item.id + '" title="' + tr("Eenheid wisselen", "Change unit") + '">' + amountText(r.item, cheapest && r.by[cheapest.id]) + "</button></div>" +
           '<div class="ops"><button data-act="staple" data-id="' + r.item.id + '" aria-pressed="' + r.item.staple + '" title="' + tr("Vaste boodschap", "Staple") + '">📌</button>' +
           '<button data-act="remove" data-id="' + r.item.id + '" title="' + tr("Van de lijst", "Remove from list") + '">✕</button></div>' +
           (r.item.guessed ? '<div class="guess">' + (r.item.ingredient
-            ? tr("Hoeveelheid geraden: gerekend in " + ({ kg: "kilo", l: "liter", piece: "stuks" })[r.item.unit], "Amount guessed: counted in " + ({ kg: "kilos", l: "liters", piece: "pieces" })[r.item.unit])
+            ? tr("Geen hoeveelheid: de verpakking die per " + ({ kg: "kilo", l: "liter", piece: "stuk" })[r.item.unit] + " het goedkoopst is", "No amount given: the pack cheapest per " + ({ kg: "kilo", l: "liter", piece: "piece" })[r.item.unit])
             : tr("Eenheid geraden: tik het aantal om te wisselen", "Unit guessed: tap the amount to change it")) + "</div>" : "") +
           (r.item.ingredient ? "" : '<div class="guess">' + tr("Niet herkend: gezocht op de naam van producten", "Not recognized: searched by product name") + "</div>") +
           (kinds ? kindButtons(r.item) : "") +
@@ -1143,7 +1149,7 @@
       const diffs = rows.map((r) => {
         const open = openRow === r.item.id, spread = r.avail.length > 1 ? r.max - r.min : 0, missing = bagChains.filter((c) => !r.by[c.id]).length;
         return '<div class="df-row"><button data-act="row" data-id="' + r.item.id + '" aria-expanded="' + open + '">' +
-          '<span class="nm">' + pic(r.item) + esc(nounOf(r.item)) + '<span class="q">' + qtyText(r.item) + (missing ? " · " + missing + tr(" winkel" + (missing > 1 ? "s" : "") + " niet", " store" + (missing > 1 ? "s" : "") + " without") : "") + "</span></span>" +
+          '<span class="nm">' + pic(r.item) + esc(nounOf(r.item)) + '<span class="q">' + amountText(r.item, r.avail[0] && r.by[r.avail[0].id]) + (missing ? " · " + missing + tr(" winkel" + (missing > 1 ? "s" : "") + " niet", " store" + (missing > 1 ? "s" : "") + " without") : "") + "</span></span>" +
           '<span class="plw">' + priceLine(r) + (r.avail.length ? '<div class="pl-ends"><span class="lo">' + euro(r.min) + " " + esc(r.avail[0].name) + "</span><span>" + (spread ? euro(r.max) : "") + "</span></div>" : "") + "</span>" +
           '<span class="spread">' + (spread ? "+" + euro(spread) : "—") + "<small>" + (spread ? tr("verschil", "difference") : r.avail.length ? tr("gelijk", "same") : tr("nergens", "nowhere")) + "</small></span></button>" +
           (open ? '<div class="open">' + chains.map((c) => {
@@ -1203,9 +1209,9 @@
       const shops = groups.map(({ c, rows }) => '<section class="bag shop" style="--c:' + c.color + '"><header><span><b>' + esc(c.name) + "</b><br>" + bagAge(c) + "</span><span>" + rows.length + " · " +
         euro(rows.reduce((n, r) => n + r.by[c.id].cost, 0)) + "</span></header>" + aisleGroups(rows, (r) => shelfOf(r.item, r.by[c.id].p), (r) => {
           const l = r.by[c.id], d = done.has(r.item.id);
-          if (shopView === "tegels") return tile(r.item, r.item, qtyText(r.item), l);
+          if (shopView === "tegels") return tile(r.item, r.item, amountText(r.item, l), l);
           return '<div class="cir"><button class="ci' + (d ? " done" : "") + '" data-act="tick" data-id="' + r.item.id + '" aria-pressed="' + d + '"><span class="tick">' + (d ? "✓" : "") + "</span>" +
-            '<span class="nm">' + pic(r.item) + esc(nounOf(r.item)) + '<span class="q">' + qtyText(r.item) + "</span></span>" +
+            '<span class="nm">' + pic(r.item) + esc(nounOf(r.item)) + '<span class="q">' + amountText(r.item, l) + "</span></span>" +
             '<span class="g">' + (l.offer ? offerChip(l.p, l.o) + " " : "") + (l.packs > 1 ? l.packs + "× " : "") + esc(l.p.name) +
             (l.p.packaging ? " · " + esc(l.p.packaging) : "") + overNote(l, r.item) + "</span>" +
             '<span class="v">' + euro(l.cost) + "</span></button>" + flag(l.p, l.cost, where(qtyText(r.item) + " " + nounOf(r.item))) +
