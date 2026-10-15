@@ -104,7 +104,8 @@ export interface CatalogueIngredient {
   readonly unit: ComparisonUnit;
   readonly also: readonly string[];
   readonly equals: Readonly<Partial<Record<ComparisonUnit, number>>>;
-  readonly variants: readonly { readonly id: string; readonly name: string; readonly names?: Translated }[];
+  /** `aspect`: what the Variant differs in, "soort" where absent. */
+  readonly variants: readonly { readonly id: string; readonly name: string; readonly aspect?: string; readonly names?: Translated }[];
   readonly fresh: boolean;
   readonly aisle?: string | undefined;
   /** Its names in other languages than Dutch (#25), each the one shown first; absent from older catalogues. */

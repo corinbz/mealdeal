@@ -239,7 +239,7 @@ export function buildCatalogue(source: CatalogueSource, { now = new Date(), voca
       id: d.id, name: d.name, unit: d.unit, also: d.also, equals: d.equals,
       variants: d.variants.map((v) => {
         const en = englishOf(d.id)?.variants[v.id];
-        return { id: v.id, name: v.name, ...(en ? { names: { en } } : {}) };
+        return { id: v.id, name: v.name, ...(v.aspect && v.aspect !== "soort" ? { aspect: v.aspect } : {}), ...(en ? { names: { en } } : {}) };
       }),
       fresh: !d.anyForm && d.aisles.some((a) => formOf(a) === "vers"),
       aisle: d.aisles[0],

@@ -202,6 +202,9 @@
   .nmb { border: 0; background: none; padding: 0; font: inherit; color: inherit; cursor: pointer; text-align: left; text-decoration: underline dotted var(--ink-3); text-underline-offset: 4px; }
   .kinds { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 6px 0 2px; }
   .kinds > span { width: 100%; font-size: 13px; font-weight: 800; color: var(--ink-2); }
+  .kinds.several > span:not(.q) { margin-top: 4px; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--ink-3); }
+  .kinds button.more { border-style: dashed; color: var(--ink-2); }
+  .kinds button.any { margin-top: 4px; }
   .kinds button { border: 1.5px solid var(--line); background: var(--paper); color: var(--ink); border-radius: 999px; padding: 6px 12px; font: inherit; font-size: 14px; font-weight: 800; cursor: pointer; }
   .kinds button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--card); }
   .cir .kinds { grid-column: 1; background: var(--card); border-radius: var(--r); padding: 8px 12px 10px; margin: 0 0 4px; }
@@ -567,13 +570,54 @@
   /**
    * Which kind (#43): an item whose Ingredient comes in Variants but that
    * names none is asked which one, until the shopper picks one or answers
-   * "any" (`anyKind`). Priced as any kind meanwhile.
+   * "any" (`anyKind`). Priced as any kind meanwhile. Variants may differ in
+   * several aspects (type, fat, flavour), each asked on its own, and only
+   * those sold with what is already chosen are offered: Greek yoghurt shows
+   * the fats Greek yoghurt comes in.
    */
-  const kindsOf = (item) => { const d = item.ingredient && !item.exact && R.vocabulary.get(item.ingredient); return d && d.variants.length ? d.variants : null; };
-  const asksKind = (item) => !!kindsOf(item) && !item.variant && !item.anyKind;
-  const kindButtons = (item) => '<div class="kinds" role="group" aria-label="' + tr("Welke soort?", "Which kind?") + '"><span>' + tr("Welke soort?", "Which kind?") + "</span>" +
-    kindsOf(item).map((v) => '<button data-act="kind" data-id="' + item.id + '" data-v="' + v.id + '" aria-pressed="' + (item.variant === v.id) + '">' + esc(R.label(item.ingredient, v.id, lang)) + "</button>").join("") +
-    '<button data-act="kind" data-id="' + item.id + '" data-v="" aria-pressed="' + !!item.anyKind + '">' + tr("Maakt niet uit", "Any kind") + "</button></div>";
+  const ASPECT_WORDS = { soort: ["Soort", "Type"], vet: ["Vet", "Fat"], smaak: ["Smaak", "Flavour"] };
+  const KINDS_SHOWN = 6;                                    // a flavour row shows this many until "more" is tapped
+  const kindsOf = (item) => {
+    const d = item.ingredient && !item.exact && R.vocabulary.get(item.ingredient);
+    if (!d || !d.variants.length) return null;
+    const chosen = R.variantsOf(item.variant), sold = R.kindsSold(d.id);
+    const aspectOf = (v) => v.aspect || "soort";
+    const aspects = [...new Set(d.variants.map(aspectOf))].map((a) => {
+      const others = chosen.filter((id) => aspectOf(d.variants.find((v) => v.id === id) || {}) !== a);
+      // How many Products have this Variant and every one chosen in the other aspects.
+      const count = (v) => { let n = 0; for (const [k, c] of sold) { const has = R.variantsOf(k); if (has.includes(v.id) && others.every((o) => has.includes(o))) n += c; } return n; };
+      let options = d.variants.filter((v) => aspectOf(v) === a).map((v) => ({ v, n: count(v) })).filter((o) => o.n > 0 || chosen.includes(o.v.id));
+      // Flavours most sold first, plain ahead of them all.
+      if (a === "smaak") options = options.sort((x, y) => (y.v.id === "naturel") - (x.v.id === "naturel") || y.n - x.n);
+      return { aspect: a, options, value: chosen.find((id) => options.some((o) => o.v.id === id)) || null };
+    });
+    // An aspect with one kind on sale has nothing to ask; a Variant typed in it still shows.
+    const shown = aspects.filter((x) => x.options.length > 1 || x.value);
+    return shown.length ? shown : null;
+  };
+  /** Whether any Chain sells the Variants an item names together: "griekse yoghurt 10% aardbei" is sold nowhere. */
+  const soldAs = (item) => { const want = R.variantsOf(item.variant); for (const k of R.kindsSold(item.ingredient).keys()) { const has = R.variantsOf(k); if (want.every((v) => has.includes(v))) return true; } return false; };
+  // Also an item naming Variants no Product has together, so the shopper can change one.
+  const asksKind = (item) => !!kindsOf(item) && (!soldAs(item) || !item.anyKind && kindsOf(item).some((x) => !x.value && x.options.length > 1));
+  let kindMore = null;                                      // the item and aspect whose every flavour is shown
+  const kindButtons = (item) => {
+    const aspects = kindsOf(item), several = aspects.length > 1, d = R.vocabulary.get(item.ingredient);
+    const base = R.label(item.ingredient, null, lang);
+    // One aspect: the Variants' full names, as ever. Several: each row under its heading, the Ingredient's name left out ("aardbei").
+    const word = (v) => { const n = R.label(item.ingredient, v.id, lang); return several && n.includes(base) && n !== base ? n.replace(base, "").trim() : n; };
+    const rows = aspects.map((x) => {
+      const all = kindMore === item.id + "|" + x.aspect, cut = !all && x.options.length > KINDS_SHOWN + 1;
+      const options = cut ? x.options.filter((o, i) => i < KINDS_SHOWN || o.v.id === x.value) : x.options;
+      return (several ? '<span>' + tr(...ASPECT_WORDS[x.aspect]) + "</span>" : "") +
+        options.map((o) => '<button data-act="kind" data-id="' + item.id + '" data-v="' + esc(o.v.id) + '" aria-pressed="' + (x.value === o.v.id) + '">' + esc(word(o.v)) + "</button>").join("") +
+        (cut ? '<button class="more" data-act="kind-more" data-id="' + item.id + '" data-a="' + x.aspect + '">' + tr("+ " + (x.options.length - options.length) + " meer", "+ " + (x.options.length - options.length) + " more") + "</button>" : "");
+    }).join("");
+    const rest = several && R.variantsOf(item.variant).length > 0;
+    const sold = soldAs(item), question = sold ? tr("Welke soort?", "Which kind?") : tr("Zo nergens te koop. Welke soort dan?", "Not sold like this anywhere. Which kind instead?");
+    // Sold nowhere: leaving the rest open cannot help, only giving up a choice can.
+    return '<div class="kinds' + (several ? " several" : "") + '" role="group" aria-label="' + question + '"><span class="q">' + question + "</span>" + rows +
+      (sold ? '<button class="any" data-act="kind" data-id="' + item.id + '" data-v="" aria-pressed="' + !!item.anyKind + '">' + (rest ? tr("Verder maakt niet uit", "Rest doesn't matter") : tr("Maakt niet uit", "Any kind")) + "</button>" : "") + "</div>";
+  };
   const qtyText = (i) => i.unit === "piece" ? i.quantity + "×"
     : i.unit === "kg" && i.quantity < 1 ? Math.round(i.quantity * 1000) + " g"
     : i.unit === "l" && i.quantity < 1 ? Math.round(i.quantity * 1000) + " ml" : i.quantity + " " + i.unit;
@@ -1446,14 +1490,29 @@
       case "row": openRow = openRow === id ? null : id; break;
       case "kind-open": kindOpen = kindOpen === id ? null : id; break;
       case "kind": {
-        // Keeps the amount and Preferences: only which Variant, and so the name, changes.
+        // Keeps the amount and Preferences: only which Variants, and so the name, change.
         if (!item || !kindsOf(item)) break;
-        const v = b.dataset.v || null;
-        if (v) { item.variant = v; delete item.anyKind; } else { item.variant = null; item.anyKind = true; }
-        item.noun = R.label(item.ingredient, v, lang);
-        kindOpen = null;
+        const v = b.dataset.v || null, d = R.vocabulary.get(item.ingredient);
+        const aspectOf = (id) => (d.variants.find((x) => x.id === id) || {}).aspect || "soort";
+        const several = new Set(d.variants.map((x) => x.aspect || "soort")).size > 1;
+        if (v) {
+          // One Variant per aspect: tapping one replaces the other of its aspect, tapping it again takes it off.
+          const had = R.variantsOf(item.variant);
+          const kept = had.filter((id) => aspectOf(id) !== aspectOf(v));
+          item.variant = R.joinVariants(item.ingredient, had.includes(v) ? kept : [...kept, v]);
+          // With several aspects, "the rest is any" still holds for the rest.
+          if (!several) delete item.anyKind;
+        } else {
+          // "Any": the rest is any kind; what was chosen stays, unless nothing was.
+          item.anyKind = true;
+          if (!several) item.variant = null;
+        }
+        item.noun = R.label(item.ingredient, item.variant, lang);
+        // Several aspects stay open until each is answered.
+        if (!several || !asksKind(item)) kindOpen = null;
         break;
       }
+      case "kind-more": kindMore = id + "|" + b.dataset.a; break;
       case "fix": sheet = { kind: "fix", chainId: b.dataset.chain, itemId: id }; break;
       case "pick": { const it = list.find((i) => i.id === sheet.itemId); if (it) corrections[correctionKey(sheet.chainId, it)] = id; sheet = null; break; }
       case "unfix": { const it = list.find((i) => i.id === sheet.itemId); if (it) delete corrections[correctionKey(sheet.chainId, it)]; sheet = null; break; }

@@ -16,7 +16,7 @@ import { productsOf, type Catalogue } from "./format.ts";
 /** The parts of the catalogue (format.ts) the morning reports read. */
 export interface CoverageCatalogue extends Pick<Catalogue, "columns" | "catalogue"> {
   readonly chains: readonly { readonly id: string; readonly name?: string; readonly offersOnly?: boolean }[];
-  readonly vocabulary: readonly { readonly id: string; readonly variants: readonly { readonly id: string }[] }[];
+  readonly vocabulary: readonly { readonly id: string; readonly variants: readonly { readonly id: string; readonly aspect?: string }[] }[];
   readonly exact?: readonly { readonly id: string; readonly name: string; readonly members: Readonly<Record<string, string>> }[];
 }
 
@@ -80,14 +80,16 @@ export function assessCoverage(built: CoverageCatalogue, published: CoverageCata
     for (const p of productsOf(built, id)) {
       if (p.ingredient === null || p.ingredientUnitPriceCents === null) continue;
       s.add(p.ingredient);
-      if (p.variant !== null) s.add(`${p.ingredient}/${p.variant}`);
+      // One key per Variant, whatever others it combines with.
+      if (p.variant !== null) for (const v of p.variant.split("+")) s.add(`${p.ingredient}/${v}`);
     }
     sells.set(id, s);
   }
 
   const isKnown = (chain: string, ingredient: string) => known.some((k) => k.chain === chain && k.ingredient === ingredient);
   const gaps: Gap[] = [];
-  const keys = built.vocabulary.flatMap((d) => [d.id, ...d.variants.map((v) => `${d.id}/${v.id}`)]);
+  // Not flavours: a Chain without cherry ice cream is a smaller range, not a mapping to fix.
+  const keys = built.vocabulary.flatMap((d) => [d.id, ...d.variants.filter((v) => v.aspect !== "smaak").map((v) => `${d.id}/${v.id}`)]);
   for (const key of keys) {
     const missing = chains.filter((c) => !sells.get(c)!.has(key));
     // Sold nowhere, or at too few to call the rest a gap.

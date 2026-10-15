@@ -18,8 +18,8 @@
     do { before = w; if (w.length > 4) w = w.replace(/(tjes|tje|jes|je|en|e|s)$/, ""); } while (w !== before);
     return w;
   }
-  /** The stems a typed noun must match. */
-  const wordsOf = (noun) => noun.toLowerCase().split(/[^\p{L}]+/u).filter((w) => w.length > 1).map(stem);
+  /** The stems a typed noun must match, and any percentage in it ("yoghurt 10%"), which names a Variant. */
+  const wordsOf = (noun) => (noun.toLowerCase().match(/\d+(?:[.,]\d+)?%|\p{L}+/gu) || []).filter((w) => w.length > 1).map(stem);
   /** The stems of a Product name. */
   const nameWords = (name) => name.toLowerCase().split(/[^\p{L}]+/u).filter(Boolean).map(stem);
 
@@ -39,7 +39,8 @@
     const t = text.trim().replace(/\s+/g, " ");
     if (!t) return null;
     let quantity = null, unit = null, noun = t;
-    const m = t.match(/^(\d+(?:[.,]\d+)?)\s*(.*)$/);
+    // Not a percentage: "2% yoghurt" is a kind of yoghurt, not two of them.
+    const m = t.match(/^(\d+(?:[.,]\d+)?)(?![\d.,]|\s*%)\s*(.*)$/);
     if (m) {
       quantity = Number(m[1].replace(",", "."));
       noun = m[2];
