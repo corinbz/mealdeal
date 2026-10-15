@@ -288,6 +288,20 @@
   .ci.done { opacity: .5; }
   .ci.done .tick { background: var(--ink); color: var(--card); }
   .ci.done .nm { text-decoration: line-through 2.5px; }
+  /* #41: the list by aisle, as rows or as Bring!-style tiles. */
+  .shopview { margin: 14px 0 0; }
+  .aisle-h { font-size: 15px; font-weight: 900; margin: 14px 6px 6px; color: var(--ink-2); }
+  .shop .aisle-h { color: inherit; opacity: .9; text-transform: uppercase; letter-spacing: .04em; font-size: 13px; }
+  .shop > .aisle-h:first-of-type, .xshop > .aisle-h:first-of-type { margin-top: 2px; }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 6px; }
+  .tile { position: relative; background: var(--card-deep); color: var(--ink); border: 0; border-radius: 12px; padding: 12px 6px 10px; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; font: inherit; min-height: 118px; }
+  .tile .pic { width: 52px; height: 52px; margin: 0; }
+  .tile .tn { font-weight: 900; font-size: 14px; line-height: 1.15; hyphens: auto; overflow-wrap: break-word; max-width: 100%; }
+  .tile .tq { font-size: 13px; font-weight: 700; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  .tile .to { position: absolute; top: 6px; right: 6px; font-size: 11px; font-weight: 900; border-radius: 6px; padding: 0 5px; background: var(--offer); color: var(--offer-ink); }
+  .tile.done { opacity: .45; }
+  .tile.done .tn { text-decoration: line-through 2.5px; }
   .missing { margin-top: 18px; border: 2px dashed var(--bad); color: var(--bad); border-radius: var(--r); padding: 12px 14px; font-weight: 800; }
   .progress {
     position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(14px + env(safe-area-inset-bottom)); z-index: 30;
@@ -536,12 +550,13 @@
   const RECIPES_SHOWN = 8; let showAllRecipes = false;
   // Bladeren (#36): which view, aisle and order, remembered; which rows are open and how many shown, not.
   let browse = { view: "verschil", aisle: "alle", sort: "verschil", ...load("mealdeal.browse.v1", {}) };
+  let shopView = load("mealdeal.shopview.v1", "rijen");     // Winkelen as "rijen" | "tegels" (#41)
   let browseOpen = null, browseShown = 0;
 
   function persist() {
     save("mealdeal.list.v1", list); save("mealdeal.corrections.v1", corrections);
     save("mealdeal.plan.v1", plan); save("mealdeal.done.v1", [...done]); save("mealdeal.week.v1", week);
-    save("mealdeal.browse.v1", browse);
+    save("mealdeal.browse.v1", browse); save("mealdeal.shopview.v1", shopView);
   }
 
   // ── Resolution ────────────────────────────────────────────────────────
@@ -753,6 +768,29 @@
   const AISLES = [["produce", "Groente & fruit"], ["meat", "Vlees"], ["fish", "Vis"], ["vega", "Vegetarisch"], ["dairy", "Zuivel & eieren"],
     ["cheese", "Kaas"], ["deli", "Vleeswaren & beleg"], ["bakery", "Brood"], ["pantry", "Voorraadkast"], ["conserves", "Conserven"],
     ["frozen", "Diepvries"], ["readymeal", "Kant-en-klaar"], ["snacks", "Snacks & noten"], ["drinks", "Dranken"]];
+  // Winkelen (#41): a bag's items under their aisle, in AISLES order, so
+  // groente comes first at every Chain; ticked ones sink to the bottom of
+  // theirs. A frozen or tinned Product is found in the freezer or with the
+  // tins, whatever its Ingredient's main aisle; an item the list did not
+  // recognise takes the aisle of the Product picked for it, and one with
+  // none at all goes under Overig.
+  const shelfOf = (item, p) => p.form === "diepvries" ? "frozen" : p.form === "conserven" ? "conserves" :
+    AISLE_OF.get(item.ingredient) || AISLE_OF.get(p.ingredient);
+  function aisleGroups(rows, aisleOf, render) {
+    const groups = [...AISLES, ["overig", "Overig"]].map(([id, label]) => ({ id, label, rows: [] }));
+    for (const r of rows) (groups.find((g) => g.id === aisleOf(r)) || groups[groups.length - 1]).rows.push(r);
+    return groups.filter((g) => g.rows.length).map((g) => {
+      const sorted = g.rows.slice().sort((a, b) => done.has(a.item.id) - done.has(b.item.id));
+      return '<h3 class="aisle-h">' + esc(g.label) + "</h3>" + '<div class="' + (shopView === "tegels" ? 'tiles" lang="nl' : "chk") + '">' + sorted.map(render).join("") + "</div>";
+    }).join("");
+  }
+  // A tile, as in Bring!: sticker, name, how much and what it costs; a tap ticks it.
+  const tile = (item, stickerOf, qty, l) => {
+    const d = done.has(item.id);
+    return '<button class="tile' + (d ? " done" : "") + '" data-act="tick" data-id="' + item.id + '" aria-pressed="' + d + '" title="' + esc(l.p.name) + '">' +
+      pic(stickerOf) + '<span class="tn">' + esc(item.noun) + '</span><span class="tq">' + esc(qty) + " · " + euro(l.cost) + "</span>" +
+      (l.offer ? '<span class="to">actie</span>' : "") + "</button>";
+  };
   let browseData = null;
   function browseIndex() {
     if (browseData) return browseData;
@@ -1025,34 +1063,42 @@
       const p = currentPlan(s);
       // Exact items are bought where the plan goes, at the cheapest of its
       // Chains that sells the very item; never added to the bags' totals.
-      const exactShop = !s.exact.rows.length ? "" : '<section class="xshop"><header><b>Exacte producten</b><span>apart van de tassen</span></header><div class="chk">' +
-        s.exact.rows.map((r) => {
-          const at = p.ids.map(chainById).filter((c) => r.by[c.id]).sort((a, b) => r.by[a.id].cost - r.by[b.id].cost)[0];
-          const likely = !at && p.ids.map(chainById).find((c) => r.likely[c.id]);
-          const l = at ? r.by[at.id] : likely ? r.likely[likely.id] : null, d = done.has(r.item.id);
-          if (!l) return '<div class="miss">' + esc(r.item.noun) + " · niet bij " + andList(p.ids.map((id) => esc(chainById(id).name))) + "</div>";
-          return '<button class="ci' + (d ? " done" : "") + '" data-act="tick" data-id="' + r.item.id + '" aria-pressed="' + d + '"><span class="tick">' + (d ? "✓" : "") + "</span>" +
-            '<span class="nm">' + esc(r.item.noun) + '<span class="q">' + r.item.quantity + "×</span></span>" +
+      const exactLines = s.exact.rows.map((r) => {
+        const at = p.ids.map(chainById).filter((c) => r.by[c.id]).sort((a, b) => r.by[a.id].cost - r.by[b.id].cost)[0];
+        const likely = !at && p.ids.map(chainById).find((c) => r.likely[c.id]);
+        return { item: r.item, at, likely, l: at ? r.by[at.id] : likely ? r.likely[likely.id] : null };
+      });
+      const exactMiss = exactLines.filter((x) => !x.l);
+      const exactShop = !exactLines.length ? "" : '<section class="xshop"><header><b>Exacte producten</b><span>apart van de tassen</span></header>' +
+        aisleGroups(exactLines.filter((x) => x.l), (x) => shelfOf(x.item, x.l.p), (x) => {
+          const { item, at, likely, l } = x, d = done.has(item.id);
+          if (shopView === "tegels") return tile(item, { ingredient: l.p.ingredient }, item.quantity + "×", l);
+          return '<button class="ci' + (d ? " done" : "") + '" data-act="tick" data-id="' + item.id + '" aria-pressed="' + d + '"><span class="tick">' + (d ? "✓" : "") + "</span>" +
+            '<span class="nm">' + esc(item.noun) + '<span class="q">' + item.quantity + "×</span></span>" +
             '<span class="g">' + tag(at || likely) + " " + (likely ? '<span class="likely">waarschijnlijk hetzelfde</span> ' : "") + (l.offer ? offerChip(l.p, l.o) + " " : "") + esc(l.p.name) + "</span>" +
             '<span class="v">' + euro(l.cost) + "</span></button>";
-        }).join("") + "</div></section>";
+        }) + (exactMiss.length ? '<div class="chk">' + exactMiss.map((x) => '<div class="miss">' + esc(x.item.noun) + " · niet bij " + andList(p.ids.map((id) => esc(chainById(id).name))) + "</div>").join("") + "</div>" : "") +
+        "</section>";
       const groups = p.ids.map((id) => ({ c: chainById(id), rows: s.rows.filter((r) => sourceOf(r, p, s) === id) })).filter((g) => g.rows.length);
       const nowhere = s.rows.filter((r) => !sourceOf(r, p, s));
       let left = 0, ticked = 0, count = 0, total = 0;
       for (const g of groups) for (const r of g.rows) { const c = r.by[g.c.id].cost; total += c; count++; if (done.has(r.item.id)) ticked++; else left += c; }
       const shops = groups.map(({ c, rows }) => '<section class="bag shop" style="--c:' + c.color + '"><header><span><b>' + esc(c.name) + "</b><br>" + bagAge(c) + "</span><span>" + rows.length + " · " +
-        euro(rows.reduce((n, r) => n + r.by[c.id].cost, 0)) + '</span></header><div class="chk">' + rows.map((r) => {
+        euro(rows.reduce((n, r) => n + r.by[c.id].cost, 0)) + "</span></header>" + aisleGroups(rows, (r) => shelfOf(r.item, r.by[c.id].p), (r) => {
           const l = r.by[c.id], d = done.has(r.item.id);
+          if (shopView === "tegels") return tile(r.item, r.item, qtyText(r.item), l);
           return '<div class="cir"><button class="ci' + (d ? " done" : "") + '" data-act="tick" data-id="' + r.item.id + '" aria-pressed="' + d + '"><span class="tick">' + (d ? "✓" : "") + "</span>" +
             '<span class="nm">' + pic(r.item) + esc(r.item.noun) + '<span class="q">' + qtyText(r.item) + "</span></span>" +
             '<span class="g">' + (l.offer ? offerChip(l.p, l.o) + " " : "") + (l.packs > 1 ? l.packs + "× " : "") + esc(l.p.name) +
             (l.p.packaging ? " · " + esc(l.p.packaging) : "") + overNote(l, r.item) + "</span>" +
             '<span class="v">' + euro(l.cost) + "</span></button>" + flag(l.p, l.cost, where(qtyText(r.item) + " " + r.item.noun)) + "</div>";
-        }).join("") + "</div></section>").join("");
+        }) + "</section>").join("");
       const pct = count ? Math.round(ticked / count * 100) : 0;
       return "<h1>Winkelen</h1>" + freshness("Prijzen van") + cardNote() +
         '<div class="plan"><span>' + (p.kind === "combo" ? "Twee winkels:" : "Alles bij") + " " + p.ids.map((id) => esc(chainById(id).name)).join(" + ") + " · <b>" + euro(total) + "</b></span>" +
-        '<button data-act="go" data-id="vergelijk">andere tas kiezen</button></div>' + shops +
+        '<button data-act="go" data-id="vergelijk">andere tas kiezen</button></div>' +
+        '<div class="wk shopview" role="group" aria-label="Weergave">' + [["rijen", "Rijen"], ["tegels", "Tegels"]].map(([id, label]) =>
+          '<button data-act="shop-view" data-id="' + id + '" aria-pressed="' + (shopView === id) + '">' + label + "</button>").join("") + "</div>" + shops +
         exactShop + (nowhere.length ? '<div class="missing">Hier niet te koop: ' + nowhere.map((r) => esc(r.item.noun)).join(", ") + "</div>" : "") +
         '<div class="progress"><span><b>' + euro(left) + "</b> nog</span><span class=\"bar\"><i style=\"width:" + pct + '%"></i></span><span>' + ticked + "/" + count + "</span>" +
         (ticked ? '<button class="btn" data-act="finish">Klaar</button>' : "") + "</div>";
@@ -1264,6 +1310,7 @@
       case "make-exact": makeExact(b.dataset.item, id); exactOffer = null; sheet = null; break;
       case "packs": if (item && item.exact) item.quantity = item.quantity % 9 + 1; break;
       case "tick": done.has(id) ? done.delete(id) : done.add(id); break;
+      case "shop-view": shopView = id; break;
       case "finish": list = list.filter((i) => i.staple || !done.has(i.id)); done.clear(); page = "lijst"; history.replaceState(null, "", "#lijst"); break;
       case "recipe": addRecipe(id); break;
       case "all-recipes": showAllRecipes = true; break;
