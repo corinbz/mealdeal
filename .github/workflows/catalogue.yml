@@ -126,7 +126,7 @@ jobs:
         run: npm run ingest -- --migrate --chain all --date "${{ steps.day.outputs.date }}"
 
       - name: Build the catalogue
-        run: node scripts/catalogue-from-db.ts
+        run: node scripts/catalogue-from-db.ts --opinions opinions.md
 
       - name: Fetch the published catalogue and price history
         run: |
@@ -165,6 +165,11 @@ jobs:
           args="--built prototype/catalogue.js"
           [ -n "${published:-}" ] && args="$args --published $published"
           node scripts/check-coverage.ts $args >> "$GITHUB_STEP_SUMMARY"
+
+      # Twins at other Chains and the Chain's own shelf as second opinions
+      # on each mapping: written while building, when categories are at hand.
+      - name: Report second opinions on mapping
+        run: cat opinions.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: List "Klopt niet" reports
         # From the app (#38), grouped by Product, the last seven days. Never fails the refresh.

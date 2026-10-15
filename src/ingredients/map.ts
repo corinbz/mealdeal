@@ -96,6 +96,8 @@ const FROZEN = /\b(diepvries|bevroren|vis marine)\b/;
 const TINNED = /\bin [\p{L} ]*?(olie|olijfolie|zonnebloemolie|water|tomatensaus|pekel)\b|\bgebroken\b|\bop [\p{L} ]*?siroop\b/u;
 
 const ELSEWHERE: ReadonlySet<Aisle> = new Set(["readymeal", "baby", "pet", "nonfood"]);
+/** Aisles no twin elsewhere can lend a food to. */
+const NOT_FOOD: ReadonlySet<Aisle> = new Set(["baby", "pet", "nonfood"]);
 /**
  * Where a Product with no category at all may be: any food aisle but those.
  * Aldi files its weekly action articles under "offer" alone (over a thousand
@@ -132,6 +134,26 @@ export function variantOf(def: IngredientDef, lower: string): string | null {
     return v ? [v.id] : [];
   });
   return ids.length ? ids.join("+") : null;
+}
+
+/**
+ * Whether a Product may be an Ingredient it does not map to by name, as its
+ * twins at other Chains say (borrow.ts): only if nothing in its own name
+ * rules it out, and it is not filed as baby food, pet food or non-food the
+ * Ingredient is not. Its aisle is not asked otherwise: a Chain's odd shelf
+ * (Hoogvliet's sugar among the coffee) is often why its name did not map.
+ */
+export function createAllows(vocabulary: readonly IngredientDef[] = VOCABULARY) {
+  const defs = new Map(vocabulary.map((d) => [d.id, d]));
+  return function allows(product: MappableProduct, ingredient: string): boolean {
+    const def = defs.get(ingredient);
+    if (!def) return false;
+    const aisles = product.categories.map(aisleOf);
+    const lower = product.name.toLowerCase();
+    const raw = lower.split(/[^\p{L}0-9%']+/u).filter(Boolean);
+    return aisles.every((a) => !a || !NOT_FOOD.has(a) || def.aisles.includes(a))
+      && !def.not.some((n) => excludes(n, lower, raw));
+  };
 }
 
 export function createMapper(vocabulary: readonly IngredientDef[] = VOCABULARY) {
