@@ -411,7 +411,9 @@ The build itself writes **second opinions on mapping** to the summary, from
   disagree, at least two copies and more than half decide for all, and the
   odd copy is listed as a rule to fix; with no majority, nothing moves. A
   twin never lends an Ingredient its `not` words rule out, nor to a baby,
-  pet or non-food Product.
+  pet or non-food Product. What each Product ends up as, and how (by name,
+  from its twins, outvoted, or none for too small a pack), is decided in
+  one place, `mapProducts` in `src/catalogue/mapping.ts`.
 - **The Chain's own shelf** (`shelves.ts`): a Product mapped to an
   Ingredient its shelf hardly holds, and unmapped Products on a shelf nearly
   all one Ingredient.
