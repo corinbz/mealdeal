@@ -902,6 +902,53 @@
     bakery: ["--a:#d4a05a;--b:#c98b4a;--e:#8f5a28",
       '<g transform="rotate(-30 30 30)"><rect class="a" x="6" y="22" width="48" height="13" rx="6.5"/><path class="e" d="M14 25l4 7M24 25l4 7M34 25l4 7M44 25l4 7"/></g>' +
       '<circle class="b" cx="44" cy="44" r="12"/><path class="e" d="M38 40c4 2 8 2 12 0"/>'],
+    vega: ["--a:#5c9e3a;--b:#9cc768;--c:#f4efdc;--d:#3d7a2a",
+      '<path class="c" d="M8 44l12-6 16 5-12 6z"/><path class="c" d="M8 44l16 5v9L8 53z"/><path class="c" d="M24 49l12-6v9l-12 6z"/>' +
+      '<path class="a" d="M24 40C20 22 32 8 56 6c2 22-10 36-30 36z"/><path class="e" d="M24 42C32 30 40 20 50 12M34 30l-6-6M40 23l-2-8M38 27l8 1"/>'],
+    cheese: ["--a:#f2c84b;--c:#f8dc7a;--b:#e0a830;--d:#d9a72c",
+      '<path class="b" d="M6 30v14c0 6 12 10 26 10s26-4 26-10V30z"/>' +
+      '<path class="a" d="M6 30c0-6 12-10 26-10s26 4 26 10c0 6-12 10-26 10S6 36 6 30z"/>' +
+      '<path class="c" d="M32 30l26 0c0 3-3 6-8 7.5z"/><path class="c" d="M32 30l18 7.5V52l-18-7.5z"/>' +
+      '<circle class="d" cx="40" cy="42" r="2"/><circle class="d" cx="18" cy="28" r="2"/><circle class="d" cx="26" cy="33" r="1.4"/>'],
+    deli: ["--a:#b53a3e;--b:#c98b4a;--c:#f2a0a6;--d:#f6e0d6",
+      '<path class="b" d="M4 40h48l6-6v8l-6 6H4z"/><path class="b" d="M4 40l6-6h48l-6 6z"/>' +
+      '<path class="c" d="M8 36c2-8 8-12 16-12s12 4 14 10c-6-2-14-2-20 0-4 1-7 2-10 2z"/>' +
+      '<circle class="a" cx="36" cy="30" r="9"/><circle class="a" cx="46" cy="34" r="8"/>' +
+      '<circle class="d" cx="34" cy="28" r="1.2"/><circle class="d" cx="38" cy="32" r="1.2"/><circle class="d" cx="45" cy="32" r="1.1"/><circle class="d" cx="48" cy="36" r="1.1"/>'],
+    conserves: ["--a:#d94b3d;--b:#5c9e3a;--c:#b9bfc4;--d:#f3e3c3",
+      '<rect class="c" x="6" y="24" width="24" height="32" rx="3"/><ellipse class="c" cx="18" cy="24" rx="12" ry="4"/><rect class="a" x="6" y="31" width="24" height="18"/>' +
+      '<rect class="c" x="32" y="32" width="26" height="24" rx="3"/><ellipse class="c" cx="45" cy="32" rx="13" ry="4"/><rect class="b" x="32" y="38" width="26" height="12"/>' +
+      '<rect class="c" x="10" y="10" width="16" height="12" rx="2"/><ellipse class="c" cx="18" cy="10" rx="8" ry="3"/><rect class="d" x="10" y="13" width="16" height="6"/>'],
+    frozen: ["--a:#bfe0f2;--b:#3a7fc4;--d:#f2f8fb",
+      '<path class="a" d="M10 14l4-6h36l4 6v38c0 3-2 5-5 5H15c-3 0-5-2-5-5z"/><path class="e" d="M10 14h44"/>' +
+      '<path class="s" d="M32 22v28M20 29l24 14M20 43l24-14"/>' +
+      '<path class="e" d="M28 22l4 3 4-3M28 50l4-3 4 3M18 33l5-1-1-5M46 39l-5 1 1 5M18 39l5 1-1 5M46 33l-5-1 1-5"/>'],
+    readymeal: ["--a:#f2efe6;--b:#e8e2d0;--c:#f2dc94;--d:#6cb33f",
+      '<rect class="b" x="4" y="18" width="56" height="36" rx="5"/><rect class="a" x="8" y="22" width="22" height="28" rx="3"/><rect class="a" x="34" y="22" width="22" height="12" rx="3"/><rect class="a" x="34" y="38" width="22" height="12" rx="3"/>' +
+      '<path class="c" d="M10 46c-1-8 4-14 9-12 2-6 10-5 10 2v10z"/>' +
+      '<path class="d" d="M38 28a2.4 2.4 0 1 0 0 .1zM43 27a2.4 2.4 0 1 0 0 .1zM48 29a2.4 2.4 0 1 0 0 .1zM42 31a2.4 2.4 0 1 0 0 .1zM51 26a2.4 2.4 0 1 0 0 .1z"/>' +
+      '<ellipse class="c" cx="45" cy="44" rx="8" ry="3.5"/>'],
+    drinks: ["--a:#5c9e3a;--b:#d94b3d;--c:#e8eef0;--d:#f5d65a",
+      '<rect class="a" x="12" y="4" width="8" height="6" rx="1.5"/><path class="a" d="M13 10h6v8c4 2 6 6 6 10v24c0 3-2 5-5 5h-8c-3 0-5-2-5-5V28c0-4 2-8 6-10z"/>' +
+      '<path class="s" d="M44 30l6-24"/>' +
+      '<path class="c" d="M28 28h28l-3 28H31z"/><path class="d" d="M29 36h26l-2 18H31z"/>' +
+      '<circle class="c" cx="38" cy="44" r="2"/><circle class="c" cx="46" cy="48" r="1.6"/>'],
+    snacks: ["--a:#e84a3a;--b:#f2c84b;--c:#c83a2a",
+      '<path class="b" d="M18 14c2-6 8-8 12-4 4-4 12-2 12 4z"/><path class="b" d="M28 12c3-5 10-6 14-2-3 4-9 5-14 2z"/>' +
+      '<path class="a" d="M12 14l3 4 3-4 3 4 3-4 3 4 3-4 3 4 3-4 3 4 3-4 3 4 3-4-2 44H14z"/>' +
+      '<path class="c" d="M12 52h40v4H12z"/><circle class="b" cx="32" cy="34" r="8"/><circle class="c" cx="29" cy="32" r="1.2"/><circle class="c" cx="35" cy="36" r="1.2"/>'],
+    baby: ["--a:#f2f4f6;--b:#9cc4e8;--c:#f2d27a;--d:#f7f4ec",
+      '<path class="c" d="M28 4c3 0 4 3 4 6v4h-8v-4c0-3 1-6 4-6z" transform="translate(4 0)"/>' +
+      '<rect class="b" x="22" y="14" width="20" height="7" rx="2"/>' +
+      '<path class="a" d="M24 21h16v6c4 3 6 6 6 10v16c0 3-2 5-5 5H23c-3 0-5-2-5-5V37c0-4 2-7 6-10z"/>' +
+      '<path class="d" d="M20 40h24v13c0 2-1 3-3 3H23c-2 0-3-1-3-3z"/><path class="e" d="M18 36h6M18 44h6"/>'],
+    pet: ["--a:#d94b3d;--b:#f2efe6;--c:#a8643a",
+      '<path class="b" d="M20 18c-4 0-6-4-3-7 2-2 5-1 6 1 2-2 5-1 6 1l10 0c1-2 4-3 6-1 2-2 5-3 7-1 3 3 1 7-3 7 4 1 4 6 1 7-2 2-5 1-6-1H29c-1 2-4 3-6 1-3-1-3-6 1-7z" transform="rotate(-10 34 18)"/>' +
+      '<path class="a" d="M6 38h52l-5 16c-1 2-3 3-5 3H16c-2 0-4-1-5-3z"/><ellipse class="c" cx="32" cy="38" rx="26" ry="5"/>' +
+      '<circle class="b" cx="22" cy="36" r="2.4"/><circle class="b" cx="30" cy="38" r="2.4"/><circle class="b" cx="38" cy="36" r="2.4"/><circle class="b" cx="44" cy="38" r="2.2"/>'],
+    nonfood: ["--a:#f7f4ec;--b:#e2dccd;--c:#7ab0d0;--d:#3a6fb8",
+      '<path class="a" d="M6 26v26c0 3 7 5 16 5s16-2 16-5V26z"/><ellipse class="a" cx="22" cy="26" rx="16" ry="6"/><ellipse class="b" cx="22" cy="26" rx="5" ry="2"/>' +
+      '<path class="c" d="M44 8h10v6h-4l-2 4h-4z"/><path class="c" d="M44 18h8l4 8v28c0 2-2 3-4 3h-8c-2 0-4-1-4-3V26z"/><rect class="d" x="40" y="32" width="16" height="12"/>'],
   };
   // An item no Ingredient was found for.
   const BAG = ["--a:#d9b88a;--e:#a07a4a", '<path class="s" d="M24 24c0-9 16-9 16 0"/><path class="a" d="M13 24h38l-3 32H16z"/><path class="e" d="M13 30h38"/>'];
