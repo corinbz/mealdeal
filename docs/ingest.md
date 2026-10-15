@@ -402,6 +402,26 @@ Anything found right as it is goes in `src/catalogue/known-slips.ts` with the
 reason. A split entry naming any one member quietens the whole group, and the
 report names entries it no longer finds.
 
+The build itself writes **second opinions on mapping** to the summary, from
+`src/catalogue/opinions.ts`. They report and change nothing, except for twins:
+
+- **Twins** (`twins.ts`) are one item at several Chains: a shared EAN, own
+  brands included, or the same stemmed brand and name words at a pack within
+  10%. An unmapped copy takes what its mapped twins agree on. Where they
+  disagree, at least two copies and more than half decide for all, and the
+  odd copy is listed as a rule to fix; with no majority, nothing moves. A
+  twin never lends an Ingredient its `not` words rule out, nor to a baby,
+  pet or non-food Product.
+- **The Chain's own shelf** (`shelves.ts`): a Product mapped to an
+  Ingredient its shelf hardly holds, and unmapped Products on a shelf nearly
+  all one Ingredient.
+- **A classifier** (`classifier.ts`): naive Bayes learnt from the
+  vocabulary's own mappings, on name and brand words, word endings, shelf
+  words and unit, each Product judged by a model that never saw it. It runs
+  in about 15 seconds on the runner, with no service. It agrees with the
+  vocabulary on about 95% of mapped Products, and lists those it is far surer
+  belong elsewhere, and unmapped ones it would map.
+
 The first run on 2026-10-14 found Jumbo selling whole cases under one unit's
 title: sku 47868DSL, "Arla Bio Halfvolle Melk 1 L", is a box of six at
 €10.74. The Jumbo reader now takes such a pack as the multiple its price over

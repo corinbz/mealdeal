@@ -16,7 +16,8 @@
  * What goes in it is decided in src/catalogue/build.ts; this only reads the
  * database (src/catalogue/source-db.ts) and writes the file. With
  * --opinions it also writes, as Markdown, where a Product's twins at other
- * Chains or its own shelf disagree with its mapping (src/catalogue/opinions.ts):
+ * Chains, its own shelf or a classifier disagree with its mapping
+ * (src/catalogue/opinions.ts):
  * the catalogue has no categories, so this is the only point it can be told.
  */
 
@@ -26,6 +27,7 @@ import { buildCatalogue } from "../src/catalogue/build.ts";
 import { catalogueScript } from "../src/catalogue/format.ts";
 import { readCatalogueSource } from "../src/catalogue/source-db.ts";
 import { opinionsMarkdown } from "../src/catalogue/opinions.ts";
+import { assessClassifier } from "../src/catalogue/classifier.ts";
 
 const OUT = new URL("../prototype/catalogue.js", import.meta.url);
 const argv = process.argv.slice(2);
@@ -38,10 +40,10 @@ if (argv.length && !opinions) {
 const db = connect();
 const source = await readCatalogueSource(db);
 await db.end();
-const { catalogue, counts, conflicts, shelves } = buildCatalogue(source);
+const { catalogue, counts, conflicts, shelves, labelled } = buildCatalogue(source);
 await writeFile(OUT, catalogueScript(catalogue, "scripts/catalogue-from-db.ts"));
 const chainName = (id: string) => catalogue.chains.find((c) => c.id === id)?.name ?? id;
-if (opinions) await writeFile(opinions, opinionsMarkdown(conflicts, shelves, chainName));
+if (opinions) await writeFile(opinions, opinionsMarkdown(conflicts, shelves, assessClassifier(labelled), chainName));
 
 const chains = catalogue.chains;
 console.error(`wrote ${OUT.pathname}: ${chains.map((c) => `${c.name} ${counts[c.id]!.total} (${counts[c.id]!.upcoming} with an upcoming Offer)`).join(", ")} comparable products`);

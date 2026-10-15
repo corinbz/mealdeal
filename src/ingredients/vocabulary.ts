@@ -568,7 +568,7 @@ ing("quinoa", "kg", PANTRY, ["quinoa"], {});
 ing("havermout", "kg", PANTRY, ["havermout", "havervlok", "havervlokken", "oats"], { not: ["koek", "reep", "drink", "melk"] });
 ing("muesli", "kg", PANTRY, ["muesli", "granola", "cruesli"], { not: ["reep", "repen", "yoghurt"] });
 ing("cornflakes", "kg", PANTRY, ["cornflakes", "ontbijtgranen"], { not: ["churros"] });
-ing("bloem", "kg", PANTRY, ["bloem", "tarwebloem", "patentbloem", "meel", "tarwemeel", "volkorenmeel"], { not: ["liga", "bakmeel", "zelfrijzend", "mais", "rijst", "kool", "pannenkoek", "mix"], also: ["meel", "tarwebloem"] });
+ing("bloem", "kg", PANTRY, ["bloem", "tarwebloem", "patentbloem", "meel", "tarwemeel", "volkorenmeel"], { not: ["liga", "bakmeel", "zelfrijzend", "mais", "rijst", "kool", "pannenkoek", "mix", "zonnebloem"], also: ["meel", "tarwebloem"] });
 ing("zelfrijzend bakmeel", "kg", PANTRY, ["bakmeel", "zelfrijzend"], {});
 // Hoogvliet files its mixes beside the pancakes, under Hollandse keuken.
 ing("pannenkoekmix", "kg", [...PANTRY, "readymeal"], ["pannenkoekmix", "pannenkoekenmix", "pannenkoekmeel", "bakmix voor pannenkoeken", "schudfles"], {});
