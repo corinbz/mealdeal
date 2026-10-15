@@ -170,6 +170,83 @@
       '<circle class="a" cx="21" cy="41" r="11"/><path class="e" d="M12.8 37.7c4.4 7.7 12.1 11 16.5 8.3M28.7 36.1c-1.1 6.6 -5.5 11 -11 12.1"/>' +
       '<circle class="a" cx="43" cy="41" r="11"/><path class="e" d="M34.8 37.7c4.4 7.7 12.1 11 16.5 8.3M50.7 36.1c-1.1 6.6 -5.5 11 -11 12.1"/>' +
       '<circle class="a" cx="32" cy="23" r="11"/><path class="e" d="M23.8 19.7c4.4 7.7 12.1 11 16.5 8.3M39.7 18.1c-1.1 6.6 -5.5 11 -11 12.1"/>'],
+    sperziebonen: ["--a:#5a9a3e",
+      '<g transform="translate(0 0)"><path class="a" d="M9 46c12-6 26-18 37-31 1-2 4-1 3 1C40 30 26 43 12 51c-2 1-4-3-3-5z"/><path class="s" d="M47 15l3-4"/></g>' +
+      '<g transform="translate(7 4)"><path class="a" d="M9 46c12-6 26-18 37-31 1-2 4-1 3 1C40 30 26 43 12 51c-2 1-4-3-3-5z"/><path class="s" d="M47 15l3-4"/></g>' +
+      '<g transform="translate(-6 6)"><path class="a" d="M9 46c12-6 26-18 37-31 1-2 4-1 3 1C40 30 26 43 12 51c-2 1-4-3-3-5z"/><path class="s" d="M47 15l3-4"/></g>'],
+    snijbonen: ["--a:#8cbf55;--d:#b8dc8a",
+      '<path class="a" d="M5 34c12-4 26-12 36-24 2-2 7 0 6 3-8 14-22 24-36 28-4 1-9-5-6-7z"/><path class="e" d="M11 36c12-4 24-12 32-22"/>' +
+      '<path class="a" d="M18 51l4-8h8l-4 8z"/><path class="a" d="M30 49l4-8h8l-4 8z"/><path class="a" d="M42 47l4-8h8l-4 8z"/><path class="a" d="M24 59l4-8h8l-4 8z"/><path class="a" d="M36 58l4-8h8l-4 8z"/>'],
+    peultjes: ["--a:#9cc65a;--d:#c9e39a;--b:#5c9e3a",
+      '<g transform="translate(0 0)"><path class="a" d="M8 30c10 6 30 6 44-6 2 2 2 5 0 7C40 42 18 42 8 34c-2-1-1-4 0-4z"/><circle class="d" cx="20" cy="35" r="2.6"/><circle class="d" cx="29" cy="36" r="2.6"/><circle class="d" cx="38" cy="34" r="2.6"/><path class="b" d="M5 28l6 1-2 6z"/></g>' +
+      '<g transform="translate(4 14)"><path class="a" d="M8 30c10 6 30 6 44-6 2 2 2 5 0 7C40 42 18 42 8 34c-2-1-1-4 0-4z"/><circle class="d" cx="20" cy="35" r="2.6"/><circle class="d" cx="29" cy="36" r="2.6"/><circle class="d" cx="38" cy="34" r="2.6"/><path class="b" d="M5 28l6 1-2 6z"/></g>'],
+    doperwten: ["--a:#6cb33f;--d:#b8e08a",
+      '<circle class="a" cx="20" cy="46" r="6"/><circle class="d" cx="18" cy="44" r="1.5"/>' +
+      '<circle class="a" cx="32" cy="46" r="6"/><circle class="d" cx="30" cy="44" r="1.5"/>' +
+      '<circle class="a" cx="44" cy="46" r="6"/><circle class="d" cx="42" cy="44" r="1.5"/>' +
+      '<circle class="a" cx="26" cy="36" r="6"/><circle class="d" cx="24" cy="34" r="1.5"/>' +
+      '<circle class="a" cx="38" cy="36" r="6"/><circle class="d" cx="36" cy="34" r="1.5"/>' +
+      '<circle class="a" cx="32" cy="26" r="6"/><circle class="d" cx="30" cy="24" r="1.5"/>' +
+      '<circle class="a" cx="14" cy="36" r="6"/><circle class="d" cx="12" cy="34" r="1.5"/>' +
+      '<circle class="a" cx="50" cy="36" r="6"/><circle class="d" cx="48" cy="34" r="1.5"/>'],
+    "doperwten en wortelen": ["--a:#6cb33f;--b:#f08a24;--d:#b8e08a",
+      '<rect class="b" x="12" y="38" width="10" height="10" rx="1.5" transform="rotate(-12 17 43)"/><rect class="b" x="36" y="22" width="10" height="10" rx="1.5" transform="rotate(15 41 27)"/><rect class="b" x="40" y="41" width="10" height="10" rx="1.5" transform="rotate(-5 45 46)"/>' +
+      '<circle class="a" cx="26" cy="46" r="5.5"/><circle class="d" cx="24.2" cy="44.2" r="1.3"/><circle class="a" cx="32" cy="36" r="5.5"/><circle class="d" cx="30.2" cy="34.2" r="1.3"/><circle class="a" cx="20" cy="27" r="5.5"/><circle class="d" cx="18.2" cy="25.2" r="1.3"/><circle class="a" cx="26" cy="26" r="5.5"/><circle class="d" cx="24.2" cy="24.2" r="1.3"/><circle class="a" cx="46" cy="35" r="5.5"/><circle class="d" cx="44.2" cy="33.2" r="1.3"/><circle class="a" cx="16" cy="52" r="5.5"/><circle class="d" cx="14.2" cy="50.2" r="1.3"/><circle class="a" cx="36" cy="52" r="5.5"/><circle class="d" cx="34.2" cy="50.2" r="1.3"/>'],
+    mais: ["--a:#f5cf3c;--b:#7fae4a;--d:#e0a822",
+      '<g transform="rotate(35 32 32)"><ellipse class="a" cx="32" cy="28" rx="10" ry="22"/>' +
+      '<path class="e" d="M24 18h16M23 25h18M23 32h18M24 39h16M28 9v38M36 9v38"/>' +
+      '<path class="b" d="M32 58c-8-4-14-16-12-30 3 8 7 14 12 18z"/><path class="b" d="M32 58c8-4 14-16 12-30-3 8-7 14-12 18z"/></g>'],
+    paddenstoelen: ["--a:#6b4a33;--b:#efe3cc;--c:#e8a23a;--d:#a8805c",
+      '<path class="b" d="M18 36h8l-1 18h-6z"/><path class="a" d="M6 38c0-10 7-16 16-16s16 6 16 16c-5 3-27 3-32 0z"/><circle class="d" cx="16" cy="30" r="1.8"/><circle class="d" cx="25" cy="27" r="1.5"/>' +
+      '<path class="c" d="M36 22c6-4 18-4 22 0-2 6-7 8-9 12l-1 20h-5l-1-20c-2-4-6-6-6-12z"/><path class="e" d="M41 25l3 6M46 24v7M51 25l-2 6"/>'],
+    aubergine: ["--a:#5b2d5e;--b:#5c9e3a;--d:#8d5a90",
+      '<path class="a" d="M38 18c8 2 12 9 10 16-3 12-14 22-26 22-8 0-13-6-11-13 2-9 10-12 15-18 3-4 6-8 12-7z"/>' +
+      '<ellipse class="d" cx="22" cy="44" rx="2.5" ry="5" transform="rotate(40 22 44)"/>' +
+      '<path class="b" d="M34 19c3-4 10-6 15-3-1 4 0 9-2 12-3-5-8-7-13-9z"/><path class="s" d="M46 16l5-6"/>'],
+    pompoen: ["--a:#e8792a;--b:#5c9e3a",
+      '<path class="s" d="M32 20c0-5 2-9 6-11"/><path class="b" d="M34 18c4-5 11-5 14-2-4 4-9 5-14 2z"/>' +
+      '<ellipse class="a" cx="20" cy="38" rx="12" ry="16"/><ellipse class="a" cx="44" cy="38" rx="12" ry="16"/><ellipse class="a" cx="32" cy="38" rx="11" ry="17"/>'],
+    knolselderij: ["--a:#d8c9a3;--b:#7fae4a;--d:#a8956a",
+      '<path class="b" d="M26 22c-2-6-1-12 1-15l4 1c-1 4-1 9 0 14zM36 22c1-6 4-11 8-13l2 4c-3 2-5 6-6 10z"/>' +
+      '<path class="a" d="M51 36A5.4 5.4 0 0 1 48.8 43.4A5.8 5.8 0 0 1 42.8 49.2A6.2 6.2 0 0 1 34.3 51.9A6.4 6.4 0 0 1 25.3 51A6.1 6.1 0 0 1 17.8 46.6A5.6 5.6 0 0 1 13.6 39.8A5.4 5.4 0 0 1 13.6 32.2A5.6 5.6 0 0 1 17.8 25.4A6.1 6.1 0 0 1 25.3 21A6.4 6.4 0 0 1 34.3 20.1A6.2 6.2 0 0 1 42.8 22.8A5.8 5.8 0 0 1 48.8 28.6A5.4 5.4 0 0 1 51 36z"/>' +
+      '<path class="s" d="M24 51l-3 6M32 52v6M40 51l3 6"/><circle class="d" cx="24" cy="34" r="1.6"/><circle class="d" cx="35" cy="30" r="1.6"/><circle class="d" cx="40" cy="40" r="1.6"/><circle class="d" cx="28" cy="42" r="1.4"/>'],
+    bleekselderij: ["--a:#a9cf6e;--b:#5c9e3a;--d:#cfe6a0",
+      '<path class="b" d="M47 15A3.7 3.7 0 0 1 43.5 20.1A5.6 5.6 0 0 1 34.6 22.9A6.1 6.1 0 0 1 24.5 21.9A4.7 4.7 0 0 1 17.9 17.7A3.3 3.3 0 0 1 17.9 12.3A4.7 4.7 0 0 1 24.5 8.1A6.1 6.1 0 0 1 34.6 7.1A5.6 5.6 0 0 1 43.5 9.9A3.7 3.7 0 0 1 47 15z"/>' +
+      '<g transform="rotate(-10 32 58)"><path class="a" d="M27 16h10l1 38c0 3-12 3-12 0z"/><path class="e" d="M30 22v30M34 22v30"/></g><g transform="rotate(10 32 58)"><path class="a" d="M27 16h10l1 38c0 3-12 3-12 0z"/><path class="e" d="M30 22v30M34 22v30"/></g><g transform="rotate(0 32 58)"><path class="a" d="M27 16h10l1 38c0 3-12 3-12 0z"/><path class="e" d="M30 22v30M34 22v30"/></g>'],
+    venkel: ["--a:#eef0d6;--b:#9cc768;--c:#6fa046",
+      '<g transform="translate(32 33) scale(0.9) translate(-32 -32)"><path class="b" d="M25 28l-6-18h5l6 18zM39 28l6-18h-5l-6 18zM30 28l1-20h3l1 20z"/>' +
+      '<path class="c" d="M26 10A3.3 3.3 0 0 1 22.5 14.3A4.2 4.2 0 0 1 15.5 14.3A3.3 3.3 0 0 1 12 10A3.3 3.3 0 0 1 15.5 5.7A4.2 4.2 0 0 1 22.5 5.7A3.3 3.3 0 0 1 26 10z"/><path class="c" d="M52 10A3.3 3.3 0 0 1 48.5 14.3A4.2 4.2 0 0 1 41.5 14.3A3.3 3.3 0 0 1 38 10A3.3 3.3 0 0 1 41.5 5.7A4.2 4.2 0 0 1 48.5 5.7A3.3 3.3 0 0 1 52 10z"/><path class="c" d="M38 8A3.4 3.4 0 0 1 33.9 11.8A4.1 4.1 0 0 1 27.1 10.4A2.8 2.8 0 0 1 27.1 5.6A4.1 4.1 0 0 1 33.9 4.2A3.4 3.4 0 0 1 38 8z"/>' +
+      '<path class="a" d="M24 27c5-2 11-2 16 0 8 3 14 10 13 18-1 8-10 12-21 12s-20-4-21-12c-1-8 5-15 13-18z"/><path class="e" d="M32 28c-6 6-8 18-4 28M32 28c6 6 8 18 4 28"/></g>'],
+    "rode kool": ["--a:#7a3a78;--c:#d9b3dc",
+      '<circle class="a" cx="32" cy="34" r="22"/><circle class="c" cx="32" cy="34" r="16"/>' +
+      '<path class="e" d="M32 50V36M24 22c6 4 8 10 8 14 0-6 4-12 10-14M18 32c6 0 10 2 14 6 4-4 8-6 14-6M20 44c4-4 8-6 12-6 4 0 8 2 12 6"/>'],
+    "witte kool": ["--a:#dfe8b8;--b:#a9c96a",
+      '<circle class="b" cx="32" cy="35" r="21"/><circle class="a" cx="32" cy="35" r="15"/>' +
+      '<path class="e" d="M17 30c4-8 10-12 15-12M47 30c-4-8-10-12-15-12M32 21c-3 8-3 16 0 26M24 40c3 4 6 6 8 7M40 40c-3 4-6 6-8 7"/>'],
+    spitskool: ["--a:#a9c96a;--b:#7fae4a",
+      '<path class="b" d="M32 6c-10 8-18 24-17 36 1 10 7 15 17 15s16-5 17-15C50 30 42 14 32 6z"/>' +
+      '<path class="a" d="M32 12c-6 8-11 20-10 30 1 8 4 12 10 12s9-4 10-12c1-10-4-22-10-30z"/>' +
+      '<path class="e" d="M32 14v38M32 28l-6-5M32 36l7-6M32 44l-7-5"/>'],
+    "chinese kool": ["--a:#f1edc8;--b:#9cc768;--d:#d8dba0",
+      '<g transform="translate(32 33) scale(.88) rotate(-30) translate(-32 -32)"><path class="b" d="M20 18c-3-8 2-14 8-14 2-3 6-3 8 0 6 0 11 6 8 14z"/>' +
+      '<path class="a" d="M20 18c-2 12-2 26 2 34 3 5 17 5 20 0 4-8 4-22 2-34-6 3-18 3-24 0z"/>' +
+      '<path class="e" d="M32 20v32M26 20c-1 10-1 22 1 30M38 20c1 10 1 22-1 30"/></g>'],
+    paksoi: ["--a:#f2f2e4;--b:#2f7a3a",
+      '<g transform="rotate(-16 32 58)"><path class="b" d="M32 32c-9-3-13-12-11-22 4-6 18-6 22 0 2 10-2 19-11 22z"/><path class="a" d="M28 30h8l2 24c0 4-12 4-12 0z"/><path class="e" d="M32 30V12"/></g>' +
+      '<g transform="rotate(16 32 58)"><path class="b" d="M32 32c-9-3-13-12-11-22 4-6 18-6 22 0 2 10-2 19-11 22z"/><path class="a" d="M28 30h8l2 24c0 4-12 4-12 0z"/><path class="e" d="M32 30V12"/></g>' +
+      '<g transform="rotate(0 32 58)"><path class="b" d="M32 32c-9-3-13-12-11-22 4-6 18-6 22 0 2 10-2 19-11 22z"/><path class="a" d="M28 30h8l2 24c0 4-12 4-12 0z"/><path class="e" d="M32 30V12"/></g>'],
+    witlof: ["--a:#f3f0dc;--b:#e8dc6e",
+      '<g transform="rotate(-10 22 34)"><path class="a" d="M22 8c-8 6-11 18-10 30 1 10 4 18 10 18s9-8 10-18c1-12-2-24-10-30z"/><path class="b" d="M22 8c-5 4-8 9-9 15 4-2 6-2 9 0 3-2 5-2 9 0-1-6-4-11-9-15z"/><path class="e" d="M22 24v28M17 30c1 8 2 14 3 20M27 30c-1 8-2 14-3 20"/></g>' +
+      '<g transform="rotate(10 42 34)"><path class="a" d="M42 8c-8 6-11 18-10 30 1 10 4 18 10 18s9-8 10-18c1-12-2-24-10-30z"/><path class="b" d="M42 8c-5 4-8 9-9 15 4-2 6-2 9 0 3-2 5-2 9 0-1-6-4-11-9-15z"/><path class="e" d="M42 24v28M37 30c1 8 2 14 3 20M47 30c-1 8-2 14-3 20"/></g>'],
+    koolrabi: ["--a:#cfe0a0;--b:#7fae4a;--d:#a9c47a",
+      '<g transform="translate(32 33) scale(0.9) translate(-32 -32)"><path class="s" d="M26 28L18 16M32 25V12M38 28l8-12"/>' +
+      '<path class="b" d="M18 17c-8 0-12-5-11-10 6-1 11 3 11 10zM32 13c-5-3-5-9-1-12 4 3 5 8 1 12zM46 17c8 0 12-5 11-10-6-1-11 3-11 10z"/>' +
+      '<circle class="a" cx="32" cy="40" r="16"/><path class="s" d="M32 56v3"/><circle class="d" cx="22" cy="40" r="2"/><circle class="d" cx="42" cy="38" r="2"/><circle class="d" cx="33" cy="48" r="2"/></g>'],
+    "rode bieten": ["--a:#8a1f3a;--b:#5c9e3a;--c:#a3284a;--d:#c4506a",
+      '<path class="c" d="M27 24l-8-12 3-2 8 13zM31 23l1-14h3l-1 14zM36 24l7-12 3 2-7 11z"/>' +
+      '<path class="b" d="M14 12c2-6 9-7 10-2-2 4-6 5-10 2zM29 8c3-5 9-3 9 1-3 3-7 3-9-1zM41 11c4-5 10-3 9 2-3 3-7 3-9-2z"/>' +
+      '<path class="a" d="M32 22c11 0 18 7 18 16 0 9-8 14-15 16l-3 5-3-5c-7-2-15-7-15-16 0-9 7-16 18-16z"/>' +
+      '<ellipse class="d" cx="24" cy="34" rx="3" ry="5" transform="rotate(25 24 34)"/>'],
   };
 
   // Where an Ingredient has no drawing of its own, its aisle stands in.
