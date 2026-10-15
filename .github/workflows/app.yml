@@ -88,6 +88,14 @@ jobs:
           sleep 10
           curl -fsS "$url/" | grep -q 'src="catalogue.js"'
           curl -fsS "$url/catalogue.js" | grep -o '"observedAt":"[0-9-]*"' | sort -u
-          # The report function answers, and refuses what is not a report: nothing is stored.
-          test "$(curl -s -o /dev/null -w '%{http_code}' -X POST "$url/api/report" -d '{}')" = 400
+          # The report function answers, and refuses what is not a report:
+          # nothing is stored. 503 would mean no bucket bound. A new Function
+          # takes a little longer than the files to reach the address.
+          for i in $(seq 1 12); do
+            code=$(curl -s -o /dev/null -w '%{http_code}' -X POST "$url/api/report" -d '{}')
+            [ "$code" = 400 ] && break
+            sleep 5
+          done
+          echo "report endpoint: $code"
+          test "$code" = 400
           echo "Live at $url"
