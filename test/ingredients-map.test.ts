@@ -303,6 +303,14 @@ test("a Variant word may end the name: Yoghurt Vol", () => {
   assert.deepEqual([m?.ingredient, m?.variant], ["yoghurt", "vol"]);
 });
 
+test("Dirk's and DekaMarkt's halal shelf is cold cuts: Wahid's 125 g kipfilet is sliced, not fresh", () => {
+  const m = (chainId: string, name: string) => map({ chainId, name, brand: "Wahid", categories: ["Vlees & vis > Halal vlees & kip"] })?.ingredient ?? null;
+  assert.equal(aisleOf("Vlees & vis > Halal vlees & kip"), "deli");
+  assert.equal(m("dirk", "Wahid Kipfilet naturel"), "kipfilet beleg");
+  assert.equal(m("dekamarkt", "Wahid Kalkoenfilet halal"), "kipfilet beleg");
+  assert.equal(m("dekamarkt", "Wahid Kalkoensalami"), "salami");
+});
+
 test("a brand is not what it sells: Bolletje rusks, Kips paté, Hoogvliet's Met Roomboter", () => {
   const m = (chainId: string, name: string, categories: string[], brand: string | null = null) => map({ chainId, name, brand, categories })?.ingredient ?? null;
   assert.equal(m("dirk", "Bolletje Beschuit volkoren", ["Brood, beleg & koek > Beschuit & crackers"]), "beschuit");
