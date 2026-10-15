@@ -281,3 +281,24 @@ test("reads peas with carrots as the mix, however the Chain joins them", () => {
   assert.equal(gap("Hak Doperwtjes Worteltjes")?.ingredient, "doperwten en wortelen");
   assert.equal(gap("Hak Doperwtjes met Worteltjes 350 g")?.ingredient, "doperwten en wortelen");
 });
+
+test("with no category at all, the name decides, in any food aisle (Aldi's offers)", () => {
+  const offer = (name: string, brand: string | null = null) => map({ chainId: "aldi", name, brand, categories: [] });
+  assert.equal(offer("Verse Zeeuwse mosselen")?.ingredient, "mosselen");
+  assert.equal(offer("Croissants")?.ingredient, "croissants");
+  assert.equal(offer("Kipfilet")?.form, "vers");
+  assert.equal(offer("Partjes mandarijn op lichte siroop")?.form, "conserven");
+  for (const n of ["Melkchocoladeballen", "Pepermunt", "Vogelvoer of voederautomaat", "Tortilla Spaanse stijl", "Kip karaage"]) assert.equal(offer(n), null, n);
+  assert.equal(offer("Paddenstoelen", "ALL SEASONS"), null, "frozen or tinned, the name does not say which");
+});
+
+test("how a Product is sold, or the flavour of stock, is not a second thing", () => {
+  const veg = ["Aardappelen, groente & fruit > Groente"];
+  assert.equal(map({ chainId: "dirk", name: "Bio+ Portobello per bak", brand: null, categories: veg })?.ingredient, "paddenstoelen");
+  assert.equal(map({ chainId: "dirk", name: "Maggi Bouillon kip", brand: null, categories: ["Maaltijden, salades & tapas > Houdbare soepen"] })?.ingredient, "bouillon");
+});
+
+test("a Variant word may end the name: Yoghurt Vol", () => {
+  const m = map({ chainId: "vomar", name: "Campina Yoghurt Vol", brand: null, categories: ["Vers > Zuivel, Boter & Eieren > Yoghurt"] });
+  assert.deepEqual([m?.ingredient, m?.variant], ["yoghurt", "vol"]);
+});
