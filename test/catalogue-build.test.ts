@@ -96,3 +96,18 @@ test("non-food and wine are left out before anything is matched, and counted", (
   assert.deepEqual(b.counts["plus"]!.excluded, { nonfood: 1, alcohol: 1 });
   assert.deepEqual(b.catalogue.exact, []);
 });
+
+test("a pack smaller than its Ingredient's smallest is not that Ingredient: a party bread is not a loaf", () => {
+  const BREAD = ["Brood, beleg > Brood"];
+  const { catalogue } = buildCatalogue({
+    chains: [chain("jumbo", "Jumbo")],
+    products: { jumbo: [
+      product({ ref: "b1", name: "Jumbo Volkorenbrood heel", categories: BREAD, packQuantity: 0.8 }),
+      product({ ref: "b2", name: "Jumbo Partybrood Wit 200 g", categories: BREAD, packQuantity: 0.2 }),
+      product({ ref: "b3", name: "Brood van Soma Volkoren Roggebrood 400 g", categories: BREAD, packQuantity: 0.4 }),
+      product({ ref: "b4", name: "Waldkorn brood", categories: BREAD, packQuantity: 0.6 }),
+    ] },
+  }, { now: new Date("2026-10-14T05:00:00Z") });
+  assert.deepEqual(productsOf(catalogue, "jumbo").map((p) => [p.ref, p.ingredient, p.ingredientUnitPriceCents !== null]),
+    [["b1", "brood", true], ["b2", null, false], ["b3", null, false], ["b4", "brood", true]]);
+});

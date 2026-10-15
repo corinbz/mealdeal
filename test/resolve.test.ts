@@ -187,3 +187,15 @@ test("the real vocabulary reads plain boter as roomboter, and margarine as itsel
   assert.equal(real.parse("margarine").ingredient, "margarine");
   assert.equal(real.parse("ongezouten roomboter").variant, "ongezouten");
 });
+
+test("an Ingredient counted in pieces, typed without a unit, is counted in pieces: one loaf, not 1.25", () => {
+  // Bread is mostly priced per kilo, so the words alone would read "brood" as a kilo.
+  const loaf = (ref: string): Row => [ref, "Volkorenbrood heel", "kg", 229, 286, 0.8, "kg", "brood", null, "vers", 0, 229, 1];
+  const R = context.MealdealResolve.createResolver({ chains: [{ id: "dirk", name: "Dirk" }], columns: COLUMNS,
+    vocabulary: [{ id: "brood", name: "brood", unit: "piece", also: [], equals: { kg: 0.8 }, variants: [], fresh: true }],
+    catalogue: { dirk: [loaf("1"), loaf("2")] } });
+  const read = (t: string) => { const g = R.parse(t); return [g.quantity, g.unit, g.guessed]; };
+  assert.deepEqual(read("brood"), [1, "piece", true]);
+  assert.deepEqual(read("2 brood"), [2, "piece", false]);
+  assert.deepEqual(read("400 g brood"), [0.5, "piece", false]);
+});
