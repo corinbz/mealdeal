@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { runInNewContext } from "node:vm";
+import { buildCatalogue } from "../src/catalogue/build.ts";
 
 /**
  * Resolution through Ingredients (#14), as the basket page and the digest
@@ -176,4 +177,13 @@ test("a staple alerts when today is clearly below its Usual Price, and only with
 
 test("three days of history are too few for any staple to alert", () => {
   for (const text of ["1 l melk", "400 g spinazie"]) assert.equal(resolver.priceDropAt("dirk", resolver.parse(text)), null);
+});
+
+test("the real vocabulary reads plain boter as roomboter, and margarine as itself", () => {
+  const { catalogue } = buildCatalogue({ chains: [], products: {} });
+  const real = context.MealdealResolve.createResolver({ ...catalogue, chains: [] });
+  assert.equal(real.parse("250 g boter").ingredient, "roomboter");
+  assert.equal(real.parse("boter").ingredient, "roomboter");
+  assert.equal(real.parse("margarine").ingredient, "margarine");
+  assert.equal(real.parse("ongezouten roomboter").variant, "ongezouten");
 });

@@ -316,6 +316,8 @@ ing("kookroom", "l", ["dairy"], ["kookroom", "blue band finesse koken", "finesse
 ing("crème fraîche", "l", ["dairy"], ["crème fraîche", "creme fraiche", "fraîche", "fraiche"], { equals: { kg: 1 }, also: ["creme fraiche"] });
 ing("zure room", "l", ["dairy"], ["zure room", "sour cream"], { equals: { kg: 1 }, also: ["sour cream"] });
 ing("roomboter", "kg", ["dairy"], ["roomboter", "boter", "grasboter"], {
+  // On a list, plain "boter" is roomboter: margarine may not be sold as boter.
+  also: ["boter"],
   not: ["margarine", "halvarine", "plant", "sense", "cholesterol", "blue band", "pinda", "bak", "braad", "kruiden", "knoflook", "koek", "cake", "croissant", "spritsen", "vloeibaar", "olie", "appel", "zout"],
   variants: [["ongezouten", "ongezouten roomboter", ["ongezouten"], true], ["gezouten", "gezouten roomboter", ["gezouten"]]],
 });
