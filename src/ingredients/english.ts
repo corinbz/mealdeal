@@ -205,7 +205,7 @@ export const ENGLISH: Readonly<Record<string, Translation>> = {
   margarine: ["margarine"],
   "bak- en braadboter": ["frying butter", "cooking butter", "frying margarine"],
   eieren: { names: ["eggs", "egg"], variants: {
-    scharrel: ["cage-free eggs", "barn eggs"], "vrije uitloop": ["free-range eggs"] } },
+    bio: ["organic eggs"], scharrel: ["cage-free eggs", "barn eggs"], "vrije uitloop": ["free-range eggs"] } },
 
   // ── Cheese
   kaas: { names: ["cheese"], variants: {

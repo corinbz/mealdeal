@@ -336,7 +336,9 @@ ing("bak- en braadboter", "kg", ["dairy", "pantry"], ["bak- en braad", "bak en b
 ing("eieren", "piece", ["dairy"], ["eier", "eieren", "scharreleier", "scharreleieren"], {
   equals: { kg: 0.06 },
   not: ["salade", "chocolade", "paas", "spread", "kwartel", "verf", "pasta"],
-  variants: [["scharrel", "scharreleieren", ["scharrel"]], ["vrije uitloop", "vrije-uitloopeieren", ["vrije uitloop", "uitloop"]]],
+  // Organic is how the hens are kept, as much as scharrel or vrije uitloop: the egg's code 0. First, so
+  // "Biologische scharreleieren" is organic.
+  variants: [["bio", "biologische eieren", ["biologisch", "bio+", "bio "]], ["scharrel", "scharreleieren", ["scharrel"]], ["vrije uitloop", "vrije-uitloopeieren", ["vrije uitloop", "uitloop"]]],
   also: ["ei", "eitjes"],
 });
 
