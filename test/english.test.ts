@@ -1,6 +1,5 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
 import { createResolver } from "../src/page.ts";
 import { must } from "./helpers/page.ts";
 import { buildCatalogue } from "../src/catalogue/build.ts";
