@@ -182,6 +182,23 @@ export interface Pricing {
 /** A Requirement's Ingredient and Preferences, without what was typed: what satisfies asks. */
 export type Asked = Pick<Requirement, "ingredient" | "variant" | "preferences">;
 
+/** An item on the list as which kind (#43) reads it: the page adds `anyKind` once the shopper answers "any". */
+export interface Kindable extends Pick<Requirement, "ingredient" | "variant"> {
+  readonly exact?: string;
+  readonly anyKind?: boolean;
+}
+
+/** The kinds an item may be (#43); see kinds in prototype/resolve.js. */
+export interface Kinds {
+  readonly aspects: readonly {
+    readonly aspect: string;
+    readonly options: readonly { readonly v: { readonly id: string; readonly name: string }; readonly n: number }[];
+    readonly value: string | null;
+  }[];
+  readonly sold: boolean;
+  readonly asks: boolean;
+}
+
 export interface Resolver {
   /** Each Chain's Products by id ("dirk-123"). */
   readonly products: Readonly<Record<string, Readonly<Record<string, ResolvedProduct>>>>;
@@ -194,6 +211,8 @@ export interface Resolver {
   variantsOf(variant: string | null): string[];
   joinVariants(ingredient: string, ids: readonly string[]): string | null;
   kindsSold(ingredient: string): Map<string | null, number>;
+  kinds(item: Kindable): Kinds | null;
+  chooseKind(item: Kindable, variant: string | null): { variant: string | null; anyKind: boolean; answered: boolean };
   candidates(chainId: string, item: Requirement): ResolvedProduct[];
   satisfies(p: Pick<ResolvedProduct, "ingredient" | "variant" | "form" | "biologisch" | "huismerk" | "ingredientUnitPriceCents">, item: Asked): boolean;
   packsFor(p: ResolvedProduct, item: Requirement): { known: boolean; packs: number; pack: number | null };

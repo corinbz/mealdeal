@@ -12,7 +12,7 @@ import { createResolver, priceDrop, RECIPES, SPREAD_CHECK, USUAL_MIN_DAYS, words
 
 const RESOLVER: Record<keyof Resolver, true> = {
   products: true, vocabulary: true, nextStarts: true, parse: true, suggest: true, label: true, variantsOf: true, joinVariants: true,
-  kindsSold: true, candidates: true, satisfies: true, packsFor: true, unitPrice: true, correctionKey: true, dailyPrices: true,
+  kindsSold: true, kinds: true, chooseKind: true, candidates: true, satisfies: true, packsFor: true, unitPrice: true, correctionKey: true, dailyPrices: true,
   priceDropAt: true, exactIdOf: true, exactProduct: true, likelyProduct: true, exactMatches: true, spreads: true, isOnOffer: true,
   offerFor: true, packCents: true, verdict: true, correctedProduct: true, line: true, compare: true, priceRecipe: true, usedCents: true,
 };

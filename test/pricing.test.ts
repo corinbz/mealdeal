@@ -1,6 +1,5 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
 import { createResolver, type Item, type Pricing, type Requirement, type ResolvedProduct } from "../src/page.ts";
 import { must } from "./helpers/page.ts";
 import { COLUMNS as BUILT, HISTORY_COLUMNS, toRow } from "../src/catalogue/format.ts";

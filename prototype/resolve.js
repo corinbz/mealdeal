@@ -605,7 +605,71 @@
       return sold;
     }
 
-    return { products, vocabulary, parse, suggest, label, variantsOf, joinVariants, kindsSold, candidates, satisfies, packsFor, unitPrice, correctionKey, dailyPrices, priceDropAt,
+    // ── Which kind (#43) ─────────────────────────────────────────────────
+    // An item whose Ingredient comes in Variants but that names none is asked
+    // which one, until the shopper picks one or answers "any" (`anyKind`).
+    // Variants may differ in several aspects (type, fat, flavour), each asked
+    // on its own, and only those sold with what is already chosen are offered:
+    // Greek yoghurt shows the fats Greek yoghurt comes in.
+    const aspectIn = (d, id) => (d.variants.find((v) => v.id === id) || {}).aspect || "soort";
+
+    /** Whether any Chain sells the Variants an item names together: "griekse yoghurt 10% aardbei" is sold nowhere. */
+    function soldAs(item) {
+      const want = variantsOf(item.variant);
+      for (const k of kindsSold(item.ingredient).keys()) { const has = variantsOf(k); if (want.every((v) => has.includes(v))) return true; }
+      return false;
+    }
+
+    /**
+     * The kinds an item may be, or null when there is nothing to choose (no
+     * Variants, an Exact Product, or one kind on sale in every aspect).
+     *   aspects  per aspect: options { v, n } (n Products sold with it and
+     *            what is chosen in the other aspects), flavours most sold
+     *            first and plain ahead of them, and the one chosen or null
+     *   sold     whether the Variants named are sold together anywhere
+     *   asks     whether to ask now: sold nowhere as named, or an aspect left
+     *            open with a choice and not answered "any"
+     */
+    function kinds(item) {
+      const d = item.ingredient && !item.exact && vocabulary.get(item.ingredient);
+      if (!d || !d.variants.length) return null;
+      const chosen = variantsOf(item.variant), sold = kindsSold(d.id);
+      const aspects = [...new Set(d.variants.map((v) => aspectIn(d, v.id)))].map((a) => {
+        const others = chosen.filter((id) => aspectIn(d, id) !== a);
+        // How many Products have this Variant and every one chosen in the other aspects.
+        const count = (v) => { let n = 0; for (const [k, c] of sold) { const has = variantsOf(k); if (has.includes(v.id) && others.every((o) => has.includes(o))) n += c; } return n; };
+        let options = d.variants.filter((v) => aspectIn(d, v.id) === a).map((v) => ({ v, n: count(v) })).filter((o) => o.n > 0 || chosen.includes(o.v.id));
+        if (a === "smaak") options = options.sort((x, y) => (y.v.id === "naturel") - (x.v.id === "naturel") || y.n - x.n);
+        return { aspect: a, options, value: chosen.find((id) => options.some((o) => o.v.id === id)) || null };
+      });
+      // An aspect with one kind on sale has nothing to ask; a Variant typed in it still shows.
+      const shown = aspects.filter((x) => x.options.length > 1 || x.value);
+      if (!shown.length) return null;
+      const isSold = soldAs(item);
+      return { aspects: shown, sold: isSold, asks: !isSold || (!item.anyKind && shown.some((x) => !x.value && x.options.length > 1)) };
+    }
+
+    /**
+     * An item's Variants and `anyKind` once the shopper taps a kind, or "any"
+     * (null). One Variant per aspect: a kind replaces the other of its aspect,
+     * and tapping it again takes it off. With several aspects, "any" leaves
+     * what was chosen and makes the rest any; with one, it clears the choice.
+     * `answered`: nothing is left to ask, since the Ingredient varies in one
+     * aspect only, or every aspect with a choice is settled.
+     */
+    function chooseKind(item, variant) {
+      const d = vocabulary.get(item.ingredient), several = new Set(d.variants.map((v) => aspectIn(d, v.id))).size > 1;
+      let next;
+      if (!variant) next = { variant: several ? item.variant : null, anyKind: true };
+      else {
+        const had = variantsOf(item.variant), kept = had.filter((id) => aspectIn(d, id) !== aspectIn(d, variant));
+        next = { variant: joinVariants(item.ingredient, had.includes(variant) ? kept : [...kept, variant]), anyKind: several ? !!item.anyKind : false };
+      }
+      const after = kinds({ ...item, ...next });
+      return { ...next, answered: !several || !after || !after.asks };
+    }
+
+    return { products, vocabulary, parse, suggest, label, variantsOf, joinVariants, kindsSold, kinds, chooseKind, candidates, satisfies, packsFor, unitPrice, correctionKey, dailyPrices, priceDropAt,
       exact, exactIdOf, exactProduct, likelyProduct, exactMatches, spreads,
       isOnOffer, nextStarts, offerFor, packCents, verdict, correctedProduct, line, compare, priceRecipe, usedCents };
   }
