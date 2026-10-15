@@ -49,7 +49,7 @@ export const ENGLISH: Readonly<Record<string, Translation>> = {
   tomatenblokjes: ["diced tomatoes", "chopped tomatoes"],
   "gepelde tomaten": ["whole peeled tomatoes", "peeled tomatoes"],
   passata: ["passata", "strained tomatoes", "sieved tomatoes"],
-  tomatenpuree: ["tomato paste", "tomato concentrate"],
+  tomatenpuree: ["tomato paste", "tomato concentrate", "tomato puree"],
   broccoli: ["broccoli"],
   bloemkool: ["cauliflower"],
   spinazie: ["spinach"],
@@ -176,6 +176,8 @@ export const ENGLISH: Readonly<Record<string, Translation>> = {
   haring: ["herring"],
   makreel: ["mackerel"],
   tonijn: ["tuna"],
+  kibbeling: ["kibbeling", "battered fish bites", "fried cod bites"],
+  surimi: ["surimi", "crab sticks", "imitation crab"],
   sardines: ["sardine"],
 
   // ── Vegetarian
@@ -183,6 +185,7 @@ export const ENGLISH: Readonly<Record<string, Translation>> = {
   tempeh: ["tempeh"],
   "vegetarisch gehakt": ["vegetarian ground meat", "veggie mince", "vegetarian mince", "vegan mince", "plant-based ground meat"],
 
+  falafel: ["falafel"],
   // ── Dairy and eggs
   melk: { names: ["milk"], variants: {
     lactosevrij: ["lactose-free milk"], halfvol: ["low-fat milk", "semi-skimmed milk", "reduced-fat milk"],
@@ -224,10 +227,12 @@ export const ENGLISH: Readonly<Record<string, Translation>> = {
   brie: ["brie"],
   halloumi: ["halloumi"],
 
+  ricotta: ["ricotta"],
   // ── Cold cuts and spreads
   ham: { names: ["ham"], variants: { rauw: ["cured ham", "raw ham"], gekookt: ["cooked ham"] } },
   "kipfilet beleg": ["sliced chicken breast", "sliced chicken", "chicken cold cuts"],
   salami: ["salami"],
+  cervelaat: ["cervelat", "cervelat sausage"],
   "filet americain": ["filet americain", "steak tartare spread"],
   leverworst: ["liverwurst", "liver sausage"],
   hummus: ["hummus"],
@@ -243,10 +248,11 @@ export const ENGLISH: Readonly<Record<string, Translation>> = {
   afbakbroodjes: ["bake-at-home rolls", "part-baked rolls"],
   bolletjes: ["bread rolls", "rolls", "buns"],
   "tortilla's": ["tortillas"],
-  pitabroodjes: ["pita bread", "pitas", "pita"],
+  pitabroodjes: ["pita bread", "pitas", "pita", "naan bread"],
   croissants: ["croissant"],
   beschuit: ["rusks", "dutch rusks"],
   crackers: ["cracker"],
+  roggebrood: ["rye bread", "dark rye bread", "pumpernickel"],
 
   // ── Pantry
   rijst: { names: ["rice"], variants: {
@@ -306,6 +312,13 @@ export const ENGLISH: Readonly<Record<string, Translation>> = {
   paprikapoeder: ["paprika powder", "ground paprika"],
   kaneel: ["cinnamon"],
   sambal: ["sambal", "chili paste", "sambal oelek"],
+  "zwarte bonen": ["black beans"],
+  sesamzaad: ["sesame seeds"],
+  oregano: ["oregano", "dried oregano"],
+  nootmuskaat: ["nutmeg", "mace"],
+  bladerdeeg: ["puff pastry"],
+  sriracha: ["sriracha", "sriracha sauce"],
+  knoflooksaus: ["garlic sauce"],
   appelstroop: ["apple syrup", "apple butter"],
 
   // ── Drinks
@@ -321,12 +334,15 @@ export const ENGLISH: Readonly<Record<string, Translation>> = {
   limonadesiroop: ["lemonade syrup", "cordial"],
   bier: { names: ["beer"], variants: { alcoholvrij: ["alcohol-free beer", "non-alcoholic beer"], pils: ["lager", "pilsner"] } },
   water: ["water"],
+  tonic: ["tonic water", "tonic"],
 
   // ── Snacks, biscuits and sweets
   chips: { names: ["chips", "crisps", "potato chips"], variants: { paprika: ["paprika chips"], naturel: ["salted chips", "plain chips", "ready salted crisps"] } },
   popcorn: ["popcorn"],
   kroepoek: ["prawn crackers", "shrimp chips", "krupuk"],
   drop: ["licorice", "liquorice"],
+  kauwgom: ["chewing gum", "gum", "bubble gum"],
+  winegums: ["wine gums", "gummies", "gummy candy"],
   chocolade: { names: ["chocolate", "chocolate bar"], variants: { puur: ["dark chocolate"], wit: ["white chocolate"], melk: ["milk chocolate"] } },
   koekjes: ["cookies", "biscuits", "cookie"],
   stroopwafels: ["stroopwafels", "syrup waffles", "caramel waffles"],
@@ -338,6 +354,13 @@ export const ENGLISH: Readonly<Record<string, Translation>> = {
   soep: { names: ["soup"], variants: { tomaat: ["tomato soup"], kip: ["chicken soup"], erwten: ["pea soup", "split pea soup"],
     champignon: ["mushroom soup"], uien: ["onion soup"], groente: ["vegetable soup"] } },
   frikandellen: ["frikandel", "frikandellen", "frikandel sausages"],
+  kroketten: ["croquettes", "croquette", "kroket"],
+  bitterballen: ["bitterballen", "bitterbal", "dutch meatballs"],
+  "loempia's": ["spring rolls", "egg rolls", "loempia"],
+  "mini loempia's": ["mini spring rolls", "mini egg rolls"],
+  pannenkoeken: ["pancakes", "dutch pancakes"],
+  poffertjes: ["poffertjes", "mini pancakes"],
+  gnocchi: ["gnocchi"],
   ijs: ["ice cream"],
 };
 

@@ -34,6 +34,13 @@ import { COLUMNS, toRow, type Catalogue, type CatalogueProduct, type Row } from 
 export const OFFERS_ONLY: ReadonlySet<string> = new Set(["lidl"]);
 
 /**
+ * Words Products are named by that say too little to read as their
+ * Ingredient when typed alone: "kip" is any chicken, not a whole one, and
+ * "olie" any oil.
+ */
+const TOO_GENERAL: ReadonlySet<string> = new Set(["kip", "olie", "curry", "vlokken", "melange"]);
+
+/**
  * The card or app a Chain's Offers may require, as its wording names it.
  * Every such price counts as paid, as if the shopper held the card (owner's
  * decision, 2026-10-14), and the page says which cards it assumed.
@@ -234,9 +241,12 @@ export function buildCatalogue(source: CatalogueSource, { now = new Date(), voca
      * `aisle`: where it is mainly sold, which Bladeren groups it under (#36)
      * and whose sticker stands in for its own. `names`: its names in other
      * languages, read whatever the page's language, the first one shown (#25).
+     * `words`: the words its Products are named by, which read as it too
+     * where no other Ingredient's are the same.
      */
     vocabulary: vocabulary.map((d) => ({
       id: d.id, name: d.name, unit: d.unit, also: d.also, equals: d.equals,
+      words: d.words.filter((w) => !w.startsWith("=") && w.trim() === w && !TOO_GENERAL.has(w)),
       variants: d.variants.map((v) => {
         const en = englishOf(d.id)?.variants[v.id];
         return { id: v.id, name: v.name, ...(v.aspect && v.aspect !== "soort" ? { aspect: v.aspect } : {}), ...(en ? { names: { en } } : {}) };

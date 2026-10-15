@@ -24,6 +24,11 @@
     [/\b(uit (blik|pot)|blik|pot|conserven|canned|tinned|jarred)\b/g, "conserven"],
   ];
 
+  const NOT_ITSELF = new Set(["met", "voor", "in", "op", "au", "with", "vega", "vegan", "vegetarisch", "vegetarische", "plantaardig",
+    "plantaardige", "veggie", "plant", "vegetarian"].map((w) => W.stem(w)));
+  // Words a name search does without: "rijstwafels met chocolade" finds "Rijstwafels chocolade".
+  const JOINING = new Set(["met", "with", "en", "and"].map((w) => W.stem(w)));
+
   /** `prices` is window.PRICES (scripts/daily-prices.ts), or nothing when there is no history. */
   function createResolver(data, prices) {
     const C = Object.fromEntries(data.columns.map((name, i) => [name, i]));
@@ -66,6 +71,15 @@
       for (const v of d.variants) for (const n of (v.names && v.names[lang]) || []) if (!names.has(key(n))) names.set(key(n), { ingredient: d.id, variant: v.id, lang });
       for (const n of ns) if (!names.has(key(n))) names.set(key(n), { ingredient: d.id, variant: null, lang });
     }
+    // The words its Products are named by read as it too ("winterpeen",
+    // "halvarine"), where no other Ingredient's Products are named so and no
+    // name above is the same.
+    const owners = new Map();
+    for (const d of vocabulary.values()) for (const w of d.words || []) {
+      const k = key(w);
+      if (k) owners.set(k, (owners.get(k) || new Set()).add(d.id));
+    }
+    for (const [k, ids] of owners) if (ids.size === 1 && !names.has(k)) names.set(k, { ingredient: [...ids][0], variant: null, lang: "nl" });
     /**
      * What the page calls an Ingredient, or its Variants, in a language; Dutch
      * where it has none in that one. Several Variants ("grieks+mager+aardbei")
@@ -117,14 +131,15 @@
       let best = null, bestDistance = allowed + 1;
       for (const [k, name] of display) {
         if (Math.abs(k.length - typed.length) > allowed) continue;
-        const d = distance(typed, k);
+        const d = distance(typed, k, bestDistance - 1);
         if (d < bestDistance) { best = name; bestDistance = d; }
       }
       return best;
     }
 
-    const matching = (chainId, unit, words) => searchable[chainId].filter((p) =>
-      (unit === null || p.unit === unit) && W.matches(words, p.words));
+    // No word to search on ("m&m's") matches nothing, not everything.
+    const matching = (chainId, unit, typed) => { const words = typed.filter((w) => !JOINING.has(w)); return !words.length ? [] : searchable[chainId].filter((p) =>
+      (unit === null || p.unit === unit) && W.matches(words, p.words)); };
     const tally = (words) => {
       // Product names are Dutch: a name in another language counts the
       // Products of its Ingredient's Dutch name.
@@ -150,7 +165,9 @@
       if (several) return several;
       for (let i = 1; i < words.length; i++) {
         const found = names.get(words.slice(i).join(" "));
-        if (found) return { ...found, partial: true };
+        // Not past a word that makes the rest a part of something else
+        // ("rijstwafels met chocolade", "mix voor spaghetti") or not it at all ("vega gehakt").
+        if (found) return words.slice(0, i).some((w) => NOT_ITSELF.has(w)) ? null : { ...found, partial: true };
       }
       return null;
     }
@@ -613,14 +630,22 @@
   }
 
   /** Edits between two strings, a swap of neighbours counting as one ("kpi" for "kip"). */
-  function distance(a, b) {
-    const d = Array.from({ length: a.length + 1 }, (_, i) => [i, ...Array(b.length).fill(0)]);
-    for (let j = 1; j <= b.length; j++) d[0][j] = j;
-    for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++) {
-      d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
-      if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + 1);
+  // Three rows at a time; stops once every way on is further than `max`.
+  function distance(a, b, max = Infinity) {
+    let older = [], prev = Array.from({ length: b.length + 1 }, (_, j) => j), row = [];
+    for (let i = 1; i <= a.length; i++) {
+      row = [i];
+      let least = i;
+      for (let j = 1; j <= b.length; j++) {
+        let v = Math.min(prev[j] + 1, row[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+        if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) v = Math.min(v, older[j - 2] + 1);
+        row[j] = v;
+        if (v < least) least = v;
+      }
+      if (least > max) return max + 1;
+      older = prev; prev = row;
     }
-    return d[a.length][b.length];
+    return prev[b.length];
   }
 
   /** A difference between Chains larger than this is checked before it is shown as a bargain. */

@@ -20,7 +20,6 @@ export const KNOWN_GAPS: readonly KnownGap[] = [
   { chain: "aldi", ingredient: "rozemarijn", why: "no fresh rozemarijn in Aldi's range (checked 2026-10-15)" },
   { chain: "aldi", ingredient: "kersen", why: "only kersen op siroop and jam, no fresh cherries (checked 2026-10-15)" },
   { chain: "aldi", ingredient: "granaatappel", why: "only a drink with pomegranate, no fruit (checked 2026-10-15)" },
-  { chain: "aldi", ingredient: "kalkoenfilet", why: "only a choice of kip- of kalkoenfilet and turkey cold cuts (checked 2026-10-15)" },
   { chain: "aldi", ingredient: "rundvlees reepjes", why: "only shoarma-, kip- and spekreepjes, no beef strips (checked 2026-10-15)" },
   { chain: "aldi", ingredient: "halloumi", why: "no halloumi or grillkaas in Aldi's range (checked 2026-10-15)" },
   { chain: "aldi", ingredient: "brood/meergranen", why: "multigrain only as baguettes and rolls, no loaf (checked 2026-10-15)" },
@@ -40,4 +39,9 @@ export const KNOWN_GAPS: readonly KnownGap[] = [
   { chain: "vomar", ingredient: "kalkoenfilet", why: "turkey only in pet food (checked 2026-10-15)" },
   { chain: "vomar", ingredient: "rundvlees reepjes", why: "no beef strips in Vomar's range (checked 2026-10-15)" },
   { chain: "vomar", ingredient: "gehakt/kip", why: "no kipgehakt in Vomar's range (checked 2026-10-15)" },
+  { chain: "aldi", ingredient: "paksoi", why: "no paksoi in Aldi's range (checked 2026-10-15)" },
+  { chain: "aldi", ingredient: "surimi", why: "only a surimi krabsalade, no sticks (checked 2026-10-15)" },
+  { chain: "aldi", ingredient: "pasta/tagliatelle", why: "only a weekly choice of tagliatelle or gnocchi (checked 2026-10-15)" },
+  { chain: "aldi", ingredient: "oregano", why: "only crackers with oregano, no herb (checked 2026-10-15)" },
+  { chain: "aldi", ingredient: "sriracha", why: "only a choice of sriracha- or truffelmayonaise (checked 2026-10-15)" },
 ];
