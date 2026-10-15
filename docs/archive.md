@@ -480,8 +480,9 @@ durable one.
 `.github/workflows/archive.yml` runs it daily at 04:30 UTC, as one job per
 Chain in parallel — 06:30 in
 Amsterdam in summer, 05:30 in winter, both after Dirk's own ~04:01 local
-refresh. GitHub Actions cron is UTC only, so that drifts with the seasons by
-design. The archive is uploaded to a private Cloudflare R2 bucket; R2 is
+refresh. The schedule is UTC only, so that drifts with the seasons by
+design. A small Cloudflare Worker starts the run, not GitHub's own cron; see
+"When a morning is missed". The archive is uploaded to a private Cloudflare R2 bucket; R2 is
 S3-compatible, so the AWS CLI already on the runner can talk to it.
 
 Nothing about the schedule needs a server to operate, which is the point. At
@@ -531,7 +532,7 @@ objects, and never needs to create or delete a bucket.
   hour, so back to back they would overrun the 90-minute timeout, and Jumbo's
   edge refusing the runner must not cost Dirk its day. Each job restores,
   uploads and checks only its own Chain's directory. A manual run picks one
-  Chain, or `all`.
+  Chain, `all`, or `missing`: those not yet archived today.
 - **Manifests are attached to each run** for 30 days. They are small and are
   the only thing worth reading when a run looks wrong.
 
@@ -562,23 +563,54 @@ It then sets `ARCHIVE_RUNNER` to `["self-hosted","pi"]` and starts a run.
 
 ### When a morning is missed
 
-`.github/workflows/archive-watch.yml` runs at 08:00 UTC on GitHub's runners
-(about a minute a day) and goes red unless each Chain's manifest for today is
-in R2 and passes `archive:check`. GitHub emails the owner about a failed
-scheduled run. It exists because the archive cannot report its own absence:
+GitHub's own cron cannot be relied on to start the archive. It started the
+scheduled run 5 hours 10 minutes late on 2026-10-14 (due 04:30, created 09:40
+UTC) and 4 hours 50 minutes late on 2026-10-15, with no incident on GitHub's
+status page, and it never fired the watch's 08:00 cron at all. Scheduled runs
+are best effort, and a delay that long looks the same as a skip until it ends.
 
-- GitHub started the first scheduled run 5 hours 10 minutes late, on
-  2026-10-14: due at 04:30, created at 09:40 UTC. Scheduled runs are best
-  effort, and a delay that long looks the same as a skip until it ends.
-- A job waiting for a Pi that is off sits queued with no error until GitHub
-  drops it.
+So the scheduler Worker, `scheduler/`, starts both runs on Cloudflare's Cron
+Triggers, which fire on the minute and cost nothing. It does what a person
+would by hand, through GitHub's workflow_dispatch API, and nothing else:
 
-The Chains still serve that day's prices when it fires, so the day can still be
-captured: `gh workflow run archive.yml -f chain=all`. That is safe even if the
-scheduled run is only late: runs queue behind each other, and each resumes
-whatever part of the day is already in R2, carrying the manifest's steps and
-request counts forward. The watchdog's list of Chains must match the
-archive workflow's.
+| UTC | Starts | |
+|---|---|---|
+| 04:30 | `archive.yml`, `chain=all` | the morning's archive |
+| 08:00 | `archive-watch.yml` | the watch, below |
+
+It holds a fine-grained GitHub token for this repository with Actions read and
+write, and no other permission. `.github/workflows/scheduler.yml` deploys it
+whenever `scheduler/` changes, checks GitHub accepts the token, and lists the
+crons Cloudflare runs. One-time setup, after `setup-pages.sh`:
+
+```sh
+./scripts/setup-scheduler.sh
+```
+
+It has the owner create the token, stores it as the `ARCHIVE_DISPATCH_TOKEN`
+secret, adds **Workers Scripts · Edit** to the Cloudflare token that deploys
+the app, and deploys. The token expires after at most a year; GitHub emails
+before it does, and re-running the wizard replaces it.
+
+`.github/workflows/archive-watch.yml` runs on GitHub's runners (about a minute
+a day), so it does not depend on the Pi. It goes red unless each Chain's
+manifest for today is in R2 and passes `archive:check`, and when one is not
+it starts `archive.yml` with `chain=missing`. That is safe even if the archive
+is only late: runs queue behind each other, `missing` chooses its Chains only
+when it starts, and each Chain resumes whatever part of the day is already in
+R2, carrying the manifest's steps and request counts forward. The Chains
+still serve that day's prices at 08:00, so the day is not lost. GitHub
+emails the owner about the red run. It exists because the archive cannot report its
+own absence: a job waiting for a Pi that is off also sits queued with no
+error until GitHub drops it.
+
+GitHub's crons stay as backups for a Worker that did not fire: the archive at
+06:17 UTC and the watch at 09:43, whenever GitHub gets to them. A scheduled
+archive run archives only the Chains not yet done today, like `chain=missing`,
+so after a good morning it costs about a minute, and the catalogue refresh
+skips an archive run that swept no Chain. By hand, `gh workflow run
+archive.yml -f chain=missing` does the same; `-f chain=all` re-sweeps every
+Chain. The Chain lists in the archive's plan job and the watch must match.
 
 Do **not** commit the archive to git — `.gitignore` excludes `/archive/`
 (root-anchored, so it does not also swallow `src/archive/`), and `.env`.

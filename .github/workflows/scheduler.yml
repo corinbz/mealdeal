@@ -1,0 +1,71 @@
+# Deploys the scheduler Worker (scheduler/dispatch.ts), whose Cloudflare crons
+# start the morning's archive and its watch on time, as GitHub's own cron
+# does not (#2).
+#
+# Skipped until scripts/setup-scheduler.sh has set the ARCHIVE_DISPATCH_TOKEN
+# secret and given the CLOUDFLARE_API_TOKEN secret Workers access.
+name: Deploy the scheduler
+
+on:
+  push:
+    branches: [main]
+    paths: ["scheduler/**", ".github/workflows/scheduler.yml"]
+  workflow_dispatch:
+
+concurrency:
+  group: scheduler
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+      DISPATCH_TOKEN: ${{ secrets.ARCHIVE_DISPATCH_TOKEN }}
+
+    steps:
+      - name: Check the dispatch token is present
+        id: ready
+        run: |
+          if [ -z "$DISPATCH_TOKEN" ]; then
+            echo "::warning::No ARCHIVE_DISPATCH_TOKEN secret yet, so nothing is deployed: run scripts/setup-scheduler.sh"
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.ready.outputs.ok == 'true'
+
+      # A token GitHub refuses would only show up at 04:30 tomorrow.
+      - name: Check GitHub accepts the dispatch token
+        if: steps.ready.outputs.ok == 'true'
+        run: |
+          code=$(curl -s -o /dev/null -w '%{http_code}' \
+            -H "Authorization: Bearer $DISPATCH_TOKEN" -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/workflows/archive.yml")
+          echo "GitHub answered $code"
+          test "$code" = 200
+
+      - name: Deploy the Worker
+        if: steps.ready.outputs.ok == 'true'
+        working-directory: scheduler
+        run: npx --yes wrangler@4.151.0 deploy
+
+      - name: Give it the dispatch token
+        if: steps.ready.outputs.ok == 'true'
+        working-directory: scheduler
+        run: printf '%s' "$DISPATCH_TOKEN" | npx --yes wrangler@4.151.0 secret put GITHUB_TOKEN
+
+      - name: Check its crons are live
+        if: steps.ready.outputs.ok == 'true'
+        run: |
+          curl -fsS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts/mealdeal-scheduler/schedules" \
+            | jq -r '.result.schedules[].cron' | sort > live.txt
+          sed -n 's/^crons = //p' scheduler/wrangler.toml | jq -r '.[]' | sort > wanted.txt
+          cat live.txt
+          diff wanted.txt live.txt

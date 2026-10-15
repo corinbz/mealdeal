@@ -1,0 +1,11 @@
+# Deployed by .github/workflows/scheduler.yml. See scheduler/dispatch.ts.
+name = "mealdeal-scheduler"
+main = "index.ts"
+compatibility_date = "2026-09-01"
+# No address: it only runs on its crons.
+workers_dev = false
+preview_urls = false
+
+[triggers]
+# UTC. Must match SCHEDULE in dispatch.ts.
+crons = ["30 4 * * *", "0 8 * * *"]
