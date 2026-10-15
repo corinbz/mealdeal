@@ -11,7 +11,7 @@
  * repository, not from a browser.
  */
 
-import { createResolver } from "../words.ts";
+import { createResolver } from "../page.ts";
 
 /** The catalogue as scripts/catalogue-from-db.ts and apply-history.ts write it. */
 export interface DigestCatalogue {

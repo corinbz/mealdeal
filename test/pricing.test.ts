@@ -1,7 +1,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { runInNewContext } from "node:vm";
+import { createResolver, type Item, type Pricing, type Requirement, type ResolvedProduct } from "../src/page.ts";
+import { must } from "./helpers/page.ts";
 import { COLUMNS as BUILT, HISTORY_COLUMNS, toRow } from "../src/catalogue/format.ts";
 
 /**
@@ -11,8 +12,6 @@ import { COLUMNS as BUILT, HISTORY_COLUMNS, toRow } from "../src/catalogue/forma
  * unpriced until they run (#8), and a real low judged per Product (#18).
  */
 
-const context: Record<string, any> = {};
-for (const f of ["words.js", "resolve.js"]) runInNewContext(readFileSync(`prototype/${f}`, "utf8"), context);
 
 const COLUMNS = [...BUILT, ...HISTORY_COLUMNS];
 
@@ -60,39 +59,41 @@ const data = {
     ],
   },
 };
-const R = context.MealdealResolve.createResolver(data);
+const R = createResolver(data);
 /** A value from the script's own realm, as plain data, so deepEqual compares structure only. */
 const plain = (x: unknown) => JSON.parse(JSON.stringify(x));
-const item = (text: string, id = text) => ({ id, staple: false, ...R.parse(text) });
+const item = (text: string, id = text): Item => ({ id, ...must(R.parse(text)) });
+const line = (chainId: string, it: Requirement, pricing?: Pricing) => must(R.line(chainId, it, pricing));
+const at = (r: ReturnType<typeof R.priceRecipe>, chainId: string) => must(r.at.find((x) => x.chain.id === chainId));
 
 test("the cheapest per kilo is chosen, even when a smaller pack would cost less for the quantity", () => {
   const kaas = item("100 g kaas");
-  assert.equal(R.line("dirk", kaas).p.name, "Kaas blok 1 kg");
-  assert.equal(R.line("dirk", kaas).cost, 900);
+  assert.equal(line("dirk", kaas).p.name, "Kaas blok 1 kg");
+  assert.equal(line("dirk", kaas).cost, 900);
   // A Recipe resolves its Requirements the same way.
-  assert.equal(R.priceRecipe([kaas]).at.find((x: { chain: { id: string } }) => x.chain.id === "dirk").lines[0].p.name, "Kaas blok 1 kg");
+  assert.equal(must(at(R.priceRecipe([kaas]), "dirk").lines[0]).p.name, "Kaas blok 1 kg");
 });
 
 test("whole packs are bought, and an oversized pack says by how much", () => {
-  const l = R.line("dirk", item("1200 g gehakt"));
+  const l = line("dirk", item("1200 g gehakt"));
   assert.equal(l.packs, 3);
   assert.equal(l.cost, 1500);
-  assert.equal(R.line("dirk", item("100 g kaas")).over, 10);
+  assert.equal(line("dirk", item("100 g kaas")).over, 10);
   // Three packs of 500 g for 1200 g: 1.25 times what was asked for.
   assert.equal(l.over, 1.25);
 });
 
 test("a Correction wins over the Resolution, for the list and for Recipes", () => {
   const gehakt = item("500 g gehakt"), corrections = { [R.correctionKey("jumbo", gehakt)]: "jumbo-g2" };
-  assert.equal(R.line("jumbo", gehakt).p.name, "Jumbo Gehakt 500 g");
-  assert.equal(R.line("jumbo", gehakt, { corrections }).p.name, "Jumbo Gehakt bio 500 g");
-  assert.equal(R.priceRecipe([gehakt], { corrections }).at.find((x: { chain: { id: string } }) => x.chain.id === "jumbo").lines[0].p.name, "Jumbo Gehakt bio 500 g");
+  assert.equal(line("jumbo", gehakt).p.name, "Jumbo Gehakt 500 g");
+  assert.equal(line("jumbo", gehakt, { corrections }).p.name, "Jumbo Gehakt bio 500 g");
+  assert.equal(must(at(R.priceRecipe([gehakt], { corrections }), "jumbo").lines[0]).p.name, "Jumbo Gehakt bio 500 g");
   // A Correction to a Product no longer sold falls back to the Resolution.
-  assert.equal(R.line("jumbo", gehakt, { corrections: { [R.correctionKey("jumbo", gehakt)]: "jumbo-gone" } }).p.name, "Jumbo Gehakt 500 g");
+  assert.equal(line("jumbo", gehakt, { corrections: { [R.correctionKey("jumbo", gehakt)]: "jumbo-gone" } }).p.name, "Jumbo Gehakt 500 g");
 });
 
 test("a priced Offer is paid, with the Shelf Price kept as what it would have been", () => {
-  const l = R.line("jumbo", item("500 g gehakt"));
+  const l = line("jumbo", item("500 g gehakt"));
   assert.equal(l.cost, 400);
   assert.equal(l.was, 600);
   assert.equal(l.offer, "2 voor 8");
@@ -101,36 +102,37 @@ test("a priced Offer is paid, with the Shelf Price kept as what it would have be
 
 test("next week, an announced Offer has no price yet, and a running one counts if it still runs then", () => {
   assert.equal(R.nextStarts.jumbo, "2026-10-19");
-  const uien = R.line("jumbo", item("1 kg uien"), { week: "volgende" });
+  const uien = line("jumbo", item("1 kg uien"), { week: "volgende" });
   assert.equal(uien.offer, "1+1 gratis");
-  assert.equal(uien.o.startsOn, "2026-10-19");
+  assert.equal(uien.o?.startsOn, "2026-10-19");
   assert.equal(uien.cost, 120); // the Shelf Price: "1+1 gratis" is not converted (ADR-0002)
-  const gehakt = R.line("jumbo", item("500 g gehakt"), { week: "volgende" });
-  assert.equal(gehakt.o.continues, true);
+  const gehakt = line("jumbo", item("500 g gehakt"), { week: "volgende" });
+  assert.equal(gehakt.o?.continues, true);
   assert.equal(gehakt.cost, 400);
   // This week the announced one is not yet an Offer.
-  assert.equal(R.line("jumbo", item("1 kg uien")).onOffer, false);
+  assert.equal(line("jumbo", item("1 kg uien")).onOffer, false);
 });
 
 test("a real low is judged per Product against the recorded days before it", () => {
-  const p = (over: Partial<Record<string, unknown>>) => ({ ...R.products.jumbo["jumbo-g1"], ...over });
+  const p = (over: Partial<ResolvedProduct>): ResolvedProduct => ({ ...must(R.products.jumbo?.["jumbo-g1"]), ...over });
   assert.deepEqual(plain(R.verdict(p({}))), { kind: "lowest", lowCents: 550, days: 30 });
-  assert.equal(R.verdict(p({ offerPriceCents: 550 })).kind, "not-lower");
-  assert.equal(R.verdict(p({ offerPriceCents: null, shelfPriceCents: 600 })).kind, "shelf-up");
-  assert.equal(R.verdict(p({ offerPriceCents: null, shelfPriceCents: 550 })).kind, "shelf-same");
+  assert.equal(R.verdict(p({ offerPriceCents: 550 }))?.kind, "not-lower");
+  assert.equal(R.verdict(p({ offerPriceCents: null, shelfPriceCents: 600 }))?.kind, "shelf-up");
+  assert.equal(R.verdict(p({ offerPriceCents: null, shelfPriceCents: 550 }))?.kind, "shelf-same");
   assert.equal(R.verdict(p({ referenceLowCents: null })), null, "no history, no claim");
-  assert.equal(R.verdict(R.products.dirk["dirk-g1"]), null, "no Offer, no claim");
+  assert.equal(R.verdict(must(R.products.dirk?.["dirk-g1"])), null, "no Offer, no claim");
 });
 
 test("a list compares as bags; an offers-only Chain is no bag, but it can be half of a two-shop plan", () => {
   const s = R.compare([item("500 g gehakt", "a"), item("1 kg uien", "b")]);
   assert.deepEqual(plain(s.totals.map((t: any) => [t.chain.id, t.cost, t.full])), [["dirk", 650, true], ["jumbo", 520, true]].sort((a, b) => (a[1] as number) - (b[1] as number)));
-  assert.equal(s.best.chain.id, "jumbo");
-  assert.deepEqual(plain(s.rows[1].avail.map((c: any) => c.id)), ["lidl", "jumbo", "dirk"]);
+  assert.equal(s.best?.chain.id, "jumbo");
+  assert.deepEqual(plain(must(s.rows[1]).avail.map((c: any) => c.id)), ["lidl", "jumbo", "dirk"]);
   // Gehakt at Jumbo, uien on Offer at Lidl: cheaper than all at Jumbo, and both shops used.
-  assert.deepEqual(plain(s.combo.ids), ["jumbo", "lidl"]);
-  assert.equal(s.combo.cost, 449);
-  assert.deepEqual(plain(s.combo.from), { a: "jumbo", b: "lidl" });
+  const combo = must(s.combo);
+  assert.deepEqual(plain(combo.ids), ["jumbo", "lidl"]);
+  assert.equal(combo.cost, 449);
+  assert.deepEqual(plain(combo.from), { a: "jumbo", b: "lidl" });
 });
 
 test("a two-shop plan that saves nothing over the best bag is not offered", () => {
@@ -145,16 +147,16 @@ test("an item a bag lacks makes it partial, its total a floor", () => {
 });
 
 test("a Recipe is complete where one Chain sells every ingredient, and ranks the Chains missing least first", () => {
-  const r = R.priceRecipe([R.parse("500 g gehakt"), R.parse("100 g kaas")]);
+  const r = R.priceRecipe([item("500 g gehakt"), item("100 g kaas")]);
   assert.equal(r.complete, true);
   assert.deepEqual(plain(r.at.map((x: any) => [x.chain.id, x.cost, x.missing, x.deals, x.saving])), [["jumbo", 520, 0, 1, 200], ["dirk", 590, 0, 0, 0]]);
   // Dirk's kaas is its 1 kg block, the cheapest per kilo, though only 100 g is
   // needed: bought whole, shown as 10 times the need, and costed at a tenth.
-  const kaas = r.at[1].lines[1];
+  const kaas = must(must(r.at[1]).lines[1]);
   assert.equal(kaas.cost, 900);
   assert.equal(kaas.over, 10);
   assert.equal(R.usedCents(kaas), 90);
   assert.ok(!r.at.some((x: any) => x.chain.id === "lidl"), "an offers-only Chain prices no whole Recipe");
-  const partial = R.priceRecipe([R.parse("1 g saffraan")]);
+  const partial = R.priceRecipe([item("1 g saffraan")]);
   assert.equal(partial.complete, false);
 });

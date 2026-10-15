@@ -16,8 +16,8 @@
  */
 
 import { readFile } from "node:fs/promises";
-import { runInNewContext } from "node:vm";
 import { parseCatalogueScript } from "../src/catalogue/format.ts";
+import { createResolver, words as W } from "../src/page.ts";
 
 function usage(): never {
   console.error("Usage: node scripts/check-reading.ts --built <file> [--list <file>]");
@@ -38,11 +38,7 @@ for (let i = 0; i < argv.length; i++) {
 if (!built) usage();
 
 const data = parseCatalogueScript(await readFile(built, "utf8")) as any;
-const context: Record<string, any> = {};
-for (const f of ["words.js", "resolve.js"]) {
-  runInNewContext(await readFile(new URL(`../prototype/${f}`, import.meta.url), "utf8"), context);
-}
-const W = context.MealdealWords, R = context.MealdealResolve.createResolver(data);
+const R = createResolver(data);
 const chains: string[] = data.chains.map((c: any) => c.id);
 const vocabulary: any[] = data.vocabulary;
 
@@ -60,7 +56,7 @@ const ownStem = new Map<string, string>();
 for (const d of vocabulary) {
   for (const t of [d.id, d.name, ...(d.also || [])] as string[]) {
     const ws = W.wordsOf(t);
-    if (ws.length === 1 && !ownStem.has(ws[0])) ownStem.set(ws[0], d.id);
+    if (ws.length === 1 && !ownStem.has(ws[0]!)) ownStem.set(ws[0]!, d.id);
   }
 }
 
@@ -149,7 +145,7 @@ type Group = { stem: string; forms: Map<string, number>; chains: Set<string>; pr
 const groups = new Map<string, Group>();
 let unmatched = 0;
 for (const c of chains) {
-  for (const p of Object.values(R.products[c]) as any[]) {
+  for (const p of Object.values(R.products[c] ?? {})) {
     if (p.ingredient) continue;
     unmatched++;
     const raw = p.name.toLowerCase().split(/[^\p{L}]+/u).filter(Boolean);
@@ -171,7 +167,7 @@ for (const c of chains) {
 // So is a word nearly all of whose Products one Chain sells ("1 de Beste").
 const perChain = new Map<string, Map<string, number>>();
 for (const c of chains) {
-  for (const p of Object.values(R.products[c]) as any[]) {
+  for (const p of Object.values(R.products[c] ?? {})) {
     if (p.ingredient) continue;
     for (const s of new Set(p.name.toLowerCase().split(/[^\p{L}]+/u).filter(Boolean).map(W.stem)) as Set<string>) {
       const m = perChain.get(s) ?? new Map(); m.set(c, (m.get(c) ?? 0) + 1); perChain.set(s, m);

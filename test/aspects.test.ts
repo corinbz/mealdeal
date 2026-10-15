@@ -1,7 +1,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { runInNewContext } from "node:vm";
+import { createResolver } from "../src/page.ts";
+import { must } from "./helpers/page.ts";
 import { createMapper } from "../src/ingredients/map.ts";
 import { buildCatalogue } from "../src/catalogue/build.ts";
 
@@ -41,17 +42,15 @@ test("a shelf that holds one thing decides where the name gives only a flavour",
   assert.deepEqual(as("vomar", "Ola Festini Peer", ["Diepvries > IJs > Handijs"]), ["ijs", "peer"]);
 });
 
-const context: Record<string, any> = {};
-for (const f of ["words.js", "resolve.js"]) runInNewContext(readFileSync(`prototype/${f}`, "utf8"), context);
 const { catalogue } = buildCatalogue({ chains: [], products: {} });
-const R = context.MealdealResolve.createResolver({ ...catalogue, chains: [] });
+const R = createResolver({ ...catalogue, chains: [] });
 
 test("several Variants typed together are read as one Requirement", () => {
-  const p = R.parse("griekse yoghurt 10% aardbei");
+  const p = must(R.parse("griekse yoghurt 10% aardbei"));
   assert.deepEqual([p.ingredient, p.variant, p.noun], ["yoghurt", "grieks+10%+aardbei", "griekse yoghurt 10% aardbei"]);
-  assert.deepEqual([R.parse("500 g magere griekse yoghurt").variant, R.parse("500 g magere griekse yoghurt").quantity], ["grieks+mager", 0.5]);
-  assert.equal(R.parse("strawberry greek yogurt").variant, "grieks+aardbei");
-  assert.equal(R.parse("2% yogurt").variant, "2%");
+  assert.deepEqual([R.parse("500 g magere griekse yoghurt")?.variant, R.parse("500 g magere griekse yoghurt")?.quantity], ["grieks+mager", 0.5]);
+  assert.equal(R.parse("strawberry greek yogurt")?.variant, "grieks+aardbei");
+  assert.equal(R.parse("2% yogurt")?.variant, "2%");
 });
 
 test("several Variants share the Ingredient's name", () => {
@@ -61,7 +60,7 @@ test("several Variants share the Ingredient's name", () => {
 });
 
 test("a Requirement naming some aspects is satisfied whatever the others are", () => {
-  const p = { ingredient: "yoghurt", variant: "grieks+10%+naturel", ingredientUnitPriceCents: 400, form: "vers" };
+  const p = { ingredient: "yoghurt", variant: "grieks+10%+naturel", ingredientUnitPriceCents: 400, form: "vers", biologisch: false, huismerk: false };
   const asks = (variant: string | null) => R.satisfies(p, { ingredient: "yoghurt", variant, preferences: {} });
   assert.deepEqual([asks(null), asks("grieks"), asks("grieks+10%"), asks("10%+naturel"), asks("skyr"), asks("grieks+aardbei")],
     [true, true, true, true, false, false]);

@@ -1,9 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
-import { runInNewContext } from "node:vm";
-import { VOCABULARY } from "../src/ingredients/vocabulary.ts";
-import { formOf } from "../src/ingredients/aisles.ts";
+import { createResolver, RECIPES } from "../src/page.ts";
+import { pageVocabulary } from "../src/catalogue/build.ts";
 
 /**
  * The recipes (#20, ADR-0007) are data, and each Requirement must name an
@@ -12,18 +10,8 @@ import { formOf } from "../src/ingredients/aisles.ts";
  * names happen to match, or on nothing.
  */
 
-const context: Record<string, any> = {};
-context.window = context;
-for (const f of ["words.js", "resolve.js", "recipes.js"]) runInNewContext(readFileSync(`prototype/${f}`, "utf8"), context);
-const RECIPES: any[] = context.RECIPES;
-
-// The vocabulary as scripts/catalogue-from-db.ts hands it to the page.
-const vocabulary = VOCABULARY.map((d) => ({
-  id: d.id, name: d.name, unit: d.unit, also: d.also, equals: d.equals,
-  variants: d.variants.map((v) => ({ id: v.id, name: v.name })),
-  fresh: !d.anyForm && d.aisles.some((a) => formOf(a) === "vers"),
-}));
-const resolver = context.MealdealResolve.createResolver({ chains: [], columns: ["ref"], vocabulary, catalogue: {} });
+const vocabulary = pageVocabulary();
+const resolver = createResolver({ chains: [], columns: ["ref"], vocabulary, catalogue: {} });
 
 test("there are recipes, each complete and with a unique id", () => {
   assert.ok(RECIPES.length >= 20);
@@ -50,8 +38,8 @@ test("every Requirement names a known Ingredient, in its own unit, with a stated
   const bad: string[] = [];
   for (const r of RECIPES) for (const text of r.requirements) {
     const g = resolver.parse(text);
-    const def = g && units.get(g.ingredient);
-    if (!def) bad.push(`${r.id}: "${text}" names no Ingredient`);
+    const def = g?.ingredient ? units.get(g.ingredient) : undefined;
+    if (!g || !def) bad.push(`${r.id}: "${text}" names no Ingredient`);
     // A bare count ("4 eieren") is read as pieces, which is right for an Ingredient counted so.
     else if (g.guessed && def.unit !== "piece") bad.push(`${r.id}: "${text}" has no unit`);
     else if (g.unit !== def.unit && !(g.unit in def.equals)) bad.push(`${r.id}: "${text}" is in ${g.unit}, ${def.id} in ${def.unit}`);

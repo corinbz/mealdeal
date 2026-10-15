@@ -1,7 +1,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { runInNewContext } from "node:vm";
+import { createResolver } from "../src/page.ts";
+import { must } from "./helpers/page.ts";
 import { buildCatalogue } from "../src/catalogue/build.ts";
 import { VOCABULARY } from "../src/ingredients/vocabulary.ts";
 import { ENGLISH, englishOf } from "../src/ingredients/english.ts";
@@ -12,10 +13,8 @@ import { ENGLISH, englishOf } from "../src/ingredients/english.ts";
  * language, and none of them reads as another Ingredient or Variant.
  */
 
-const context: Record<string, any> = {};
-for (const f of ["words.js", "resolve.js"]) runInNewContext(readFileSync(`prototype/${f}`, "utf8"), context);
 const { catalogue } = buildCatalogue({ chains: [], products: {} });
-const R = context.MealdealResolve.createResolver({ ...catalogue, chains: [] });
+const R = createResolver({ ...catalogue, chains: [] });
 
 test("every Ingredient and Variant has an English name", () => {
   const missing = VOCABULARY.flatMap((d) => {
@@ -53,7 +52,7 @@ test("every English name reads as its own Ingredient or Variant, never another",
 });
 
 test("English names do not change how a Dutch name reads", () => {
-  const plain = context.MealdealResolve.createResolver({ ...catalogue, chains: [], vocabulary: catalogue.vocabulary.map(({ names, variants, ...d }: any) =>
+  const plain = createResolver({ ...catalogue, chains: [], vocabulary: catalogue.vocabulary.map(({ names, variants, ...d }: any) =>
     ({ ...d, variants: variants.map(({ names: _, ...v }: any) => v) })) });
   const changed: string[] = [];
   for (const d of VOCABULARY) for (const n of [d.name, d.id, ...d.also, ...d.variants.map((v) => v.name)]) {
@@ -71,30 +70,30 @@ test("English shopping reads as the same Requirements as Dutch", () => {
     ["1 kg potatoes", "1 kg aardappelen"], ["275 g smoked sausage", "275 g rookworst"], ["400 g fresh spinach", "400 g spinazie"],
   ];
   for (const [en, nl] of same) {
-    const a = R.parse(en), b = R.parse(nl);
+    const a = must(R.parse(en)), b = must(R.parse(nl));
     assert.deepEqual([a.ingredient, a.variant, a.unit, a.quantity], [b.ingredient, b.variant, b.unit, b.quantity], en);
   }
 });
 
 test("a Variant typed in English is named in English", () => {
-  assert.equal(R.parse("500 g minced beef").noun, "ground beef");
-  assert.equal(R.parse("500 g rundergehakt").noun, "rundergehakt");
+  assert.equal(R.parse("500 g minced beef")?.noun, "ground beef");
+  assert.equal(R.parse("500 g rundergehakt")?.noun, "rundergehakt");
 });
 
 test("English Preferences and units read", () => {
-  const p = R.parse("400 g organic frozen spinach");
+  const p = must(R.parse("400 g organic frozen spinach"));
   assert.equal(p.ingredient, "spinazie");
   assert.deepEqual({ ...p.preferences }, { biologisch: true, diepvries: true });
-  assert.deepEqual({ ...R.parse("store brand peanut butter").preferences }, { huismerk: true });
-  assert.deepEqual({ ...R.parse("name brand peanut butter").preferences }, { amerk: true });
-  assert.deepEqual({ ...R.parse("canned corn").preferences }, { conserven: true });
-  assert.deepEqual([R.parse("3 pieces garlic").unit, R.parse("2 litres milk").quantity], ["kg", 2]);
+  assert.deepEqual({ ...R.parse("store brand peanut butter")?.preferences }, { huismerk: true });
+  assert.deepEqual({ ...R.parse("name brand peanut butter")?.preferences }, { amerk: true });
+  assert.deepEqual({ ...R.parse("canned corn")?.preferences }, { conserven: true });
+  assert.deepEqual([R.parse("3 pieces garlic")?.unit, R.parse("2 litres milk")?.quantity], ["kg", 2]);
 });
 
 test("a misspelt English name gets a Spelling Hint", () => {
-  assert.equal(R.parse("500 g ground beaf").suggestion, "ground beef");
-  assert.equal(R.parse("brocolli").suggestion, "broccoli");
-  assert.equal(R.parse("cucumbre").suggestion, "cucumber");
+  assert.equal(R.parse("500 g ground beaf")?.suggestion, "ground beef");
+  assert.equal(R.parse("brocolli")?.suggestion, "broccoli");
+  assert.equal(R.parse("cucumbre")?.suggestion, "cucumber");
 });
 
 test("an Ingredient's label is in the language asked for, Dutch without one", () => {

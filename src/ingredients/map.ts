@@ -4,7 +4,7 @@
  * none, and that is counted rather than forced.
  */
 
-import { words as reading } from "../words.ts";
+import { words as reading } from "../page.ts";
 import { aisleOf, formOf, type Aisle, type Form } from "./aisles.ts";
 import { ASPECTS, VOCABULARY, type IngredientDef, type VariantDef } from "./vocabulary.ts";
 

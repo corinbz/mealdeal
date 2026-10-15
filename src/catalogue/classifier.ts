@@ -18,7 +18,7 @@
  * rest of its Ingredient, and like another one.
  */
 
-import { words as reading } from "../words.ts";
+import { words as reading } from "../page.ts";
 
 export interface LabelledProduct {
   readonly chainId: string;
