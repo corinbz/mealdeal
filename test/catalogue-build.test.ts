@@ -49,7 +49,7 @@ test("a Product sold per kg is priced in its Ingredient's unit, where the vocabu
 test("an unmapped Product borrows its EAN twin's Ingredient, and is counted as borrowed", () => {
   assert.equal(at("hoogvliet")[0]!.ingredient, "melk");
   assert.equal(at("hoogvliet")[0]!.variant, "halfvol");
-  assert.deepEqual(built.counts["hoogvliet"], { total: 1, mapped: 1, borrowed: 1, comparable: 1, upcoming: 0 });
+  assert.deepEqual(built.counts["hoogvliet"], { total: 1, excluded: { nonfood: 0, alcohol: 0 }, mapped: 1, borrowed: 1, comparable: 1, upcoming: 0 });
   assert.deepEqual(built.catalogue.exact?.map((g) => g.members), [{ hoogvliet: "h1", jumbo: "j2" }]);
   assert.deepEqual(built.conflicts, []);
 });
@@ -72,4 +72,27 @@ test("the page is told each Chain's Store, Offers, EANs, offers-only and the car
   assert.equal(c["lidl"]!.card, "Lidl Plus");
   assert.equal(c["jumbo"]!.card, null);
   assert.equal(built.catalogue.generatedAt, "2026-10-14T05:00:00.000Z");
+});
+
+test("non-food and wine are left out before anything is matched, and counted", () => {
+  const b = buildCatalogue({
+    chains: [chain("jumbo", "Jumbo"), chain("plus", "Plus")],
+    products: {
+      jumbo: [
+        product({ ref: "j1", name: "Campina Halfvolle Melk 1 l", eans: ["8712800000001"], categories: MILK, packUnit: "l", comparisonUnit: "l" }),
+        product({ ref: "j2", name: "Pampers maat 4", categories: ["Baby en kind > Luiers en verschonen > Luiers"], comparisonUnit: "piece" }),
+        product({ ref: "j3", name: "Hertog Jan Pilsener 6 x 30 cl", categories: ["Bier en wijn > Bier, pils > Blik"], packUnit: "l", comparisonUnit: "l" }),
+      ],
+      plus: [
+        // A wine sharing an EAN with nothing kept, and a detergent: neither may reach an Exact Product.
+        product({ ref: "p1", name: "Campina Halfvolle Melk 1 l", eans: ["8712800000001"], categories: ["Bier, wijn, sterke drank > Wijn > Rode wijn"], packUnit: "l", comparisonUnit: "l" }),
+        product({ ref: "p2", name: "Ariel wasmiddel", categories: ["Huishouden, non food > Wasmiddelen"], packUnit: "l", comparisonUnit: "l" }),
+      ],
+    },
+  });
+  assert.deepEqual(productsOf(b.catalogue, "jumbo").map((p) => p.ref), ["j1", "j3"]);
+  assert.deepEqual(productsOf(b.catalogue, "plus"), []);
+  assert.deepEqual(b.counts["jumbo"]!.excluded, { nonfood: 1, alcohol: 0 });
+  assert.deepEqual(b.counts["plus"]!.excluded, { nonfood: 1, alcohol: 1 });
+  assert.deepEqual(b.catalogue.exact, []);
 });

@@ -313,6 +313,20 @@ words, and Corrections cover what it misses in the meantime. To see what it
 does with a real day without the R2 keys, export one with
 `.github/workflows/archive-export.yml` and ingest it locally.
 
+### Food and beer only
+
+The app shows food and drink, and of alcohol only beer, alcohol-free beer
+and radler (owner's decision, 2026-10-15). Pet food and baby food stay. The
+catalogue build leaves the rest out (`src/catalogue/food.ts`) and reports
+per Chain how many non-food and wine or spirits Products it dropped; on
+2026-10-14 that was about a fifth of every Chain. Ingest and the archive keep
+everything, so a better rule re-runs over every day already captured. It
+judges by the Chain's category path, the deepest shelf deciding, and one
+food category is enough to keep a Product. Where no category says anything,
+as with Aldi's action articles (filed under "offer" alone), theme shops, and
+a bare "Kat" shelf with litter beside the food, the name and Comparison Unit
+decide: by the piece is non-food unless the name says food.
+
 ## Every morning, with no laptop
 
 `.github/workflows/catalogue.yml` runs after each archive run on `main` (and

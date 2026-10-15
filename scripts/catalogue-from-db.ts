@@ -37,6 +37,7 @@ console.error(`wrote ${OUT.pathname}: ${chains.map((c) => `${c.name} ${counts[c.
 // how much of that compares in the Ingredient's own unit.
 for (const c of chains) {
   const n = counts[c.id]!;
+  console.error(`  ${c.name}: ${n.excluded.nonfood} non-food and ${n.excluded.alcohol} wine or spirits left out`);
   console.error(`  ${c.name}: ${n.mapped} mapped to an Ingredient (${n.borrowed} borrowed from an EAN twin), ${n.total - n.mapped} unmapped; ${n.comparable} comparable in the Ingredient's unit`);
 }
 // EAN twins mapped to different Ingredients: one of them is wrong (#34).

@@ -12,7 +12,8 @@
  *
  * Only Products carrying a Unit Price and a Comparison Unit belong in the
  * source. One without either is not a comparison candidate, which is why
- * ingest reports that count per run.
+ * ingest reports that count per run. Non-food and alcohol other than beer
+ * are left out here, and counted (food.ts).
  */
 
 import { formOf } from "../ingredients/aisles.ts";
@@ -21,6 +22,7 @@ import { VOCABULARY, type ComparisonUnit, type IngredientDef } from "../ingredie
 import { borrowMappings, productKey, type Conflict } from "./borrow.ts";
 import { CHECKED_SPREADS } from "./checked-spreads.ts";
 import { groupExactProducts, type ExactCandidate } from "./exact.ts";
+import { excluded, type Excluded } from "./food.ts";
 import { COLUMNS, toRow, type Catalogue, type CatalogueProduct, type Row } from "./format.ts";
 
 /**
@@ -78,7 +80,10 @@ export interface CatalogueSource {
 }
 
 export interface ChainCounts {
+  /** In the catalogue, after what was left out. */
   readonly total: number;
+  /** Left out: non-food, and alcohol other than beer. */
+  readonly excluded: Readonly<Record<Excluded, number>>;
   readonly mapped: number;
   readonly borrowed: number;
   /** Mapped, and priced in the Ingredient's own unit. */
@@ -107,7 +112,19 @@ function inIngredientUnit(perUnitOf: ComparisonUnit, quantity: number, ingredien
 export function buildCatalogue(source: CatalogueSource, { now = new Date(), vocabulary = VOCABULARY }: { now?: Date; vocabulary?: readonly IngredientDef[] } = {}): Built {
   const map = createMapper(vocabulary);
   const defs = new Map(vocabulary.map((d) => [d.id, d]));
-  const productsAt = (id: string) => source.products[id] ?? [];
+  // Left out before anything else, so no Exact Product or borrowed mapping
+  // leads to a Product the page never shows.
+  const left: Record<string, Record<Excluded, number>> = {};
+  const kept: Record<string, readonly SourceProduct[]> = {};
+  for (const chain of source.chains) {
+    const n = (left[chain.id] = { nonfood: 0, alcohol: 0 });
+    kept[chain.id] = (source.products[chain.id] ?? []).filter((p) => {
+      const why = excluded({ name: p.name, categories: p.categories, unit: p.comparisonUnit });
+      if (why) n[why]++;
+      return !why;
+    });
+  }
+  const productsAt = (id: string) => kept[id] ?? [];
 
   const own = new Map<string, Mapping | null>();
   const candidates: ExactCandidate[] = [];
@@ -126,7 +143,7 @@ export function buildCatalogue(source: CatalogueSource, { now = new Date(), voca
   const counts: Record<string, ChainCounts> = {};
   const products: Record<string, Omit<CatalogueProduct, "referenceLowCents" | "referenceDays">[]> = {};
   for (const chain of source.chains) {
-    const c = { total: 0, mapped: 0, borrowed: 0, comparable: 0, upcoming: 0 };
+    const c = { total: 0, excluded: left[chain.id]!, mapped: 0, borrowed: 0, comparable: 0, upcoming: 0 };
     products[chain.id] = productsAt(chain.id).map((p) => {
       const key = productKey(chain.id, p.ref);
       const lent = borrowed.mappings.get(key);
