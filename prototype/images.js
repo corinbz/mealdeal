@@ -571,6 +571,100 @@
       '<circle class="b" cx="40" cy="24" r="16"/><path class="e" d="M30 14l4 3M44 10l-1 4M52 20l-4 1M48 32l-3-2"/><circle class="d" cx="36" cy="22" r="1.8"/><circle class="d" cx="42" cy="22" r="1.8"/><circle class="d" cx="39" cy="27" r="1.8"/>' +
       '<path class="a" d="M6 36c0 12 10 20 22 20s22-8 22-20z"/><path class="c" d="M10 36c0 9 8 16 18 16s18-7 18-16z"/>' +
       '<ellipse class="c" cx="28" cy="36" rx="22" ry="5"/>'],
+    yoghurt: ["--a:#f7f4ec;--b:#8ab0d8;--c:#e2e6ea;--d:#f7f4ec",
+      '<path class="a" d="M24 22c0-6 4-10 8-10 0 3 3 3 5 4 3 1 4 4 3 6z"/>' +
+      '<path class="a" d="M16 26h32l-3 30H19z"/><rect class="b" x="17" y="36.5" width="30" height="10.5"/><rect class="c" x="14" y="22" width="36" height="5" rx="2"/>' +
+      '<path class="e" d="M26 18c3 0 6-1 8-3"/>'],
+    kwark: ["--a:#f7f4ec;--b:#e8a04a;--c:#e2e6ea",
+      '<path class="a" d="M14 32c0-8 8-12 14-10 4-6 14-4 16 2 6 0 8 4 8 8z"/>' +
+      '<path class="a" d="M10 36h44l-3 20H13z"/><rect class="b" x="11" y="43" width="42" height="7"/><rect class="c" x="8" y="32" width="48" height="5" rx="2"/>'],
+    vla: ["--a:#f5d65a;--b:#f2efe6;--c:#c9ced2;--d:#8a5a32",
+      '<path class="c" d="M36 32l16-22c1-2 4 0 3 2L41 34z"/>' +
+      '<path class="a" d="M10 37c0-6 10-10 22-10s22 4 22 10z"/><path class="d" d="M16 34c4-3 10-4 14-2 4 2 10 2 14 0-1 3-8 6-14 5-5-1-10-1-14-3z"/>' +
+      '<path class="b" d="M6 36h52c0 11-11 20-26 20S6 47 6 36z"/>'],
+    slagroom: ["--a:#fbf8f0;--b:#7fa6c4",
+      '<path class="a" d="M14 44c-4-4-2-10 4-10-2-6 4-10 9-8 0-6 6-10 11-8 4 1 4 5 2 8 6 0 8 6 4 9 6 1 8 6 4 9z"/>' +
+      '<path class="e" d="M20 38c4 2 10 2 16 0M24 30c4 2 8 2 12 0"/>' +
+      '<path class="b" d="M8 44h48c0 8-10 13-24 13S8 52 8 44z"/>'],
+    kookroom: ["--a:#f7f0dc;--b:#d9a05a;--c:#e2dccd;--d:#f7f0dc",
+      '<rect class="c" x="34" y="15" width="6" height="4" rx="1"/><path class="c" d="M18 22l2-4h24l2 4z"/><rect class="a" x="18" y="22" width="28" height="34" rx="2"/>' +
+      '<rect class="b" x="18" y="32" width="28" height="14"/><path class="d" d="M32 34c3 4 4 6 4 8a4 4 0 0 1-8 0c0-2 1-4 4-8z"/>'],
+    "crème fraîche": ["--a:#f7f4ec;--b:#6fae6a;--c:#e2e6ea",
+      '<path class="a" d="M20 30c0-6 6-9 12-8 4-4 12-2 12 4 2 1 2 3 2 4z"/>' +
+      '<path class="a" d="M14 32h36l-3 22H17z"/><rect class="b" x="15" y="39.7" width="34" height="7.699999999999999"/><rect class="c" x="12" y="28" width="40" height="5" rx="2"/>' +
+      '<path class="s" d="M44 22l12-14"/><ellipse class="c" cx="44" cy="24" rx="4" ry="6" transform="rotate(40 44 24)"/>'],
+    "zure room": ["--a:#f7f4ec;--b:#7ab0d0;--c:#f2f4f6;--d:#f5d63c",
+      '<path class="a" d="M14 26h36l-3 28H17z"/><rect class="b" x="15" y="35.8" width="34" height="9.799999999999999"/><ellipse class="c" cx="32" cy="24" rx="20" ry="5"/>' +
+      '<path class="d" d="M32 40l7 0a7 7 0 0 0-7-7z"/><path class="e" d="M32 40l7-0M32 40l5-5"/>'],
+    roomboter: ["--a:#f8e08a;--b:#d9b04a;--c:#f6f1e4",
+      '<path class="b" d="M6 34l14-10h30l8 8v10l-14 10H14L6 46z"/>' +
+      '<path class="a" d="M14 34l12-8h26l-12 8z"/><path class="a" d="M14 34h26v14H14z"/><path class="a" d="M40 34l12-8v14l-12 8z"/>' +
+      '<path class="c" d="M6 34l8 0v12l-8 0z"/>'],
+    margarine: ["--a:#f5e07a;--b:#7fb24e;--c:#f7f4ec",
+      '<path class="b" d="M12 22c-2-6 2-10 8-10h24c6 0 10 4 8 10z" transform="rotate(-14 20 22)"/>' +
+      '<path class="c" d="M8 30h48l-4 24H12z"/><ellipse class="a" cx="32" cy="30" rx="24" ry="5"/>' +
+      '<path class="e" d="M18 30c4-2 10-2 14 0s10 2 14 0"/>'],
+    "bak- en braadboter": ["--a:#3a3a3e;--b:#f5d65a;--d:#fbe9a0",
+      '<path class="a" d="M42 40l16-4 1 4-16 5z"/><ellipse class="a" cx="26" cy="40" rx="22" ry="12"/>' +
+      '<path class="b" d="M10 40c0-4 6-6 12-6 4 0 4-3 8-3 6 0 12 4 12 9 0 4-8 6-16 6s-16-2-16-6z"/>' +
+      '<path class="b" d="M20 36l6-8h10l-2 9z"/><ellipse class="d" cx="18" cy="40" rx="3" ry="1.2"/>'],
+    "geraspte kaas": ["--a:#f2c84b;--c:#c9ced2;--d:#d9a72c",
+      '<g transform="translate(32 32) scale(0.9) translate(-32 -32)"><path class="c" d="M18 8h20l6 42H12z"/><rect class="c" x="22" y="4" width="12" height="5" rx="2"/>' +
+      '<path class="e" d="M18 18h3"/><path class="e" d="M24 18h3"/><path class="e" d="M30 18h3"/><path class="e" d="M20 26h3"/><path class="e" d="M26 26h3"/><path class="e" d="M32 26h3"/><path class="e" d="M18 34h3"/><path class="e" d="M24 34h3"/><path class="e" d="M30 34h3"/><path class="e" d="M36 34h3"/>' +
+      '<rect class="a" x="26" y="48.4" width="12" height="3.2" rx="1.6" transform="rotate(-30 32 50)"/><rect class="a" x="32" y="50.4" width="12" height="3.2" rx="1.6" transform="rotate(20 38 52)"/><rect class="a" x="38" y="46.4" width="12" height="3.2" rx="1.6" transform="rotate(-10 44 48)"/><rect class="a" x="42" y="52.4" width="12" height="3.2" rx="1.6" transform="rotate(40 48 54)"/><rect class="a" x="22" y="54.4" width="12" height="3.2" rx="1.6" transform="rotate(10 28 56)"/><rect class="a" x="34" y="55.4" width="12" height="3.2" rx="1.6" transform="rotate(-40 40 57)"/><rect class="a" x="46" y="48.4" width="12" height="3.2" rx="1.6" transform="rotate(60 52 50)"/></g>'],
+    geitenkaas: ["--a:#f8f6ee;--b:#e4e0d4;--c:#f2eee2;--d:#d8d4c6",
+      '<g transform="translate(32 32) scale(0.9) translate(-32 -32)"><path class="a" d="M8 24h30c4 0 6 6 6 12s-2 12-6 12H8z"/><ellipse class="b" cx="8" cy="36" rx="5" ry="12"/>' +
+      '<ellipse class="a" cx="46" cy="40" rx="8" ry="13"/><ellipse class="c" cx="47" cy="40" rx="5" ry="10"/>' +
+      '<circle class="d" cx="7" cy="32" r="1.3"/><circle class="d" cx="9" cy="40" r="1.3"/></g>'],
+    mozzarella: ["--a:#fbfaf4;--b:#4caa3e;--d:#e8e6dc",
+      '<circle class="a" cx="28" cy="38" r="18"/><circle class="a" cx="46" cy="24" r="11"/>' +
+      '<ellipse class="d" cx="22" cy="32" rx="5" ry="3" transform="rotate(-30 22 32)"/><ellipse class="d" cx="43" cy="20" rx="3" ry="2" transform="rotate(-30 43 20)"/>' +
+      '<path class="b" d="M36 48C43.1 51.8 50.7 49 52.9 41.8C46.6 37.7 39 40.5 36 48z"/><path class="e" d="M38.5 47.1L49.5 43.1"/>'],
+    feta: ["--a:#fbf9f0;--b:#e8e4d6;--c:#f2eee2",
+      '<g transform="translate(32 32) scale(0.9) translate(-32 -32)"><path class="b" d="M8 30l18-8 26 6v18l-18 10L8 48z"/>' +
+      '<path class="a" d="M8 30l18-8 26 6-18 8z"/><path class="c" d="M34 36l18-8v18l-18 10z"/>' +
+      '<path class="e" d="M14 36l2 2M20 42l2-1M26 38l1 2M40 40l2 1M46 34l-1 2"/>' +
+      '<rect class="a" x="44" y="46" width="9" height="9" rx="1.5" transform="rotate(12 48 50)"/><rect class="a" x="4" y="50" width="8" height="8" rx="1.5" transform="rotate(-10 8 54)"/></g>'],
+    "parmezaanse kaas": ["--a:#f0dca0;--b:#c99a3a;--d:#d9bf7a",
+      '<path class="b" d="M6 44L26 14l32 18-8 18z"/>' +
+      '<path class="a" d="M10 44l17-25 26 15-5 13z"/>' +
+      '<path class="e" d="M18 38l4-3M26 28l3 2M36 32l-2 4M42 40l3-2M24 42l3 1"/><circle class="d" cx="30" cy="36" r="1.4"/><circle class="d" cx="20" cy="34" r="1.2"/><circle class="d" cx="40" cy="36" r="1.2"/>'],
+    roomkaas: ["--a:#fbfaf4;--b:#7ab0d0;--c:#c9ced2",
+      '<path class="b" d="M8 34h48l-3 18c0 3-4 5-8 5H19c-4 0-8-2-8-5z"/><ellipse class="a" cx="32" cy="34" rx="24" ry="7"/>' +
+      '<path class="e" d="M18 34c4-3 10-3 16-1s10 2 14-1"/>' +
+      '<path class="c" d="M34 30l20-22c2-2 5 0 4 2L40 34z"/>'],
+    brie: ["--a:#fbf8ee;--c:#f6e3a0;--d:#e4ddc8",
+      '<path class="a" d="M8 28v14c0 6 11 10 24 10s24-4 24-10V28z"/><ellipse class="a" cx="32" cy="28" rx="24" ry="10"/>' +
+      '<path class="c" d="M32 28l8 9.6V52l-8-10z"/><path class="c" d="M32 28l18 6.6V48L32 42z" transform="translate(0 0)"/>' +
+      '<path class="c" d="M32 28l8 9.6L50 34.6z"/>' +
+      '<circle class="d" cx="20" cy="26" r="1.4"/><circle class="d" cx="30" cy="22" r="1.4"/><circle class="d" cx="42" cy="24" r="1.4"/>'],
+    halloumi: ["--a:#f7f1de;--d:#b8742a",
+      '<g transform="rotate(-8 28 24)"><rect class="a" x="10" y="16" width="36" height="16" rx="3"/><path class="d" d="M17 19h4l-3 10h-4z"/><path class="d" d="M27 19h4l-3 10h-4z"/><path class="d" d="M37 19h4l-3 10h-4z"/></g>' +
+      '<g transform="rotate(-8 36 42)"><rect class="a" x="18" y="34" width="36" height="16" rx="3"/><path class="d" d="M25 37h4l-3 10h-4z"/><path class="d" d="M35 37h4l-3 10h-4z"/><path class="d" d="M45 37h4l-3 10h-4z"/></g>'],
+    ham: ["--a:#f2a0a6;--c:#fbe6e4;--d:#f8c4c4",
+      '<path class="c" d="M8 40c0-12 10-22 24-22 10 0 20 6 24 16-8-4-18-6-26-4-10 2-16 6-22 10z"/>' +
+      '<path class="a" d="M11 40c2-10 10-18 21-18 8 0 16 4 20 10-8-2-16-2-24 0-8 2-12 4-17 8z"/>' +
+      '<path class="c" d="M6 44c6-8 16-12 28-12 10 0 18 4 24 10-4 8-14 14-26 14S8 52 6 44z"/>' +
+      '<path class="a" d="M10 44c6-6 14-9 24-9 8 0 15 3 20 8-4 6-12 10-22 10S12 50 10 44z"/><ellipse class="d" cx="26" cy="44" rx="6" ry="2.5"/>'],
+    "kipfilet beleg": ["--a:#f6e8d6;--c:#ead2b4",
+      '<ellipse class="a" cx="18" cy="40" rx="14" ry="11"/><path class="e" d="M11 38c3-3 9-3 12 0M13 43c3-2 7-2 10 0"/>' +
+      '<ellipse class="a" cx="30" cy="34" rx="14" ry="11"/><path class="e" d="M23 32c3-3 9-3 12 0M25 37c3-2 7-2 10 0"/>' +
+      '<ellipse class="a" cx="42" cy="28" rx="14" ry="11"/><path class="e" d="M35 26c3-3 9-3 12 0M37 31c3-2 7-2 10 0"/>'],
+    salami: ["--a:#b53a3e;--b:#8a3a2a;--d:#f6e0d6",
+      '<g transform="translate(32 32) scale(0.9) translate(-32 -32)"><g transform="rotate(-25 40 26)"><rect class="b" x="24" y="16" width="34" height="20" rx="10"/></g>' +
+      '<circle class="a" cx="20" cy="42" r="11"/><circle class="d" cx="16" cy="39" r="1.4"/><circle class="d" cx="23" cy="38" r="1.4"/><circle class="d" cx="25" cy="45" r="1.4"/><circle class="d" cx="17" cy="46" r="1.4"/><circle class="d" cx="20" cy="42" r="1.4"/><circle class="a" cx="34" cy="46" r="11"/><circle class="d" cx="30" cy="43" r="1.4"/><circle class="d" cx="37" cy="42" r="1.4"/><circle class="d" cx="39" cy="49" r="1.4"/><circle class="d" cx="31" cy="50" r="1.4"/><circle class="d" cx="34" cy="46" r="1.4"/><circle class="a" cx="46" cy="40" r="11"/><circle class="d" cx="42" cy="37" r="1.4"/><circle class="d" cx="49" cy="36" r="1.4"/><circle class="d" cx="51" cy="43" r="1.4"/><circle class="d" cx="43" cy="44" r="1.4"/><circle class="d" cx="46" cy="40" r="1.4"/></g>'],
+    "filet americain": ["--a:#e86a6a;--b:#f2efe6;--c:#c9ced2;--d:#f49a9a",
+      '<path class="b" d="M8 34h48l-3 18c0 3-4 5-8 5H19c-4 0-8-2-8-5z"/><ellipse class="a" cx="32" cy="34" rx="24" ry="7"/>' +
+      '<path class="d" d="M18 33c4-3 10-3 16-1s10 2 14-1c-2 3-8 5-14 4s-12-1-16-2z"/>' +
+      '<path class="c" d="M34 30l20-22c2-2 5 0 4 2L40 34z"/>'],
+    leverworst: ["--a:#b89a8a;--b:#c8303a;--c:#d9c4b4;--d:#a88878",
+      '<path class="a" d="M10 30c0-6 4-10 10-10h22c4 0 6 4 6 10s-2 10-6 10H20c-6 0-10-4-10-10z"/>' +
+      '<path class="b" d="M10 30c0-5 3-9 7-10v20c-4-1-7-5-7-10z"/><path class="s" d="M10 30H5"/>' +
+      '<ellipse class="a" cx="44" cy="42" rx="11" ry="12"/><ellipse class="c" cx="45" cy="42" rx="8" ry="9.5"/><circle class="d" cx="43" cy="40" r="1.4"/><circle class="d" cx="48" cy="45" r="1.2"/>'],
+    hummus: ["--a:#e6cc96;--b:#c8743a;--d:#d93a2f;--c:#d9b46a",
+      '<path class="a" d="M10 37c0-6 10-10 22-10s22 4 22 10z"/><path class="e" d="M18 33c6-3 12-3 18-1"/>' +
+      '<circle class="c" cx="36" cy="31" r="3"/><circle class="d" cx="22" cy="31" r="1.2"/><circle class="d" cx="28" cy="34" r="1.2"/><circle class="d" cx="44" cy="33" r="1.2"/>' +
+      '<path class="b" d="M6 36h52c0 11-11 20-26 20S6 47 6 36z"/>'],
   };
 
   // Where an Ingredient has no drawing of its own, its aisle stands in.
