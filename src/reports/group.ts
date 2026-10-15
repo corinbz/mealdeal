@@ -40,9 +40,11 @@ export function reportsMarkdown(groups: readonly ReportGroup[], since: string): 
   const head = `### "Klopt niet" reports since ${since}\n\n`;
   if (!total) return head + "None.\n";
   const rows = groups.map((g) => {
-    const notes = g.reports.map((r) => r.note).filter(Boolean).map((n) => `“${cell(n)}”`).join(" ");
+    // A report from a page in another language than Dutch says which (#25).
+    const tagged = (r: Report, s: string) => ((r.lang ?? "nl") === "nl" ? s : `[${r.lang.toUpperCase()}] ${s}`);
+    const notes = g.reports.filter((r) => r.note).map((r) => tagged(r, `“${cell(r.note)}”`)).join(" ");
     const seen = [...new Set(g.reports.map((r) => (r.cents === null ? "" : euro(r.cents) + " ") + (r.observedAt ?? "")).map((s) => s.trim()).filter(Boolean))].join(", ");
-    const where = [...new Set(g.reports.map((r) => r.context).filter(Boolean))].slice(0, 3).map(cell).join("; ");
+    const where = [...new Set(g.reports.filter((r) => r.context).map((r) => tagged(r, cell(r.context))))].slice(0, 3).join("; ");
     return `| ${cell(g.chain)} | ${cell(g.name)} (${cell(g.ref)}) | ${g.ingredient ?? "—"} | ${Object.entries(g.what).map(([w, n]) => `${w} ×${n}`).join(", ")} | ${seen} | ${where} | ${notes} |`;
   });
   return head + `${total} report${total === 1 ? "" : "s"} on ${groups.length} Product${groups.length === 1 ? "" : "s"}, most reported first.\n\n` +

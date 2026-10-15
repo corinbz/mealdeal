@@ -456,7 +456,9 @@ repository's 2,000 free a month (see "Which machine runs it" in
 their staples (#22). It sends once per week, after the first good refresh from
 Wednesday on, when most Offer weeks begin. For one owner until there are
 accounts (#21): staples are the `DIGEST_STAPLES` repository variable, one per
-line, written as on the basket page.
+line, written as on the basket page. It is written in Dutch unless the
+`DIGEST_LANG` repository variable is `en` (#25); staples are named as they are
+typed, and Product names and Offer wording as the Chain wrote them.
 
 It only names a discount the real-discount check supports: an Offer with a
 price of its own, below the Product's Reference Price. An Offer with no price
