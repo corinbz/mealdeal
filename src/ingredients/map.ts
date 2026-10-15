@@ -67,7 +67,7 @@ function compile(vocabulary: readonly IngredientDef[]): Compiled[] {
     aisles: new Set(def.aisles),
     stems: def.words.filter((w) => !w.includes(" ") && !w.startsWith("=")).map((w) => reading.nameWords(w).join("")).filter(Boolean),
     exact: def.words.filter((w) => w.startsWith("=")).map((w) => w.slice(1)),
-    phrases: def.words.filter((w) => w.includes(" ")).map((w) => w.toLowerCase()),
+    phrases: def.words.filter((w) => w.includes(" ")).map((w) => w.toLowerCase().replace(JOINERS, " ")),
   }));
 }
 
@@ -84,10 +84,25 @@ function excludes(term: string, lower: string, raw: readonly string[]): boolean 
   });
 }
 
+const BRAND_NOT_FOOD = /^gouda's glorie\b/;
+
+/**
+ * What a name or brand says about how a Product is kept, where the Chain's
+ * category does not: Hoogvliet and Plus file Vis Marine, a frozen brand,
+ * beside fresh fish, and Jumbo its tinned mackerel among the tapas.
+ */
+const FROZEN = /\b(diepvries|bevroren|vis marine)\b/;
+const TINNED = /\bin [\p{L} ]*?(olie|olijfolie|zonnebloemolie|water|tomatensaus|pekel)\b|\bgebroken\b/u;
+
 const ELSEWHERE: ReadonlySet<Aisle> = new Set(["readymeal", "baby", "pet", "nonfood"]);
+
+/** Words after which a name goes on about something else: "X met Y". */
+const JOINER = /\s(?:met|with|in|op|zonder|minder)\s/;
+const JOINERS = new RegExp(JOINER.source, "g");
 
 export function createMapper(vocabulary: readonly IngredientDef[] = VOCABULARY) {
   const compiled = compile(vocabulary);
+  const joined = vocabulary.flatMap((d) => d.words).map((w) => w.toLowerCase()).filter((w) => JOINER.test(w));
 
   /**
    * Which Ingredients each word of a name belongs to, across the whole
@@ -130,9 +145,16 @@ export function createMapper(vocabulary: readonly IngredientDef[] = VOCABULARY) 
     // name the Product. A dish named after X is not X.
     // "Zalm gerookt minder zout": what something is without, or with less
     // of, does not name it either.
-    const head = lower.split(/\s(?:met|with|in|op|zonder|minder)\s/)[0]!;
+    // A brand that names a food it is not: Gouda's Glorie makes margarine.
+    // A vocabulary phrase spanning one of those words ("doperwtjes met
+    // worteltjes") names one thing, so the name is not cut inside it.
+    let text = lower.replace(BRAND_NOT_FOOD, "").trim();
+    for (const p of joined) text = text.replaceAll(p, p.replace(JOINERS, " "));
+    const head = text.split(JOINER)[0]!;
     const written = head.split(/\s+/);
-    const names = written.map((w) => reading.nameWords(w).join(""));
+    // "Avocado's" is avocados: the apostrophe of a Dutch plural is not a
+    // break between two words, or the word would never end with "avocado".
+    const names = written.map((w) => reading.nameWords(w.replace(/['’]/g, "")).join(""));
     const raw = lower.split(/[^\p{L}0-9%']+/u).filter(Boolean);
 
     const owned = owners(head, names, written);
@@ -160,10 +182,13 @@ export function createMapper(vocabulary: readonly IngredientDef[] = VOCABULARY) 
     // carrots sit in Groente too, but they are in a jar.
     const kept = [...aisles].filter((a) => chosen.aisles.has(a));
     const aisle = kept.find((a) => formOf(a) === "conserven" || formOf(a) === "diepvries") ?? kept[0]!;
+    // Only for an Ingredient that is sold tinned at all: mozzarella in water is fresh.
+    const said = FROZEN.test(lower) || FROZEN.test((product.brand ?? "").toLowerCase()) ? "diepvries"
+      : chosen.aisles.has("conserves") && TINNED.test(lower) ? "conserven" : null;
     return {
       ingredient: def.id,
       variant: variant?.id ?? null,
-      form: formOf(aisle),
+      form: said ?? formOf(aisle),
       biologisch: /\bbio(logisch|logische)?\b/.test(lower) || product.categories.some((c) => /biologisch/i.test(c)),
       huismerk: isOwnBrand(product.chainId, product.brand, product.name),
     };

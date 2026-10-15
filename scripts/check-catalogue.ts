@@ -12,7 +12,8 @@
  */
 
 import { readFile } from "node:fs/promises";
-import { assessCatalogue, parseCatalogueScript } from "../src/catalogue/assess.ts";
+import { assessCatalogue } from "../src/catalogue/assess.ts";
+import { parseCatalogueScript } from "../src/catalogue/format.ts";
 
 function usage(): never {
   console.error(

@@ -1,12 +1,21 @@
 # Basket comparison prototype
 
 The basket app in the chosen **Tassen** design (issue #4): every Chain is a
-shopping bag holding your whole list. Four pages share one shell, with tabs on
+shopping bag holding your whole list. Five pages share one shell, with tabs on
 top on a desktop and a bar at the bottom on a phone:
 
 - **Recepten**: example recipes built on this week's real Offers. Cooking
   steps open only when a recipe is opened, and one tap puts the ingredients on
   the list.
+- **Bladeren** (#36): what is cheap where, with no list. Per aisle, each
+  Ingredient's cheapest Product per kg, liter or piece at every Chain, ranked
+  by how far the cheapest Chain is below the middle one (not the dearest: one
+  odd Product at one Chain would top the list). A difference over 70% waits at the
+  foot under "Nog niet gecontroleerd" until it is checked (`src/catalogue/checked-spreads.ts`). "Aanbiedingen die lonen" are
+  priced Offers beating every other Chain's cheapest of their Ingredient; an
+  Offer with no price is not ranked. "Zelfde product" lists Exact Products by
+  the difference in pack price, leaving out any whose dearer side has an
+  unpriced Offer. One tap puts an Ingredient or Exact Product on the list.
 - **Lijst**: the Basket. Staples and one-offs, and per item the cheapest
   Chain and a price line with one dot per Chain.
 - **Vergelijk**: Chains ranked as bags (total, difference to the cheapest,

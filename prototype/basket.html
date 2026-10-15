@@ -172,6 +172,12 @@
   .banner { margin: 0 0 14px; background: var(--card); border-radius: var(--r); padding: 12px 14px; box-shadow: 0 2px 0 var(--line); display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
   .banner b { font-weight: 900; }
   .banner .btn { background: var(--good); color: var(--on-ink); }
+  .drops { margin: 0 0 14px; background: var(--card); border-radius: var(--r); padding: 12px 14px; box-shadow: 0 2px 0 var(--line); }
+  .drops h2 { margin: 0 0 6px; font-size: 17px; font-weight: 900; }
+  .drops ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .drops li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; font-size: 14px; }
+  .drops li > b:first-child { font-size: 15px; flex-basis: 100%; }
+  .drops .note { margin: 8px 0 0; }
   .items { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; }
   .it { background: var(--card); border-radius: var(--r); padding: 12px 14px 10px; box-shadow: 0 2px 0 var(--line); display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; }
   .it .nm { font-weight: 900; font-size: 18px; line-height: 1.15; }
@@ -292,7 +298,9 @@
   .rc::before { content: ""; position: absolute; left: 50%; top: -22px; width: 38%; height: 30px; transform: translateX(-50%); border: 7px solid var(--line); border-bottom: 0; border-radius: 40px 40px 0 0; }
   .rc .hd { padding: 16px 16px 10px; border-bottom: 1px dashed var(--line); cursor: pointer; border-radius: 10px 10px 0 0; }
   .rc .hd:hover h3 { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
-  .ex { font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); border: 1.5px dashed var(--ink-3); border-radius: 6px; padding: 0 6px; }
+  .credit { color: var(--ink-3); font-size: 12px; margin: 10px 0 0; }
+  .credit a { color: inherit; }
+  .more-rc { grid-column: 1 / -1; justify-self: center; margin-top: 4px; }
   .rc h3 { margin: 8px 0 2px; font-size: 21px; font-weight: 900; line-height: 1.15; letter-spacing: -.01em; }
   .rc .meta { color: var(--ink-2); font-size: 14px; font-weight: 600; }
   .rc .save { margin: 10px 0 0; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
@@ -310,6 +318,28 @@
   .chains .best { color: var(--ink); }
   .btn.on { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 2px var(--ink); }
   @media (max-width: 720px) { .recipes { grid-template-columns: 1fr; } }
+
+  /* ── Bladeren ─────────────────────────────────────────────────────── */
+  .aisles { display: flex; gap: 6px; overflow-x: auto; padding: 2px 2px 10px; margin: 0 -2px 4px; }
+  .aisles button { flex: none; border: 0; background: var(--card); color: var(--ink-2); border-radius: 999px; padding: 6px 12px; font: inherit; font-size: 14px; font-weight: 800; cursor: pointer; box-shadow: 0 2px 0 var(--line); }
+  .aisles button[aria-pressed="true"] { background: var(--ink); color: var(--on-ink); }
+  .aisles .n { opacity: .6; margin-left: 4px; font-weight: 700; }
+  .views { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+  .sort { font-size: 14px; color: var(--ink-2); margin-left: auto; }
+  .sort button { border: 0; background: none; padding: 0 0 0 8px; font: inherit; font-weight: 800; color: var(--ink-3); cursor: pointer; }
+  .sort button[aria-pressed="true"] { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+  .br-row .spread b { display: block; color: var(--good); }
+  .br-row .add-i { border: 0; background: var(--paper-2); color: var(--ink); border-radius: 999px; padding: 4px 12px; font: inherit; font-size: 13px; font-weight: 800; cursor: pointer; }
+  .br-row .add-i.on { background: transparent; box-shadow: inset 0 0 0 2px var(--ink-3); color: var(--ink-2); }
+  .br-row .open .pr { grid-template-columns: auto 1fr auto auto; }
+  .br-row .open .foot-i { display: flex; justify-content: flex-end; }
+  .worth { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; }
+  .worth .it .nm { font-size: 17px; }
+  .worth .it .v { font-weight: 900; font-size: 18px; font-variant-numeric: tabular-nums; text-align: right; }
+  .worth .it .v small { display: block; font-size: 12px; color: var(--ink-3); font-weight: 700; }
+  .worth .it .why { grid-column: 1 / -1; font-size: 14px; color: var(--ink-2); display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; }
+  .more-br { display: block; margin: 14px auto 0; }
+  @media (max-width: 720px) { .sort { margin-left: 0; } }
 
   /* ── Sheets: recipe method and corrections. A panel on a desktop, full screen on a phone. ── */
   .scrim { position: fixed; inset: 0; z-index: 70; background: var(--scrim); }
@@ -357,6 +387,7 @@
 <script src="words.js"></script>
 <script src="resolve.js"></script>
 <script src="images.js"></script>
+<script src="recipes.js"></script>
 <script>
   if (!window.CATALOGUE) {
     document.getElementById("main").innerHTML =
@@ -392,7 +423,9 @@
   // position, Plus arriving between Jumbo and Vomar would have repainted
   // Vomar. Every pair was checked for colour-blind readers (README).
   const COLOUR_SLOT = { dirk: 0, jumbo: 1, vomar: 2, plus: 3, lidl: 4, hoogvliet: 5, dekamarkt: 6, aldi: 7 };
-  const chains = data.chains.map((c, i) => ({ ...c, color: "var(--c" + (COLOUR_SLOT[c.id] ?? 4 + (i % 4)) + ")" }));
+  // Painted on the catalogue's own Chains, which Basket pricing (resolve.js) hands back in its rows.
+  data.chains.forEach((c, i) => { c.color = "var(--c" + (COLOUR_SLOT[c.id] ?? 4 + (i % 4)) + ")"; });
+  const chains = data.chains;
   const chainById = (id) => chains.find((c) => c.id === id);
   /** "Dirk, Jumbo en Vomar". */
   const andList = (xs) => xs.length < 2 ? xs.join("") : xs.slice(0, -1).join(", ") + " en " + xs[xs.length - 1];
@@ -480,15 +513,20 @@
   const done = new Set(load("mealdeal.done.v1", []));       // ticked while shopping
   let theme = load("mealdeal.theme.v1", "system");          // "system" | "light" | "dark"
   let week = load("mealdeal.week.v1", "nu");                // "nu" | "volgende": whose Offers Recepten and Lijst show
-  const PAGE_KEYS = ["recepten", "lijst", "vergelijk", "winkelen"];
+  const PAGE_KEYS = ["recepten", "bladeren", "lijst", "vergelijk", "winkelen"];
   let page = PAGE_KEYS.includes(location.hash.slice(1)) ? location.hash.slice(1) : "lijst";
   let exactOffer = null;                                    // { itemId, matches }: Exact Products the item just typed may mean
   let hint = "", openRow = null, sheet = null;              // sheet: { kind: "recipe", id } | { kind: "fix", chainId, itemId }
   const added = new Set(), stepsDone = {};
+  const RECIPES_SHOWN = 8; let showAllRecipes = false;
+  // Bladeren (#36): which view, aisle and order, remembered; which rows are open and how many shown, not.
+  let browse = { view: "verschil", aisle: "alle", sort: "verschil", ...load("mealdeal.browse.v1", {}) };
+  let browseOpen = null, browseShown = 0;
 
   function persist() {
     save("mealdeal.list.v1", list); save("mealdeal.corrections.v1", corrections);
     save("mealdeal.plan.v1", plan); save("mealdeal.done.v1", [...done]); save("mealdeal.week.v1", week);
+    save("mealdeal.browse.v1", browse);
   }
 
   // ── Resolution ────────────────────────────────────────────────────────
@@ -501,57 +539,31 @@
     return resolved[key];
   }
   function chosenId(chainId, item) {
-    const fixed = corrections[correctionKey(chainId, item)];
-    if (fixed && products[chainId][fixed]) return fixed;
-    return candidates(chainId, item)[0] || null;
+    const fixed = R.correctedProduct(chainId, item, corrections);
+    return fixed ? fixed.id : candidates(chainId, item)[0] || null;
   }
-  /** Whether an Offer is running on the day swept. Upcoming ones are never in this slot. */
-  const isOffer = (p) => p.offerPriceCents !== null || !!p.offerWording;
 
-  // ── This week or next (#8) ────────────────────────────────────────────
-  // Chains announce next week's Offers before they start. Next week, per
-  // Chain, begins on the first day its announced Offers do. An Offer counts
-  // for it if it starts then, or if this week's is still running then. One
-  // that has not started has no price yet, and none is derived from its
-  // wording (ADR-0002), so next week is priced at today's Shelf Prices.
-  // Vergelijk and Winkelen always show this week: that is where you shop.
-  const nextStart = {};
-  for (const c of chains) for (const p of Object.values(products[c.id])) {
-    if (p.nextStartsOn && (!nextStart[c.id] || p.nextStartsOn < nextStart[c.id])) nextStart[c.id] = p.nextStartsOn;
-  }
-  const hasNextWeek = Object.keys(nextStart).length > 0;
+  // ── Basket pricing: prototype/resolve.js, shared with the digest ──────
+  // What an item costs at each Chain, this week or next (#8), whole packs,
+  // Offers paid. Vergelijk and Winkelen always show this week: that is where
+  // you shop.
+  const isOffer = R.isOnOffer, offerFor = R.offerFor;
+  const hasNextWeek = Object.keys(R.nextStarts).length > 0;
   if (!hasNextWeek) week = "nu"; // a remembered choice outlives the catalogue that offered it
-  function offerFor(p, w) {
-    if (w === "volgende") {
-      if (p.nextWording !== null) return { wording: p.nextWording || "aanbieding", priceCents: null, startsOn: p.nextStartsOn };
-      const from = nextStart[p.chainId];
-      if (!isOffer(p) || !from || (p.offerEndsOn && p.offerEndsOn < from)) return null;
-      return { wording: p.offerWording || "aanbieding", priceCents: p.offerPriceCents, startsOn: null, continues: true };
-    }
-    return isOffer(p) ? { wording: p.offerWording || "aanbieding", priceCents: p.offerPriceCents, startsOn: null } : null;
-  }
   const dayText = (iso) => { const [y, m, d] = iso.split("-").map(Number); return new Date(y, m - 1, d).toLocaleDateString("nl-NL", { weekday: "short", day: "numeric", month: "short" }); };
-  const nextFrom = () => { const days = Object.values(nextStart).sort(); return days.length ? dayText(days[0]) : ""; };
+  const nextFrom = () => { const days = Object.values(R.nextStarts).sort(); return days.length ? dayText(days[0]) : ""; };
 
-  // ── Is an Offer a real low? (#18) ─────────────────────────────────────
-  // Judged per Product against the lowest price paid in the 30 days before
-  // the reduction began, from recorded history only (src/catalogue/history.ts),
-  // the reference EU price-reduction rules use. With less history the period
-  // is stated; with none, nothing is claimed. An Offer with no price of its
-  // own ("1+1 gratis") is not converted into one (ADR-0002): only its normal
-  // price is judged, which is where an inflated "was" price would show.
+  /** Whether an Offer is a real low (#18), as resolve.js judges it; with no history, nothing is claimed. */
   function verdict(p) {
-    const low = p.referenceLowCents;
-    if (!isOffer(p) || low === null) return "";
-    const days = p.referenceDays === 1 ? "1 dag" : p.referenceDays + " dagen";
-    if (p.offerPriceCents === null) {
-      return p.shelfPriceCents > low
-        ? '<span class="vd not">normale prijs hoger dan recent: ' + euro(low) + " in " + days + "</span>"
-        : '<span class="vd">normale prijs niet verhoogd in ' + days + "</span>";
-    }
-    return p.offerPriceCents < low
-      ? '<span class="vd low">laagste prijs in ' + days + "</span>"
-      : '<span class="vd not">niet lager dan recent: ' + euro(low) + " in " + days + "</span>";
+    const v = R.verdict(p);
+    if (!v) return "";
+    const days = v.days === 1 ? "1 dag" : v.days + " dagen";
+    return {
+      "shelf-up": '<span class="vd not">normale prijs hoger dan recent: ' + euro(v.lowCents) + " in " + days + "</span>",
+      "shelf-same": '<span class="vd">normale prijs niet verhoogd in ' + days + "</span>",
+      lowest: '<span class="vd low">laagste prijs in ' + days + "</span>",
+      "not-lower": '<span class="vd not">niet lager dan recent: ' + euro(v.lowCents) + " in " + days + "</span>",
+    }[v.kind];
   }
   /** An Offer's wording, then when it starts if it has not, or else whether it is a real low. */
   function offerChip(p, o) {
@@ -562,16 +574,8 @@
   const weekSwitch = () => '<div class="wk" role="group" aria-label="Aanbiedingen van">' +
     '<button data-act="week" data-id="nu" aria-pressed="' + (week === "nu") + '">Deze week</button>' +
     '<button data-act="week" data-id="volgende" aria-pressed="' + (week === "volgende") + '"' + (hasNextWeek ? "" : " disabled") + ">Volgende week</button></div>";
-  /** Whole packs, because you cannot buy 0.4 of one. */
-  function line(chainId, item, w = "nu") {
-    const id = chosenId(chainId, item);
-    if (!id) return null;
-    const p = products[chainId][id];
-    const o = offerFor(p, w), offer = o ? o.wording : null;
-    const price = o && o.priceCents ? o.priceCents : p.shelfPriceCents;
-    const { known, packs, pack } = R.packsFor(p, item);
-    return { p, o, offer, packs, cost: packs * price, over: known ? pack / item.quantity : 1 };
-  }
+  /** An item at one Chain: the Resolution, or the Correction, in whole packs. */
+  const line = (chainId, item, w = "nu") => R.line(chainId, item, { week: w, corrections });
 
   // ── Exact Products (#15) ────────────────────────────────────────────
   // An item may name one Exact Product: Calvé Pindakaas Regular 350 g, the
@@ -581,26 +585,6 @@
   // no EANs (Dirk) is not comparable; a Product there that is likely the
   // same is shown, labelled, and counted nowhere.
   const eanChains = chains.filter((c) => c.eans !== false), noEanChains = chains.filter((c) => c.eans === false);
-  function exactLine(chainId, item, likely) {
-    const p = likely ? R.likelyProduct(chainId, item.exact) : R.exactProduct(chainId, item.exact);
-    if (!p) return null;
-    const o = offerFor(p, "nu"), price = o && o.priceCents ? o.priceCents : p.shelfPriceCents;
-    return { p, o, offer: o ? o.wording : null, packs: item.quantity, cost: item.quantity * price };
-  }
-  function exactSnapshot() {
-    const rows = list.filter((i) => i.exact).map((item) => {
-      const by = Object.fromEntries(eanChains.map((c) => [c.id, exactLine(c.id, item, false)]));
-      const likely = Object.fromEntries(noEanChains.map((c) => [c.id, exactLine(c.id, item, true)]));
-      const avail = eanChains.filter((c) => by[c.id]).sort((a, b) => by[a.id].cost - by[b.id].cost);
-      return { item, by, likely, avail, min: avail.length ? by[avail[0].id].cost : null };
-    });
-    const totals = eanChains.map((c) => {
-      let cost = 0, filled = 0;
-      for (const r of rows) if (r.by[c.id]) { filled++; cost += r.by[c.id].cost; }
-      return { chain: c, cost, filled, total: rows.length, full: filled === rows.length && rows.length > 0 };
-    }).sort((a, b) => b.full - a.full || a.cost - b.cost);
-    return { rows, totals };
-  }
   /** Turns a list item into one Exact Product, keeping a piece count typed as the number of packs. */
   function makeExact(itemId, exactId) {
     const it = list.find((i) => i.id === itemId), g = R.exact.get(exactId);
@@ -634,36 +618,8 @@
     "Het wordt apart vergeleken en telt niet mee in de tassen, die per soort product vergelijken en vaak een huismerk kiezen." +
     (noEanChains.length ? " " + andList(noEanChains.map((c) => esc(c.name))) + " publiceert geen EAN's: wat daar waarschijnlijk hetzelfde is, op merk, naam en verpakking, tonen we wel, maar telt nergens mee." : "") + "</p>";
 
-  function snapshot() {
-    const rows = list.filter((i) => !i.exact).map((item) => {
-      const by = Object.fromEntries(chains.map((c) => [c.id, line(c.id, item)]));
-      const avail = chains.filter((c) => by[c.id]).sort((a, b) => by[a.id].cost - by[b.id].cost);
-      return { item, by, avail, min: avail.length ? by[avail[0].id].cost : null, max: avail.length ? by[avail.at(-1).id].cost : null };
-    });
-    const totals = bagChains.map((c) => {
-      let cost = 0, filled = 0;
-      for (const r of rows) if (r.by[c.id]) { filled++; cost += r.by[c.id].cost; }
-      return { chain: c, cost, filled, total: rows.length, full: filled === rows.length && rows.length > 0 };
-    }).sort((a, b) => b.full - a.full || a.cost - b.cost);
-    const best = totals.find((t) => t.full) || null;
-    // The best two-chain combination: each item from the cheaper of the pair.
-    let combo = null;
-    for (let i = 0; i < chains.length; i++) for (let j = i + 1; j < chains.length; j++) {
-      const a = chains[i], b = chains[j]; let cost = 0, filled = 0; const from = {};
-      if (a.offersOnly && b.offersOnly) continue;
-      for (const r of rows) {
-        const la = r.by[a.id], lb = r.by[b.id];
-        if (!la && !lb) continue;
-        const pick = !lb || (la && la.cost <= lb.cost) ? a : b;
-        filled++; from[r.item.id] = pick.id; cost += r.by[pick.id].cost;
-      }
-      const cand = { ids: [a.id, b.id], cost, filled, from };
-      if (!combo || cand.filled > combo.filled || (cand.filled === combo.filled && cand.cost < combo.cost)) combo = cand;
-    }
-    // Only worth showing when it fills the list, beats one shop, and really uses both.
-    if (combo && (combo.filled < rows.length || (best && combo.cost >= best.cost) || new Set(Object.values(combo.from)).size < 2)) combo = null;
-    return { rows, totals, best, combo, exact: exactSnapshot() };
-  }
+  /** The list compared across Chains, this week: bags, the best two-shop plan, Exact Products apart (resolve.js). */
+  const snapshot = () => R.compare(list, { corrections });
   function currentPlan(s) {
     if (plan && plan.kind === "combo" && s.combo && s.combo.ids.join() === plan.ids.join()) return plan;
     if (plan && plan.kind === "single" && chainById(plan.ids[0])) return plan;
@@ -678,7 +634,8 @@
     return '<div class="pl' + (mini ? " mini" : "") + '" aria-hidden="true">' + r.avail.map((c, i) => {
       const x = span ? (r.by[c.id].cost - r.min) / span * 100 : 0;
       const k = Math.round(x); seen[k] = (seen[k] || 0) + 1;
-      return '<span class="dot' + (i === 0 ? " min" : "") + '" style="--c:' + c.color + ";left:calc(" + x + "% + " + (seen[k] - 1) * (mini ? 7 : 12) + 'px)" title="' +
+      const nudge = (seen[k] - 1) * (mini ? 7 : 12) * (x > 50 ? -1 : 1);
+      return '<span class="dot' + (i === 0 ? " min" : "") + '" style="--c:' + c.color + ";left:calc(" + x + "% + " + nudge + 'px)" title="' +
         esc(c.name) + " " + euro(r.by[c.id].cost) + '"></span>';
     }).join("") + "</div>";
   }
@@ -689,96 +646,24 @@
   // the catalogue. Each ingredient is a Requirement written as a shopper would
   // type it, read through the same vocabulary as the list, so a Correction
   // made on the list holds in every recipe that needs that Ingredient.
-  const req = (text) => parse(text);
-  const ONION = req("500 g uien"), POTATO = req("1 kg kruimige aardappelen"), MINCE = req("500 g rundergehakt");
-  const MILK = (ml) => req(ml + " ml halfvolle melk"), CHEESE = req("150 g belegen kaas");
-  const RECIPES = [
-    { id: "andijvie", name: "Andijviestamppot met rookworst", persons: 4, minutes: 30, ingredients: [
-      POTATO, req("500 g andijvie"), req("275 g rookworst"), MILK(250), ONION],
-      pantry: ["boter", "zout", "peper"], steps: [
-      "Schil de aardappelen, snijd ze in gelijke stukken en kook ze in ongeveer 20 minuten gaar in water met een snuf zout.",
-      "Leg intussen de rookworst 20 minuten in heet water dat net niet meer kookt.",
-      "Snipper de ui en bak hem in een klontje boter in 5 minuten zacht en goudgeel.",
-      "Was de andijvie, laat hem goed uitlekken en snijd hem fijn.",
-      "Giet de aardappelen af en stamp ze fijn met de warme melk en een klontje boter.",
-      "Schep de rauwe andijvie en de gebakken ui erdoor en breng op smaak met zout en peper. Serveer met de rookworst in plakken."] },
-    { id: "wraps", name: "Wraps met gehakt, paprika en avocado", persons: 4, minutes: 25, ingredients: [
-      req("8 tortilla's"), MINCE, req("500 g puntpaprika"), req("2 avocado's"), ONION],
-      pantry: ["olie", "zout", "peper", "paprikapoeder"], steps: [
-      "Snipper de ui en snijd de puntpaprika in reepjes.",
-      "Verhit een scheutje olie in een koekenpan en bak het gehakt rul. Breng op smaak met zout, peper en een theelepel paprikapoeder.",
-      "Bak de ui en de paprika 5 minuten mee tot ze zacht zijn.",
-      "Halveer de avocado's, haal de pit eruit en snijd het vruchtvlees in plakjes.",
-      "Verwarm de tortilla's een halve minuut per stuk in een droge koekenpan.",
-      "Vul de wraps met het gehaktmengsel en de avocado, vouw de onderkant om en rol ze op."] },
-    { id: "pompoen", name: "Romige pompoensoep", persons: 4, minutes: 40, ingredients: [
-      req("1 pompoen"), ONION, req("500 g wortelen"), req("250 ml kookroom")],
-      pantry: ["olie", "2 bouillonblokjes", "zout", "peper"], steps: [
-      "Halveer de pompoen, schep de pitten eruit en snijd hem in blokjes. Een oranje pompoen hoef je niet te schillen.",
-      "Snipper de ui en snijd de wortelen in plakjes.",
-      "Fruit de ui 3 minuten in een soeppan met een scheutje olie. Voeg pompoen en wortel toe en bak 5 minuten mee.",
-      "Voeg 1 liter water en de bouillonblokjes toe en laat 25 minuten zachtjes koken.",
-      "Pureer de soep glad met een staafmixer en roer de kookroom erdoor.",
-      "Breng op smaak met zout en peper en warm nog even door."] },
-    { id: "spruitjes", name: "Spruitjes met gehaktbal en puree", persons: 4, minutes: 45, ingredients: [
-      req("750 g spruiten"), POTATO, MINCE, MILK(250)],
-      pantry: ["boter", "zout", "peper", "1 ei", "paneermeel"], steps: [
-      "Meng het gehakt met het ei, 2 eetlepels paneermeel, zout en peper en draai er 4 ballen van.",
-      "Bak de gehaktballen rondom bruin in een flinke klont boter. Zet het vuur laag en laat ze met de deksel op de pan 20 minuten garen.",
-      "Schil de aardappelen en kook ze in ongeveer 20 minuten gaar.",
-      "Maak de spruiten schoon, snijd een kruisje in de steel en kook ze 8 tot 10 minuten.",
-      "Giet de aardappelen af en stamp ze met de warme melk en een klontje boter tot een gladde puree.",
-      "Serveer de puree met de spruiten, de gehaktballen en de jus uit de pan."] },
-    { id: "pesto", name: "Spaghetti pesto met broccoli", persons: 4, minutes: 20, ingredients: [
-      req("500 g spaghetti"), req("185 g pesto"), req("500 g broccoli"), CHEESE],
-      pantry: ["zout"], steps: [
-      "Breng een grote pan water met een flinke snuf zout aan de kook en kook de spaghetti volgens de verpakking.",
-      "Snijd de broccoli in kleine roosjes en kook ze de laatste 4 minuten mee met de pasta.",
-      "Schep een kopje kookwater apart en giet de pasta en broccoli af.",
-      "Meng de pesto erdoor, met een scheutje kookwater voor een smeuïge saus.",
-      "Snijd de kaas in reepjes en strooi die over de pasta."] },
-    { id: "bloemkool", name: "Bloemkool met kaassaus en aardappelen", persons: 4, minutes: 35, ingredients: [
-      req("1 bloemkool"), MILK(500), CHEESE, POTATO],
-      pantry: ["30 g boter", "3 el bloem", "zout", "peper", "nootmuskaat"], steps: [
-      "Schil de aardappelen en kook ze in ongeveer 20 minuten gaar.",
-      "Snijd de bloemkool in roosjes en kook ze in 8 minuten beetgaar.",
-      "Smelt de boter in een steelpan, roer de bloem erdoor en laat dit 1 minuut zachtjes garen.",
-      "Voeg al roerend scheutje voor scheutje de melk toe tot je een gladde saus hebt.",
-      "Scheur de kaas erin en laat smelten. Breng op smaak met zout, peper en een snufje nootmuskaat.",
-      "Giet de kaassaus over de bloemkool en serveer met de aardappelen."] },
-  ];
+  // The recipes themselves are data, in recipes.js (#20, ADR-0007).
+  const RECIPES = (window.RECIPES || []).map((r) => ({ ...r, ingredients: r.requirements.map((text) => parse(text)) }));
+  /** The credit line a recipe adapted from Wikibooks carries wherever it is shown. */
+  const credit = (rc) => rc.source === "own" ? "" : '<p class="credit">Bewerkt naar <a href="' + esc(rc.source.url) + '" target="_blank" rel="noopener"><i>' +
+    esc(rc.source.title) + '</i></a> op Wikibooks, <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.nl" target="_blank" rel="noopener">CC BY-SA 4.0</a></p>';
   const ingText = (g) => qtyText(g) + " " + g.noun;
-  const ingCache = {};
-  /** The cheapest way to buy one ingredient at one chain, Offers included. */
-  function ingLine(chainId, g, w) {
-    const key = w + "|" + chainId + "|" + g.text;
-    if (key in ingCache) return ingCache[key];
-    // A Correction for this Ingredient at this Chain holds here too.
-    const fixed = corrections[correctionKey(chainId, g)];
-    const pool = fixed && products[chainId][fixed] ? [products[chainId][fixed]] : R.candidates(chainId, g);
-    const best = pool.map((p) => {
-      const o = offerFor(p, w), onOffer = !!o;
-      const price = o && o.priceCents ? o.priceCents : p.shelfPriceCents;
-      const { packs } = R.packsFor(p, g);
-      return { p, o, packs, cost: packs * price, onOffer, offer: o ? o.wording : null,
-        was: o && o.priceCents && o.priceCents < p.shelfPriceCents ? packs * p.shelfPriceCents : null };
-    }).sort((a, b) => a.cost - b.cost)[0] || null;
-    return (ingCache[key] = best);
-  }
-  function priceRecipe(rc, w = week) {
-    const at = bagChains.map((c) => {
-      const lines = rc.ingredients.map((g) => ingLine(c.id, g, w)), have = lines.filter(Boolean);
-      return { chain: c, lines, cost: have.reduce((n, l) => n + l.cost, 0), missing: lines.length - have.length,
-        deals: have.filter((l) => l.onOffer).length, saving: have.reduce((n, l) => n + (l.was ? l.was - l.cost : 0), 0) };
-    }).sort((a, b) => a.missing - b.missing || a.cost - b.cost);
-    return { rc, at, best: at[0] };
-  }
+  /** The cheapest way to buy one ingredient at one chain, Offers included; a Correction holds here too. */
+  const ingLine = (chainId, g, w) => R.line(chainId, g, { week: w, corrections, choose: "pack" });
+  /** Complete where at least one Chain sells every ingredient (resolve.js priceRecipe). */
+  const priceRecipe = (rc, w = week) => ({ rc, ...R.priceRecipe(rc.ingredients, { week: w, corrections }) });
   // This week, the most saved first. Next week no Offer that has yet to start
   // has a price, so ranking on savings would only reward the few Offers that
   // run on: recipes rank on how many ingredients are on Offer then.
-  const rankedRecipes = (w = week) => RECIPES.map((rc) => priceRecipe(rc, w)).sort(w === "volgende"
-    ? (a, b) => b.best.deals - a.best.deals || b.best.saving - a.best.saving
-    : (a, b) => b.best.saving - a.best.saving || b.best.deals - a.best.deals);
+  const rankedRecipes = (w = week) => RECIPES.map((rc) => priceRecipe(rc, w)).sort((a, b) => b.complete - a.complete || (w === "volgende"
+    ? b.best.deals - a.best.deals || b.best.saving - a.best.saving
+    : b.best.saving - a.best.saving || b.best.deals - a.best.deals));
+  /** What one person pays, or why there is no such figure. */
+  const perPerson = (rc, best, complete) => complete ? euro(Math.round(best.cost / rc.persons)) + " p.p." : "nergens compleet te koop";
   function addRecipe(id) {
     const rc = RECIPES.find((r) => r.id === id); if (!rc) return;
     let n = 0;
@@ -794,6 +679,50 @@
     : '<li><span class="l">' + esc(ingText(g)) + '</span><span class="p">' + euro(l.cost) + '</span><span class="d">' +
       (l.onOffer ? offerChip(l.p, l.o) + " " : "") + (l.was ? '<span class="was">' + euro(l.was) + "</span> " : "") +
       esc((l.packs > 1 ? l.packs + "× " : "") + l.p.name) + "</span></li>";
+
+  // ── Bladeren: what is cheap where, with no list (#36) ─────────────────
+  // Per Ingredient, each Chain's cheapest Product of it per kg, liter or
+  // piece today, chosen as a list item naming only the Ingredient would be
+  // (fresh where it is sold fresh). Priced Offers are in that price already.
+  // An Ingredient sits in its main aisle; a catalogue built before it said
+  // which (vocabulary[].aisle) shows them all as one.
+  const AISLES = [["produce", "Groente & fruit"], ["meat", "Vlees"], ["fish", "Vis"], ["vega", "Vegetarisch"], ["dairy", "Zuivel & eieren"],
+    ["cheese", "Kaas"], ["deli", "Vleeswaren & beleg"], ["bakery", "Brood"], ["pantry", "Voorraadkast"], ["conserves", "Conserven"],
+    ["frozen", "Diepvries"], ["readymeal", "Kant-en-klaar"], ["snacks", "Snacks & noten"], ["drinks", "Dranken"]];
+  let browseData = null;
+  function browseIndex() {
+    if (browseData) return browseData;
+    // Shared with the morning coverage report (prototype/resolve.js), in this page's Chains, which carry their colour.
+    const own = new Map(chains.map((c) => [c.id, c])), mine = (c) => own.get(c.id);
+    const S = R.spreads();
+    const ingredients = S.ingredients.map((g) => ({ ...g, aisle: g.d.aisle || null, avail: g.avail.map(mine) }));
+    const byId = new Map(ingredients.map((g) => [g.d.id, g]));
+    const worth = S.worth.map((w) => ({ ...w, c: mine(w.c), rival: mine(w.rival), g: byId.get(w.g.d.id) }));
+    // Exact Products (#15) proven by EAN at two Chains or more, the largest
+    // difference in what one pack costs first.
+    const same = [];
+    for (const g of R.exact.values()) {
+      const at = eanChains.map((c) => ({ c, p: R.exactProduct(c.id, g.id) })).filter((x) => x.p)
+        .map((x) => ({ ...x, cost: R.packCents(x.p, offerFor(x.p, "nu")) })).sort((a, b) => a.cost - b.cost);
+      // An Offer with no price ("1+1 gratis") may well make the dearer one the
+      // cheaper (ADR-0002): its difference would be a claim we cannot make.
+      if (at.length < 2 || at.at(-1).cost === at[0].cost || at.slice(1).some((x) => isOffer(x.p) && x.p.offerPriceCents === null)) continue;
+      same.push({ g, at, diff: at.at(-1).cost - at[0].cost });
+    }
+    same.sort((a, b) => b.diff - a.diff);
+    return (browseData = { ingredients, worth, same, aisles: AISLES.filter(([a]) => ingredients.some((g) => g.aisle === a)) });
+  }
+  const BROWSE_PAGE = 40;
+  /**
+   * Differences over SPREAD_CHECK held back at the foot of Bladeren until
+   * looked at: more often a wrong match or a slipped unit than a bargain.
+   */
+  const unchecked = (n, body) => n ? '<div class="sec"><h2>Nog niet gecontroleerd</h2><span>' + n + " · meer dan " + Math.round(window.MealdealResolve.SPREAD_CHECK * 100) +
+    "% verschil</span></div>" + '<p class="hint">Zo’n groot verschil is vaker een verkeerd gekoppeld product of een verkeerde eenheid dan een koopje. We kijken het eerst na; tot dan staat het hier en niet bovenaan.</p>' + body : "";
+  const pct = (share) => Math.round(share * 100) + "%";
+  /** "1 kg aardappelen": an Ingredient as a list item, in the unit it compares by. */
+  const ingredientItem = (d) => parse((d.unit === "piece" ? "1 " : "1 " + d.unit + " ") + d.name);
+  const onList = (d) => list.some((i) => i.ingredient === d.id);
 
   // ── Pages ─────────────────────────────────────────────────────────────
   const PAGES = {
@@ -812,15 +741,17 @@
       const deals = [...seen.values()].sort((a, b) => gain(b.l) - gain(a.l)).map(({ c, l }) =>
         '<div class="deal"><span class="n">' + esc(l.p.name) + "</span><span>" + tag(c) + '</span><span class="v">' + euro(l.cost) +
         (l.was ? '<span class="was">' + euro(l.was) + "</span>" : "") + '</span><span class="w">' + offerChip(l.p, l.o) + "</span></div>").join("");
-      const cards = priced.map(({ rc, at, best }) =>
+      const shown = showAllRecipes ? priced : priced.slice(0, RECIPES_SHOWN);
+      const cards = shown.map(({ rc, at, best, complete }) =>
         '<article class="rc"><div class="hd" data-act="open-recipe" data-id="' + rc.id + '" role="button" tabindex="0" aria-label="Bereiding van ' + esc(rc.name) + '">' +
-        '<span class="ex">voorbeeldrecept</span><h3>' + esc(rc.name) + "</h3>" +
-        '<div class="meta">' + rc.persons + " personen · " + rc.minutes + " min · " + euro(Math.round(best.cost / rc.persons)) + " p.p.</div>" +
+        "<h3>" + esc(rc.name) + "</h3>" +
+        '<div class="meta">' + rc.persons + " personen · " + rc.minutes + " min · " + perPerson(rc, best, complete) + "</div>" +
         '<div class="save">' + (best.saving ? "<b>" + euro(best.saving) + " korting</b>" : "") + "<span>" + best.deals + " van " + rc.ingredients.length + " in de aanbieding bij " + esc(best.chain.name) + "</span></div>" +
         '<span class="more">Bekijk bereiding →</span></div>' +
         "<ul>" + rc.ingredients.map((g, i) => ingRow(g, best.lines[i], best.chain)).join("") + "</ul>" +
         '<div class="ft"><div class="chains">' + at.map((x, i) => '<span class="' + (i ? "" : "best") + '">' + tag(x.chain) + " <b>" + euro(x.cost) + "</b>" + (x.missing ? " · " + x.missing + " mist" : "") + "</span>").join("") + "</div>" +
-        '<button class="btn' + (added.has(rc.id) ? " on" : "") + '" data-act="recipe" data-id="' + rc.id + '">' + (added.has(rc.id) ? "✓ Op je lijst" : "Zet op mijn lijst") + "</button></div></article>").join("");
+        '<button class="btn' + (added.has(rc.id) ? " on" : "") + '" data-act="recipe" data-id="' + rc.id + '">' + (added.has(rc.id) ? "✓ Op je lijst" : "Zet op mijn lijst") + "</button></div>" + credit(rc) + "</article>").join("") +
+        (priced.length > shown.length ? '<button class="btn ghost more-rc" data-act="all-recipes">Alle ' + priced.length + " recepten tonen</button>" : "");
       const next = week === "volgende";
       return "<h1>" + (next ? "Recepten voor volgende week" : "Recepten van deze week") + "</h1>" + weekSwitch() +
         (next
@@ -830,7 +761,77 @@
         '<p class="hint">' + esc(hint) + "</p>" +
         '<div class="sec"><h2>' + (next ? "Volgende week in de aanbieding" : "In de aanbieding") + "</h2><span>waar deze recepten op draaien</span></div><div class='deals'>" + deals + "</div>" +
         '<div class="recipes">' + cards + "</div>" +
-        '<p class="note">De recepten zijn voorbeelden. Prijzen, producten en acties zijn echt, uit de prijzen van ' + esc(chains[0].observedAt) + ".</p>";
+        '<p class="note">Recepten van mealdeal, en enkele bewerkt naar het Wikibooks Kookboek. Prijzen, producten en acties komen uit de prijzen van ' + esc(chains[0].observedAt) + ". Wat uit de kast komt, zoals zout en olie, is niet meegerekend.</p>";
+    } },
+
+    bladeren: { label: "Bladeren", ic: "▦", render() {
+      const B = browseIndex(), unit = (d) => ({ kg: "/kg", l: "/l", piece: "/stuk" })[d.unit];
+      // An aisle remembered from a catalogue that had it, in one that does not.
+      if (!B.aisles.some(([a]) => a === browse.aisle)) browse.aisle = "alle";
+      const aisleOk = (g) => browse.aisle === "alle" || g.aisle === browse.aisle;
+      const limit = BROWSE_PAGE + browseShown;
+      const more = (n) => n > limit ? '<button class="btn ghost more-br" data-act="browse-more">Nog ' + Math.min(BROWSE_PAGE, n - limit) + " tonen</button>" : "";
+      const viewBtn = (id, label) => '<button data-act="browse-view" data-id="' + id + '" aria-pressed="' + (browse.view === id) + '">' + label + "</button>";
+      const head = "<h1>Bladeren</h1>" +
+        '<p class="lede">Wat waar goedkoop is, zonder lijst. Per ingrediënt de goedkoopste prijs per kilo, liter of stuk bij elke winkel vandaag.</p>' +
+        freshness("Prijzen van") + cardNote() + '<p class="hint">' + esc(hint) + "</p>" +
+        '<div class="views"><div class="wk" role="group" aria-label="Weergave">' + viewBtn("verschil", "Verschil per winkel") +
+        viewBtn("aanbiedingen", "Aanbiedingen die lonen") + viewBtn("zelfde", "Zelfde product") + "</div>" +
+        (browse.view === "verschil" ? '<span class="sort">Volgorde <button data-act="browse-sort" data-id="verschil" aria-pressed="' + (browse.sort === "verschil") + '">grootste verschil</button>' +
+          '<button data-act="browse-sort" data-id="az" aria-pressed="' + (browse.sort === "az") + '">A–Z</button></span>' : "") + "</div>" +
+        (browse.view !== "zelfde" && B.aisles.length ? '<div class="aisles" role="group" aria-label="Afdeling">' +
+          [["alle", "Alles"], ...B.aisles].map(([id, label]) => '<button data-act="browse-aisle" data-id="' + id + '" aria-pressed="' + (browse.aisle === id) + '">' + label + "</button>").join("") + "</div>" : "");
+
+      if (browse.view === "aanbiedingen") {
+        const all = B.worth.filter((w) => aisleOk(w.g)), rows = all.filter((w) => !w.unchecked), held = all.filter((w) => w.unchecked);
+        const card = ({ p, c, g, rival, rivalCost, share, unchecked }) =>
+            '<div class="it"><div class="nm">' + esc(p.name) + '</div><div class="v">' + euro(p.offerPriceCents) + "<small>" + euro(p.ingredientUnitPriceCents) + unit(g.d) + "</small></div>" +
+            '<div class="why">' + tag(c) + " " + offerChip(p, offerFor(p, "nu")) + (unchecked ? '<span class="delta">' + pct(share) + " goedkoper?</span>" : '<span class="delta zero">' + pct(share) + " goedkoper</span>") + "</div>" +
+            '<div class="why">' + esc(g.d.name) + " elders vanaf " + tag(rival) + " " + euro(rivalCost) + unit(g.d) + "</div>" +
+            '<div class="why"><button class="add-i' + (onList(g.d) ? " on" : "") + '" data-act="browse-add" data-id="' + esc(g.d.id) + '">' + (onList(g.d) ? "✓ Op je lijst" : "+ " + esc(g.d.name) + " op je lijst") + "</button></div></div>";
+        return head + '<div class="sec"><h2>Aanbiedingen die lonen</h2><span>' + rows.length + " · goedkoper dan elke andere winkel, grootste verschil bovenaan</span></div>" +
+          (rows.length ? '<div class="worth">' + rows.slice(0, limit).map(card).join("") + "</div>" + more(rows.length)
+            : '<p class="lede">Hier is nu geen aanbieding goedkoper dan elders.</p>') + unchecked(held.length, '<div class="worth">' + held.map(card).join("") + "</div>") +
+          '<p class="note">Alleen aanbiedingen met een eigen prijs: een actie als “1+1 gratis” of “2e halve prijs” heeft er geen, en die rekenen we niet om. ' +
+          "Vergeleken met de goedkoopste prijs per eenheid van hetzelfde ingrediënt bij de andere winkels vandaag, niet met wat de winkel zelf als oude prijs noemt.</p>";
+      }
+
+      if (browse.view === "zelfde") {
+        return head + '<div class="sec"><h2>Zelfde product, andere prijs</h2><span>' + B.same.length + " · hetzelfde merkartikel, herkend aan de EAN, grootste verschil bovenaan</span></div>" +
+          '<div class="worth">' + B.same.slice(0, limit).map(({ g, at, diff }) =>
+            '<div class="it"><div class="nm">' + esc(g.name) + '</div><div class="v">+' + euro(diff) + "<small>verschil</small></div>" +
+            '<div class="xs">' + at.map(({ c, p, cost }, i) => "<span>" + tag(c) + " <b>" + euro(cost) + "</b>" + (isOffer(p) ? " " + offerChip(p, offerFor(p, "nu")) : "") +
+              (i === 0 ? ' <span class="delta zero">laagst</span>' : ' <span class="delta">+' + euro(cost - at[0].cost) + "</span>") + "</span>").join("") + "</div>" +
+            '<div class="why"><button class="add-i' + (list.some((i) => i.exact === g.id) ? " on" : "") + '" data-act="make-exact-new" data-id="' + esc(g.id) + '">' + (list.some((i) => i.exact === g.id) ? "✓ Op je lijst" : "+ Op je lijst") + "</button></div></div>").join("") + "</div>" + more(B.same.length) +
+          exactNote();
+      }
+
+      const all = B.ingredients.filter((g) => g.avail.length && aisleOk(g)), held = all.filter((g) => g.unchecked).sort((a, b) => b.share - a.share);
+      const rows = all.filter((g) => !g.unchecked)
+        .sort(browse.sort === "az" ? (a, b) => a.d.name.localeCompare(b.d.name, "nl") : (a, b) => b.share - a.share || a.d.name.localeCompare(b.d.name, "nl"));
+      const line = (g) => {
+        const open = browseOpen === g.d.id, lo = g.avail[0], hi = g.avail.at(-1), r = { avail: g.avail, by: g.by, min: g.min, max: g.max };
+        return '<div class="df-row br-row"><button data-act="browse-row" data-id="' + esc(g.d.id) + '" aria-expanded="' + open + '">' +
+          '<span class="nm">' + esc(g.d.name) + '<span class="q">' + g.avail.length + " van " + chains.length + " winkels</span></span>" +
+          '<span class="plw">' + priceLine(r) + '<div class="pl-ends"><span class="lo">' + euro(g.min) + unit(g.d) + " " + esc(lo.name) + "</span><span>" +
+          (g.avail.length > 1 ? euro(g.max) + unit(g.d) + " " + esc(hi.name) : "") + "</span></div></span>" +
+          '<span class="spread">' + (g.unchecked ? "−" + pct(g.share) + "?<small>nog te controleren</small>" : g.avail.length < 2 ? "—<small>één winkel</small>" : g.share ? "<b>−" + pct(g.share) + "</b><small>" + esc(lo.name) + " vs. midden</small>" : g.max > g.min ? "—<small>niet onder het midden</small>" : "gelijk<small>overal</small>") + "</span></button>" +
+          (open ? '<div class="open">' + g.avail.map((c) => {
+            const { p, cost } = g.by[c.id], o = offerFor(p, "nu");
+            return '<div class="pr">' + tag(c) + '<span class="pn" title="' + esc(p.name) + '">' + (o ? offerChip(p, o) + " " : "") + esc(p.name) + (p.packaging ? " · " + esc(p.packaging) : "") + "</span>" +
+              '<span class="v">' + euro(cost) + unit(g.d) + "</span>" + (cost > g.min ? '<span class="delta">+' + pct((cost - g.min) / g.min) + "</span>" : '<span class="delta zero">laagst</span>') + "</div>";
+          }).join("") + '<div class="foot-i"><button class="add-i' + (onList(g.d) ? " on" : "") + '" data-act="browse-add" data-id="' + esc(g.d.id) + '">' +
+            (onList(g.d) ? "✓ Op je lijst" : "+ Op je lijst") + "</button></div></div>" : "") + "</div>";
+      };
+      return head + '<div class="sec"><h2>' + (browse.aisle === "alle" ? "Alle ingrediënten" : esc(AISLES.find(([a]) => a === browse.aisle)?.[1] || "")) + "</h2><span>" + rows.length +
+        (browse.sort === "az" ? " · op naam" : " · waar de winkel het meest uitmaakt bovenaan") + " · tik voor de producten</span></div>" +
+        '<div class="legend">' + chains.map(tag).join("") + "<span>· omcirkeld = goedkoopst</span></div>" +
+        '<div class="diffs">' + rows.slice(0, limit).map(line).join("") + "</div>" + more(rows.length) +
+        unchecked(held.length, '<div class="diffs">' + held.map(line).join("") + "</div>") +
+        '<p class="note">Per winkel het goedkoopste product van dat ingrediënt per kilo, liter of stuk, vers waar het vers verkocht wordt, aanbiedingen met een prijs meegerekend. ' +
+        "Het percentage is hoeveel goedkoper de goedkoopste winkel is dan de middelste: wat je bespaart door de goede winkel te kiezen in plaats van een gewone. " +
+        "Kruiden, bouillon en brood worden in heel verschillende vormen verkocht; tik zo'n ingrediënt aan om te zien welke producten vergeleken worden. Alleen producten die we aan een ingrediënt koppelen staan hier" +
+        (offersOnly.length ? "; " + andList(offersOnly.map((c) => esc(c.name))) + " alleen met " + (offersOnly.length > 1 ? "hun" : "zijn") + " aanbiedingen" : "") + ".</p>";
     } },
 
     lijst: { label: "Lijst", ic: "☰", render(s) {
@@ -858,10 +859,23 @@
           '<div class="best">' + best + "</div>" + priceLine(r, true) + sparkline(r.item) + offersFor(r.item) + "</div>";
       };
       const staples = s.rows.filter((r) => r.item.staple), once = s.rows.filter((r) => !r.item.staple), ex = s.exact.rows;
+      // Staples cheaper today than usual, per Chain (#19). The rule is in
+      // resolve.js (priceDrop) and CONTEXT.md: no alert without enough history.
+      const drops = staples.map((r) => ({ r, at: chains.map((c) => ({ c, d: R.priceDropAt(c.id, r.item) })).filter((x) => x.d).sort((a, b) => a.d.cents - b.d.cents) }))
+        .filter((x) => x.at.length).sort((a, b) => Math.max(...b.at.map((x) => x.d.percent)) - Math.max(...a.at.map((x) => x.d.percent)));
+      const measured = (window.PRICES && window.PRICES.dates.length) || 0, need = window.MealdealResolve.USUAL_MIN_DAYS;
+      const dropBlock = drops.length
+        ? '<div class="drops"><h2>Nu goedkoper dan normaal</h2><ul>' + drops.map(({ r, at }) => "<li><b>" + esc(r.item.noun) + "</b>" +
+            at.map(({ c, d }) => "<span>" + tag(c) + " <b>" + euro(d.cents) + "</b> " + (UNIT_TEXT[r.item.unit] || "") +
+              ' <span class="delta zero">−' + d.percent + "%</span> " + '<span class="nc">normaal ' + euro(d.usualCents) + (d.offer ? " · aanbieding" : "") + "</span></span>").join("") + "</li>").join("") +
+          '</ul><p class="note">Vaste boodschappen die vandaag minstens ' + Math.round(window.MealdealResolve.DROP_SHARE * 100) + "% onder hun normale prijs zijn: de middelste laagste prijs per dag van de afgelopen " + (measured - 1) + " dagen. Goed moment om in te slaan.</p></div>"
+        : staples.length && measured <= need
+          ? '<p class="note">Zodra er ' + (need + 1) + " dagen prijzen gemeten zijn (nu " + measured + "), zie je hier welke vaste boodschappen goedkoper zijn dan normaal.</p>"
+          : "";
       const offer = exactOffer && list.some((i) => i.id === exactOffer.itemId && !i.exact) ? exactOffer : null;
-      const p = currentPlan(s), top = rankedRecipes(week)[0];
+      const p = currentPlan(s), top = rankedRecipes(week).find((x) => x.complete && x.best.deals);
       return "<h1>Boodschappenlijst</h1><p class=\"lede\">Wat er in huis moet komen. Waar het het goedkoopst is, zie je bij Vergelijk.</p>" +
-        freshness("Prijzen van") + cardNote() + weekSwitch() +
+        freshness("Prijzen van") + cardNote() + dropBlock + weekSwitch() +
         (top ? '<div class="banner"><span>' + (week === "volgende" ? "Volgende week" : "Deze week") + ': <b>' + esc(top.rc.name) + "</b>, " + top.best.deals + " ingrediënt" + (top.best.deals === 1 ? "" : "en") + ' in de aanbieding</span><button class="btn" data-act="go" data-id="recepten">' + RECIPES.length + " recepten bekijken</button></div>" : "") +
         '<form class="add"><label for="q" hidden>Op de lijst zetten</label><input id="q" name="q" placeholder="500 g rundergehakt, 2 courgettes, melk…" autocomplete="off"><button>Erbij</button></form>' +
         '<p class="hint' + (hint.startsWith("!") ? " warn" : "") + '">' + esc(hint.replace(/^!/, "")) + "</p>" +
@@ -1086,10 +1100,10 @@
 
   function recipeSheet(id) {
     const rc = RECIPES.find((r) => r.id === id); if (!rc) return "";
-    const { at, best } = priceRecipe(rc), ticked = stepsDone[rc.id] || new Set();
+    const { at, best, complete } = priceRecipe(rc), ticked = stepsDone[rc.id] || new Set();
     return '<div class="scrim" data-act="close"></div><section class="sheet rd" role="dialog" aria-modal="true" aria-labelledby="sheet-title">' +
-      '<header><div><span class="ex">voorbeeldrecept</span><h2 id="sheet-title">' + esc(rc.name) + "</h2>" +
-      '<div class="meta">' + rc.persons + " personen · " + rc.minutes + " min · " + euro(Math.round(best.cost / rc.persons)) + " p.p." + (best.saving ? " · " + euro(best.saving) + " korting bij " + esc(best.chain.name) : "") + "</div></div>" +
+      '<header><div><h2 id="sheet-title">' + esc(rc.name) + "</h2>" +
+      '<div class="meta">' + rc.persons + " personen · " + rc.minutes + " min · " + perPerson(rc, best, complete) + (best.saving ? " · " + euro(best.saving) + " korting bij " + esc(best.chain.name) : "") + "</div></div>" +
       '<button class="x" data-act="close" aria-label="Sluiten">✕</button></header>' +
       '<div class="body"><div class="ing"><h3>Ingrediënten</h3><ul>' + rc.ingredients.map((g, i) => ingRow(g, best.lines[i], best.chain)).join("") + "</ul>" +
       '<div class="kast"><b>Uit de kast:</b> ' + rc.pantry.map(esc).join(", ") + "</div>" +
@@ -1097,7 +1111,7 @@
       '<button class="btn' + (added.has(rc.id) ? " on" : "") + '" data-act="recipe" data-id="' + rc.id + '">' + (added.has(rc.id) ? "✓ Op je lijst" : "Zet op mijn lijst") + "</button></div>" +
       "<div><h3>Bereiding</h3><ol>" + rc.steps.map((t, i) => '<li><button data-act="step" data-id="' + i + '" class="' + (ticked.has(i) ? "done" : "") + '" aria-pressed="' + ticked.has(i) + '">' +
         '<span class="n">' + (ticked.has(i) ? "✓" : i + 1) + '</span><span class="t">' + esc(t) + "</span></button></li>").join("") +
-      '</ol><p class="tip">Tik een stap aan als hij klaar is.</p></div></div></section>';
+      '</ol><p class="tip">Tik een stap aan als hij klaar is.</p>' + credit(rc) + "</div></div></section>";
   }
   function fixSheet(chainId, itemId) {
     const item = list.find((i) => i.id === itemId), chain = chainById(chainId); if (!item || !chain) return "";
@@ -1107,7 +1121,7 @@
       '<header><div><span class="ct" style="--c:' + chain.color + '">' + esc(chain.name) + '</span><h2 id="sheet-title">' + esc(qtyText(item) + " " + item.noun) + "</h2>" +
       '<div class="meta">Gekozen op de laagste kiloprijs. Kies het product dat je echt bedoelt; dat onthouden we voor de volgende keer.</div></div>' +
       '<button class="x" data-act="close" aria-label="Sluiten">✕</button></header><div class="list">' + ids.map((id) => {
-        const p = products[chainId][id], o = offerFor(p, "nu"), price = o && o.priceCents ? o.priceCents : p.shelfPriceCents;
+        const p = products[chainId][id], o = offerFor(p, "nu"), price = R.packCents(p, o);
         return '<button class="alt' + (id === current ? " on" : "") + '" data-act="pick" data-id="' + id + '"><span class="n">' + esc(p.name) + '</span><span class="v">' + euro(price) + "</span>" +
           '<span class="m">' + euro(R.unitPrice(p, item)) + ({ kg: "/kg", l: "/l", piece: " per stuk" })[item.ingredient ? item.unit : p.comparisonUnit] + (p.packaging ? " · " + esc(p.packaging) : "") +
           (o ? " · " + offerChip(p, o) : "") + "</span></button>" +
@@ -1127,7 +1141,7 @@
     const counts = { recepten: RECIPES.length, lijst: s.rows.length + s.exact.rows.length, vergelijk: bagChains.length, winkelen: s.rows.filter((r) => !done.has(r.item.id)).length };
     for (const nav of ["tabs-top", "tabs-bottom"]) document.getElementById(nav).innerHTML = PAGE_KEYS.map((k) =>
       '<button data-act="go" data-id="' + k + '"' + (k === page ? ' aria-current="page"' : "") + '><span class="ic">' + PAGES[k].ic + "</span>" +
-      PAGES[k].label + '<span class="n">' + counts[k] + "</span></button>").join("");
+      PAGES[k].label + (k in counts ? '<span class="n">' + counts[k] + "</span>" : "") + "</button>").join("");
     const focused = document.activeElement && document.activeElement.name === "q";
     main.innerHTML = PAGES[page].render(s);
     if (focused) main.querySelector("input[name=q]")?.focus();
@@ -1176,13 +1190,14 @@
       case "combo": { const s = snapshot(); if (s.combo) plan = { kind: "combo", ids: s.combo.ids.slice() }; break; }
       case "row": openRow = openRow === id ? null : id; break;
       case "fix": sheet = { kind: "fix", chainId: b.dataset.chain, itemId: id }; break;
-      case "pick": { const it = list.find((i) => i.id === sheet.itemId); if (it) corrections[correctionKey(sheet.chainId, it)] = id; for (const k in ingCache) delete ingCache[k]; sheet = null; break; }
-      case "unfix": { const it = list.find((i) => i.id === sheet.itemId); if (it) delete corrections[correctionKey(sheet.chainId, it)]; for (const k in ingCache) delete ingCache[k]; sheet = null; break; }
+      case "pick": { const it = list.find((i) => i.id === sheet.itemId); if (it) corrections[correctionKey(sheet.chainId, it)] = id; sheet = null; break; }
+      case "unfix": { const it = list.find((i) => i.id === sheet.itemId); if (it) delete corrections[correctionKey(sheet.chainId, it)]; sheet = null; break; }
       case "make-exact": makeExact(b.dataset.item, id); exactOffer = null; sheet = null; break;
       case "packs": if (item && item.exact) item.quantity = item.quantity % 9 + 1; break;
       case "tick": done.has(id) ? done.delete(id) : done.add(id); break;
       case "finish": list = list.filter((i) => i.staple || !done.has(i.id)); done.clear(); page = "lijst"; history.replaceState(null, "", "#lijst"); break;
       case "recipe": addRecipe(id); break;
+      case "all-recipes": showAllRecipes = true; break;
       case "open-recipe": sheet = { kind: "recipe", id }; break;
       case "history": sheet = { kind: "history", itemId: id }; break;
       case "suggest": {
@@ -1193,6 +1208,24 @@
         break;
       }
       case "step": { const set = (stepsDone[sheet.id] ||= new Set()); const n = Number(id); set.has(n) ? set.delete(n) : set.add(n); break; }
+      case "browse-view": browse.view = id; browseOpen = null; browseShown = 0; break;
+      case "browse-sort": browse.sort = id; browseShown = 0; break;
+      case "browse-aisle": browse.aisle = id; browseOpen = null; browseShown = 0; break;
+      case "browse-row": browseOpen = browseOpen === id ? null : id; break;
+      case "browse-more": browseShown += BROWSE_PAGE; break;
+      case "browse-add": {
+        const d = R.vocabulary.get(id), parsed = d && ingredientItem(d);
+        if (!parsed || onList(d)) break;
+        list.unshift({ id: newId(), staple: false, ...parsed }); hint = "Op je lijst: " + qtyText(parsed) + " " + parsed.noun;
+        break;
+      }
+      case "make-exact-new": {
+        const g = R.exact.get(id); if (!g) break;
+        if (!list.some((i) => i.exact === g.id)) list.unshift({ id: newId(), staple: false, exact: g.id, text: g.name, noun: g.name, quantity: 1, unit: "piece",
+          guessed: false, ingredient: null, variant: null, preferences: {} });
+        hint = "Op je lijst, als exact product: " + g.name;
+        break;
+      }
       case "close": sheet = null; break;
       default: return;
     }

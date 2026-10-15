@@ -25,6 +25,14 @@ export type Form = "vers" | "diepvries" | "conserven";
  * ("Aardappelen, groente & fruit > Groenteconserven").
  */
 const RULES: [RegExp, Aisle][] = [
+  // Plus, first: its coffee shelf is "Koffie, koffiemelk, suiker", which the
+  // dairy rule's /koffiemelk/ would claim whole, coffee and sugar with it
+  // (#37). And its bagged salads sit with dressings under "Slaschotels,
+  // salades", which the ready-meal rule's /salades/ would claim.
+  [/^frisdrank, sappen, koffie, thee > koffie, koffiemelk, suiker > koffiemelk/i, "dairy"],
+  [/^frisdrank, sappen, koffie, thee > koffie, koffiemelk, suiker > (suiker|zoetstof|cacaopoeder)/i, "pantry"],
+  [/^frisdrank, sappen, koffie, thee > koffie, koffiemelk, suiker/i, "drinks"],
+  [/^aardappelen, groente, fruit > groente > slaschotels/i, "produce"],
   // Hoogvliet, first: its meat department is called "Vlees, vis,
   // vegetarisch", which the vega rule below would claim whole, and its baby
   // department shares Lidl's name for a non-food one.
@@ -79,6 +87,11 @@ const RULES: [RegExp, Aisle][] = [
   [/^vers > grill/i, "readymeal"],
   // Plus files soup among sauces and conserves; a soup is a ready meal.
   [/^soepen, conserven, sauzen, smaakmakers > soep\b/i, "readymeal"],
+  // Jumbo files cooking cheese as "Kaas voor de maaltijd", which the
+  // ready-meal rule below would claim: grated cheese is cheese.
+  [/^vleeswaren, kaas en tapas > kaas voor de (maaltijd|borrel)/i, "cheese"],
+  // Plus files flour and baking powder beside bread; they are pantry.
+  [/^brood, gebak, bakproducten > bakproducten/i, "pantry"],
   // Soup, but not soup meat ("Soepballetjes en soepvlees"); gourmetten is raw
   // meat for the table grill.
   [/maaltijd|verspakket|> (verse )?soep(en)?$|houdbare soepen|quiche|pannenkoek|sushi|sandwich|pizza|ovenschotel|salades|slaatjes|borrelhapjes/i, "readymeal"],

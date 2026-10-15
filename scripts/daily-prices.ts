@@ -11,7 +11,7 @@
  */
 
 import { readFile, writeFile } from "node:fs/promises";
-import { parseCatalogueScript } from "../src/catalogue/assess.ts";
+import { parseCatalogueScript, productsOf } from "../src/catalogue/format.ts";
 import { dailyPrices, type UnitBasis } from "../src/catalogue/daily.ts";
 import type { PriceHistory } from "../src/catalogue/history.ts";
 
@@ -23,20 +23,18 @@ if (!cataloguePath || !historyPath || !out) {
   process.exit(2);
 }
 
-const data = parseCatalogueScript(await readFile(cataloguePath, "utf8")) as unknown as { columns: string[]; catalogue: Record<string, unknown[][]> };
+const data = parseCatalogueScript(await readFile(cataloguePath, "utf8"));
 const history = JSON.parse(await readFile(historyPath, "utf8")) as PriceHistory;
-const col = (name: string) => data.columns.indexOf(name);
-const [REF, SHELF, OFFER, WORDING, PRICE, PACK] = ["ref", "shelfPriceCents", "offerPriceCents", "offerWording", "ingredientUnitPriceCents", "ingredientPack"].map(col) as number[];
 
 const bases: Record<string, UnitBasis[]> = {};
-for (const [chainId, rows] of Object.entries(data.catalogue)) {
-  bases[chainId] = rows.filter((r) => r[PRICE!] !== null).map((r) => {
-    const onOffer = r[OFFER!] !== null || !!r[WORDING!];
+for (const chainId of Object.keys(data.catalogue)) {
+  bases[chainId] = productsOf(data, chainId).filter((p) => p.ingredientUnitPriceCents !== null).map((p) => {
+    const onOffer = p.offerPriceCents !== null || !!p.offerWording;
     return {
-      ref: r[REF!] as string,
-      ingredientPack: r[PACK!] as number | null,
-      ingredientUnitPriceCents: r[PRICE!] as number,
-      paidTodayCents: (onOffer && r[OFFER!] !== null ? r[OFFER!] : r[SHELF!]) as number,
+      ref: p.ref,
+      ingredientPack: p.ingredientPack,
+      ingredientUnitPriceCents: p.ingredientUnitPriceCents!,
+      paidTodayCents: onOffer && p.offerPriceCents !== null ? p.offerPriceCents : p.shelfPriceCents,
     };
   });
 }

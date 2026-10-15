@@ -1,11 +1,11 @@
 import { readStep, payloadOf } from "../archive.ts";
 import {
-  deriveUnitPrice,
   endDateOrOpenEnded,
   eurosToCents,
   parseInstant,
   parsePackSize,
 } from "../normalise.ts";
+import { unitPriceOf } from "../unit-price.ts";
 import type { ChainReader, ChainReading, OfferReading, PriceReading } from "./types.ts";
 
 /**
@@ -175,9 +175,7 @@ export function detailresultReader({ chainId, national }: DetailresultReaderOpti
             observedAt: parseInstant(row.priceDate) ?? new Date(`${date}T00:00:00Z`),
             shelfPriceCents: shelf,
             offerPriceCents: offerCents,
-            unitPriceCents: pack ? deriveUnitPrice(effective, pack) : null,
-            comparisonUnit: pack?.unit ?? null,
-            unitPriceSource: pack ? "derived" : null,
+            ...unitPriceOf(effective, pack, null),
           });
         }
       }

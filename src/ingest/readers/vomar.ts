@@ -1,11 +1,11 @@
 import { readStep, jsonOf } from "../archive.ts";
 import {
-  deriveUnitPrice,
   eurosToCents,
   parseInstant,
   parsePackSize,
   type PackSize,
 } from "../normalise.ts";
+import { unitPriceOf } from "../unit-price.ts";
 import type { ChainReader, ChainReading, PriceReading } from "./types.ts";
 
 /**
@@ -137,9 +137,7 @@ export const vomarReader: ChainReader = {
           observedAt,
           shelfPriceCents: shelf,
           offerPriceCents: null, // Vomar publishes no Offers we can read.
-          unitPriceCents: pack ? deriveUnitPrice(shelf, pack) : null,
-          comparisonUnit: pack?.unit ?? null,
-          unitPriceSource: pack ? "derived" : null,
+          ...unitPriceOf(shelf, pack, null),
         });
       }
     }

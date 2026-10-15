@@ -1,6 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { composeDigest, realDeals, type DigestCatalogue } from "../src/digest/compose.ts";
+import { COLUMNS, HISTORY_COLUMNS, toRow } from "../src/catalogue/format.ts";
 
 /**
  * The weekly digest may only call something a discount when the real-discount
@@ -9,20 +10,20 @@ import { composeDigest, realDeals, type DigestCatalogue } from "../src/digest/co
  * (prototype/resolve.js), through the Ingredient vocabulary (#14).
  */
 
-const COLUMNS = [
-  "ref", "name", "packaging", "packQuantity", "packUnit", "comparisonUnit", "shelfPriceCents", "offerPriceCents",
-  "unitPriceCents", "offerWording", "offerEndsOn", "nextWording", "nextStartsOn", "ingredient", "variant", "form",
-  "flags", "ingredientUnitPriceCents", "ingredientPack", "referenceLowCents", "referenceDays",
-];
+/** As the morning refresh publishes it: built, then given its history. */
+const ALL_COLUMNS = [...COLUMNS, ...HISTORY_COLUMNS];
 
 interface P { name: string; unit: "kg" | "l" | "piece"; shelf: number; offer?: number | null; wording?: string | null;
   low?: number | null; days?: number | null; ingredient?: string | null; variant?: string | null }
 let n = 0;
 const row = (p: P) => {
   const price = p.offer ?? p.shelf;
-  return [String(++n), p.name, null, 1, p.unit, p.unit, p.shelf, p.offer ?? null, price, p.wording ?? null, null, null, null,
-    p.ingredient ?? null, p.variant ?? null, p.ingredient ? "vers" : null, 0, p.ingredient ? price : null, p.ingredient ? 1 : null,
-    p.low ?? null, p.days ?? null];
+  return toRow({
+    ref: String(++n), name: p.name, packQuantity: 1, packUnit: p.unit, comparisonUnit: p.unit, shelfPriceCents: p.shelf,
+    offerPriceCents: p.offer ?? null, unitPriceCents: price, offerWording: p.wording ?? null, ingredient: p.ingredient ?? null,
+    variant: p.variant ?? null, form: p.ingredient ? "vers" : null, flags: 0, ingredientUnitPriceCents: p.ingredient ? price : null,
+    ingredientPack: p.ingredient ? 1 : null, referenceLowCents: p.low ?? null, referenceDays: p.days ?? null,
+  }, ALL_COLUMNS);
 };
 
 const VOCABULARY = [
@@ -33,7 +34,7 @@ const VOCABULARY = [
 
 const catalogue = (rows: Record<string, P[]>, chains = [["dirk", "Dirk"], ["jumbo", "Jumbo"]]): DigestCatalogue => ({
   chains: chains.filter(([id]) => rows[id!]).map(([id, name]) => ({ id: id!, name: name!, observedAt: "2026-10-21" })),
-  columns: COLUMNS,
+  columns: ALL_COLUMNS,
   vocabulary: VOCABULARY,
   catalogue: Object.fromEntries(Object.entries(rows).map(([id, ps]) => [id, ps.map(row)])),
 });

@@ -1,5 +1,6 @@
 import { readStep, jsonOf } from "../archive.ts";
-import { deriveUnitPrice, parseInstant, parsePackSize, type ComparisonUnit } from "../normalise.ts";
+import { parseInstant, parsePackSize, type ComparisonUnit } from "../normalise.ts";
+import { isApproximate, unitPriceOf } from "../unit-price.ts";
 import type { ChainReader, ChainReading, OfferReading, PriceReading } from "./types.ts";
 
 /**
@@ -182,14 +183,8 @@ export const aldiReader: ChainReader = {
         // "Per stuk." and "0.75 l.": a sign's full stop is not part of the unit.
         const pack = parsePackSize(packText?.replace(/\.$/, ""));
         const chain = basePrice(current);
-        let unitPriceCents: number | null = null;
-        let comparisonUnit: ComparisonUnit | null = null;
-        let unitPriceSource: PriceReading["unitPriceSource"] = null;
-        if (chain) {
-          [unitPriceCents, comparisonUnit, unitPriceSource] = [chain.cents, chain.unit, "chain"];
-        } else if (pack) {
-          [unitPriceCents, comparisonUnit, unitPriceSource] = [deriveUnitPrice(shown, pack), pack.unit, "derived"];
-        }
+        // Aldi's own figure is on the price shown, Offer or not (src/ingest/unit-price.ts).
+        const { unitPriceCents, comparisonUnit, unitPriceSource } = unitPriceOf(shown, pack, chain && { ...chain, ofCents: shown }, { approximate: isApproximate(packText) });
         if (unitPriceCents === null) withoutUnitPrice++;
 
         prices.push({

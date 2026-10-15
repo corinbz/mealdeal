@@ -10,8 +10,8 @@
  */
 
 import { readFile, writeFile } from "node:fs/promises";
-import { parseCatalogueScript } from "../src/catalogue/assess.ts";
-import { composeDigest, type DigestCatalogue } from "../src/digest/compose.ts";
+import { parseCatalogueScript } from "../src/catalogue/format.ts";
+import { composeDigest } from "../src/digest/compose.ts";
 
 function usage(): never {
   console.error("Usage: DIGEST_STAPLES=... node scripts/digest.ts --catalogue <file> --site <url> --disable-url <url> --out <file>");
@@ -37,7 +37,7 @@ if (!staples.length) {
   process.exit(1);
 }
 
-const data = parseCatalogueScript(await readFile(catalogue, "utf8")) as unknown as DigestCatalogue;
+const data = parseCatalogueScript(await readFile(catalogue, "utf8"));
 const digest = composeDigest(data, staples, site, disableUrl);
 await writeFile(out, JSON.stringify(digest));
 console.log(`${digest.subject} (${staples.length} staples)\n\n${digest.text}`);
