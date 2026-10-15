@@ -204,6 +204,7 @@ export const ENGLISH: Readonly<Record<string, Translation>> = {
   roomboter: { names: ["butter"], variants: { ongezouten: ["unsalted butter"], gezouten: ["salted butter"] } },
   margarine: ["margarine"],
   "bak- en braadboter": ["frying butter", "cooking butter", "frying margarine"],
+  eiwit: { names: ["egg whites", "egg white", "liquid egg whites"], variants: {} },
   eieren: { names: ["eggs", "egg"], variants: {
     bio: ["organic eggs"], scharrel: ["cage-free eggs", "barn eggs"], "vrije uitloop": ["free-range eggs"] } },
 

@@ -188,7 +188,8 @@
       // A pack in another unit than the item (3 soup sachets for a
       // requirement in kg) is no usable arithmetic: one pack is all we can say.
       const known = pack > 0;
-      return { known, packs: known ? Math.max(1, Math.ceil(item.quantity / pack)) : 1, pack };
+      // With no amount typed, one pack: the one cheapest per unit, whatever it holds.
+      return { known, packs: known && !item.guessed ? Math.max(1, Math.ceil(item.quantity / pack)) : 1, pack };
     }
 
     /** The key a Correction is kept under: per Chain and Ingredient (and Variant), so it applies everywhere. */
