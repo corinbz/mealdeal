@@ -33,7 +33,7 @@ test("a report is stored with what the page filled in, and no address", async ()
   const [key, value] = [...objects][0]!;
   assert.match(key!, /^reports\/2026-10-15\/09-[0-9a-f]{16}-[0-9a-f-]{36}\.json$/);
   const stored = JSON.parse(value!);
-  assert.deepEqual(stored, { receivedAt: now.toISOString(), ...good });
+  assert.deepEqual(stored, { receivedAt: now.toISOString(), ...good, lang: "nl" });
   assert.ok(!value!.includes("203.0.113.7") && !key!.includes("203.0.113.7"));
 });
 
@@ -77,4 +77,13 @@ test("reports read back grouped by Product, the most reported first", () => {
   assert.match(md, /3 reports on 2 Products/);
   assert.match(md, /“Dit is half-om-half”/);
   assert.equal(reportsMarkdown([], "2026-10-08").trim().endsWith("None."), true);
+});
+
+test("a report from a page in English says so, and an unknown language reads as Dutch", () => {
+  assert.equal((readReport({ ...good, lang: "en" }) as { lang: string }).lang, "en");
+  assert.equal((readReport({ ...good, lang: "<script>" }) as { lang: string }).lang, "nl");
+  const r = (over: Partial<Stored>): Stored => ({ ...(good as unknown as Stored), receivedAt: "2026-10-15T09:00:00Z", lang: "nl", ...over });
+  const md = reportsMarkdown(groupReports([r({ lang: "en", context: "Compare · 500 g ground beef", note: "This is mixed" }), r({})]), "2026-10-08");
+  assert.match(md, /\[EN\] Compare · 500 g ground beef/);
+  assert.match(md, /\[EN\] “This is mixed” “Dit is half-om-half”/);
 });

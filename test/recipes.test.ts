@@ -59,3 +59,12 @@ test("every Requirement names a known Ingredient, in its own unit, with a stated
   }
   assert.deepEqual(bad, []);
 });
+
+test("every recipe has an English name, pantry and steps, step for step (#25)", () => {
+  for (const r of RECIPES) {
+    assert.ok(r.en?.name, r.id);
+    assert.equal(r.en.steps.length, r.steps.length, r.id);
+    assert.equal(r.en.pantry.length, r.pantry.length, r.id);
+    assert.ok(r.en.steps.every((s: string) => s.trim().length > 20), r.id);
+  }
+});
