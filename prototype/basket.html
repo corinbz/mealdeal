@@ -324,6 +324,8 @@
   .aisles button { flex: none; border: 0; background: var(--card); color: var(--ink-2); border-radius: 999px; padding: 6px 12px; font: inherit; font-size: 14px; font-weight: 800; cursor: pointer; box-shadow: 0 2px 0 var(--line); }
   .aisles button[aria-pressed="true"] { background: var(--ink); color: var(--on-ink); }
   .aisles .n { opacity: .6; margin-left: 4px; font-weight: 700; }
+  .aisles .pic { width: 24px; height: 24px; margin: -5px 5px -5px -5px; }
+  .worth .it .nm .pic { float: left; margin: 0 10px 0 -2px; }
   .views { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
   .sort { font-size: 14px; color: var(--ink-2); margin-left: auto; }
   .sort button { border: 0; background: none; padding: 0 0 0 8px; font: inherit; font-weight: 800; color: var(--ink-3); cursor: pointer; }
@@ -780,12 +782,13 @@
         (browse.view === "verschil" ? '<span class="sort">Volgorde <button data-act="browse-sort" data-id="verschil" aria-pressed="' + (browse.sort === "verschil") + '">grootste verschil</button>' +
           '<button data-act="browse-sort" data-id="az" aria-pressed="' + (browse.sort === "az") + '">A–Z</button></span>' : "") + "</div>" +
         (browse.view !== "zelfde" && B.aisles.length ? '<div class="aisles" role="group" aria-label="Afdeling">' +
-          [["alle", "Alles"], ...B.aisles].map(([id, label]) => '<button data-act="browse-aisle" data-id="' + id + '" aria-pressed="' + (browse.aisle === id) + '">' + label + "</button>").join("") + "</div>" : "");
+          [["alle", "Alles"], ...B.aisles].map(([id, label]) => '<button data-act="browse-aisle" data-id="' + id + '" aria-pressed="' + (browse.aisle === id) + '">' +
+            (id === "alle" ? "" : window.IMAGES.sticker("?", id)) + label + "</button>").join("") + "</div>" : "");
 
       if (browse.view === "aanbiedingen") {
         const all = B.worth.filter((w) => aisleOk(w.g)), rows = all.filter((w) => !w.unchecked), held = all.filter((w) => w.unchecked);
         const card = ({ p, c, g, rival, rivalCost, share, unchecked }) =>
-            '<div class="it"><div class="nm">' + esc(p.name) + '</div><div class="v">' + euro(p.offerPriceCents) + "<small>" + euro(p.ingredientUnitPriceCents) + unit(g.d) + "</small></div>" +
+            '<div class="it"><div class="nm">' + pic({ ingredient: g.d.id }) + esc(p.name) + '</div><div class="v">' + euro(p.offerPriceCents) + "<small>" + euro(p.ingredientUnitPriceCents) + unit(g.d) + "</small></div>" +
             '<div class="why">' + tag(c) + " " + offerChip(p, offerFor(p, "nu")) + (unchecked ? '<span class="delta">' + pct(share) + " goedkoper?</span>" : '<span class="delta zero">' + pct(share) + " goedkoper</span>") + "</div>" +
             '<div class="why">' + esc(g.d.name) + " elders vanaf " + tag(rival) + " " + euro(rivalCost) + unit(g.d) + "</div>" +
             '<div class="why"><button class="add-i' + (onList(g.d) ? " on" : "") + '" data-act="browse-add" data-id="' + esc(g.d.id) + '">' + (onList(g.d) ? "✓ Op je lijst" : "+ " + esc(g.d.name) + " op je lijst") + "</button></div></div>";
@@ -797,9 +800,11 @@
       }
 
       if (browse.view === "zelfde") {
+        // Most Exact Products are beer and detergent, which no Ingredient names: a column of bags would say nothing.
+        const stickerOf = (at) => { const x = at.find((x) => x.p.ingredient); return x ? pic({ ingredient: x.p.ingredient }) : ""; };
         return head + '<div class="sec"><h2>Zelfde product, andere prijs</h2><span>' + B.same.length + " · hetzelfde merkartikel, herkend aan de EAN, grootste verschil bovenaan</span></div>" +
           '<div class="worth">' + B.same.slice(0, limit).map(({ g, at, diff }) =>
-            '<div class="it"><div class="nm">' + esc(g.name) + '</div><div class="v">+' + euro(diff) + "<small>verschil</small></div>" +
+            '<div class="it"><div class="nm">' + stickerOf(at) + esc(g.name) + '</div><div class="v">+' + euro(diff) + "<small>verschil</small></div>" +
             '<div class="xs">' + at.map(({ c, p, cost }, i) => "<span>" + tag(c) + " <b>" + euro(cost) + "</b>" + (isOffer(p) ? " " + offerChip(p, offerFor(p, "nu")) : "") +
               (i === 0 ? ' <span class="delta zero">laagst</span>' : ' <span class="delta">+' + euro(cost - at[0].cost) + "</span>") + "</span>").join("") + "</div>" +
             '<div class="why"><button class="add-i' + (list.some((i) => i.exact === g.id) ? " on" : "") + '" data-act="make-exact-new" data-id="' + esc(g.id) + '">' + (list.some((i) => i.exact === g.id) ? "✓ Op je lijst" : "+ Op je lijst") + "</button></div></div>").join("") + "</div>" + more(B.same.length) +
@@ -812,7 +817,7 @@
       const line = (g) => {
         const open = browseOpen === g.d.id, lo = g.avail[0], hi = g.avail.at(-1), r = { avail: g.avail, by: g.by, min: g.min, max: g.max };
         return '<div class="df-row br-row"><button data-act="browse-row" data-id="' + esc(g.d.id) + '" aria-expanded="' + open + '">' +
-          '<span class="nm">' + esc(g.d.name) + '<span class="q">' + g.avail.length + " van " + chains.length + " winkels</span></span>" +
+          '<span class="nm">' + pic({ ingredient: g.d.id }) + esc(g.d.name) + '<span class="q">' + g.avail.length + " van " + chains.length + " winkels</span></span>" +
           '<span class="plw">' + priceLine(r) + '<div class="pl-ends"><span class="lo">' + euro(g.min) + unit(g.d) + " " + esc(lo.name) + "</span><span>" +
           (g.avail.length > 1 ? euro(g.max) + unit(g.d) + " " + esc(hi.name) : "") + "</span></div></span>" +
           '<span class="spread">' + (g.unchecked ? "−" + pct(g.share) + "?<small>nog te controleren</small>" : g.avail.length < 2 ? "—<small>één winkel</small>" : g.share ? "<b>−" + pct(g.share) + "</b><small>" + esc(lo.name) + " vs. midden</small>" : g.max > g.min ? "—<small>niet onder het midden</small>" : "gelijk<small>overal</small>") + "</span></button>" +
