@@ -104,10 +104,15 @@ export interface CatalogueIngredient {
   readonly unit: ComparisonUnit;
   readonly also: readonly string[];
   readonly equals: Readonly<Partial<Record<ComparisonUnit, number>>>;
-  readonly variants: readonly { readonly id: string; readonly name: string }[];
+  readonly variants: readonly { readonly id: string; readonly name: string; readonly names?: Translated }[];
   readonly fresh: boolean;
   readonly aisle?: string | undefined;
+  /** Its names in other languages than Dutch (#25), each the one shown first; absent from older catalogues. */
+  readonly names?: Translated;
 }
+
+/** Per language ("en"), the name shown and any others read: ["ground beef", "minced beef"]. */
+export type Translated = Readonly<Record<string, readonly string[]>>;
 
 export interface CatalogueExact {
   readonly id: string;

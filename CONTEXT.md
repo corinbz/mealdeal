@@ -168,6 +168,12 @@ An Ingredient the app offers for quick adding, drawn from what this user buys
 often or bought recently.
 _Avoid_: Recommendation, autocomplete, prediction
 
+**Spelling Hint**:
+The Ingredient or Variant that a typed name the app did not recognise is
+probably a misspelling of, offered as "Bedoel je …?". Not a Suggestion: it
+corrects what was typed rather than proposing something to add.
+_Avoid_: Suggestion, typo suggestion, autocorrect
+
 **Coverage**:
 How many of a Basket's Items a Chain could resolve at all. A Basket total means
 nothing without it.

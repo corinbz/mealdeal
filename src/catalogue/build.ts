@@ -18,6 +18,7 @@
 
 import { formOf } from "../ingredients/aisles.ts";
 import { createMapper, isOwnBrand, type Mapping } from "../ingredients/map.ts";
+import { englishOf } from "../ingredients/english.ts";
 import { VOCABULARY, type ComparisonUnit, type IngredientDef } from "../ingredients/vocabulary.ts";
 import { borrowMappings, productKey, type Conflict } from "./borrow.ts";
 import { CHECKED_SPREADS } from "./checked-spreads.ts";
@@ -215,13 +216,18 @@ export function buildCatalogue(source: CatalogueSource, { now = new Date(), voca
      * What the page reads a typed item against. `fresh`: the Ingredient is sold
      * fresh, so frozen, tinned and jarred count only when a Preference allows.
      * `aisle`: where it is mainly sold, which Bladeren groups it under (#36)
-     * and whose sticker stands in for its own.
+     * and whose sticker stands in for its own. `names`: its names in other
+     * languages, read whatever the page's language, the first one shown (#25).
      */
     vocabulary: vocabulary.map((d) => ({
       id: d.id, name: d.name, unit: d.unit, also: d.also, equals: d.equals,
-      variants: d.variants.map((v) => ({ id: v.id, name: v.name })),
+      variants: d.variants.map((v) => {
+        const en = englishOf(d.id)?.variants[v.id];
+        return { id: v.id, name: v.name, ...(en ? { names: { en } } : {}) };
+      }),
       fresh: !d.anyForm && d.aisles.some((a) => formOf(a) === "vers"),
       aisle: d.aisles[0],
+      ...(englishOf(d.id) ? { names: { en: englishOf(d.id)!.names } } : {}),
     })),
     catalogue: Object.fromEntries(Object.entries(products).map(([id, ps]) => [id, ps.map((p): Row => toRow(p))])),
     exact,

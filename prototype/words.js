@@ -4,9 +4,10 @@
 // a module: the page must still work opened straight from disk.
 (function (global) {
   const UNITS = {
-    g: ["kg", 0.001], gr: ["kg", 0.001], gram: ["kg", 0.001], kg: ["kg", 1], kilo: ["kg", 1],
-    ml: ["l", 0.001], cl: ["l", 0.01], l: ["l", 1], liter: ["l", 1], litre: ["l", 1],
+    g: ["kg", 0.001], gr: ["kg", 0.001], gram: ["kg", 0.001], grams: ["kg", 0.001], kg: ["kg", 1], kilo: ["kg", 1], kilos: ["kg", 1],
+    ml: ["l", 0.001], cl: ["l", 0.01], l: ["l", 1], liter: ["l", 1], litre: ["l", 1], liters: ["l", 1], litres: ["l", 1],
     x: ["piece", 1], "×": ["piece", 1], st: ["piece", 1], stuk: ["piece", 1], stuks: ["piece", 1],
+    pc: ["piece", 1], pcs: ["piece", 1], piece: ["piece", 1], pieces: ["piece", 1],
   };
 
   function stem(w) {
