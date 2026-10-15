@@ -21,7 +21,10 @@ top on a desktop and a bar at the bottom on a phone:
 - **Vergelijk**: Chains ranked as bags (total, difference to the cheapest,
   Coverage), the best two-Chain combination, and where the differences are.
   Corrections live here.
-- **Winkelen**: a checklist per bag for the chosen plan.
+- **Winkelen**: a checklist per bag for the chosen plan, grouped by aisle in
+  a fixed order that starts with groente & fruit (#41). Ticked items sink to
+  the bottom of their aisle. "Rijen" shows each item with its Product and
+  price, "Tegels" shows Bring!-style tiles; the phone remembers which.
 
 Light is Kraft and dark is Donker, following the device; the button top right
 overrides it. The design history (every rejected direction, and the Tassen
