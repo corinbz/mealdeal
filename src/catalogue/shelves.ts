@@ -23,6 +23,8 @@ export interface ShelvedProduct {
   /** The Chain's category path, the deepest it gives. */
   readonly shelf: string;
   readonly ingredient: string | null;
+  /** It has a Verdict (verdicts.ts): counted on its shelf, never listed. */
+  readonly checked?: boolean;
 }
 
 export interface ShelfOpinion {
@@ -70,10 +72,10 @@ export function assessShelves(products: readonly ShelvedProduct[], options: Shel
     const [ingredient, top] = [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))[0]!;
     const share = top / mapped.length;
     const odd = share < options.oddShelf ? [] : mapped
-      .filter((p) => { const n = counts.get(p.ingredient!)!; return n <= 2 && n / mapped.length < options.oddShare; })
+      .filter((p) => { const n = counts.get(p.ingredient!)!; return !p.checked && n <= 2 && n / mapped.length < options.oddShare; })
       .map((p) => ({ name: p.name, ingredient: p.ingredient! }));
     const suggested = share >= options.suggestShelf && mapped.length / ps.length >= options.suggestMapped
-      ? ps.filter((p) => p.ingredient === null).map((p) => p.name) : [];
+      ? ps.filter((p) => p.ingredient === null && !p.checked).map((p) => p.name) : [];
     if (odd.length || suggested.length) out.push({ chainId: ps[0]!.chainId, shelf: ps[0]!.shelf, ingredient, share, mapped: mapped.length, odd, suggested });
   }
   return out.sort((a, b) => a.chainId.localeCompare(b.chainId) || a.shelf.localeCompare(b.shelf));

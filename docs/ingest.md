@@ -424,6 +424,27 @@ The build itself writes **second opinions on mapping** to the summary, from
   vocabulary on about 95% of mapped Products, and lists those it is far surer
   belong elsewhere, and unmapped ones it would map.
 
+**Verdicts** (`src/catalogue/verdicts.json`) are what a person looking at a
+Product found it to be: an Ingredient, or none. One outranks the name, the
+shelf and the twins, lends its Ingredient to the Product's twins, and is what
+the classifier then learns; the opinions above stop listing a Product with
+one. A Verdict holds only while the Product keeps the name it was given
+under, and the report lists those that no longer hold. They are made with
+`node scripts/check-mappings.ts`:
+
+- `sample` draws Products at random, 200 by default, in an order fixed by
+  Chain and ref, so a later session goes on where one stopped. These are
+  the **Gold Set**: the report opens with how often the vocabulary alone,
+  and the classifier, agree with them, which is how often each is right.
+- `opinions` walks what the classifier is surest the vocabulary has wrong,
+  or has missed.
+- `product <chain> <ref>` is one Product, as a Klopt niet report names it.
+
+Each answer is written at once; commit the file to keep them. The script
+keeps the database's catalogue source in `.cache/`, and `--fresh` reads it
+again. Where the vocabulary was wrong, the report lists the Product: the
+Verdict already fixes it, but a rule fixed puts its like right too.
+
 The first run on 2026-10-14 found Jumbo selling whole cases under one unit's
 title: sku 47868DSL, "Arla Bio Halfvolle Melk 1 L", is a box of six at
 €10.74. The Jumbo reader now takes such a pack as the multiple its price over

@@ -162,6 +162,56 @@ export function createAllows(vocabulary: readonly IngredientDef[] = VOCABULARY) 
   };
 }
 
+/** Where a Product is filed, and its name as the mapper reads it. */
+function readProduct(product: MappableProduct): { uncategorized: boolean; aisles: ReadonlySet<Aisle>; lower: string } {
+  // Aldi's seasonal range and its brand pages say nothing of the aisle either.
+  const uncategorized = product.categories.every((c) => /^(speciaal assortiment|aldi merken)\b/i.test(c));
+  const aisles = uncategorized ? ANY_FOOD : new Set(product.categories.map(aisleOf).filter((a): a is Aisle => a !== null));
+  // Hoogvliet leaves the brand out of a name, so "Met Roomboter" is Becel's
+  // margarine with butter: a name starting with what it has is the brand's.
+  const lower = (product.chainId === "hoogvliet" && /^(met|zonder|minder)\s/i.test(product.name) && product.brand ? product.brand + " " + product.name : product.name).toLowerCase();
+  return { uncategorized, aisles, lower };
+}
+
+/** How a name or brand says a Product is kept, where its aisle may not. */
+function said(def: IngredientDef, product: MappableProduct, lower: string): Form | null {
+  // Only for an Ingredient that is sold tinned at all: mozzarella in water is fresh.
+  return FROZEN.test(lower) || FROZEN.test((product.brand ?? "").toLowerCase()) ? "diepvries"
+    : def.aisles.includes("conserves") && TINNED.test(lower) ? "conserven" : null;
+}
+
+/** A Product as one Ingredient: its Variants, form and Preferences. */
+function mappingFor(product: MappableProduct, def: IngredientDef, aisles: ReadonlySet<Aisle>, lower: string, uncategorized: boolean): Mapping {
+  // Filed under several aisles, the kept one decides the form: Hak's
+  // carrots sit in Groente too, but they are in a jar. Filed nowhere the
+  // Ingredient is (a Verdict can say so), its main aisle does.
+  const filed = uncategorized ? [] : [...aisles].filter((a) => def.aisles.includes(a));
+  const kept = filed.length ? filed : [def.aisles[0]!];
+  const aisle = kept.find((a) => formOf(a) === "conserven" || formOf(a) === "diepvries") ?? kept[0]!;
+  return {
+    ingredient: def.id,
+    variant: variantOf(def, lower),
+    form: said(def, product, lower) ?? formOf(aisle),
+    biologisch: /\bbio(logisch|logische)?\b/.test(lower) || product.categories.some((c) => /biologisch/i.test(c)),
+    huismerk: isOwnBrand(product.chainId, product.brand, product.name),
+  };
+}
+
+/**
+ * A Product as an Ingredient it was found to be by looking (a Verdict),
+ * whatever its name says: its Variants, form and Preferences read as the
+ * mapper would read them for that Ingredient.
+ */
+export function createMappingAs(vocabulary: readonly IngredientDef[] = VOCABULARY) {
+  const defs = new Map(vocabulary.map((d) => [d.id, d]));
+  return function mappingAs(product: MappableProduct, ingredient: string): Mapping {
+    const def = defs.get(ingredient);
+    if (!def) throw new Error(`no Ingredient ${ingredient}`);
+    const { uncategorized, aisles, lower } = readProduct(product);
+    return mappingFor(product, def, aisles, lower, uncategorized);
+  };
+}
+
 export function createMapper(vocabulary: readonly IngredientDef[] = VOCABULARY) {
   const compiled = compile(vocabulary);
   const joined = vocabulary.flatMap((d) => d.words).map((w) => w.toLowerCase()).filter((w) => JOINER.test(w));
@@ -200,13 +250,8 @@ export function createMapper(vocabulary: readonly IngredientDef[] = VOCABULARY) 
   }
 
   return function map(product: MappableProduct): Mapping | null {
-    // Aldi's seasonal range and its brand pages say nothing of the aisle either.
-    const uncategorized = product.categories.every((c) => /^(speciaal assortiment|aldi merken)\b/i.test(c));
-    const aisles = uncategorized ? ANY_FOOD : new Set(product.categories.map(aisleOf).filter((a): a is Aisle => a !== null));
+    const { uncategorized, aisles, lower } = readProduct(product);
     if (!aisles.size) return null;
-    // Hoogvliet leaves the brand out of a name, so "Met Roomboter" is Becel's
-    // margarine with butter: a name starting with what it has is the brand's.
-    const lower = (product.chainId === "hoogvliet" && /^(met|zonder|minder)\s/i.test(product.name) && product.brand ? product.brand + " " + product.name : product.name).toLowerCase();
     // "X met Y", "X in olijfolie", "X op siroop": only what comes before can
     // name the Product. A dish named after X is not X.
     // "Zalm gerookt minder zout": what something is without, or with less
@@ -262,24 +307,9 @@ export function createMapper(vocabulary: readonly IngredientDef[] = VOCABULARY) 
     const chosen = shelved ?? byName;
     if (!chosen) return null;
 
-    const def = chosen.def;
-    const variant = variantOf(def, lower);
-    // Filed under several aisles, the kept one decides the form: Hak's
-    // carrots sit in Groente too, but they are in a jar.
-    const kept = uncategorized ? [[...chosen.aisles][0]!] : [...aisles].filter((a) => chosen.aisles.has(a));
-    const aisle = kept.find((a) => formOf(a) === "conserven" || formOf(a) === "diepvries") ?? kept[0]!;
-    // Only for an Ingredient that is sold tinned at all: mozzarella in water is fresh.
-    const said = FROZEN.test(lower) || FROZEN.test((product.brand ?? "").toLowerCase()) ? "diepvries"
-      : chosen.aisles.has("conserves") && TINNED.test(lower) ? "conserven" : null;
     // Aldi's All Seasons is frozen or tinned, never fresh: with no category to
     // say which, only the name can.
-    if (uncategorized && !said && /^all seasons$/i.test(product.brand ?? "")) return null;
-    return {
-      ingredient: def.id,
-      variant,
-      form: said ?? formOf(aisle),
-      biologisch: /\bbio(logisch|logische)?\b/.test(lower) || product.categories.some((c) => /biologisch/i.test(c)),
-      huismerk: isOwnBrand(product.chainId, product.brand, product.name),
-    };
+    if (uncategorized && !said(chosen.def, product, lower) && /^all seasons$/i.test(product.brand ?? "")) return null;
+    return mappingFor(product, chosen.def, aisles, lower, uncategorized);
   };
 }

@@ -185,6 +185,18 @@ How many of a Basket's Items a Chain could resolve at all. A Basket total means
 nothing without it.
 _Avoid_: Match rate, completeness, hit rate
 
+**Verdict**:
+What a person looking at a Product found it to be: one Ingredient, or none.
+It outranks whatever the Product's name, shelf or twins say, and holds while
+the Product keeps the name it was looked at under.
+_Avoid_: Override, label, correction
+
+**Gold Set**:
+The Verdicts on Products drawn at random rather than picked because they
+looked wrong, so that how often the mapping agrees with them is how often it
+is right.
+_Avoid_: Test set, sample
+
 **Correction**:
 A user's replacement of the Product a Resolution chose. Corrections are
 reviewed and folded back into the shared vocabulary, not kept private to one
