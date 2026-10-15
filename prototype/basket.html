@@ -199,6 +199,12 @@
   .it .ops button:hover { background: var(--paper); color: var(--ink); }
   .it .ops button[aria-pressed="true"] { color: var(--ink); background: var(--paper-2); }
   .it .guess { grid-column: 1 / -1; font-size: 13px; color: var(--bad); font-weight: 700; }
+  .nmb { border: 0; background: none; padding: 0; font: inherit; color: inherit; cursor: pointer; text-align: left; text-decoration: underline dotted var(--ink-3); text-underline-offset: 4px; }
+  .kinds { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 6px 0 2px; }
+  .kinds > span { width: 100%; font-size: 13px; font-weight: 800; color: var(--ink-2); }
+  .kinds button { border: 1.5px solid var(--line); background: var(--paper); color: var(--ink); border-radius: 999px; padding: 6px 12px; font: inherit; font-size: 14px; font-weight: 800; cursor: pointer; }
+  .kinds button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--card); }
+  .cir .kinds { grid-column: 1; background: var(--card); border-radius: var(--r); padding: 8px 12px 10px; margin: 0 0 4px; }
   .it .best { grid-column: 1 / -1; font-size: 14px; color: var(--ink-2); font-weight: 600; display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; }
   .it .best b { color: var(--ink); font-weight: 900; }
   .it .best .none { color: var(--bad); font-weight: 800; }
@@ -558,6 +564,16 @@
     const words = prefs.map((k) => tr(...PREFERENCE_WORDS[k])).filter(Boolean);
     return [...words, noun].join(" ") + (prefs.includes("conserven") ? tr(" uit blik of pot", "") : "");
   };
+  /**
+   * Which kind (#43): an item whose Ingredient comes in Variants but that
+   * names none is asked which one, until the shopper picks one or answers
+   * "any" (`anyKind`). Priced as any kind meanwhile.
+   */
+  const kindsOf = (item) => { const d = item.ingredient && !item.exact && R.vocabulary.get(item.ingredient); return d && d.variants.length ? d.variants : null; };
+  const asksKind = (item) => !!kindsOf(item) && !item.variant && !item.anyKind;
+  const kindButtons = (item) => '<div class="kinds" role="group" aria-label="' + tr("Welke soort?", "Which kind?") + '"><span>' + tr("Welke soort?", "Which kind?") + "</span>" +
+    kindsOf(item).map((v) => '<button data-act="kind" data-id="' + item.id + '" data-v="' + v.id + '" aria-pressed="' + (item.variant === v.id) + '">' + esc(R.label(item.ingredient, v.id, lang)) + "</button>").join("") +
+    '<button data-act="kind" data-id="' + item.id + '" data-v="" aria-pressed="' + !!item.anyKind + '">' + tr("Maakt niet uit", "Any kind") + "</button></div>";
   const qtyText = (i) => i.unit === "piece" ? i.quantity + "×"
     : i.unit === "kg" && i.quantity < 1 ? Math.round(i.quantity * 1000) + " g"
     : i.unit === "l" && i.quantity < 1 ? Math.round(i.quantity * 1000) + " ml" : i.quantity + " " + i.unit;
@@ -595,6 +611,7 @@
   let browse = { view: "verschil", aisle: "alle", sort: "verschil", ...load("mealdeal.browse.v1", {}) };
   let shopView = load("mealdeal.shopview.v1", "rijen");     // Winkelen as "rijen" | "tegels" (#41)
   let browseOpen = null, browseShown = 0;
+  let kindOpen = null;                                      // the List item whose kind is being changed (#43)
 
   function persist() {
     save("mealdeal.list.v1", list); save("mealdeal.corrections.v1", corrections);
@@ -1030,7 +1047,11 @@
             (r.avail.length > 1 && r.max > r.min ? '<span class="delta">' + tr("tot +" + euro(r.max - r.min) + " elders", "up to +" + euro(r.max - r.min) + " elsewhere") + "</span>"
               : r.avail.length > 1 ? '<span class="delta zero">' + tr("overal even duur", "same price everywhere") + "</span>" : "")
           : '<span class="none">' + tr("nergens te koop", "not for sale anywhere") + "</span>";
-        return '<div class="it"><div class="nm">' + pic(r.item) + esc(nounOf(r.item)) +
+        const kinds = asksKind(r.item) || (kindOpen === r.item.id && kindsOf(r.item));
+        const name = kindsOf(r.item) && !asksKind(r.item)
+          ? '<button class="nmb" data-act="kind-open" data-id="' + r.item.id + '" aria-expanded="' + (kindOpen === r.item.id) + '" title="' + tr("Andere soort kiezen", "Choose another kind") + '">' + esc(nounOf(r.item)) + "</button>"
+          : esc(nounOf(r.item));
+        return '<div class="it"><div class="nm">' + pic(r.item) + name +
           '<button class="q" data-act="unit" data-id="' + r.item.id + '" title="' + tr("Eenheid wisselen", "Change unit") + '">' + qtyText(r.item) + "</button></div>" +
           '<div class="ops"><button data-act="staple" data-id="' + r.item.id + '" aria-pressed="' + r.item.staple + '" title="' + tr("Vaste boodschap", "Staple") + '">📌</button>' +
           '<button data-act="remove" data-id="' + r.item.id + '" title="' + tr("Van de lijst", "Remove from list") + '">✕</button></div>' +
@@ -1038,6 +1059,7 @@
             ? tr("Hoeveelheid geraden: gerekend in " + ({ kg: "kilo", l: "liter", piece: "stuks" })[r.item.unit], "Amount guessed: counted in " + ({ kg: "kilos", l: "liters", piece: "pieces" })[r.item.unit])
             : tr("Eenheid geraden: tik het aantal om te wisselen", "Unit guessed: tap the amount to change it")) + "</div>" : "") +
           (r.item.ingredient ? "" : '<div class="guess">' + tr("Niet herkend: gezocht op de naam van producten", "Not recognized: searched by product name") + "</div>") +
+          (kinds ? kindButtons(r.item) : "") +
           (R.suggest(r.item.noun) ? '<div class="guess">' + tr("Bedoel je ", "Did you mean ") + '<button class="sug" data-act="suggest" data-id="' + r.item.id + '">' + esc(R.suggest(r.item.noun)) + "</button>?</div>" : "") +
           '<div class="best">' + best + "</div>" + priceLine(r, true) + sparkline(r.item) + offersFor(r.item) + "</div>";
       };
@@ -1180,7 +1202,8 @@
             '<span class="nm">' + pic(r.item) + esc(nounOf(r.item)) + '<span class="q">' + qtyText(r.item) + "</span></span>" +
             '<span class="g">' + (l.offer ? offerChip(l.p, l.o) + " " : "") + (l.packs > 1 ? l.packs + "× " : "") + esc(l.p.name) +
             (l.p.packaging ? " · " + esc(l.p.packaging) : "") + overNote(l, r.item) + "</span>" +
-            '<span class="v">' + euro(l.cost) + "</span></button>" + flag(l.p, l.cost, where(qtyText(r.item) + " " + nounOf(r.item))) + "</div>";
+            '<span class="v">' + euro(l.cost) + "</span></button>" + flag(l.p, l.cost, where(qtyText(r.item) + " " + nounOf(r.item))) +
+            (asksKind(r.item) ? kindButtons(r.item) : "") + "</div>";
         }) + "</section>").join("");
       const pct = count ? Math.round(ticked / count * 100) : 0;
       return "<h1>" + tr("Winkelen", "Shop") + "</h1>" + freshness(tr("Prijzen van", "Prices from")) + cardNote() +
@@ -1409,6 +1432,16 @@
       case "plan": plan = { kind: "single", ids: [id] }; break;
       case "combo": { const s = snapshot(); if (s.combo) plan = { kind: "combo", ids: s.combo.ids.slice() }; break; }
       case "row": openRow = openRow === id ? null : id; break;
+      case "kind-open": kindOpen = kindOpen === id ? null : id; break;
+      case "kind": {
+        // Keeps the amount and Preferences: only which Variant, and so the name, changes.
+        if (!item || !kindsOf(item)) break;
+        const v = b.dataset.v || null;
+        if (v) { item.variant = v; delete item.anyKind; } else { item.variant = null; item.anyKind = true; }
+        item.noun = R.label(item.ingredient, v, lang);
+        kindOpen = null;
+        break;
+      }
       case "fix": sheet = { kind: "fix", chainId: b.dataset.chain, itemId: id }; break;
       case "pick": { const it = list.find((i) => i.id === sheet.itemId); if (it) corrections[correctionKey(sheet.chainId, it)] = id; sheet = null; break; }
       case "unfix": { const it = list.find((i) => i.id === sheet.itemId); if (it) delete corrections[correctionKey(sheet.chainId, it)]; sheet = null; break; }
