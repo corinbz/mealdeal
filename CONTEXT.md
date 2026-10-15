@@ -46,6 +46,8 @@ _Avoid_: Food, category, product type, grocery
 A kind of an Ingredient that differs in what the food is: its fat level, meat,
 texture or cut, such as halfvolle melk or rundergehakt. A Requirement may name
 one; one that names only the Ingredient is satisfied by any of its Variants.
+A Basket Item that names no Variant is asked which one until the shopper picks
+one or answers "any", which is then its choice.
 _Avoid_: Subtype, flavour, sort
 
 **Exact Product**:
