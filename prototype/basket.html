@@ -546,9 +546,18 @@
    * What an item is called on the page. In Dutch, as it was typed; in another
    * language, an item the vocabulary recognised is named in that language,
    * however it was typed or added, and switches with it (#25). One it did
-   * not recognise has no other name, so it reads as typed.
+   * not recognise has no other name, so it reads as typed. Its Preferences
+   * come first ("bio eieren", "organic eggs"), since they are read out of
+   * the name and would otherwise not show at all.
    */
-  const nounOf = (item) => item.ingredient && lang !== "nl" ? R.label(item.ingredient, item.variant, lang) || item.noun : item.noun;
+  const PREFERENCE_WORDS = { biologisch: ["bio", "organic"], huismerk: ["huismerk", "store brand"], amerk: ["A-merk", "name brand"],
+    diepvries: ["diepvries", "frozen"], conserven: ["", "canned"] };
+  const nounOf = (item) => {
+    const noun = item.ingredient && lang !== "nl" ? R.label(item.ingredient, item.variant, lang) || item.noun : item.noun;
+    const prefs = Object.keys(PREFERENCE_WORDS).filter((k) => item.preferences && item.preferences[k]);
+    const words = prefs.map((k) => tr(...PREFERENCE_WORDS[k])).filter(Boolean);
+    return [...words, noun].join(" ") + (prefs.includes("conserven") ? tr(" uit blik of pot", "") : "");
+  };
   const qtyText = (i) => i.unit === "piece" ? i.quantity + "×"
     : i.unit === "kg" && i.quantity < 1 ? Math.round(i.quantity * 1000) + " g"
     : i.unit === "l" && i.quantity < 1 ? Math.round(i.quantity * 1000) + " ml" : i.quantity + " " + i.unit;
