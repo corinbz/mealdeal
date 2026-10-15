@@ -588,6 +588,12 @@
   // An item saved before Ingredients (#14) is read again from its own text,
   // keeping its place on the list and whether it is a staple.
   list = list.map((i) => ("ingredient" in i || i.exact ? i : { id: i.id, staple: i.staple, ...(parse(i.text || "") || i) }));
+  // An amount the page guessed is guessed again as it now reads: "brood"
+  // saved as 1.25 loaves is one. The kind and name chosen since are kept.
+  list = list.map((i) => {
+    const again = i.ingredient && i.guessed && i.text && parse(i.text);
+    return again && again.ingredient === i.ingredient ? { ...i, quantity: again.quantity, unit: again.unit, guessed: again.guessed } : i;
+  });
   const corrections = load("mealdeal.corrections.v1", {}); // "chain|i|ingredient|variant" -> productId
   // A Correction saved per typed noun ("dirk|kg|rundergehakt") now applies to
   // its Ingredient, so it holds for every item and recipe that needs it.
