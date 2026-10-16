@@ -1146,6 +1146,11 @@
       '<rect class="a" x="38" y="10" width="16" height="16" rx="4" transform="rotate(-45 46 18)"/>' +
       '<path class="b" d="M12 40c3-4 7-2 10-5s2-7 7-9 6 1 9-2 3-7 8-9c3 1 4 4 2 7-2 4-6 3-9 6s-2 7-7 9-6-1-9 2-3 8-8 8c-3-1-4-4-3-7z"/>' +
       '<circle class="c" cx="22" cy="38" r="1.3"/><circle class="c" cx="34" cy="27" r="1.3"/><circle class="c" cx="44" cy="17" r="1.3"/>'],
+    // A protein shaker with a bar leaning on it.
+    dieetvoeding: ["--a:#3a3f4a;--b:#e8eef2;--c:#d94b3d;--d:#f2c84b",
+      '<rect class="a" x="18" y="6" width="22" height="9" rx="2"/><path class="a" d="M24 6V3h10v3"/>' +
+      '<path class="b" d="M16 15h26l-2 40c0 2-2 3-4 3H22c-2 0-4-1-4-3z"/><path class="e" d="M19 25h20M19 35h19M19 45h18"/>' +
+      '<rect class="c" x="38" y="30" width="12" height="28" rx="2" transform="rotate(12 44 44)"/><rect class="d" x="39" y="38" width="10" height="9" transform="rotate(12 44 44)"/>'],
     // A pouch of cat food with a cat's face on it.
     kattenvoer: ["--a:#7a3f8f;--b:#f08a24;--c:#f7f4ec",
       '<path class="a" d="M14 8h36l-2 6 2 6v34c0 2-2 3-4 3H18c-2 0-4-1-4-3V20l2-6z"/><path class="e" d="M14 14h36"/>' +

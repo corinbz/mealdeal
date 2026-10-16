@@ -122,6 +122,13 @@ test("a pizza is frozen or chilled by where it is kept, whatever its name says",
   assert.deepEqual(as("Deka's keuken Pizza tonijn", ["Maaltijden, salades & tapas > Pizza's"]), ["pizza", "gekoeld"]);
 });
 
+test("protein and diet food is an Ingredient of its own, wherever it is filed", () => {
+  const as = (chainId: string, name: string, categories: string[]) => { const x = map({ chainId, name, brand: null, categories }); return [x?.ingredient, x?.variant]; };
+  assert.deepEqual(as("plus", "Upfront Eiwitlimonade Zwarte bes", ["Frisdrank, sappen, koffie, thee > Sappen, fruitdrank > Gekoeld sap"]), ["dieetvoeding", "drank"]);
+  assert.deepEqual(as("dirk", "Barebells Salty peanut", ["Ontbijt, broodbeleg en bakproducten > Sportvoeding > Proteïne repen"]), ["dieetvoeding", "reep"]);
+  assert.deepEqual(as("plus", "Upfront Oats chocolade", ["Ontbijt, broodbeleg en bakproducten > Ontbijtgranen > Havermout"])[0], "havermout");
+});
+
 test("a brand the name starts with gives no flavour, though it may give the kind", () => {
   const v = (name: string, brand: string, categories: string[]) => map({ chainId: "dirk", name, brand, categories })?.variant ?? null;
   assert.equal(v("Appelsientje Fruitdrink sinaasappel", "Appelsientje", ["Dranken, sap, koffie & thee > Vruchtensappen"]), "sinaasappel");

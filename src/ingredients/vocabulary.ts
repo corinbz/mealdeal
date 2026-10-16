@@ -727,11 +727,22 @@ ing("vruchtensap", "l", ["drinks"], ["sap", "vruchtensap", "fruitsap", "multivru
 // named by brand alone, so its shelves say it too.
 ing("frisdrank", "l", ["drinks"], ["frisdrank", "frisdranken", "limonade", "sinas", "cassis", "bitter lemon", "ginger ale", "ginger beer", "gingerbeer", "energiedrank", "energy drink", "energydrink", "sportdrank", "sportdrink",
   "=fanta", "=sprite", "=7up", "=7-up", "seven up", "=sisi", "=rivella", "royal club", "dr. pepper", "dr pepper", "mountain dew", "=fernandes", "mogu mogu", "red bull", "monster energy", "=rockstar", "=bullit", "=celsius", "=shakura", "=aquarius", "=powerade", "=gatorade", "=extran", "aa drink", "=isostar", "=crystal clear", "=lipton sparkling"], {
-  not: ["siroop", "diksap", "cola", "pepsi", "ijsthee", "ice tea", "icetea", "tonic", "bier", "pils", "radler", "gazeuse", "wijn", "rum", "gin", "wodka", "vodka", "whisky", "likeur", "cocktail", "snoep", "lolly", "kauwgom", "gum", "drop", "poeder", "tablet", "bruistablet", "taart", "koek", "kokoswater", "kombucha", "water", "chips", "ijs"],
+  not: ["siroop", "diksap", "eiwit", "protein", "cola", "pepsi", "ijsthee", "ice tea", "icetea", "tonic", "bier", "pils", "radler", "gazeuse", "wijn", "rum", "gin", "wodka", "vodka", "whisky", "likeur", "cocktail", "snoep", "lolly", "kauwgom", "gum", "drop", "poeder", "tablet", "bruistablet", "taart", "koek", "kokoswater", "kombucha", "water", "chips", "ijs"],
   shelf: /^(sinas(, cassis)?|(blikjes|flessen) sinas|((flessen|blikjes|pakken|flesjes) )?fris met fruitsmaak|lemon, lime|ginger ale en ginger beer|speciaal fris|overige frisdrank|energiedranken|sportdrink|sportdranken|sportdrank, energiedrank|sport-, energiedrank|energy- of sportdrank)$/i,
   variants: [["energie", "energiedrank", ["energy", "energie", "red bull", "rockstar", "bullit", "celsius", "shakura"]], ["sport", "sportdrank", ["sport", "isoton", "aa drink", "aquarius", "extran", "powerade", "gatorade", "isostar"]],
     ["zero", "frisdrank zero", ["zero", "light", "suikervrij", "no sugar", "0% suiker", "sugar free", "sugarfree", "1kcal"]], ["gewoon", "gewone frisdrank", ["regular", "original"], true]],
   flavours: ["sinaasappel", "citroen", "limoen", "cassis", "appel", "framboos", "aardbei", "kers", "mango", "perzik", "multivruchten", "ginger", "druif", "ananas", "passievrucht"],
+});
+
+// ── Diet and sports food ────────────────────────────────────────────────
+// What the Chains shelve as "Sportvoeding, afslankvoeding": protein bars,
+// shakes and powders, meal replacements. Not sports drinks, which are fris,
+// nor protein yoghurt and kwark, kept with the dairy.
+ing("dieetvoeding", "kg", ["pantry", "drinks", "snacks"], ["dieetvoeding", "sportvoeding", "afslankvoeding", "eiwitreep", "eiwitrepen", "proteïnereep", "proteïnerepen", "proteinereep", "proteinerepen", "protein bar", "proteinbar", "eiwitshake", "proteïneshake", "proteineshake", "protein shake", "eiwitdrank", "eiwitlimonade", "eiwitpoeder", "proteïnepoeder", "proteinepoeder", "whey", "maaltijdvervanger", "maaltijdshake", "=modifast", "=slim-fast", "=slimfast", "=barebells", "=herbalife"], {
+  wins: true,
+  not: ["yoghurt", "kwark", "skyr", "vla", "pudding", "melk", "saus", "ketchup", "mayonaise", "pindakaas", "peanut butter", "oats", "havermout", "breakfast", "hummus", "cake"],
+  shelf: /^(sportvoeding.*|afslankvoeding|proteïne (repen|shake)|eiwitpoeder|sportsupplementen|pre workout|(voor|na|tijdens) het sporten|dranken & shakes)$/i,
+  variants: aspect("soort", [["reep", "eiwitreep", ["reep", "repen", "bar", "eiwitreep", "eiwitrepen", "proteïnereep", "proteïnerepen", "proteinereep", "proteinerepen", "proteinbar"]], ["drank", "eiwitdrank", ["shake", "drank", "drink", "limonade", "lemonade", "milk", "shot", "water", "eiwitshake", "proteïneshake", "proteineshake", "eiwitdrank", "eiwitlimonade", "maaltijdshake"]], ["poeder", "eiwitpoeder", ["poeder", "powder", "whey", "eiwitpoeder", "proteïnepoeder", "proteinepoeder"]]]),
 });
 
 // ── Pets ────────────────────────────────────────────────────────────────
