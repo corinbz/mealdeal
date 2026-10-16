@@ -450,3 +450,20 @@ test("what a shelf of one thing showed the vocabulary missing (2026-10-16)", () 
   assert.equal(m("jumbo", "Jumbo Biologisch Sinaasappel Gember Thee 20 Stuks 30 g", ["Koffie en thee > Thee > Kruidenthee"]), "thee");
   assert.equal(m("dirk", "Liga Proteine bar pinda", ["Brood, beleg & koek > Koekjes"]), "dieetvoeding/reep");
 });
+
+test("noodles, drop, kaas, crackers, ham, gum and spreads named by kind or brand alone (2026-10-16)", () => {
+  const m = (chainId: string, name: string, categories: string[]) => map({ chainId, name, brand: null, categories })?.ingredient ?? null;
+  assert.equal(m("jumbo", "Nissin Demae Ramen Chicken 100 g", ["Conserven, soepen, sauzen, oliën > Soep > Instant noedels en snack cups"]), "mie");
+  assert.equal(m("plus", "Go-Tan Miehoen", ["Pasta, rijst, internationale keuken > Rijst, noedels, mie > Mie, noedels, miehoen"]), "mie");
+  assert.equal(m("jumbo", "Venco Droptoppers Zacht & Zoet XL 340 g", ["Koek, snoep, chocolade en chips > Drop > Zoete drop"]), "drop");
+  assert.equal(m("jumbo", "Venco Katjesdrop Hard Zoet 235 g", ["Koek, snoep, chocolade en chips > Drop > Zoete drop"]), "drop");
+  assert.equal(m("hoogvliet", "Kaasstuk jong belegen komijn", ["Kaas, vleeswaren, tapas > Stukken kaas > Goudse kaas"]), "kaas");
+  assert.equal(m("jumbo", "Jumbo Gorgonzola Pikant ca. 180 g", ["Vleeswaren, kaas en tapas > Kaas voor de borrel > Blauwe kaas, roquefort, gorgonzola"]), "kaas");
+  assert.equal(m("jumbo", "Lezziz Kip Grillworst Cheddar Jalapeno 250g", ["Vleeswaren, kaas en tapas > Gesneden vleeswaren en worst > Worst"]), "grillworst");
+  assert.equal(m("jumbo", "Wasa Original Crisp 200 g", ["Ontbijt, broodbeleg en bakproducten > Beschuit, crackers en rijstwafels > Crackers, knäckebröd"]), "crackers");
+  assert.equal(m("jumbo", "Jumbo Tostiham 150 g", ["Vleeswaren, kaas en tapas > Gesneden vleeswaren en worst > Ham"]), "ham");
+  assert.equal(m("jumbo", "Jumbo Prosciutto di Parma 100 g", ["Vleeswaren, kaas en tapas > Gesneden vleeswaren en worst > Ham"]), "ham");
+  assert.equal(m("jumbo", "Mentos Gum White Cool Mint Suikervrij Pot 75 stuks", ["Koek, snoep, chocolade en chips > Kauwgom, mint en keelsnoepjes > Kauwgom"]), "kauwgom");
+  assert.equal(m("jumbo", "Jumbo Chocopasta Melk 400 g", ["Ontbijt, broodbeleg en bakproducten > Zoet broodbeleg > Hazelnoot-, Chocoladepasta"]), "chocoladepasta");
+  assert.equal(m("jumbo", "De Ruijter Vruchten Hagel 400 g", ["Ontbijt, broodbeleg en bakproducten > Zoet broodbeleg > Hagelslag, vlokken"]), "hagelslag");
+});

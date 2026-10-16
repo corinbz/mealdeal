@@ -231,7 +231,7 @@ grana padano	parmezaanse kaas
 pecorino	-
 brie	brie
 camembert	brie
-gorgonzola	-
+gorgonzola	kaas
 blauwe kaas	kaas
 cheddar	-
 gouda	kaas
@@ -436,7 +436,7 @@ beschuit	beschuit
 crackers	crackers
 knäckebröd	crackers
 rijstwafels	crackers
-cracottes	-
+cracottes	crackers
 toast	-
 toastjes	-
 ontbijtkoek	ontbijtkoek
@@ -491,7 +491,7 @@ tortellini	pasta/tortellini
 gnocchi	gnocchi
 noedels	mie
 mie	mie
-mihoen	-
+mihoen	mie
 rijstnoedels	mie
 udon	-
 couscous	couscous
