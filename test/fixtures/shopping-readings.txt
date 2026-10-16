@@ -719,7 +719,7 @@ chips	chips
 paprikachips	chips
 naturel chips	chips
 ribbelchips	chips
-pringles	-
+pringles	chips
 nacho's	chips
 popcorn	popcorn
 zoute popcorn	popcorn
@@ -793,7 +793,7 @@ senseo pads	-
 nespresso cups	-
 dolce gusto cups	-
 oploskoffie	koffie/oplos
-cappuccino	-
+cappuccino	koffie
 thee	thee
 zwarte thee	thee
 groene thee	thee
