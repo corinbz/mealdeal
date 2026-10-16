@@ -743,7 +743,7 @@ chocoladereep	chocolade
 melkchocolade	chocolade/melk
 witte chocolade	chocolade/wit
 tony's	-
-tony chocolonely	-
+tony chocolonely	chocolade
 m&m's	-
 mars	-
 snickers	-

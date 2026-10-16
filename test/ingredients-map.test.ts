@@ -126,6 +126,21 @@ test("a pizza is frozen or chilled by where it is kept, whatever its name says",
   assert.notEqual(as("Lamb Weston Burger fries", ["Diepvries > Diepvries aardappelproducten"])[0], "hamburgers");
 });
 
+test("what the Gold Set found the vocabulary missed", () => {
+  const is = (chainId: string, name: string, categories: string[]) => map({ chainId, name, brand: null, categories })?.ingredient ?? null;
+  assert.equal(is("dekamarkt", "Old Jamaica Ginger beer soda 6x 33cl", ["Dranken, sap, koffie & thee > Frisdranken"]), "frisdrank");
+  assert.equal(is("plus", "PLUS Gekookte Gelderse worst", ["Kaas, vleeswaren, tapas > Vleeswaren > Gekookte worst"]), "rookworst");
+  assert.equal(is("dekamarkt", "DekaVers Gelderse achterham", ["Kaas, vleeswaren, tapas > Vleeswaren > Ham"]), "ham");
+  assert.equal(is("plus", "PLUS Jong Belegen Plakken", ["Kaas, vleeswaren, tapas > Kaas > Voorverpakte kaasplakken"]), "kaas");
+  assert.equal(is("hoogvliet", "Black tea peach hibiscus", ["Frisdrank, sappen > Frisdrank > Ijsthee"]), "ijsthee");
+  assert.equal(is("jumbo", "Nescafé Vanillesmaak Latte 8 x 17 g", ["Koffie en thee > Oploskoffie > Oploscappuccino, latte machiato"]), "koffie");
+  assert.equal(is("dekamarkt", "G'woon Hot chocolate", ["Koffie en thee > Oploskoffie > Oploscappuccino, latte machiato"]), null);
+  assert.equal(is("plus", "Lotus Biscoff Sandwich Speculooscreme", ["Snoep, koek, chocolade, chips, noten > Koek > Alledaagse koek"]), "speculaas");
+  assert.equal(is("dirk", "Milka Chocoladereep biscoff", ["Snoep, koek, chocolade, chips, noten > Chocolade > Chocoladerepen"]), "chocolade");
+  assert.equal(is("vomar", "Guldenhoeve Kipburger Spek 2st", ["Vers > Kip & Kalkoen > Kip"]), "hamburgers");
+  assert.equal(is("dekamarkt", "G'woon Siroop vruchtenmix", ["Kind & drogisterij > Babyvoeding vanaf 12 maanden"]), "limonadesiroop");
+});
+
 test("a meal kit is fresh by the shelf it is filed on, if its name does not say", () => {
   const as = (chainId: string, name: string, categories: string[]) => { const x = map({ chainId, name, brand: null, categories }); return [x?.ingredient, x?.variant]; };
   assert.deepEqual(as("hoogvliet", "Chili con carne", ["Aardappelen, Groente, Fruit > Verspakketten > Maaltijdpakketten"]), ["maaltijdpakket", "vers"]);
