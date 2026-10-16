@@ -143,7 +143,7 @@ export const ENGLISH: Readonly<Record<string, Translation>> = {
     rund: ["ground beef", "minced beef", "beef mince"], varken: ["ground pork", "minced pork", "pork mince"],
     kip: ["ground chicken", "minced chicken", "chicken mince"] } },
   gehaktballen: ["meatballs", "meatball"],
-  hamburgers: ["burgers", "burger", "burger patties"],
+  hamburgers: { names: ["burgers", "burger", "burger patties"], variants: { diepvries: ["frozen burgers"], gekoeld: ["fresh burgers"] } },
   kipfilet: { names: ["chicken breast", "chicken breasts", "chicken fillet", "chicken breast fillet"], variants: {
     heel: ["whole chicken breasts", "whole chicken breast"], blokjes: ["diced chicken", "chicken pieces", "chicken chunks"] } },
   kipdijfilet: ["chicken thighs", "chicken thigh", "boneless chicken thighs", "chicken thigh fillet"],

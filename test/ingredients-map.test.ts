@@ -114,12 +114,16 @@ test("sold cut is a Variant of its own, in an aspect of its own: gesneden rode u
   assert.equal(v("dirk", "1 de Beste Broccoliroosjes", ["Aardappelen, groente & fruit > Groente"]), "gesneden");
   assert.equal(v("dekamarkt", "Boerenkool fijn", ["Aardappelen, groente & fruit > Groente"]), "gesneden");
   assert.equal(v("dekamarkt", "Boerenkool", ["Aardappelen, groente & fruit > Groente"]), "heel");
+  assert.equal(v("dirk", "1 de Beste Gesneden uienringen", ["Aardappelen, groente & fruit > Groente"]), "gele+gesneden");
 });
 
 test("a pizza is frozen or chilled by where it is kept, whatever its name says", () => {
   const as = (name: string, categories: string[]) => { const x = map({ chainId: "vomar", name, brand: null, categories }); return [x?.ingredient, x?.variant]; };
   assert.deepEqual(as("Dr Oetker Ristorante Tonno", ["Diepvries > Pizza's"]), ["pizza", "diepvries"]);
   assert.deepEqual(as("Deka's keuken Pizza tonijn", ["Maaltijden, salades & tapas > Pizza's"]), ["pizza", "gekoeld"]);
+  assert.deepEqual(as("Mora Classics Hamburgers 4 x 80 g", ["Diepvries > Snacks > Hamburgers"]), ["hamburgers", "diepvries"]);
+  assert.deepEqual(as("Hamburgers", ["Vers > Vlees > Rund"]), ["hamburgers", "gekoeld"]);
+  assert.notEqual(as("Lamb Weston Burger fries", ["Diepvries > Diepvries aardappelproducten"])[0], "hamburgers");
 });
 
 test("a meal kit is fresh by the shelf it is filed on, if its name does not say", () => {

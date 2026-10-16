@@ -240,7 +240,7 @@ ing("wortelen", "kg", VEG, ["wortel", "wortelen", "peen", "winterpeen", "bospeen
   not: ["sap", "taart", "cake", "salade", "mieriks"],
   also: ["wortels", "peen", "worteltjes"],
 });
-ing("uien", "kg", ["produce", "frozen"], ["uien", "ui", "=uien"], {
+ing("uien", "kg", ["produce", "frozen"], ["uien", "ui", "uienringen", "=uien"], {
   not: ["gebakken", "crispy", "soep", "lente", "bosui", "zilver", "chips", "onion rings", "zoetzuur", "gepaneerd"],
   variants: [["rode", "rode uien", ["rode"]], ["gele", "gele uien", ["gele"], true], ...cut("uien")],
   equals: { piece: 7 },
@@ -375,7 +375,8 @@ ing("gehakt", "kg", MEAT, ["gehakt", "gehaktmix"], {
     ["rund", "rundergehakt", ["runder", "rund"]], ["varken", "varkensgehakt", ["varkens"]], ["kip", "kipgehakt", ["kip"]]],
 });
 ing("gehaktballen", "kg", MEAT, ["gehaktbal", "gehaktballen", "balletje", "slavink"], { not: ["choco", "chocolade", "melkchocolade", "vega", "soep", "saus", "tomatensaus", "jus"] });
-ing("hamburgers", "kg", MEAT, ["hamburger", "burger", "burgers"], { not: ["vega", "broodje", "saus", "kruiden", "kip"] });
+ing("hamburgers", "kg", MEAT, ["hamburger", "burger", "burgers"], { not: ["vega", "broodje", "saus", "kruiden", "kip", "fries", "friet"],
+  variants: [{ id: "diepvries", name: "diepvries hamburgers", words: [], form: "diepvries" }, { id: "gekoeld", name: "verse hamburgers", words: [], fallback: true }] });
 ing("kipfilet", "kg", MEAT, ["kipfilet", "kipfilets", "kippenfilet", "kipfiletreepje", "kipfiletblokje", "kipreepje", "kipblokje", "kiphaasje", "kipstukje"], {
   not: ["vleeswaren", "gerookt", "broodbeleg", "gegrild", "flinterdun", "plakjes", "salade", "spread", "pastei", "vegetarisch", "vega", "nugget"],
   variants: [["heel", "hele kipfilet", ["heel", "hele", "filet"], true], ["blokjes", "kipblokjes", ["blokje", "reepje", "stukjes", "repen"]]],
