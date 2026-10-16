@@ -83,9 +83,9 @@ test("a jar is a jar, even where the Chain also files it with fresh vegetables",
   assert.equal(mapped("Hak Worteltjes 680 g")?.form, "conserven");
 });
 
-test("pet food and baby food are never an Ingredient, whatever they contain", () => {
+test("pet food and baby food are no other Ingredient, whatever they contain", () => {
   assert.equal(ingredient("Purina One Kattenvoer sensitive kalkoen & rijst"), null);
-  assert.equal(ingredient("Olvarit 6+ Maanden Tomaat Rund Aardappel Wortel"), null);
+  assert.equal(ingredient("Olvarit 6+ Maanden Tomaat Rund Aardappel Wortel"), "babyvoeding");
 });
 
 test("a Product naming several Ingredients is a mix, not the first of them", () => {
@@ -184,7 +184,7 @@ test("reads Vomar's category tree, whose names differ from the other Chains'", (
   );
   assert.equal(mapped("Winterpeen Verpakt")?.form, "vers");
   // Baby meals are baby food, not ready meals and not carrots.
-  assert.equal(ingredient("4m75 Olvarit Wortel"), null);
+  assert.equal(ingredient("4m75 Olvarit Wortel"), "babyvoeding");
   // "Vers > Vleeswaren & Salades > Vleeswaren": sliced meat, though its
   // group's name says salades.
   assert.equal(ingredient("Schouderham"), "ham");
@@ -212,8 +212,8 @@ test("reads Plus's category tree, and its own brands", () => {
   assert.equal(aisleOf("Frisdrank, sappen, koffie, thee > Koffie, koffiemelk, suiker > Koffiemelk, koffieroom, koffiecreamers"), "dairy");
   assert.equal(aisleOf("Aardappelen, groente, fruit > Groente > Slaschotels, salades, dressings, slaversierders"), "produce");
   assert.equal(mapped("PLUS Spaghetti")?.huismerk, true);
-  // A ready meal, not an Ingredient; but its brand is Plus's own line.
-  assert.equal(ingredient("Uit de keuken van PLUS Verse Nasi goreng"), null);
+  // A ready meal, not rice; and its brand is Plus's own line.
+  assert.equal(ingredient("Uit de keuken van PLUS Verse Nasi goreng"), "kant-en-klaarmaaltijd");
 });
 
 test("reads Lidl's category tree, and its own brands", () => {
@@ -224,7 +224,7 @@ test("reads Lidl's category tree, and its own brands", () => {
   assert.deepEqual([mapped("MILBONA Jong belegen plakken Goudse 48+ kaas")?.huismerk, mapped("COMBINO Spaghetti")?.huismerk], [true, true]);
   assert.equal(mapped("Extra mager rundergehakt")?.huismerk, false);
   // A frozen stir-fry meal is not spinach; dog food with chicken is not chicken.
-  assert.equal(ingredient("Iglo roerbaksensatie kip-spinazie"), null);
+  assert.equal(ingredient("Iglo roerbaksensatie kip-spinazie"), "kant-en-klaarmaaltijd");
   assert.equal(ingredient("Hondenvoer kuipje senior kip"), null);
 });
 
@@ -239,7 +239,7 @@ test("reads Hoogvliet's category tree, and its own brands", () => {
   assert.equal(ingredient("kaas jong belegen komijn plakken"), "kaas");
   // "Baby, kind" is non-food at Lidl; Hoogvliet's baby food is baby food.
   assert.equal(aisleOf("Baby, kind > Babyvoeding > Fruithapjes"), "baby");
-  assert.equal(ingredient("Appel perzik 4+ mnd"), null);
+  assert.equal(ingredient("Appel perzik 4+ mnd"), "babyvoeding");
   assert.deepEqual([mapped("Rundergehakt")?.huismerk, mapped("kaas jong belegen komijn plakken")?.huismerk], [true, false]);
 });
 
@@ -342,7 +342,8 @@ test("with no category at all, the name decides, in any food aisle (Aldi's offer
   assert.equal(offer("Croissants")?.ingredient, "croissants");
   assert.equal(offer("Kipfilet")?.form, "vers");
   assert.equal(offer("Partjes mandarijn op lichte siroop")?.form, "conserven");
-  for (const n of ["Melkchocoladeballen", "Pepermunt", "Vogelvoer of voederautomaat", "Tortilla Spaanse stijl", "Kip karaage"]) assert.equal(offer(n), null, n);
+  assert.equal(offer("Pepermunt")?.ingredient, "snoep");
+  for (const n of ["Melkchocoladeballen", "Vogelvoer of voederautomaat", "Tortilla Spaanse stijl", "Kip karaage"]) assert.equal(offer(n), null, n);
   assert.equal(offer("Paddenstoelen", "ALL SEASONS"), null, "frozen or tinned, the name does not say which");
 });
 
@@ -412,4 +413,16 @@ test("what the classifier found the vocabulary had wrong (2026-10-15)", () => {
   assert.equal(m("jumbo", "Leksands Knäckebröd Zaden en Zeezout 200g", ["Ontbijt, broodbeleg en bakproducten > Beschuit, crackers en rijstwafels > Crackers, knäckebröd"]), "crackers");
   assert.equal(m("hoogvliet", "Weide & veldbloemen", ["Ontbijt, broodbeleg > Broodbeleg > Honing"]), null);
   assert.equal(m("jumbo", "Heinz Tomato Puree 140 g", ["Wereldkeukens, kruiden, pasta en rijst > Mediterrane keuken > Tomatenblokjes en -puree"]), "tomatenpuree");
+});
+
+test("what is no single food yet is bought as one: a mix, a spice, a sauce, a meat replacement (2026-10-16)", () => {
+  const m = (chainId: string, name: string, categories: string[]) => { const r = map({ chainId, name, brand: null, categories }); return r ? r.ingredient + (r.variant ? "/" + r.variant : "") : null; };
+  assert.equal(m("plus", "Verstegen Mix voor kip", ["Soepen, conserven, sauzen, smaakmakers > Kruiden, specerijen > Kruidenmix vlees, vis, kip, maaltijd"]), "kruidenmix/kip");
+  assert.equal(m("dirk", "Silvo Laurierblad", ["Voorraadkast > Kruiden & specerijen"]), "specerijen/laurier");
+  assert.equal(m("vomar", "Calve Sambasaus", ["Voorraadkast > Soepen, conserven, sauzen & smaakmakers > Tafelsauzen"]), "saus/samba");
+  assert.equal(m("jumbo", "Go-Tan Wokolie 500ml", ["Conserven, soepen, sauzen, oliën > Oliën en frituurvet > Wokolie"]), "speciale olie/wok");
+  assert.equal(m("jumbo", "Planted Steak 150 g", ["Vlees, vis en vega > Vleesvervangers > Vega steak, stooflapje en meer"]), "vleesvervanger/steak");
+  assert.equal(m("vomar", "Vivera Plant Burger", ["Vers > Vegetarisch > Vegetarisch"]), "vleesvervanger/burger");
+  assert.equal(m("dirk", "Melkan Ijskoffie macchiato", ["Dranken, sap, koffie & thee > Koffie & cacao"]), "ijskoffie/naturel");
+  assert.equal(m("jumbo", "Jumbo's Salade Gerookte Zalmforel 125 g", ["Vleeswaren, kaas en tapas > Vis tapas"]), "salade/vis");
 });

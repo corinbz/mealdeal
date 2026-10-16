@@ -389,8 +389,8 @@ schol	-
 tong	-
 heilbot	-
 paling	-
-vegetarische burger	-
-vegaburger	-
+vegetarische burger	vleesvervanger
+vegaburger	vleesvervanger/burger
 vegetarisch gehakt	vegetarisch gehakt
 vega gehakt	vegetarisch gehakt
 tofu	tofu
@@ -399,7 +399,7 @@ seitan	-
 vegetarische kipstukjes	-
 falafel	falafel
 vegetarische schnitzel	-
-vleesvervanger	-
+vleesvervanger	vleesvervanger
 brood	brood
 volkorenbrood	brood/volkoren
 witbrood	brood/wit
@@ -530,28 +530,28 @@ sambal oelek	sambal
 ketjap	sojasaus
 ketjap manis	sojasaus
 sojasaus	sojasaus
-sweet chili saus	-
+sweet chili saus	saus
 sriracha	sriracha
 tabasco	-
 worcestershiresaus	-
-barbecuesaus	-
-bbq saus	-
+barbecuesaus	saus/bbq
+bbq saus	saus
 knoflooksaus	knoflooksaus
-cocktailsaus	-
+cocktailsaus	saus/cocktail
 satésaus	pindasaus
 pindasaus	pindasaus
-hoisinsaus	-
-oestersaus	-
+hoisinsaus	saus/hoisin
+oestersaus	saus/oester
 vissaus	-
-teriyakisaus	-
+teriyakisaus	saus/teriyaki
 kokosmelk in blik	-
 currypasta	-
 rode currypasta	-
 groene currypasta	-
-boemboe	-
-nasi kruiden	-
-bami kruiden	-
-taco kruiden	-
+boemboe	kruidenmix
+nasi kruiden	kruidenmix
+bami kruiden	kruidenmix
+taco kruiden	kruidenmix
 mix voor nasi	-
 mix voor spaghetti	-
 mix voor chili con carne	-
@@ -569,8 +569,8 @@ zonnebloemolie	zonnebloemolie
 frituurolie	zonnebloemolie
 frituurvet	-
 arachideolie	zonnebloemolie
-sesamolie	-
-kokosolie	-
+sesamolie	speciale olie/sesam
+kokosolie	speciale olie/kokos
 azijn	azijn
 witte azijn	azijn
 balsamico azijn	azijn
@@ -583,17 +583,17 @@ paprikapoeder	paprikapoeder
 gerookte paprikapoeder	paprikapoeder
 kerrie	kerrie
 kerriepoeder	kerrie
-komijn	-
-kurkuma	-
+komijn	specerijen/komijn
+kurkuma	specerijen/kurkuma
 kaneel	kaneel
 nootmuskaat	nootmuskaat
 oregano	oregano
-italiaanse kruiden	-
-laurierblaadjes	-
-chilivlokken	-
-cayennepeper	-
-gemberpoeder	-
-knoflookpoeder	-
+italiaanse kruiden	specerijen/italiaanse kruiden
+laurierblaadjes	specerijen
+chilivlokken	specerijen
+cayennepeper	specerijen
+gemberpoeder	specerijen/gemberpoeder
+knoflookpoeder	specerijen/knoflookpoeder
 vanillesuiker	vanillesuiker
 suiker	suiker
 kristalsuiker	suiker/kristal
@@ -665,17 +665,17 @@ knakworst in blik	-
 ravioli in blik	-
 corned beef	-
 smac	-
-tonijnsalade	-
-zalmsalade	-
-eiersalade	-
-kip kerrie salade	-
-huzarensalade	-
-aardappelsalade	-
+tonijnsalade	salade
+zalmsalade	salade
+eiersalade	salade/ei
+kip kerrie salade	salade
+huzarensalade	salade
+aardappelsalade	salade/aardappel
 macaronisalade	-
 hummus	hummus
 tzatziki	-
 guacamole	-
-salsa	-
+salsa	saus/taco
 tortillachips	chips
 taco's	-
 taco schelpen	-
@@ -698,9 +698,9 @@ loempia's	loempia's
 mini loempia's	mini loempia's
 nasi	-
 bami	-
-diepvriesmaaltijd	-
-kant-en-klaar maaltijd	-
-maaltijdsalade	-
+diepvriesmaaltijd	kant-en-klaarmaaltijd/diepvries
+kant-en-klaar maaltijd	kant-en-klaarmaaltijd
+maaltijdsalade	salade/maaltijd
 ijs	ijs
 vanille-ijs	ijs
 roomijs	ijs
@@ -733,10 +733,10 @@ drop	drop
 dropjes	drop
 zoute drop	drop
 zoete drop	drop
-snoep	-
+snoep	snoep
 winegums	winegums
-schuimpjes	-
-pepermunt	-
+schuimpjes	snoep
+pepermunt	snoep/mint
 kauwgom	kauwgom
 chocolade	chocolade
 chocoladereep	chocolade
@@ -873,11 +873,11 @@ gin	-
 likeur	-
 advocaat	-
 cider	-
-babyvoeding	-
+babyvoeding	babyvoeding
 babymelk	-
-opvolgmelk	-
-fruithapje	-
-groentehapje	-
+opvolgmelk	babyvoeding
+fruithapje	babyvoeding/fruit
+groentehapje	babyvoeding
 babykoekjes	-
 kattenvoer	kattenvoer
 hondenvoer	hondenvoer
@@ -962,7 +962,7 @@ iceberg lettuce	ijsbergsla
 romaine	sla
 arugula	rucola
 rocket	rucola
-mixed salad	-
+mixed salad	sla
 salad greens	sla
 cucumber	komkommer
 tomatoes	tomaten
@@ -1131,9 +1131,9 @@ mussels	mosselen
 squid	-
 fish sticks	vissticks
 crab sticks	surimi
-veggie burgers	-
+veggie burgers	vleesvervanger/burger
 plant-based mince	-
-meat substitute	-
+meat substitute	vleesvervanger
 bread	brood
 white bread	brood/wit
 brown bread	brood/bruin
@@ -1190,12 +1190,12 @@ mayonnaise	mayonaise
 mustard	mosterd
 dijon mustard	mosterd
 soy sauce	sojasaus
-hot sauce	-
-sweet chili sauce	-
-bbq sauce	-
-barbecue sauce	-
+hot sauce	saus
+sweet chili sauce	saus/chili
+bbq sauce	saus/bbq
+barbecue sauce	saus/bbq
 curry sauce	currysaus
-curry paste	-
+curry paste	kruidenmix/wereld
 coconut milk	kokosmelk
 stock cubes	bouillon
 chicken stock	bouillon
@@ -1205,20 +1205,20 @@ gravy	-
 olive oil	olijfolie
 vegetable oil	-
 sunflower oil	zonnebloemolie
-sesame oil	-
-coconut oil	-
+sesame oil	speciale olie/sesam
+coconut oil	speciale olie/kokos
 vinegar	azijn
 balsamic vinegar	azijn
 salt	zout
 pepper	-
 black pepper	zwarte peper
 paprika powder	paprikapoeder
-cumin	-
+cumin	specerijen/komijn
 cinnamon	kaneel
-turmeric	-
+turmeric	specerijen/kurkuma
 mixed herbs	-
 curry powder	kerrie
-chili flakes	-
+chili flakes	specerijen/chilipoeder
 sugar	suiker
 brown sugar	suiker/basterd
 icing sugar	suiker/poeder
@@ -1267,7 +1267,7 @@ croquettes	kroketten
 spring rolls	loempia's
 ice cream	ijs
 vanilla ice cream	ijs/vanille
-ice lollies	-
+ice lollies	ijs
 popsicles	-
 puff pastry	bladerdeeg
 pizza dough	-
@@ -1280,10 +1280,10 @@ paprika crisps	chips
 prawn crackers	kroepoek
 licorice	drop
 liquorice	drop
-candy	-
-sweets	-
+candy	snoep
+sweets	snoep
 gummy bears	-
-marshmallows	-
+marshmallows	snoep
 chewing gum	kauwgom
 gum	kauwgom
 mints	munt
@@ -1333,7 +1333,7 @@ alcohol-free beer	bier/alcoholvrij
 wine	-
 red wine	-
 white wine	-
-baby food	-
-baby formula	-
+baby food	babyvoeding
+baby formula	babyvoeding/fles
 cat food	kattenvoer
 dog food	hondenvoer

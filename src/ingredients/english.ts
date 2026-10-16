@@ -89,7 +89,7 @@ export const ENGLISH: Readonly<Record<string, Translation>> = {
   "taugé": ["bean sprouts"],
   ijsbergsla: { names: ["iceberg lettuce", "iceberg"], variants: { gesneden: ["shredded lettuce", "shredded iceberg"], heel: ["whole iceberg lettuce"] } },
   kropsla: ["butter lettuce", "butterhead lettuce", "boston lettuce", "round lettuce"],
-  sla: ["lettuce", "salad greens", "mixed greens"],
+  sla: ["lettuce", "salad greens", "mixed greens", "mixed salad", "green salad"],
   rucola: ["arugula", "rocket"],
   veldsla: ["mâche", "mache", "lamb's lettuce", "corn salad"],
   rauwkost: ["coleslaw", "slaw", "shredded vegetables"],
@@ -343,6 +343,26 @@ export const ENGLISH: Readonly<Record<string, Translation>> = {
     energie: ["energy drink", "energy drinks"], sport: ["sports drink", "sports drinks"], zero: ["diet soda", "sugar-free soda"], gewoon: ["regular soda"] } },
   tonic: ["tonic water", "tonic"],
 
+  // ── Ready meals, seasoning, sauces, oils
+  "kant-en-klaarmaaltijd": { names: ["ready meal", "ready meals", "microwave meal", "tv dinner"], variants: { diepvries: ["frozen ready meal"], houdbaar: ["shelf-stable meal"], gekoeld: ["chilled ready meal", "fresh ready meal"] } },
+  kruidenmix: { names: ["spice mix", "seasoning mix", "seasoning"], variants: { vlees: ["meat seasoning"], kip: ["chicken seasoning"], vis: ["fish seasoning"], aardappel: ["potato seasoning"], wereld: ["world cuisine seasoning", "curry paste"] } },
+  specerijen: { names: ["spices", "dried herbs"], variants: {
+    laurier: ["bay leaves", "bay leaf"], kurkuma: ["turmeric"], komijn: ["cumin"], knoflookpoeder: ["garlic powder"], uienpoeder: ["onion powder"], chilipoeder: ["chili powder", "chili flakes"], korianderzaad: ["ground coriander", "coriander seed"],
+    kruidnagel: ["cloves"], steranijs: ["star anise"], saffraan: ["saffron"], gemberpoeder: ["ground ginger"], kardemom: ["cardamom"], mosterdzaad: ["mustard seed"], piment: ["allspice"], foelie: ["mace blades"], venkelzaad: ["fennel seed"], vanille: ["vanilla pod", "vanilla bean"], "italiaanse kruiden": ["italian herbs", "italian seasoning"] } },
+  saus: { names: ["sauce", "sauces"], variants: {
+    samba: ["samba sauce"], taco: ["taco sauce", "salsa"], bbq: ["bbq sauce", "barbecue sauce"], chili: ["chili sauce", "sweet chili sauce"], cocktail: ["cocktail sauce"], joppie: ["joppie sauce"], shoarma: ["shawarma sauce", "kebab sauce"], hollandaise: ["hollandaise sauce", "bearnaise sauce"],
+    teriyaki: ["teriyaki sauce"], oester: ["oyster sauce"], hoisin: ["hoisin sauce"], burger: ["burger sauce"], zigeuner: ["gypsy sauce"], dip: ["dipping sauce", "dip"], andalouse: ["andalouse sauce"] } },
+  "speciale olie": { names: ["specialty oil", "speciality oil"], variants: {
+    wok: ["wok oil"], sesam: ["sesame oil"], kokos: ["coconut oil"], lijnzaad: ["linseed oil", "flaxseed oil"], raapzaad: ["rapeseed oil", "canola oil"], truffel: ["truffle oil"], walnoot: ["walnut oil"], avocado: ["avocado oil"], druivenpit: ["grapeseed oil"], chili: ["chili oil"] } },
+  ijskoffie: ["iced coffee", "cold brew"],
+
+  // ── Meat substitutes, sweets, baby food, salads
+  vleesvervanger: { names: ["meat substitute", "meat substitutes", "plant-based meat", "veggie meat"], variants: {
+    burger: ["veggie burger", "plant-based burger"], schnitzel: ["veggie schnitzel"], stukjes: ["veggie pieces", "plant-based chicken pieces"], balletjes: ["veggie balls", "veggie meatballs"], nuggets: ["veggie nuggets"], worst: ["veggie sausage", "veggie sausages"], steak: ["veggie steak", "plant-based steak"] } },
+  snoep: { names: ["sweets", "candy", "candies"], variants: { mint: ["breath mints", "peppermints", "throat lozenges"], hard: ["hard candy", "boiled sweets", "lollipops"], zacht: ["soft candy", "chewy sweets"] } },
+  babyvoeding: { names: ["baby food"], variants: { fles: ["baby formula", "infant formula", "formula milk"], pap: ["baby cereal", "baby porridge"], fruit: ["baby fruit puree", "fruit pouch"], snack: ["baby snacks", "toddler snacks"], maaltijd: ["baby meal", "baby jar"] } },
+  salade: { names: ["salad spread", "deli salad", "ready salad"], variants: { maaltijd: ["meal salad", "pasta salad"], kip: ["chicken salad"], vis: ["fish salad", "salmon salad", "tuna salad"], ei: ["egg salad"], aardappel: ["potato salad"], vlees: ["meat salad"] } },
+
   // ── Meal kits
   maaltijdpakket: { names: ["meal kit", "meal kits", "meal box"], variants: { vers: ["fresh meal kit"], houdbaar: ["dry meal kit", "boxed meal kit"] } },
 
@@ -381,7 +401,7 @@ export const ENGLISH: Readonly<Record<string, Translation>> = {
   pannenkoeken: ["pancakes", "dutch pancakes"],
   poffertjes: ["poffertjes", "mini pancakes"],
   gnocchi: ["gnocchi"],
-  ijs: ["ice cream"],
+  ijs: ["ice cream", "ice lolly", "ice lollies"],
 };
 
 /**

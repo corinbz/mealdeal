@@ -87,6 +87,8 @@ const RULES: [RegExp, Aisle][] = [
   [/^vers > grill/i, "readymeal"],
   // Plus files soup among sauces and conserves; a soup is a ready meal.
   [/^soepen, conserven, sauzen, smaakmakers > soep\b/i, "readymeal"],
+  // Its "Kruidenmix vlees, vis, kip, maaltijd" is herbs, not a meal.
+  [/^soepen, conserven, sauzen, smaakmakers > kruiden/i, "pantry"],
   // Jumbo files cooking cheese as "Kaas voor de maaltijd", which the
   // ready-meal rule below would claim: grated cheese is cheese.
   [/^vleeswaren, kaas en tapas > kaas voor de (maaltijd|borrel)/i, "cheese"],
