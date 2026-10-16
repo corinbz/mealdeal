@@ -33,6 +33,11 @@ test("a name is not read from its last words past a word that makes it something
   assert.equal(read("verse spinazie"), "spinazie");
 });
 
+test("frozen is a kind of an Ingredient sold both ways, not only a Preference", () => {
+  assert.equal(read("diepvries pizza"), "pizza/diepvries");
+  assert.equal(read("frozen pizza"), "pizza/diepvries");
+});
+
 test("0.0 is a drink without alcohol, not none of one", () => {
   assert.equal(read("0.0 bier"), "bier/alcoholvrij");
   assert.equal(R.parse("0,0 bier")?.quantity, 1);

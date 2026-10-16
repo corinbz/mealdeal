@@ -196,11 +196,11 @@ vla	vla
 vanillevla	vla
 chocoladevla	vla
 pap	-
-griesmeelpudding	-
+griesmeelpudding	toetje/griesmeel
 rijstepap	-
 custard	vla
-toetjes	-
-pudding	-
+toetjes	toetje
+pudding	toetje/pudding
 boter	roomboter
 roomboter	roomboter
 ongezouten roomboter	roomboter/ongezouten
@@ -682,7 +682,7 @@ taco schelpen	-
 tortilla wraps	tortilla's
 kokosrasp	-
 rozijnen in pakje	-
-diepvriespizza	-
+diepvriespizza	pizza/diepvries
 pizza	pizza
 pizza margherita	-
 patat	friet
@@ -725,9 +725,9 @@ popcorn	popcorn
 zoute popcorn	popcorn
 kroepoek	kroepoek
 cassave chips	chips
-zoutjes	-
+zoutjes	zoutjes
 tuc	-
-pretzels	-
+pretzels	zoutjes
 zoute stokjes	-
 drop	drop
 dropjes	drop
@@ -879,11 +879,11 @@ opvolgmelk	-
 fruithapje	-
 groentehapje	-
 babykoekjes	-
-kattenvoer	-
-hondenvoer	-
+kattenvoer	kattenvoer
+hondenvoer	hondenvoer
 brokjes	-
 kattenbrokken	-
-hondenbrokken	-
+hondenbrokken	hondenvoer
 natvoer	-
 kattensnoepjes	-
 hondensnoepjes	-
@@ -1258,7 +1258,7 @@ chicken soup	soep/kip
 canned soup	soep
 instant noodles	mie
 tortilla chips	chips
-frozen pizza	pizza
+frozen pizza	pizza/diepvries
 fries	friet
 french fries	friet
 oven chips	chips
@@ -1335,5 +1335,5 @@ red wine	-
 white wine	-
 baby food	-
 baby formula	-
-cat food	-
-dog food	-
+cat food	kattenvoer
+dog food	hondenvoer
