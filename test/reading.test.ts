@@ -33,6 +33,12 @@ test("a name is not read from its last words past a word that makes it something
   assert.equal(read("verse spinazie"), "spinazie");
 });
 
+test("a verspakket is the fresh kind of meal kit", () => {
+  assert.equal(read("maaltijdpakket"), "maaltijdpakket");
+  assert.equal(read("verspakket"), "maaltijdpakket/vers");
+  assert.equal(read("meal kit"), "maaltijdpakket");
+});
+
 test("frozen is a kind of an Ingredient sold both ways, not only a Preference", () => {
   assert.equal(read("diepvries pizza"), "pizza/diepvries");
   assert.equal(read("frozen pizza"), "pizza/diepvries");

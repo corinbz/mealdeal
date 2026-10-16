@@ -44,6 +44,8 @@ export interface VariantDef {
   readonly fallback?: boolean;
   /** Given to a Product kept this way, rather than by its name's words. */
   readonly form?: Form;
+  /** Given to a Product filed on a shelf this matches, where its name gives none. */
+  readonly shelf?: RegExp;
 }
 
 export interface IngredientDef {
@@ -732,6 +734,20 @@ ing("frisdrank", "l", ["drinks"], ["frisdrank", "frisdranken", "limonade", "sina
   variants: [["energie", "energiedrank", ["energy", "energie", "red bull", "rockstar", "bullit", "celsius", "shakura"]], ["sport", "sportdrank", ["sport", "isoton", "aa drink", "aquarius", "extran", "powerade", "gatorade", "isostar"]],
     ["zero", "frisdrank zero", ["zero", "light", "suikervrij", "no sugar", "0% suiker", "sugar free", "sugarfree", "1kcal"]], ["gewoon", "gewone frisdrank", ["regular", "original"], true]],
   flavours: ["sinaasappel", "citroen", "limoen", "cassis", "appel", "framboos", "aardbei", "kers", "mango", "perzik", "multivruchten", "ginger", "druif", "ananas", "passievrucht"],
+});
+
+// ── Meal kits ───────────────────────────────────────────────────────────
+// A box or bag with what one dish takes: fresh, the vegetables cut with a
+// sauce and spices (Verspakket roti masala), or kept on the shelf, the dry
+// parts of one (Old El Paso fajita). Not the spice mixes beside them, nor
+// soup kits, which are soepgroente.
+ing("maaltijdpakket", "piece", ["readymeal", "produce", "pantry"], ["maaltijdpakket", "maaltijdpakketten", "verspakket", "verspakketten", "maaltijdbox", "kookpakket", "mealkit", "meal kit", "dinner kit", "fajita kit", "taco kit", "burrito kit", "enchilada kit", "wrap kit", "tortilla kit", "wereldgerecht", "wereldgerechten"], {
+  wins: true,
+  not: ["soep", "soepgroente", "soepgroenten", "soeppakket", "kippensoep", "erwtensoep", "groentesoep", "kruidenmix", "mix voor", "saus", "hak ", "heat & eat", "maggi noodles", "maggi noedels", "seasoning", "chicken mix"],
+  shelf: /^(maaltijdpakket(ten)?|verspakketten|verse maaltijdpakketten|maaltijdpakketten, maaltijdmixen)$/i,
+  also: ["maaltijdpakketten", "verspakket"],
+  variants: [{ id: "vers", name: "verspakket", words: ["verspakket", "vers ", "verse "], shelf: /^(verspakketten|verse maaltijdpakketten|maaltijdpakket)$/i },
+    { id: "houdbaar", name: "houdbaar maaltijdpakket", words: ["houdbaar"], fallback: true }],
 });
 
 // ── Diet and sports food ────────────────────────────────────────────────

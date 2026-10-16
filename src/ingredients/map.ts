@@ -120,7 +120,7 @@ const JOINERS = new RegExp(JOINER.source, "g");
  * A Product's Variants, one per aspect. Spaces around the name, so a word
  * written "vol " also ends one ("Yoghurt Vol") and " ui " starts one.
  */
-export function variantOf(def: IngredientDef, lower: string, brand?: string | null, form?: Form | null): string | null {
+export function variantOf(def: IngredientDef, lower: string, brand?: string | null, form?: Form | null, shelves: readonly string[] = []): string | null {
   const text = " " + lower + " ";
   // A brand the name starts with may name its kind (Red Bull, Isey Skyr) but
   // not its flavour: Appelsientje is not appel, nor Tropical multivruchten.
@@ -139,7 +139,7 @@ export function variantOf(def: IngredientDef, lower: string, brand?: string | nu
     // otherwise the first in the vocabulary's order that the name gives.
     const named = vs.some((v) => v.form) ? vs.find((v) => v.form && v.form === form)
       : a === "smaak" ? vs.filter((v) => at(v) < Infinity).sort((x, y) => at(x) - at(y))[0]
-      : vs.find((v) => at(v) < Infinity);
+      : vs.find((v) => at(v) < Infinity) ?? vs.find((v) => v.shelf && shelves.some((s) => v.shelf!.test(s)));
     const v = named ?? vs.find((x) => x.fallback);
     return v ? [v.id] : [];
   });
@@ -195,7 +195,7 @@ function mappingFor(product: MappableProduct, def: IngredientDef, aisles: Readon
   const form = said(def, product, lower) ?? formOf(aisle);
   return {
     ingredient: def.id,
-    variant: variantOf(def, lower, product.brand, form),
+    variant: variantOf(def, lower, product.brand, form, shelvesOf(product.categories)),
     form,
     biologisch: /\bbio(logisch|logische)?\b/.test(lower) || product.categories.some((c) => /biologisch/i.test(c)),
     huismerk: isOwnBrand(product.chainId, product.brand, product.name),

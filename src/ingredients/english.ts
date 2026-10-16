@@ -343,6 +343,9 @@ export const ENGLISH: Readonly<Record<string, Translation>> = {
     energie: ["energy drink", "energy drinks"], sport: ["sports drink", "sports drinks"], zero: ["diet soda", "sugar-free soda"], gewoon: ["regular soda"] } },
   tonic: ["tonic water", "tonic"],
 
+  // ── Meal kits
+  maaltijdpakket: { names: ["meal kit", "meal kits", "meal box"], variants: { vers: ["fresh meal kit"], houdbaar: ["dry meal kit", "boxed meal kit"] } },
+
   // ── Diet and sports food
   dieetvoeding: { names: ["diet food", "sports nutrition", "protein"], variants: {
     reep: ["protein bar", "protein bars"], drank: ["protein shake", "protein drink"], poeder: ["protein powder", "whey"] } },

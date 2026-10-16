@@ -122,6 +122,14 @@ test("a pizza is frozen or chilled by where it is kept, whatever its name says",
   assert.deepEqual(as("Deka's keuken Pizza tonijn", ["Maaltijden, salades & tapas > Pizza's"]), ["pizza", "gekoeld"]);
 });
 
+test("a meal kit is fresh by the shelf it is filed on, if its name does not say", () => {
+  const as = (chainId: string, name: string, categories: string[]) => { const x = map({ chainId, name, brand: null, categories }); return [x?.ingredient, x?.variant]; };
+  assert.deepEqual(as("hoogvliet", "Chili con carne", ["Aardappelen, Groente, Fruit > Verspakketten > Maaltijdpakketten"]), ["maaltijdpakket", "vers"]);
+  assert.deepEqual(as("dekamarkt", "Verspakket roti massala", ["Maaltijden, salades & tapas > Verse maaltijden"]), ["maaltijdpakket", "vers"]);
+  assert.deepEqual(as("dirk", "Honig Maaltijdpakket mexicaanse wraps", ["Maaltijden, salades & tapas > Houdbare maaltijden"]), ["maaltijdpakket", "houdbaar"]);
+  assert.equal(as("hoogvliet", "Taco seasoning mix 28g", ["Wereldkeukens, kruiden, pasta en rijst > Maaltijdpakketten en mixen > Maaltijdpakketten"])[0], undefined);
+});
+
 test("protein and diet food is an Ingredient of its own, wherever it is filed", () => {
   const as = (chainId: string, name: string, categories: string[]) => { const x = map({ chainId, name, brand: null, categories }); return [x?.ingredient, x?.variant]; };
   assert.deepEqual(as("plus", "Upfront Eiwitlimonade Zwarte bes", ["Frisdrank, sappen, koffie, thee > Sappen, fruitdrank > Gekoeld sap"]), ["dieetvoeding", "drank"]);
