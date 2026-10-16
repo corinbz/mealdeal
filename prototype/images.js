@@ -1146,6 +1146,12 @@
       '<rect class="a" x="38" y="10" width="16" height="16" rx="4" transform="rotate(-45 46 18)"/>' +
       '<path class="b" d="M12 40c3-4 7-2 10-5s2-7 7-9 6 1 9-2 3-7 8-9c3 1 4 4 2 7-2 4-6 3-9 6s-2 7-7 9-6-1-9 2-3 8-8 8c-3-1-4-4-3-7z"/>' +
       '<circle class="c" cx="22" cy="38" r="1.3"/><circle class="c" cx="34" cy="27" r="1.3"/><circle class="c" cx="44" cy="17" r="1.3"/>'],
+    // A meal kit box, open, a pepper and a sauce sachet showing.
+    maaltijdpakket: ["--a:#c8955a;--b:#e8c48a;--c:#d94b3d;--d:#5c9e3a",
+      '<path class="c" d="M18 26c-2-6 2-12 8-12 3 0 5 2 5 5 0 6-6 9-13 7z"/><path class="s" d="M26 14c0-3 2-5 4-5"/>' +
+      '<rect class="d" x="34" y="10" width="14" height="18" rx="2" transform="rotate(10 41 19)"/><path class="e" d="M36 16h10" transform="rotate(10 41 19)"/>' +
+      '<path class="a" d="M8 26h48v28c0 2-2 3-4 3H12c-2 0-4-1-4-3z"/><path class="b" d="M8 26l-4 8h22l4-8zM56 26l4 8H38l-4-8z"/>' +
+      '<rect class="b" x="22" y="40" width="20" height="9" rx="2"/>'],
     // A protein shaker with a bar leaning on it.
     dieetvoeding: ["--a:#3a3f4a;--b:#e8eef2;--c:#d94b3d;--d:#f2c84b",
       '<rect class="a" x="18" y="6" width="22" height="9" rx="2"/><path class="a" d="M24 6V3h10v3"/>' +

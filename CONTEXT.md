@@ -49,7 +49,8 @@ broccoliroosjes; one sold whole is heel), its fat (halfvolle melk, yoghurt 10%)
 or its flavour (yoghurt aardbei, paprikachips). A Product has at most one
 Variant in each aspect, so Griekse yoghurt 10% aardbei has three; one that names
 no flavour is naturel. Some Variants are given by how a Product is kept rather
-than by its name: a pizza in the freezer is diepvries pizza. A Requirement may name Variants in any of the aspects and
+than by its name: a pizza in the freezer is diepvries pizza, a meal kit on
+the fresh shelf a verspakket. A Requirement may name Variants in any of the aspects and
 is satisfied by any Product that has them all, whatever its others.
 A Basket Item that leaves an aspect unnamed is asked about it, offered only the
 Variants sold with what it already names, until the shopper picks one or
