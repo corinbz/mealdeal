@@ -37,6 +37,13 @@ test("the file keeps Verdicts by Chain and ref, one a line", () => {
   assert.equal(verdictsJson([]), "[]\n");
 });
 
+test("a note is kept with its Verdict, and left out of the file when there is none", () => {
+  const v: Verdict = { chain: "jumbo", ref: "691106ZK", name: "Jumbo Kippenvlees Saté 3 Stuks", is: null, from: "sample", on: "2026-10-16", note: "no saté Ingredient" };
+  assert.deepEqual(JSON.parse(verdictsJson([v]))[0], v);
+  const { note: _, ...none } = v;
+  assert.ok(!verdictsJson([none]).includes("note"));
+});
+
 const jam = (ingredient: string | null, name: string, i: number, checked = false): LabelledProduct =>
   ({ chainId: "plus", ref: name + i, name, brand: null, categories: ["Ontbijt > Broodbeleg > Jam"], unit: "kg", ingredient, checked });
 const products: LabelledProduct[] = [

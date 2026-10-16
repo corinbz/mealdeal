@@ -7,6 +7,10 @@
  *   node scripts/check-mappings.ts opinions              those the classifier is sure are mapped wrong, or missed
  *   node scripts/check-mappings.ts product <chain> <ref> one Product, as a Klopt niet report names it
  *
+ * At the prompt, ? lists every Ingredient by aisle, and f notes what to fix
+ * beyond the one Product (an Ingredient missing, a rule wrong): the note is
+ * kept with the Verdict, and the summary lists every note.
+ *
  * Add --fresh to read the database again rather than the copy kept from the
  * last time in .cache/ (reading it takes a minute or two). Each answer is
  * written straight away, so stopping anywhere loses nothing; commit
@@ -60,6 +64,12 @@ const decisionOf = new Map(built.labelled.map((p, i) => [key(p.chainId, p.ref), 
 const sourceOf = new Map(source.chains.flatMap((c) => (source.products[c.id] ?? []).map((p) => [key(c.id, p.ref), p] as const)));
 const chainName = (id: string) => source.chains.find((c) => c.id === id)?.name ?? id;
 const ids = new Set(VOCABULARY.map((d) => d.id));
+/** Every Ingredient, by the aisle it is mostly sold in, for ? at the prompt. */
+function listIngredients(): string {
+  const by = new Map<string, string[]>();
+  for (const d of VOCABULARY) by.set(d.aisles[0]!, [...(by.get(d.aisles[0]!) ?? []), d.id]);
+  return [...by].map(([aisle, list]) => `  ${aisle}: ${list.join(", ")}`).join("\n");
+}
 const checked = () => new Set(verdicts.map((v) => key(v.chain, v.ref)));
 
 function key(chainId: string, ref: string) {
@@ -128,12 +138,18 @@ for (let n = 0; n < items.length; n++) {
   console.log(`  Mapped to: ${vocabulary ?? "none"}    Classifier: ${guess ?? "none"}`);
 
   let answer: string | null | undefined;
+  let note = verdicts.find((v) => v.chain === p.chainId && v.ref === p.ref)?.note;
   while (answer === undefined) {
-    const typed = (await ask(`  [Enter] ${vocabulary ?? "none"} · [c] ${guess ?? "none"} · [n] none · an Ingredient · [s] skip · [u] undo · [q] quit > `)).trim().toLowerCase();
+    const typed = (await ask(`  [Enter] ${vocabulary ?? "none"} · [c] ${guess ?? "none"} · [n] none · an Ingredient · [s] skip · [u] undo · [f] note · [?] list · [q] quit > `)).trim().toLowerCase();
     if (typed === "") answer = vocabulary;
     else if (typed === "c") answer = guess;
     else if (typed === "n" || typed === "none") answer = null;
-    else if (typed === "s") break;
+    else if (typed === "?") console.log(listIngredients());
+    else if (typed === "f") {
+      note = (await ask("  Note to fix later > ")).trim() || note;
+      console.log(note ? "  Noted; it is kept with your answer to this Product." : "  No note.");
+    }
+    else if (typed === "s") { if (note) console.log("  Skipped: the note goes only with an answer."); break; }
     else if (typed === "q") { n = items.length; break; }
     else if (typed === "u") {
       const last = made.pop();
@@ -151,7 +167,7 @@ for (let n = 0; n < items.length; n++) {
   if (answer === undefined) continue;
   const old = verdicts.findIndex((v) => v.chain === p.chainId && v.ref === p.ref);
   if (old >= 0) verdicts.splice(old, 1);
-  const v: Verdict = { chain: p.chainId, ref: p.ref, name: p.name, is: answer, from, on: today };
+  const v: Verdict = { chain: p.chainId, ref: p.ref, name: p.name, is: answer, from, on: today, ...(note ? { note } : {}) };
   verdicts.push(v);
   made.push(v);
   writeVerdicts(verdicts);
@@ -161,4 +177,6 @@ rl.close();
 
 const gold = verdicts.filter((v) => v.from === "sample").length;
 console.log(`\n${saved} Verdicts saved, ${verdicts.length} in all; the Gold Set holds ${gold}.`);
+const notes = verdicts.filter((v) => v.note);
+if (notes.length) console.log(`\nNotes to fix (${notes.length}):\n` + notes.map((v) => `  ${chainName(v.chain)} ${v.ref} ${v.name} (${v.is ?? "none"}): ${v.note}`).join("\n"));
 if (saved) console.log("They take effect at the next catalogue build. Commit src/catalogue/verdicts.json to keep them.");
