@@ -120,12 +120,16 @@ const JOINERS = new RegExp(JOINER.source, "g");
  * A Product's Variants, one per aspect. Spaces around the name, so a word
  * written "vol " also ends one ("Yoghurt Vol") and " ui " starts one.
  */
-export function variantOf(def: IngredientDef, lower: string): string | null {
+export function variantOf(def: IngredientDef, lower: string, brand?: string | null): string | null {
   const text = " " + lower + " ";
+  // A brand the name starts with may name its kind (Red Bull, Isey Skyr) but
+  // not its flavour: Appelsientje is not appel, nor Tropical multivruchten.
+  const b = brand?.toLowerCase();
+  const from = b && lower.startsWith(b + " ") ? b.length + 1 : 0;
   // Where a Variant's word first occurs; a flavour's only at the start of a
   // word, so "sinaasappel" is not appel, though "perzikyoghurt" is perzik.
   const first = (w: string, start: boolean) => {
-    for (let i = text.indexOf(w); i >= 0; i = text.indexOf(w, i + 1)) if (!start || w.startsWith(" ") || !/\p{L}/u.test(text[i - 1]!)) return i;
+    for (let i = text.indexOf(w, start ? from : 0); i >= 0; i = text.indexOf(w, i + 1)) if (!start || w.startsWith(" ") || !/\p{L}/u.test(text[i - 1]!)) return i;
     return Infinity;
   };
   const at = (v: VariantDef) => Math.min(...v.words.map((w) => first(w.toLowerCase(), v.aspect === "smaak")));
@@ -190,7 +194,7 @@ function mappingFor(product: MappableProduct, def: IngredientDef, aisles: Readon
   const aisle = kept.find((a) => formOf(a) === "conserven" || formOf(a) === "diepvries") ?? kept[0]!;
   return {
     ingredient: def.id,
-    variant: variantOf(def, lower),
+    variant: variantOf(def, lower, product.brand),
     form: said(def, product, lower) ?? formOf(aisle),
     biologisch: /\bbio(logisch|logische)?\b/.test(lower) || product.categories.some((c) => /biologisch/i.test(c)),
     huismerk: isOwnBrand(product.chainId, product.brand, product.name),

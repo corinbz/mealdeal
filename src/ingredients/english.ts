@@ -333,7 +333,10 @@ export const ENGLISH: Readonly<Record<string, Translation>> = {
   cola: { names: ["cola", "coke"], variants: { zero: ["diet cola", "diet coke", "coke zero"], regular: ["regular cola", "regular coke"] } },
   limonadesiroop: ["lemonade syrup", "cordial"],
   bier: { names: ["beer"], variants: { alcoholvrij: ["alcohol-free beer", "non-alcoholic beer"], pils: ["lager", "pilsner"] } },
-  water: ["water"],
+  water: { names: ["water"], variants: { bruisend: ["sparkling water", "carbonated water"], plat: ["still water"] } },
+  vruchtensap: { names: ["fruit juice", "juice", "juices"], variants: { nectar: ["fruit nectar", "nectar"], vers: ["fresh juice", "freshly squeezed juice"] } },
+  frisdrank: { names: ["soft drink", "soft drinks", "fizzy drink", "lemonade"], variants: {
+    energie: ["energy drink", "energy drinks"], sport: ["sports drink", "sports drinks"], zero: ["diet soda", "sugar-free soda"], gewoon: ["regular soda"] } },
   tonic: ["tonic water", "tonic"],
 
   // ── Snacks, biscuits and sweets

@@ -142,6 +142,12 @@ export const FLAVOURS: Readonly<Record<string, { nl: string; en: string; words: 
   peper: { nl: "peper", en: "pepper", words: ["peper", "pepper"] },
   sambal: { nl: "sambal", en: "sambal", words: ["sambal"] },
   truffel: { nl: "truffel", en: "truffle", words: ["truffel", "truffle"] },
+  granaatappel: { nl: "granaatappel", en: "pomegranate", words: ["granaatappel", "pomegranate"] },
+  ananas: { nl: "ananas", en: "pineapple", words: ["ananas", "pineapple"] },
+  druif: { nl: "druif", en: "grape", words: ["druif", "druiven", "grape"] },
+  cranberry: { nl: "cranberry", en: "cranberry", words: ["cranberr", "veenbes"] },
+  ginger: { nl: "gember", en: "ginger", words: ["ginger", "gember"] },
+  munt: { nl: "munt", en: "mint", words: ["munt", " mint"] },
 };
 
 /** Variants of one aspect, in the order they are matched. */
@@ -375,7 +381,7 @@ ing("zalm", "kg", ["fish", "frozen", "deli"], ["zalm", "zalmfilet", "zalmmoot", 
   variants: [["gerookt", "gerookte zalm", ["gerookt", "smoked"]], ["vers", "zalmfilet", ["filet", "moot", "moten"], true]],
 });
 ing("kabeljauw", "kg", FISH, ["kabeljauw", "kabeljauwfilet", "kabeljauwhaas"], {});
-ing("pangasius", "kg", FISH, ["pangasius", "pangasiusfilet"], {});
+ing("pangasius", "kg", FISH, ["pangasius", "pangasiusfilet", "pangalicious"], {});
 ing("koolvis", "kg", FISH, ["koolvis", "koolvisfilet", "alaskakoolvis"], {});
 // Sold frozen only.
 ing("tilapia", "kg", FISH, ["tilapia", "tilapiafilet"], { anyForm: true });
@@ -451,7 +457,7 @@ ing("eiwit", "kg", ["dairy"], ["vloeibaar eiwit", "vloeibare eiwit", "kippeneiwi
 
 // ── Cheese ──────────────────────────────────────────────────────────────
 ing("kaas", "kg", ["cheese", "dairy"], ["kaas", "gouda", "leerdammer", "maasdammer", "edammer", "beemster", "old amsterdam", "milner", "=kaas"], {
-  not: ["smeer", "room", "geit", "schapen", "flavour", "vegan", "stengel", "mozzarella", "feta", "parmezaan", "brie", "camembert", "geraspt", "rasp", "strooi", "vega", "plantaardig", "saus", "fondue", "soufflé", "souffle", "chips", "cracker", "koek", "broodje", "stengel", "dip", "salade", "blokjes", "cottage", "hüttenkäse", "mascarpone", "ricotta", "halloumi", "smelt", "heks"],
+  not: ["amsterdam crème", "amsterdam creme", "kaascrème", "kaascreme", "smeer", "room", "geit", "schapen", "flavour", "vegan", "stengel", "mozzarella", "feta", "parmezaan", "brie", "camembert", "geraspt", "rasp", "strooi", "vega", "plantaardig", "saus", "fondue", "soufflé", "souffle", "chips", "cracker", "koek", "broodje", "stengel", "dip", "salade", "blokjes", "cottage", "hüttenkäse", "mascarpone", "ricotta", "halloumi", "smelt", "heks"],
   variants: [["extra belegen", "extra belegen kaas", ["extra belegen"]], ["jong belegen", "jong belegen kaas", ["jong belegen"]],
     ["belegen", "belegen kaas", ["belegen"]], ["oud", "oude kaas", ["oude", "oud ", "overjarig"]], ["jong", "jonge kaas", ["jong"]]],
 });
@@ -460,7 +466,7 @@ ing("geitenkaas", "kg", ["cheese", "dairy"], ["geitenkaas", "=geitenbrie"], {});
 ing("mozzarella", "kg", ["cheese", "dairy"], ["mozzarella", "burrata"], { not: ["stick", "pizza"] });
 ing("feta", "kg", ["cheese", "dairy"], ["feta", "fetakaas", "witte kaas"], { not: ["salade", "spread", "dip"] });
 ing("parmezaanse kaas", "kg", ["cheese", "dairy"], ["parmezaan", "parmezaanse", "parmigiano", "grana", "padano", "parmezaanse kaas", "padano kaas", "reggiano kaas"], { also: ["parmezaan", "parmigiano"] });
-ing("roomkaas", "kg", ["cheese", "dairy", "deli"], ["roomkaas", "smeerkaas", "philadelphia", "mascarpone"], { not: ["rol", "rolletje", "rolletjes", "sweet peppers", "mexicaantjes", "chimichurri", "hot honey", "saus", "dip"],
+ing("roomkaas", "kg", ["cheese", "dairy", "deli"], ["roomkaas", "smeerkaas", "philadelphia", "mascarpone", "kaascrème", "kaascreme", "old amsterdam crème", "old amsterdam creme"], { not: ["rol", "rolletje", "rolletjes", "sweet peppers", "mexicaantjes", "chimichurri", "hot honey", "saus", "dip"],
   flavours: ["naturel", "kruiden", "knoflook", "bieslook", "sambal", "peper", "truffel", "honing"] });
 ing("brie", "kg", ["cheese", "dairy"], ["brie", "camembert", "=brie"], {});
 ing("halloumi", "kg", ["cheese", "dairy"], ["halloumi", "grillkaas"], {});
@@ -520,7 +526,7 @@ ing("chocolade", "kg", ["snacks"], ["chocolade", "chocoladereep", "chocoladetabl
 ing("koekjes", "kg", ["snacks", "pantry", "bakery"], ["koek", "koekje", "koekjes", "biscuit", "biscuits", "cookie", "cookies", "=sprits", "=spritsen"], {
   wins: true,
   shelf: /^(koekjes|koekjes, biscuits|biscuits?|mini koekjes|chocolade koekjes|koekjes met chocolade|alledaagse koek|alledaagse en trommelbiscuit)$/i,
-  not: ["pannenkoek", "ontbijtkoek", "peperkoek", "hond", "kat", "baby", "vla", "crackers", "cookies & cream", "cookies and cream", "cookie dough", "cruesli", "pudding", "powder", "protein", "reep", "repen", "muesli", "cake", "muffin", "brownie", "donut", "crunchers", "kaas", "bar", "mix voor"],
+  not: ["pannenkoek", "ontbijtkoek", "peperkoek", "hond", "kat", "baby", "vla", "crackers", "cookies & cream", "cookies and cream", "cookie dough", "cruesli", "pudding", "powder", "protein", "reep", "repen", "muesli", "cake", "muffin", "brownie", "donut", "crunchers", "kaas", "bar", "mix voor", "borrelzoutjes", "rijstcookie"],
   also: ["koek", "biscuits"], notShelf: /^chocolade$|chocoladerepen|candybars|chocolade ?snoepjes|uitdeelzakken|chocoladeletters/i,
 });
 ing("stroopwafels", "kg", ["snacks", "bakery", "pantry"], ["stroopwafel", "stroopwafels"], { wins: true, not: ["mix", "chocoladereep", "reep", "boterkoek"], also: ["stroopwafel"] });
@@ -641,10 +647,11 @@ ing("koffie", "kg", ["drinks"], ["koffie", "koffiebonen", "filterkoffie", "snelf
   variants: [["bonen", "koffiebonen", ["bonen"]], ["pads", "koffiepads", ["pads", "senseo"]], ["cups", "koffiecups", ["cups", "capsule", "nespresso", "dolce"]],
     ["oplos", "oploskoffie", ["oplos", "instant"]], ["filter", "filterkoffie", ["filter", "snelfilter", "gemalen"], true]],
 });
-ing("thee", "piece", ["drinks"], ["thee", "theezakje", "theezakjes", "rooibos", "earl grey", "=thee"], { equals: { kg: 0.002 }, not: ["ijsthee", "ice", "glas", "pot", "lepel", "koek", "drink", "biscuit", "licht", "kaars", "kombucha"] });
-ing("sinaasappelsap", "l", ["drinks"], ["sinaasappelsap", "jus d'orange"], {});
-ing("appelsap", "l", ["drinks"], ["appelsap"], {});
-ing("drinkyoghurt", "l", ["dairy", "drinks"], ["drinkyoghurt", "yoghurtdrank", "yoghurtdrink"], { flavours: ["naturel", "bosvruchten", "aardbei", "framboos", "perzik", "mango", "multivruchten"] });
+ing("thee", "piece", ["drinks"], ["thee", "theezakje", "theezakjes", "rooibos", "earl grey", "infusion", "infusions", "=thee"], { equals: { kg: 0.002 }, not: ["ijsthee", "ice", "glas", "pot", "lepel", "koek", "drink", "biscuit", "licht", "kaars", "kombucha"] });
+// Named, they are what a juice of several fruits is not: "Fruity Juice Sinaasappelsap".
+ing("sinaasappelsap", "l", ["drinks"], ["sinaasappelsap", "jus d'orange", "sap sinaasappel"], { wins: true });
+ing("appelsap", "l", ["drinks"], ["appelsap", "sap appel"], { wins: true });
+ing("drinkyoghurt", "l", ["dairy", "drinks"], ["drinkyoghurt", "yoghurtdrank", "yoghurtdrink", "yoghurt drink", "drink yoghurt", "optimel drink", "melkan drink"], { not: ["haver", "soja", "kokos", "amandel", "rijst"], flavours: ["naturel", "bosvruchten", "aardbei", "framboos", "perzik", "mango", "ananas", "multivruchten"] });
 ing("ijsthee", "l", ["drinks"], ["ijsthee", "icetea", "ice tea"], { also: ["ice tea"], not: ["siroop"] });
 ing("cola", "l", ["drinks"], ["cola", "=pepsi"], {
   not: ["rum", "bacardi", "whisky", "jack daniel", "pitu", "batida", "bourbon", "wodka", "vodka", "sodastream", "soda mix", "cream soda"],
@@ -657,7 +664,30 @@ ing("bier", "l", ["drinks"], ["bier", "pils", "pilsener", "pilsner"], {
   variants: [["alcoholvrij", "alcoholvrij bier", ["0.0", "0,0", "alcoholvrij", "alcoholarm"]], ["pils", "pils", ["pils", "pilsener", "pilsner", "lager"]]], shelf: /^(bier|bier, pils|pilsener( bier)?|speciaal ?bier|alcoholvrij bier.*|bokbieren|mexicaans bier|pils 0\.0|speciaalbier 0\.0)$/i, notShelf: /^(cider.*|fruitbieren|fris en fruitig bier|radler( 0\.0)?|cider en fruitbier 0\.0)$/i,
 });
 ing("tonic", "l", ["drinks"], ["tonic"], { not: ["gin", "wodka", "vodka", "isotonic", "hyper", "sport"] });
-ing("water", "l", ["drinks"], ["water", "bronwater", "mineraalwater"], { not: ["kokos", "tonic", "sparkling flavour", "smaak", "drinkfles", "waterfles", "kraan", "watermeloen", "vitamin", "ijs", "rozen"] });
+ing("water", "l", ["drinks"], ["water", "bronwater", "mineraalwater", "smaakwater", "vitaminwater", "vitaminewater", "fruitwater", "=vitamin well", "=spa touch", "=spa fruit"], {
+  not: ["kokos", "tonic", "drinkfles", "waterfles", "kraan", "watermeloen", "ijs", "rozen", "siroop", "limonade"],
+  variants: [["bruisend", "bruisend water", ["bruisend", "sparkling", "koolzuurhoudend", "met prik", "touch"]], ["plat", "plat water", ["plat", "still", "niet bruisend", "koolzuurvrij", "zonder prik"], true]],
+  flavours: ["naturel", "citroen", "limoen", "granaatappel", "appel", "kers", "framboos", "aardbei", "cassis", "perzik", "mango", "munt", "ginger"],
+});
+// Juice, nectar and fruit drink, of whatever fruit but orange or apple alone,
+// which have their own: "Fruity Juice Sinaasappel mango", "Dubbeldrank Ananas
+// & guave".
+ing("vruchtensap", "l", ["drinks"], ["sap", "vruchtensap", "fruitsap", "multivruchtensap", "nectar", "vruchtennectar", "juice", "fruitdrank", "vruchtendrank",
+  "=dubbelfris", "=dubbelfrisss", "=dubbeldrank", "=wicky", "=taksi", "capri-sun", "capri sun", "=tintelfruit", "fruitdrink", "=oasis", "=maaza", "=superjuice"], {
+  not: ["siroop", "diksap", "limonade", "cider", "bier", "wijn", "azijn", "shot", "shotje", "smoothie", "groente", "tomaat", "tomaten", "biet", "wortel", "aloe", "kokos", "citroensap", "limoensap", "saus", "ijs", "zuurkool", "kombucha", "water"],
+  variants: [["nectar", "vruchtennectar", ["nectar"]], ["vers", "vers sap", ["vers ", "versgeperst", "vers geperst", "gekoeld"]]],
+  flavours: ["granaatappel", "sinaasappel", "appel", "multivruchten", "mango", "ananas", "druif", "cranberry", "perzik", "peer", "aardbei", "framboos", "bosvruchten", "banaan", "passievrucht", "kers", "citroen", "cassis"],
+});
+// Soft drinks but cola, tonic and iced tea, which have their own; mostly
+// named by brand alone, so its shelves say it too.
+ing("frisdrank", "l", ["drinks"], ["frisdrank", "frisdranken", "limonade", "sinas", "cassis", "bitter lemon", "ginger ale", "ginger beer", "gingerbeer", "energiedrank", "energy drink", "energydrink", "sportdrank", "sportdrink",
+  "=fanta", "=sprite", "=7up", "=7-up", "seven up", "=sisi", "=rivella", "royal club", "dr. pepper", "dr pepper", "mountain dew", "=fernandes", "mogu mogu", "red bull", "monster energy", "=rockstar", "=bullit", "=celsius", "=shakura", "=aquarius", "=powerade", "=gatorade", "=extran", "aa drink", "=isostar", "=crystal clear", "=lipton sparkling"], {
+  not: ["siroop", "diksap", "cola", "pepsi", "ijsthee", "ice tea", "icetea", "tonic", "bier", "pils", "radler", "gazeuse", "wijn", "rum", "gin", "wodka", "vodka", "whisky", "likeur", "cocktail", "snoep", "lolly", "kauwgom", "gum", "drop", "poeder", "tablet", "bruistablet", "taart", "koek", "kokoswater", "kombucha", "water", "chips", "ijs"],
+  shelf: /^(sinas(, cassis)?|(blikjes|flessen) sinas|((flessen|blikjes|pakken|flesjes) )?fris met fruitsmaak|lemon, lime|ginger ale en ginger beer|speciaal fris|overige frisdrank|energiedranken|sportdrink|sportdranken|sportdrank, energiedrank|sport-, energiedrank|energy- of sportdrank)$/i,
+  variants: [["energie", "energiedrank", ["energy", "energie", "red bull", "rockstar", "bullit", "celsius", "shakura"]], ["sport", "sportdrank", ["sport", "isoton", "aa drink", "aquarius", "extran", "powerade", "gatorade", "isostar"]],
+    ["zero", "frisdrank zero", ["zero", "light", "suikervrij", "no sugar", "0% suiker", "sugar free", "sugarfree", "1kcal"]], ["gewoon", "gewone frisdrank", ["regular", "original"], true]],
+  flavours: ["sinaasappel", "citroen", "limoen", "cassis", "appel", "framboos", "aardbei", "kers", "mango", "perzik", "multivruchten", "ginger", "druif", "ananas", "passievrucht"],
+});
 
 export const VOCABULARY: readonly IngredientDef[] = defs;
 
