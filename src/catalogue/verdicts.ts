@@ -34,6 +34,11 @@ export interface Verdict {
   readonly from: VerdictSource;
   /** The day it was looked at. */
   readonly on: string;
+  /**
+   * What the person wanted fixed beyond this Product, such as an Ingredient
+   * the vocabulary lacks; taken off once the vocabulary is fixed.
+   */
+  readonly note?: string;
 }
 
 export const VERDICTS_FILE = new URL("./verdicts.json", import.meta.url);
@@ -48,7 +53,7 @@ export function readVerdicts(file: URL | string = VERDICTS_FILE): Verdict[] {
 /** As the file keeps them: by Chain and ref, one a line, so a diff shows each one added. */
 export function verdictsJson(verdicts: readonly Verdict[]): string {
   const sorted = [...verdicts].sort((a, b) => a.chain.localeCompare(b.chain) || a.ref.localeCompare(b.ref));
-  const line = (v: Verdict) => JSON.stringify({ chain: v.chain, ref: v.ref, name: v.name, is: v.is, from: v.from, on: v.on });
+  const line = (v: Verdict) => JSON.stringify({ chain: v.chain, ref: v.ref, name: v.name, is: v.is, from: v.from, on: v.on, ...(v.note ? { note: v.note } : {}) });
   return sorted.length ? "[\n" + sorted.map((v) => "  " + line(v)).join(",\n") + "\n]\n" : "[]\n";
 }
 

@@ -440,7 +440,11 @@ under, and the report lists those that no longer hold. They are made with
   or has missed.
 - `product <chain> <ref>` is one Product, as a Klopt niet report names it.
 
-Each answer is written at once; commit the file to keep them. The script
+Each answer is written at once; commit the file to keep them. At the
+prompt `?` lists the Ingredients, and `f` notes something to fix beyond
+the one Product, such as an Ingredient the vocabulary lacks: the note is
+kept on the Verdict, the end of a session lists every note, and it is taken
+off once the vocabulary is fixed. The script
 keeps the database's catalogue source in `.cache/`, and `--fresh` reads it
 again. Where the vocabulary was wrong, the report lists the Product: the
 Verdict already fixes it, but a rule fixed puts its like right too.
