@@ -817,18 +817,18 @@ pepsi max	-
 fanta	-
 sprite	-
 7up	-
-seven up	-
-frisdrank	-
+seven up	frisdrank
+frisdrank	frisdrank
 tonic	tonic
-ginger ale	-
-cassis	-
-sinas	-
+ginger ale	frisdrank
+cassis	frisdrank
+sinas	frisdrank
 dubbelfris	-
 appelsap	appelsap
 sinaasappelsap	sinaasappelsap
 jus d'orange	sinaasappelsap
 verse jus	-
-multivruchtensap	-
+multivruchtensap	vruchtensap
 tomatensap	-
 druivensap	-
 cranberrysap	-
@@ -838,10 +838,10 @@ limonadesiroop	limonadesiroop
 ranja	limonadesiroop
 siroop	limonadesiroop
 diksap	limonadesiroop
-energiedrank	-
-red bull	-
+energiedrank	frisdrank/energie
+red bull	frisdrank
 monster	-
-sportdrank	-
+sportdrank	frisdrank/sport
 aquarius	-
 bier	bier
 pils	bier/pils
@@ -1311,21 +1311,21 @@ green tea	thee
 herbal tea	thee
 peppermint tea	thee
 iced tea	ijsthee
-sparkling water	water
+sparkling water	water/bruisend
 mineral water	water
 coke	cola
 diet coke	cola/zero
 coke zero	cola/zero
-lemonade	-
+lemonade	frisdrank
 orange juice	sinaasappelsap
 apple juice	appelsap
-cranberry juice	-
-fruit juice	-
+cranberry juice	vruchtensap
+fruit juice	vruchtensap
 smoothies	-
 squash	pompoen
 cordial	limonadesiroop
-energy drinks	-
-sports drinks	-
+energy drinks	frisdrank/energie
+sports drinks	frisdrank/sport
 beer	bier
 lager	bier/pils
 non-alcoholic beer	bier/alcoholvrij

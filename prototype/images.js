@@ -1113,6 +1113,18 @@
       '<rect class="b" x="17" y="24" width="12" height="12" rx="2" transform="rotate(12 23 30)"/><rect class="b" x="30" y="30" width="12" height="12" rx="2" transform="rotate(-10 36 36)"/>' +
       '<circle class="d" cx="22" cy="46" r="1.4"/><circle class="d" cx="30" cy="50" r="1.2"/><circle class="d" cx="40" cy="47" r="1.4"/><circle class="d" cx="45" cy="26" r="1.2"/>' +
       '<path class="c" d="M37 18a10 10 0 0 0 20 0z"/><path class="e" d="M37 18a10 10 0 0 0 20 0M47 18l-6 5M47 18v8M47 18l6 5"/>'],
+    // Drawn with the drinks of 2026-10-16.
+    vruchtensap: ["--a:#e86a3a;--b:#f6f1e4;--c:#7a3f8f;--d:#f5c63a",
+      '<path class="s" d="M36 12l5-9"/>' +
+      '<path class="b" d="M16 18l6-8h16l6 8z"/><rect class="b" x="16" y="18" width="28" height="38" rx="2"/>' +
+      '<path class="a" d="M16 34h28v20c0 1-1 2-2 2H18c-1 0-2-1-2-2z"/>' +
+      '<circle class="c" cx="44" cy="42" r="5"/><circle class="c" cx="50" cy="47" r="5"/><circle class="c" cx="44" cy="52" r="5"/>' +
+      '<circle class="d" cx="26" cy="27" r="5"/><path class="e" d="M26 22v10M21 27h10"/>'],
+    frisdrank: ["--a:#c9d1d6;--b:#f08a24;--c:#eef3f5;--d:#ffffff",
+      '<path class="a" d="M20 10h24l2 4v38l-2 4H20l-2-4V14z"/><rect class="c" x="23" y="7" width="18" height="4" rx="1.5"/>' +
+      '<rect class="b" x="18" y="20" width="28" height="24"/>' +
+      '<circle class="d" cx="25" cy="27" r="2"/><circle class="d" cx="32" cy="35" r="1.6"/><circle class="d" cx="38" cy="26" r="1.4"/><circle class="d" cx="27" cy="39" r="1.2"/><circle class="d" cx="40" cy="38" r="2"/>' +
+      '<path class="e" d="M18 20h28M18 44h28"/>'],
   };
 
   // Where an Ingredient has no drawing of its own, its aisle stands in.
