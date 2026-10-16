@@ -779,8 +779,8 @@ krakelingen	-
 eierkoek	-
 rijstwafels met chocolade	-
 mueslirepen	-
-proteinerepen	-
-eiwitrepen	-
+proteinerepen	dieetvoeding
+eiwitrepen	dieetvoeding
 energierepen	-
 dadelrepen	-
 koffie	koffie
@@ -1299,7 +1299,7 @@ speculoos	speculaas
 waffles	-
 cereal bars	-
 granola bars	-
-protein bars	-
+protein bars	dieetvoeding/reep
 coffee	koffie
 coffee beans	koffie/bonen
 ground coffee	koffie/filter
