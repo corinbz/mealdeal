@@ -137,9 +137,10 @@ export function variantOf(def: IngredientDef, lower: string, brand?: string | nu
     const vs = def.variants.filter((v) => (v.aspect ?? "soort") === a);
     // A flavour is the one named first ("perzik passievrucht" is perzik);
     // otherwise the first in the vocabulary's order that the name gives.
-    const named = vs.some((v) => v.form) ? vs.find((v) => v.form && v.form === form)
-      : a === "smaak" ? vs.filter((v) => at(v) < Infinity).sort((x, y) => at(x) - at(y))[0]
-      : vs.find((v) => at(v) < Infinity) ?? vs.find((v) => v.shelf && shelves.some((s) => v.shelf!.test(s)));
+    // How it is kept, where a Variant is given by that, outranks its name.
+    const named = vs.find((v) => v.form && v.form === form)
+      ?? (a === "smaak" ? vs.filter((v) => at(v) < Infinity).sort((x, y) => at(x) - at(y))[0]
+      : vs.find((v) => at(v) < Infinity) ?? vs.find((v) => v.shelf && shelves.some((s) => v.shelf!.test(s))));
     const v = named ?? vs.find((x) => x.fallback);
     return v ? [v.id] : [];
   });
@@ -308,7 +309,7 @@ export function createMapper(vocabulary: readonly IngredientDef[] = VOCABULARY) 
     const byName = candidates.sort((a, b) => at(b) - at(a)).find(fits);
     // A shelf that holds one thing outranks a name that gives only a flavour
     // or nothing at all, but not a name that says what kind of thing it is.
-    const shelved = byName?.def.wins ? undefined : compiled.find((c) => c.def.shelf && shelves.some((s) => c.def.shelf!.test(s)) && fits(c));
+    const shelved = byName?.def.wins ? undefined : compiled.find((c) => c.def.shelf && !(byName && c.def.rest) && shelves.some((s) => c.def.shelf!.test(s)) && fits(c));
     const chosen = shelved ?? byName;
     if (!chosen) return null;
 

@@ -1152,6 +1152,55 @@
       '<rect class="d" x="34" y="10" width="14" height="18" rx="2" transform="rotate(10 41 19)"/><path class="e" d="M36 16h10" transform="rotate(10 41 19)"/>' +
       '<path class="a" d="M8 26h48v28c0 2-2 3-4 3H12c-2 0-4-1-4-3z"/><path class="b" d="M8 26l-4 8h22l4-8zM56 26l4 8H38l-4-8z"/>' +
       '<rect class="b" x="22" y="40" width="20" height="9" rx="2"/>'],
+    // A tray meal under film: rice, a stew and greens in their compartments.
+    "kant-en-klaarmaaltijd": ["--a:#f2efe6;--b:#f6f1e4;--c:#a8643a;--d:#5c9e3a",
+      '<rect class="a" x="6" y="18" width="52" height="34" rx="5"/>' +
+      '<rect class="b" x="11" y="23" width="20" height="24" rx="3"/><rect class="c" x="34" y="23" width="19" height="11" rx="3"/><rect class="d" x="34" y="37" width="19" height="10" rx="3"/>' +
+      '<circle class="e" cx="16" cy="30" r="1"/><circle class="e" cx="23" cy="34" r="1"/><circle class="e" cx="19" cy="41" r="1"/><path class="e" d="M8 16l48 0"/>'],
+    // A sachet of seasoning, torn open, spice spilling.
+    kruidenmix: ["--a:#d94b3d;--b:#f2c84b;--c:#a8643a",
+      '<path class="a" d="M14 8l4 4 4-4 4 4 4-4 4 4 4-4 4 4 4-4v42H14z"/>' +
+      '<rect class="b" x="19" y="20" width="26" height="16" rx="2"/><path class="e" d="M24 26h16M24 31h11"/>' +
+      '<circle class="c" cx="22" cy="56" r="2.2"/><circle class="c" cx="30" cy="58" r="1.8"/><circle class="c" cx="38" cy="56" r="2.4"/><circle class="c" cx="45" cy="58" r="1.6"/>'],
+    // A spice jar with a sprinkler lid, a bay leaf beside it.
+    specerijen: ["--a:#e8c48a;--b:#c83a2a;--c:#f7f4ec;--d:#5c9e3a",
+      '<rect class="b" x="16" y="8" width="22" height="9" rx="2"/><circle class="c" cx="22" cy="12" r="1"/><circle class="c" cx="27" cy="12" r="1"/><circle class="c" cx="32" cy="12" r="1"/>' +
+      '<rect class="a" x="14" y="17" width="26" height="40" rx="4"/><rect class="c" x="18" y="28" width="18" height="16" rx="2"/>' +
+      '<path class="d" d="M42 54c0-14 8-24 16-28 2 12-4 24-16 28z"/><path class="e" d="M44 51c4-8 8-14 12-21"/>'],
+    // A squeeze bottle of sauce, a dollop at its tip.
+    saus: ["--a:#e84a3a;--b:#f7f4ec;--c:#3a3f4a",
+      '<path class="c" d="M28 4h8l2 8H26z"/>' +
+      '<path class="a" d="M22 12h20c3 0 5 3 5 6v34c0 3-2 6-5 6H22c-3 0-5-3-5-6V18c0-3 2-6 5-6z"/>' +
+      '<rect class="b" x="21" y="26" width="22" height="16" rx="2"/><path class="e" d="M25 32h14M25 37h9"/>'],
+    // A tall bottle of oil, a drop falling.
+    "speciale olie": ["--a:#e8c040;--b:#3a3f4a;--c:#f7f4ec;--d:#f2c84b",
+      '<rect class="b" x="26" y="4" width="10" height="7" rx="1.5"/>' +
+      '<path class="a" d="M27 11h8v8c6 3 8 7 8 12v22c0 3-2 5-5 5H24c-3 0-5-2-5-5V31c0-5 2-9 8-12z"/>' +
+      '<rect class="c" x="22" y="34" width="18" height="12" rx="2"/>' +
+      '<path class="d" d="M52 30c3 5 4 7 4 9a4 4 0 0 1-8 0c0-2 1-4 4-9z"/>'],
+    // A glass of iced coffee with cubes and a straw.
+    ijskoffie: ["--a:#a8743a;--b:#e8eef2;--c:#f2e2c4;--d:#2e86c1",
+      '<path class="s" d="M38 4l-4 18"/>' +
+      '<path class="b" d="M14 14h36l-5 42c0 2-2 3-4 3H23c-2 0-4-1-4-3z"/>' +
+      '<path class="a" d="M17 30h30l-3 25c0 1-1 2-3 2H23c-2 0-3-1-3-2z"/><path class="c" d="M16 22h32l-1 8H17z"/>' +
+      '<rect class="b" x="22" y="34" width="9" height="9" rx="2" transform="rotate(-12 26 38)"/><rect class="b" x="33" y="40" width="9" height="9" rx="2" transform="rotate(10 37 44)"/>'],
+    // A green burger patty with a leaf on top.
+    vleesvervanger: ["--a:#7aa84a;--b:#5c9e3a;--c:#4a7a2a",
+      '<ellipse class="a" cx="32" cy="40" rx="24" ry="13"/><path class="e" d="M16 38c4 2 8 2 12 0M34 44c4 2 8 2 12 0M22 46c3 1 5 1 8 0"/>' +
+      '<path class="b" d="M22 26c4-12 18-18 30-16-2 12-14 20-30 16z"/><path class="e" d="M24 25c8-4 16-9 26-14"/>'],
+    // A sweet in a twisted wrapper.
+    snoep: ["--a:#e84a8a;--b:#f2c84b;--c:#f7f4ec",
+      '<path class="b" d="M18 32L4 20v24z"/><path class="b" d="M46 32l14-12v24z"/>' +
+      '<ellipse class="a" cx="32" cy="32" rx="16" ry="13"/>' +
+      '<path class="c" d="M24 26c3-3 7-4 10-3"/><path class="e" d="M22 36c4 3 12 4 18 0"/>'],
+    // A jar of baby food with a spoon.
+    babyvoeding: ["--a:#f2a65a;--b:#9cc4e8;--c:#f7f4ec;--d:#e8e2d4",
+      '<rect class="b" x="14" y="16" width="30" height="9" rx="2"/>' +
+      '<path class="c" d="M15 25h28v26c0 4-3 7-7 7H22c-4 0-7-3-7-7z"/><path class="a" d="M17 32h24v19c0 3-2 5-5 5H22c-3 0-5-2-5-5z"/>' +
+      '<path class="d" d="M46 10c4-4 9-1 7 4-1 3-4 4-6 3L40 40l-3-1 7-22c-2-1-1-5 2-7z"/>'],
+    // A bowl of Caesar salad: romaine, croutons, parmesan.
+    salade: ["--a:#f7f4ec;--b:#4f9a34;--c:#8cc63f;--d:#f6e7b0",
+      '<g transform="translate(29 42) rotate(-60) scale(0.98)"><path class="b" d="M0 0C-6-4-9-10-7-15C-9-19-6-24 0-28C6-24 9-19 7-15C9-10 6-4 0 0z"/><path class="e" d="M0-2V-24M0-9l-4-4M0-15l4-4M0-20l-3-3"/></g><g transform="translate(35 42) rotate(60) scale(0.98)"><path class="b" d="M0 0C-6-4-9-10-7-15C-9-19-6-24 0-28C6-24 9-19 7-15C9-10 6-4 0 0z"/><path class="e" d="M0-2V-24M0-9l-4-4M0-15l4-4M0-20l-3-3"/></g><g transform="translate(29 42) rotate(-38) scale(1.25)"><path class="c" d="M0 0C-6-4-9-10-7-15C-9-19-6-24 0-28C6-24 9-19 7-15C9-10 6-4 0 0z"/><path class="e" d="M0-2V-24M0-9l-4-4M0-15l4-4M0-20l-3-3"/></g><g transform="translate(35 42) rotate(38) scale(1.25)"><path class="c" d="M0 0C-6-4-9-10-7-15C-9-19-6-24 0-28C6-24 9-19 7-15C9-10 6-4 0 0z"/><path class="e" d="M0-2V-24M0-9l-4-4M0-15l4-4M0-20l-3-3"/></g><g transform="translate(31 42) rotate(-12) scale(1.35)"><path class="b" d="M0 0C-6-4-9-10-7-15C-9-19-6-24 0-28C6-24 9-19 7-15C9-10 6-4 0 0z"/><path class="e" d="M0-2V-24M0-9l-4-4M0-15l4-4M0-20l-3-3"/></g><g transform="translate(34 42) rotate(14) scale(1.3)"><path class="c" d="M0 0C-6-4-9-10-7-15C-9-19-6-24 0-28C6-24 9-19 7-15C9-10 6-4 0 0z"/><path class="e" d="M0-2V-24M0-9l-4-4M0-15l4-4M0-20l-3-3"/></g><g style="--c:#e3a94b"><rect class="c" x="14" y="31" width="9" height="9" rx="2" transform="rotate(-14 18 35)"/><rect class="c" x="40" y="30" width="9" height="9" rx="2" transform="rotate(18 44 34)"/><rect class="c" x="27" y="33" width="8" height="8" rx="2" transform="rotate(8 31 37)"/></g><path class="d" d="M21 27l8-3-2 4zM36 23l7 2-6 2zM24 18l5-4 0 5z"/><path class="a" d="M6 40h52c-1 10-11 18-26 18S7 50 6 40z"/><path class="e" d="M12 47c9 3 31 3 40 0"/>'],
     // A protein shaker with a bar leaning on it.
     dieetvoeding: ["--a:#3a3f4a;--b:#e8eef2;--c:#d94b3d;--d:#f2c84b",
       '<rect class="a" x="18" y="6" width="22" height="9" rx="2"/><path class="a" d="M24 6V3h10v3"/>' +
