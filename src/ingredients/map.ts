@@ -120,7 +120,7 @@ const JOINERS = new RegExp(JOINER.source, "g");
  * A Product's Variants, one per aspect. Spaces around the name, so a word
  * written "vol " also ends one ("Yoghurt Vol") and " ui " starts one.
  */
-export function variantOf(def: IngredientDef, lower: string, brand?: string | null): string | null {
+export function variantOf(def: IngredientDef, lower: string, brand?: string | null, form?: Form | null): string | null {
   const text = " " + lower + " ";
   // A brand the name starts with may name its kind (Red Bull, Isey Skyr) but
   // not its flavour: Appelsientje is not appel, nor Tropical multivruchten.
@@ -137,8 +137,8 @@ export function variantOf(def: IngredientDef, lower: string, brand?: string | nu
     const vs = def.variants.filter((v) => (v.aspect ?? "soort") === a);
     // A flavour is the one named first ("perzik passievrucht" is perzik);
     // otherwise the first in the vocabulary's order that the name gives.
-    const named = a === "smaak"
-      ? vs.filter((v) => at(v) < Infinity).sort((x, y) => at(x) - at(y))[0]
+    const named = vs.some((v) => v.form) ? vs.find((v) => v.form && v.form === form)
+      : a === "smaak" ? vs.filter((v) => at(v) < Infinity).sort((x, y) => at(x) - at(y))[0]
       : vs.find((v) => at(v) < Infinity);
     const v = named ?? vs.find((x) => x.fallback);
     return v ? [v.id] : [];
@@ -192,10 +192,11 @@ function mappingFor(product: MappableProduct, def: IngredientDef, aisles: Readon
   const filed = uncategorized ? [] : [...aisles].filter((a) => def.aisles.includes(a));
   const kept = filed.length ? filed : [def.aisles[0]!];
   const aisle = kept.find((a) => formOf(a) === "conserven" || formOf(a) === "diepvries") ?? kept[0]!;
+  const form = said(def, product, lower) ?? formOf(aisle);
   return {
     ingredient: def.id,
-    variant: variantOf(def, lower, product.brand),
-    form: said(def, product, lower) ?? formOf(aisle),
+    variant: variantOf(def, lower, product.brand, form),
+    form,
     biologisch: /\bbio(logisch|logische)?\b/.test(lower) || product.categories.some((c) => /biologisch/i.test(c)),
     huismerk: isOwnBrand(product.chainId, product.brand, product.name),
   };

@@ -236,6 +236,10 @@
       // Where organic is a Variant of its own (eggs), "bio eieren" names it, not a Preference.
       let variant = found.variant;
       if (!variant && preferences.biologisch && def.variants.some((v) => v.id === "bio")) { variant = "bio"; delete preferences.biologisch; }
+      // So too frozen, where it is a kind of the Ingredient: "diepvries pizza".
+      if (preferences.diepvries && def.variants.some((v) => v.id === "diepvries") && !variantsOf(variant).includes("diepvries")) {
+        variant = joinVariants(def.id, [...variantsOf(variant), "diepvries"]); delete preferences.diepvries;
+      }
       return { ...base, noun: variant ? label(def.id, variant, found.lang) : item.noun,
         quantity, unit, guessed, ingredient: def.id, variant, ...(found.partial ? { suggestion: suggest(item.noun) } : {}) };
     }

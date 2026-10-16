@@ -568,7 +568,7 @@
     return [...words, noun].join(" ") + (prefs.includes("conserven") ? tr(" uit blik of pot", "") : "");
   };
   // Which kind (#43): what to offer, and whether to ask, is resolve.js's (kinds, chooseKind); drawn here.
-  const ASPECT_WORDS = { soort: ["Soort", "Type"], vet: ["Vet", "Fat"], smaak: ["Smaak", "Flavour"] };
+  const ASPECT_WORDS = { soort: ["Soort", "Type"], snit: ["Snit", "Cut"], vet: ["Vet", "Fat"], smaak: ["Smaak", "Flavour"] };
   const KINDS_SHOWN = 6;                                    // a flavour row shows this many until "more" is tapped
   const asksKind = (item) => { const k = R.kinds(item); return !!k && k.asks; };
   let kindMore = null;                                      // the item and aspect whose every flavour is shown

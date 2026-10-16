@@ -1125,6 +1125,37 @@
       '<rect class="b" x="18" y="20" width="28" height="24"/>' +
       '<circle class="d" cx="25" cy="27" r="2"/><circle class="d" cx="32" cy="35" r="1.6"/><circle class="d" cx="38" cy="26" r="1.4"/><circle class="d" cx="27" cy="39" r="1.2"/><circle class="d" cx="40" cy="38" r="2"/>' +
       '<path class="e" d="M18 20h28M18 44h28"/>'],
+    // A pudding turned out of its mould, caramel running down, on a plate.
+    toetje: ["--a:#f3e3b8;--b:#9a5a2a;--c:#f7f4ec;--d:#d94b3d",
+      '<ellipse class="c" cx="32" cy="52" rx="26" ry="6"/>' +
+      '<path class="a" d="M18 50l4-30h20l4 30z"/>' +
+      '<path class="b" d="M21 26l1-6h20l1 6c-2 3-3 0-5 3-2 3-3-1-5 2-2 3-3-1-5 1-2 2-3-2-4 0-1 1-2-1-3-6z"/>' +
+      '<circle class="d" cx="32" cy="15" r="4"/><path class="s" d="M32 11c1-3 3-4 5-4"/>'],
+    // A pretzel and two square cheese crackers.
+    zoutjes: ["--a:#b8743a;--b:#f2c84b;--d:#f7f4ec",
+      '<rect class="b" x="6" y="38" width="17" height="17" rx="2" transform="rotate(-12 14 46)"/><rect class="b" x="41" y="38" width="17" height="17" rx="2" transform="rotate(10 50 46)"/>' +
+      '<circle class="e" cx="12" cy="44" r="0.8"/><circle class="e" cx="17" cy="49" r="0.8"/><circle class="e" cx="47" cy="44" r="0.8"/><circle class="e" cx="52" cy="50" r="0.8"/>' +
+      '<path class="a" d="M32 40c-6-6-18-10-18-20 0-6 5-10 10-10 6 0 8 6 8 10 0-4 2-10 8-10 5 0 10 4 10 10 0 10-12 14-18 20z"/>' +
+      '<path class="a" style="fill:var(--paper,#fffaf2)" d="M24 16c-3 0-4 3-4 5 0 4 6 7 10 10-1-5-2-9-3-12-1-2-2-3-3-3zM40 16c3 0 4 3 4 5 0 4-6 7-10 10 1-5 2-9 3-12 1-2 2-3 3-3z"/>' +
+      '<circle class="d" cx="22" cy="24" r="1"/><circle class="d" cx="42" cy="25" r="1"/><circle class="d" cx="32" cy="34" r="1"/>'],
+    // Grilled meat on a skewer, peanut sauce over it.
+    "saté": ["--a:#a8643a;--b:#c89058;--c:#e8d2a4",
+      '<path class="s" d="M6 58L58 6"/>' +
+      '<rect class="a" x="10" y="38" width="16" height="16" rx="4" transform="rotate(-45 18 46)"/>' +
+      '<rect class="a" x="24" y="24" width="16" height="16" rx="4" transform="rotate(-45 32 32)"/>' +
+      '<rect class="a" x="38" y="10" width="16" height="16" rx="4" transform="rotate(-45 46 18)"/>' +
+      '<path class="b" d="M12 40c3-4 7-2 10-5s2-7 7-9 6 1 9-2 3-7 8-9c3 1 4 4 2 7-2 4-6 3-9 6s-2 7-7 9-6-1-9 2-3 8-8 8c-3-1-4-4-3-7z"/>' +
+      '<circle class="c" cx="22" cy="38" r="1.3"/><circle class="c" cx="34" cy="27" r="1.3"/><circle class="c" cx="44" cy="17" r="1.3"/>'],
+    // A pouch of cat food with a cat's face on it.
+    kattenvoer: ["--a:#7a3f8f;--b:#f08a24;--c:#f7f4ec",
+      '<path class="a" d="M14 8h36l-2 6 2 6v34c0 2-2 3-4 3H18c-2 0-4-1-4-3V20l2-6z"/><path class="e" d="M14 14h36"/>' +
+      '<path class="b" d="M20 30l2-8 6 5h8l6-5 2 8c2 3 2 6 2 8 0 8-7 12-14 12s-14-4-14-12c0-2 0-5 2-8z"/>' +
+      '<circle class="e" cx="27" cy="36" r="1.2"/><circle class="e" cx="37" cy="36" r="1.2"/><path class="e" d="M30 41l2 2 2-2M32 43v2M22 42h-6M22 45h-6M42 42h6M42 45h6"/>'],
+    // A sack of dog kibble with a bone on it, kibble spilling.
+    hondenvoer: ["--a:#3a6fb8;--b:#f2efe6;--c:#a8643a",
+      '<path class="a" d="M14 10h36l2 6-2 4 2 32c0 3-2 5-5 5H17c-3 0-5-2-5-5l2-32-2-4z"/><path class="e" d="M14 16h36"/>' +
+      '<path class="b" d="M22 36c-3 0-5-3-3-5 1-2 4-2 5 0 1-2 4-2 5 0h6c1-2 4-2 5 0 1-2 4-2 5 0 2 2 0 5-3 5 3 0 5 3 3 5-1 2-4 2-5 0-1 2-4 2-5 0h-6c-1 2-4 2-5 0-1 2-4 2-5 0-2-2 0-5 3-5z"/>' +
+      '<circle class="c" cx="47" cy="58" r="3"/><circle class="c" cx="53" cy="58" r="3"/><circle class="c" cx="59" cy="58" r="3"/><circle class="c" cx="50" cy="53" r="3"/><circle class="c" cx="56" cy="53" r="3"/>'],
   };
 
   // Where an Ingredient has no drawing of its own, its aisle stands in.

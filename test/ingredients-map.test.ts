@@ -102,10 +102,30 @@ test("a short word must be the whole word: ui is not the end of slagerhuis", () 
 });
 
 test("a Variant named, or the fallback when none is", () => {
-  assert.equal(mapped("1 de Beste Rode uien")?.variant, "rode");
-  assert.equal(mapped("1 de Beste Uien")?.variant, "gele");
+  assert.equal(mapped("1 de Beste Rode uien")?.variant, "rode+heel");
+  assert.equal(mapped("1 de Beste Uien")?.variant, "gele+heel");
   assert.equal(mapped("Poldergoud Geschilde aardappeltjes Kruimig ongekookt")?.variant, "kruimig");
   assert.equal(mapped("Vloerbrood volkoren heel")?.variant, "volkoren");
+});
+
+test("sold cut is a Variant of its own, in an aspect of its own: gesneden rode uien", () => {
+  const v = (chainId: string, name: string, categories: string[]) => map({ chainId, name, brand: null, categories })?.variant ?? null;
+  assert.equal(v("jumbo", "Jumbo Gesnipperde Uien 150 g", ["Aardappelen, groente en fruit > Groente > Uien, knoflook en sjalotten"]), "gele+gesneden");
+  assert.equal(v("dirk", "1 de Beste Broccoliroosjes", ["Aardappelen, groente & fruit > Groente"]), "gesneden");
+  assert.equal(v("dekamarkt", "Boerenkool fijn", ["Aardappelen, groente & fruit > Groente"]), "gesneden");
+  assert.equal(v("dekamarkt", "Boerenkool", ["Aardappelen, groente & fruit > Groente"]), "heel");
+});
+
+test("a pizza is frozen or chilled by where it is kept, whatever its name says", () => {
+  const as = (name: string, categories: string[]) => { const x = map({ chainId: "vomar", name, brand: null, categories }); return [x?.ingredient, x?.variant]; };
+  assert.deepEqual(as("Dr Oetker Ristorante Tonno", ["Diepvries > Pizza's"]), ["pizza", "diepvries"]);
+  assert.deepEqual(as("Deka's keuken Pizza tonijn", ["Maaltijden, salades & tapas > Pizza's"]), ["pizza", "gekoeld"]);
+});
+
+test("a brand the name starts with gives no flavour, though it may give the kind", () => {
+  const v = (name: string, brand: string, categories: string[]) => map({ chainId: "dirk", name, brand, categories })?.variant ?? null;
+  assert.equal(v("Appelsientje Fruitdrink sinaasappel", "Appelsientje", ["Dranken, sap, koffie & thee > Vruchtensappen"]), "sinaasappel");
+  assert.equal(v("Red Bull Sugarfree", "Red Bull", ["Dranken, sap, koffie & thee > Frisdranken"]), "energie");
 });
 
 test("a roll is not a loaf, though both stem to brood", () => {
