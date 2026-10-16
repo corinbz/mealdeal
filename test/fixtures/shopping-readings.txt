@@ -449,8 +449,8 @@ roze muisjes	-
 gestampte muisjes	-
 pindakaas	pindakaas
 jam	jam
-aardbeienjam	-
-abrikozenjam	-
+aardbeienjam	jam
+abrikozenjam	jam
 confiture	jam
 honing	honing
 appelstroop	appelstroop
@@ -1155,7 +1155,7 @@ rice cakes	-
 crispbread	-
 peanut butter	pindakaas
 strawberry jam	jam
-marmalade	-
+marmalade	jam
 honey	honing
 maple syrup	-
 chocolate spread	chocoladepasta

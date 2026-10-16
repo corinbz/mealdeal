@@ -467,3 +467,19 @@ test("noodles, drop, kaas, crackers, ham, gum and spreads named by kind or brand
   assert.equal(m("jumbo", "Jumbo Chocopasta Melk 400 g", ["Ontbijt, broodbeleg en bakproducten > Zoet broodbeleg > Hazelnoot-, Chocoladepasta"]), "chocoladepasta");
   assert.equal(m("jumbo", "De Ruijter Vruchten Hagel 400 g", ["Ontbijt, broodbeleg en bakproducten > Zoet broodbeleg > Hagelslag, vlokken"]), "hagelslag");
 });
+
+test("fries, mayo, vla, jam, margarine and pasta sauce named by kind or brand alone (2026-10-16)", () => {
+  const m = (chainId: string, name: string, categories: string[]) => map({ chainId, name, brand: null, categories })?.ingredient ?? null;
+  assert.equal(m("jumbo", "Lamb Weston Rustic Fries 750g", ["Diepvries > Aardappelproducten > Patat frites, friet"]), "friet");
+  // Fries is also Frisian.
+  assert.equal(m("jumbo", "Bolletje Roggebrood Fries 500 g", ["Ontbijt, broodbeleg en bakproducten > Brood > Roggebrood"]), "roggebrood");
+  assert.equal(m("jumbo", "Jumbo's Kerrie Mayonaise 250 ml", ["Conserven, soepen, sauzen, oliën > Snacksauzen > Mayonaise"]), "mayonaise");
+  assert.equal(m("jumbo", "Hellmann's Mayo Real 210 ml", ["Conserven, soepen, sauzen, oliën > Snacksauzen > Mayonaise"]), "mayonaise");
+  assert.equal(m("dirk", "Melkunie Vla rum rozijnen", ["Zuivel & kaas > Vla"]), "vla");
+  assert.equal(m("plus", "PLUS Fruitspread aardbei", ["Ontbijtgranen, broodbeleg, tussendoor > Broodbeleg zoet en hartig > Jam"]), "jam");
+  // Ajam is chicken, not jam.
+  assert.equal(m("jumbo", "Conimex Boemboe Ajam Smoor 95 g", ["Wereldkeukens, kruiden, pasta en rijst > Kruiden en specerijen > Meer kruidenmixen"]), "kruidenmix");
+  assert.equal(m("plus", "Sense Original", ["Zuivel, eieren, boter > Boter, margarine > Halvarine, margarine"]), "margarine");
+  assert.equal(m("jumbo", "Grand'Italia Sugocasa Aglio met Knoflook 690 g", ["Wereldkeukens, kruiden, pasta en rijst > Pastasauzen > Tomaten pastasauzen"]), "pastasaus");
+  assert.equal(m("jumbo", "Jumbo Lasagne Bolognese 1 kg", ["Verse maaltijden en gemak > Verse maaltijden > Italiaanse maaltijden"]), "kant-en-klaarmaaltijd");
+});
