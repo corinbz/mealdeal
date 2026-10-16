@@ -483,3 +483,20 @@ test("fries, mayo, vla, jam, margarine and pasta sauce named by kind or brand al
   assert.equal(m("jumbo", "Grand'Italia Sugocasa Aglio met Knoflook 690 g", ["Wereldkeukens, kruiden, pasta en rijst > Pastasauzen > Tomaten pastasauzen"]), "pastasaus");
   assert.equal(m("jumbo", "Jumbo Lasagne Bolognese 1 kg", ["Verse maaltijden en gemak > Verse maaltijden > Italiaanse maaltijden"]), "kant-en-klaarmaaltijd");
 });
+
+test("pasta and wraps named for their filling, crackers among the snacks, Spa, soups and cordials (2026-10-16)", () => {
+  const m = (chainId: string, name: string, categories: string[]) => map({ chainId, name, brand: null, categories })?.ingredient ?? null;
+  assert.equal(m("jumbo", "Rummo Orecchiette 87 500 g", ["Wereldkeukens, kruiden, pasta en rijst > Pasta > Meer pasta"]), "pasta");
+  // Named for the filling, but the shelf says it is pasta; a ready meal of pasta is still a ready meal.
+  assert.equal(m("jumbo", "Jumbo Tortellini Kaas 250 g", ["Verse maaltijden en gemak > Verse pasta en sauzen > Verse pasta"]), "pasta");
+  assert.equal(m("jumbo", "Jumbo Ovenschotel Lasagnette 900 g", ["Verse maaltijden en gemak > Verse pasta en sauzen > Verse pasta"]), null);
+  assert.equal(m("jumbo", "Knorr Good Pasta Carbonara 71 g", ["Wereldkeukens, kruiden, pasta en rijst > Pasta > Meer pasta"]), null);
+  assert.equal(m("hoogvliet", "Wortel wraps", ["Pasta, rijst, oliën, wereldkeuken > Mexicaanse keuken > Wraps"]), "tortilla's");
+  assert.equal(m("hoogvliet", "Taco schelpen", ["Pasta, rijst, oliën, wereldkeuken > Mexicaanse keuken > Wraps"]), null);
+  assert.equal(m("dirk", "Lu Minicrackers naturel", ["Snacks & snoep > Popcorn & toastjes"]), "crackers");
+  assert.equal(m("dirk", "Spa Intense", ["Dranken, sap, koffie & thee > Mineraal- & bronwater"]), "water");
+  assert.notEqual(m("jumbo", "SPA FRUIT Niet-Bruisende Fruitige Frisdrank Strawberry Watermelon 1,25 L", ["Frisdrank en sappen > Fris met fruitsmaak > Flesjes fris met fruitsmaak"]), "water");
+  assert.equal(m("jumbo", "Jumbo Bruine Bonensoep 800ml", ["Conserven, soepen, sauzen, oliën > Soep > Soep in blik"]), "soep");
+  assert.equal(m("hoogvliet", "Bamisoep curry", ["Soepen, conserven, sauzen, kruiden > Soepen > Soep om op te warmen"]), "soep");
+  assert.equal(m("plus", "Belvoir Ginger cordial bio", ["Frisdrank, sappen, koffie, thee > Siroop"]), "limonadesiroop");
+});
