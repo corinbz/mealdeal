@@ -879,6 +879,240 @@
     water: ["--a:#cfe6f2;--b:#3a7fc4;--d:#f2f8fb",
       '<rect class="b" x="26" y="4" width="12" height="6" rx="1.5"/><path class="a" d="M27 10h10v4c6 2 9 6 9 12v4c-2 2-2 4 0 6v4c-2 2-2 4 0 6v8c0 2-2 3-4 3H22c-2 0-4-1-4-3v-8c2-2 2-4 0-6v-4c2-2 2-4 0-6v-4c0-6 3-10 9-12z"/>' +
       '<ellipse class="d" cx="24" cy="26" rx="1.8" ry="4"/><path class="e" d="M18 34h28M18 44h28"/>'],
+    // Drawn for #44: Ingredients added after the first set.
+    kibbeling: ["--a:#e3a33e;--b:#f2efe6;--d:#b8741a",
+      '<path class="a" d="M8 33c-1-6 4-10 9-9 4-3 11-1 11 5 1 4-2 7-8 7-6 0-11-1-12-3z"/>' +
+      '<path class="a" d="M38 33c-1-6 4-10 9-9 5-1 10 3 9 8 0 3-4 5-9 5s-9-1-9-4z"/>' +
+      '<path class="a" d="M22 28c-1-7 5-11 11-10 5-2 11 2 10 8 0 4-4 6-10 6s-10-1-11-4z"/>' +
+      '<circle class="d" cx="15" cy="29" r="1.3"/><circle class="d" cx="29" cy="23" r="1.3"/><circle class="d" cx="36" cy="26" r="1.3"/><circle class="d" cx="47" cy="29" r="1.3"/>' +
+      '<path class="b" d="M5 34h54l-5 18c-1 3-3 4-6 4H16c-3 0-5-1-6-4z"/><path class="e" d="M9 40h46"/>'],
+    surimi: ["--a:#e8553a;--b:#fbf5ee",
+      '<g transform="rotate(-25 32 32)">' +
+      '<rect class="b" x="8" y="12" width="48" height="11" rx="5.5"/><path class="a" d="M8 17.5a5.5 5.5 0 0 1 5.5-5.5h37a5.5 5.5 0 0 1 5.5 5.5z"/>' +
+      '<rect class="b" x="8" y="26" width="48" height="11" rx="5.5"/><path class="a" d="M8 31.5a5.5 5.5 0 0 1 5.5-5.5h37a5.5 5.5 0 0 1 5.5 5.5z"/>' +
+      '<rect class="b" x="8" y="40" width="48" height="11" rx="5.5"/><path class="a" d="M8 45.5a5.5 5.5 0 0 1 5.5-5.5h37a5.5 5.5 0 0 1 5.5 5.5z"/></g>'],
+    falafel: ["--a:#a0642e;--c:#8ab05a;--d:#5e3618",
+      '<circle class="a" cx="21" cy="24" r="12"/><circle class="a" cx="43" cy="28" r="12"/>' +
+      '<circle class="d" cx="16" cy="21" r="1.3"/><circle class="d" cx="24" cy="18" r="1.3"/><circle class="d" cx="21" cy="28" r="1.3"/><circle class="d" cx="40" cy="24" r="1.3"/><circle class="d" cx="47" cy="27" r="1.3"/><circle class="d" cx="43" cy="33" r="1.3"/>' +
+      '<circle class="a" cx="30" cy="45" r="13"/><circle class="c" cx="30" cy="45" r="9"/>' +
+      '<circle class="d" cx="27" cy="42" r="1.2"/><circle class="d" cx="33" cy="44" r="1.2"/><circle class="d" cx="28" cy="49" r="1.2"/>'],
+    eiwit: ["--a:#fbf9f2;--b:#eef2f4;--c:#f2c84b",
+      '<path class="b" d="M16 18l8-10h16l8 10v37c0 2-1 3-3 3H19c-2 0-3-1-3-3z"/><path class="b" d="M24 8V4h16v4z"/><path class="e" d="M16 18h32"/>' +
+      '<rect class="c" x="16" y="27" width="32" height="20"/>' +
+      '<path class="a" d="M21 38c0-5 4-7 8-6 3-3 9-2 10 2 4 0 6 3 4 6-1 3-6 4-11 4s-11-2-11-6z"/>'],
+    drinkyoghurt: ["--a:#f4a6bc;--b:#f7f4ec;--c:#d94b6a;--d:#d9324a",
+      '<rect class="c" x="24" y="5" width="16" height="8" rx="2"/>' +
+      '<path class="b" d="M25 13h14v4c5 3 8 7 8 13v24c0 3-2 4-4 4H21c-2 0-4-1-4-4V30c0-6 3-10 8-13z"/>' +
+      '<rect class="a" x="17" y="32" width="30" height="17"/>' +
+      '<path class="d" d="M32 37c3-2 7-1 7 3 0 4-4 7-7 7s-7-3-7-7c0-4 4-5 7-3z"/><path class="s" d="M32 37l1-3"/>'],
+    ricotta: ["--a:#fbf8f0;--b:#5a9a4a;--d:#e2d6bc",
+      '<path class="a" d="M7 34c0-9 11-17 25-17s25 8 25 17z"/>' +
+      '<circle class="d" cx="20" cy="28" r="1.5"/><circle class="d" cx="28" cy="24" r="1.5"/><circle class="d" cx="37" cy="26" r="1.5"/><circle class="d" cx="45" cy="29" r="1.5"/><circle class="d" cx="32" cy="30" r="1.4"/>' +
+      '<path class="b" d="M7 34h50l-4 19c-1 3-3 4-6 4H17c-3 0-5-1-6-4z"/><path class="e" d="M17 38l2 14M25 38l1 15M33 38v15M41 38l-1 15M49 38l-2 14"/>'],
+    knakworst: ["--a:#eb9a70;--d:#f8cfb6",
+      '<g transform="rotate(-30 32 32)">' +
+      '<rect class="a" x="6" y="17" width="52" height="8" rx="4"/><rect class="a" x="6" y="29" width="52" height="8" rx="4"/><rect class="a" x="6" y="41" width="52" height="8" rx="4"/>' +
+      '<rect class="d" x="12" y="19" width="38" height="1.8" rx=".9"/><rect class="d" x="12" y="31" width="38" height="1.8" rx=".9"/><rect class="d" x="12" y="43" width="38" height="1.8" rx=".9"/></g>'],
+    grillworst: ["--a:#b8553a;--d:#dc8a62",
+      '<g transform="rotate(-25 32 32)"><rect class="a" x="5" y="22" width="54" height="20" rx="10"/>' +
+      '<rect class="d" x="13" y="25" width="34" height="2.2" rx="1.1"/>' +
+      '<path class="e" d="M17 30l5 10M27 29l6 12M38 29l6 12M49 30l4 8"/></g>'],
+    boterhamworst: ["--a:#e8c48a;--c:#f6c9c4;--d:#e49a98",
+      '<path class="a" d="M10 56V26c-4-3-4-10 2-13 5-3 11-2 14 1 4-3 10-3 14 0 3-3 9-4 14-1 6 3 6 10 2 13v30z"/>' +
+      '<circle class="c" cx="25" cy="33" r="12"/><circle class="d" cx="21" cy="30" r="1.3"/><circle class="d" cx="28" cy="29" r="1.3"/><circle class="d" cx="25" cy="37" r="1.3"/>' +
+      '<circle class="c" cx="39" cy="44" r="12"/><circle class="d" cx="35" cy="41" r="1.3"/><circle class="d" cx="42" cy="40" r="1.3"/><circle class="d" cx="39" cy="48" r="1.3"/>'],
+    cervelaat: ["--a:#b5463e;--d:#f6e0d6",
+      '<g transform="rotate(-25 38 25)"><rect class="a" x="16" y="16" width="44" height="18" rx="9"/><path class="e" d="M24 16v18M32 16v18M40 16v18M48 16v18M16 25h44"/></g>' +
+      '<circle class="a" cx="22" cy="44" r="13"/>' +
+      '<circle class="d" cx="17" cy="40" r="1.5"/><circle class="d" cx="24" cy="38" r="1.5"/><circle class="d" cx="28" cy="45" r="1.5"/><circle class="d" cx="19" cy="48" r="1.5"/><circle class="d" cx="23" cy="44" r="1.3"/><circle class="d" cx="27" cy="51" r="1.3"/>'],
+    roggebrood: ["--a:#5a3a26;--c:#76503a;--d:#a07c5c",
+      '<rect class="a" x="24" y="8" width="28" height="36" rx="2" transform="rotate(8 38 26)"/>' +
+      '<rect class="c" x="12" y="20" width="30" height="36" rx="2" transform="rotate(-6 27 38)"/>' +
+      '<circle class="d" cx="19" cy="28" r="1.2"/><circle class="d" cx="27" cy="26" r="1.2"/><circle class="d" cx="35" cy="30" r="1.2"/><circle class="d" cx="22" cy="37" r="1.2"/><circle class="d" cx="31" cy="38" r="1.2"/><circle class="d" cx="38" cy="43" r="1.2"/><circle class="d" cx="20" cy="47" r="1.2"/><circle class="d" cx="29" cy="49" r="1.2"/>'],
+    chips: ["--a:#f2c84b;--b:#d94b3d;--d:#d9a22a",
+      '<ellipse class="a" cx="36" cy="25" rx="11" ry="7" transform="rotate(15 36 25)"/>' +
+      '<ellipse class="a" cx="19" cy="31" rx="10" ry="7" transform="rotate(-20 19 31)"/>' +
+      '<ellipse class="a" cx="46" cy="32" rx="9" ry="6" transform="rotate(-10 46 32)"/>' +
+      '<ellipse class="a" cx="30" cy="34" rx="9" ry="6" transform="rotate(5 30 34)"/>' +
+      '<circle class="d" cx="34" cy="23" r="1.3"/><circle class="d" cx="40" cy="27" r="1.1"/><circle class="d" cx="17" cy="29" r="1.3"/><circle class="d" cx="46" cy="31" r="1.1"/>' +
+      '<path class="b" d="M6 36h52c0 12-11 20-26 20S6 48 6 36z"/>'],
+    popcorn: ["--a:#d94b3d;--b:#f7f2e6;--c:#fbf3d8;--d:#f2c84b",
+      '<circle class="c" cx="18" cy="21" r="7"/><circle class="c" cx="28" cy="15" r="7"/><circle class="c" cx="39" cy="15" r="7"/><circle class="c" cx="47" cy="22" r="7"/>' +
+      '<circle class="c" cx="24" cy="24" r="6"/><circle class="c" cx="34" cy="22" r="6.5"/><circle class="c" cx="42" cy="26" r="6"/>' +
+      '<circle class="d" cx="27" cy="13" r="1.4"/><circle class="d" cx="40" cy="13" r="1.4"/><circle class="d" cx="17" cy="19" r="1.4"/><circle class="d" cx="34" cy="21" r="1.4"/><circle class="d" cx="47" cy="20" r="1.4"/>' +
+      '<path class="b" d="M12 27h40l-5 29H17z"/>' +
+      '<path class="a" d="M12 27h8l3 29h-6z"/><path class="a" d="M28 27h8l-1 29h-6z"/><path class="a" d="M44 27h8l-5 29h-6z"/>'],
+    kroepoek: ["--a:#f8eee6;--b:#f2d8cc",
+      '<path class="b" d="M6 30c2-8 10-12 16-9 6-4 14-1 15 5 4 4 2 11-4 12-4 5-12 5-16 1-7 1-13-3-11-9z"/>' +
+      '<path class="a" d="M27 21c3-7 11-9 16-5 6-2 12 3 11 9 4 5 0 11-6 11-3 5-11 6-15 2-6 0-10-6-6-11-2-2-1-5 0-6z"/>' +
+      '<path class="a" d="M12 44c2-6 9-9 14-6 5-3 12 0 13 5 4 3 2 10-3 11-3 4-10 5-14 1-6 1-11-5-10-11z"/>' +
+      '<path class="e" d="M14 29c3-2 6 0 5 3M36 25c3-2 7 0 6 3M43 30c2-1 4 0 4 2M21 45c3-2 6 0 5 3M29 47c2-1 4 0 4 2"/>'],
+    drop: ["--a:#2e2522;--b:#453632;--c:#f2efe6;--d:#7a6a64",
+      '<rect class="b" x="30" y="10" width="18" height="18" rx="2" transform="rotate(45 39 19)"/><rect class="d" x="36" y="13" width="4" height="4" rx="1" transform="rotate(45 38 15)"/>' +
+      '<circle class="a" cx="20" cy="38" r="12"/><ellipse class="d" cx="15" cy="33" rx="3" ry="1.6" transform="rotate(-35 15 33)"/>' +
+      '<rect class="a" x="34" y="38" width="22" height="15" rx="5"/><rect class="d" x="38" y="41" width="10" height="2" rx="1"/>' +
+      '<circle class="c" cx="12" cy="54" r="1.4"/><circle class="c" cx="17" cy="57" r="1.2"/><circle class="c" cx="25" cy="55" r="1.4"/>'],
+    chocolade: ["--a:#6a3a22;--b:#c83a3a;--c:#d8dce0;--d:#8a5236",
+      '<g transform="rotate(-18 32 32)"><rect class="a" x="16" y="5" width="32" height="30" rx="2"/>' +
+      '<rect class="d" x="18.5" y="7.5" width="6" height="6.5" rx="1"/><rect class="d" x="29" y="7.5" width="6" height="6.5" rx="1"/><rect class="d" x="39.5" y="7.5" width="6" height="6.5" rx="1"/>' +
+      '<rect class="d" x="18.5" y="17.5" width="6" height="6.5" rx="1"/><rect class="d" x="29" y="17.5" width="6" height="6.5" rx="1"/><rect class="d" x="39.5" y="17.5" width="6" height="6.5" rx="1"/>' +
+      '<path class="c" d="M14 30l4-3 4 3 4-3 4 3 4-3 4 3 4-3 4 3 4-3 2 1.5V36H14z"/>' +
+      '<rect class="b" x="14" y="35" width="36" height="25" rx="2"/><path class="e" d="M14 42h36M14 53h36"/></g>'],
+    koekjes: ["--a:#dca05a;--d:#5a3420",
+      '<circle class="a" cx="24" cy="25" r="15"/>' +
+      '<circle class="d" cx="18" cy="20" r="2"/><circle class="d" cx="27" cy="17" r="1.8"/><circle class="d" cx="30" cy="26" r="2"/><circle class="d" cx="19" cy="30" r="1.8"/><circle class="d" cx="25" cy="34" r="1.6"/>' +
+      '<circle class="a" cx="40" cy="42" r="15"/>' +
+      '<circle class="d" cx="34" cy="38" r="2"/><circle class="d" cx="43" cy="35" r="1.8"/><circle class="d" cx="47" cy="44" r="2"/><circle class="d" cx="36" cy="48" r="1.8"/><circle class="d" cx="42" cy="51" r="1.6"/>'],
+    stroopwafels: ["--a:#d9a05a;--c:#9a5a26",
+      '<circle class="c" cx="34" cy="36" r="23"/><circle class="a" cx="31" cy="32" r="23"/>' +
+      '<g transform="rotate(45 31 32)"><path class="e" d="M14 20h34M11 28h40M11 36h40M14 44h34M19 15v34M27 12v40M35 12v40M43 15v34"/></g>'],
+    speculaas: ["--a:#c8803a",
+      '<g transform="rotate(-10 21 32)"><rect class="a" x="8" y="10" width="26" height="44" rx="3"/>' +
+      '<path class="e" d="M17 48l3-18h2l3 18M21 30l-7-7M21 30l7-7M21 30l-7 7M21 30l7 7M13 48h16"/></g>' +
+      '<g transform="rotate(8 44 34)"><rect class="a" x="31" y="12" width="26" height="44" rx="3"/>' +
+      '<path class="e" d="M44 50V28M44 28c-4-2-6-6-4-10 3 0 4 3 4 5 0-2 1-5 4-5 2 4 0 8-4 10M44 40c-3-1-6 0-7 3M44 44c3-1 6 0 7 3"/></g>'],
+    ontbijtkoek: ["--a:#9a5226;--c:#c88a4e;--d:#6a3a1a",
+      '<path class="a" d="M5 30c0-4 3-7 7-7h30c4 0 7 3 7 7v20c0 3-2 5-5 5H10c-3 0-5-2-5-5z"/><path class="e" d="M10 29c8-2 24-2 34 0"/>' +
+      '<rect class="c" x="42" y="24" width="15" height="31" rx="2" transform="rotate(10 49 40)"/>' +
+      '<circle class="d" cx="47" cy="32" r="1.1"/><circle class="d" cx="51" cy="38" r="1.1"/><circle class="d" cx="46" cy="44" r="1.1"/><circle class="d" cx="49" cy="50" r="1.1"/>'],
+    kauwgom: ["--a:#3fa36a;--b:#f2f6f0;--c:#eaf4e2;--d:#2a7a4a",
+      '<rect class="b" x="9" y="13" width="30" height="10" rx="3"/>' +
+      '<path class="a" d="M10 23h28v30c0 3-3 5-14 5s-14-2-14-5z"/><path class="b" d="M17 35c0-4 3-6 7-6s7 2 7 6-3 6-7 6-7-2-7-6z"/>' +
+      '<rect class="c" x="40" y="14" width="16" height="10" rx="5" transform="rotate(20 48 19)"/>' +
+      '<rect class="c" x="42" y="31" width="16" height="10" rx="5" transform="rotate(-15 50 36)"/>' +
+      '<rect class="c" x="40" y="46" width="16" height="10" rx="5"/>'],
+    winegums: ["--a:#d9323a;--b:#f2a62a;--c:#4aa84a",
+      '<rect class="b" x="30" y="8" width="22" height="18" rx="5" transform="rotate(12 41 17)"/><rect class="e" x="34" y="12" width="14" height="10" rx="3" transform="rotate(12 41 17)"/>' +
+      '<circle class="a" cx="19" cy="24" r="11"/><circle class="e" cx="19" cy="24" r="6.5"/>' +
+      '<rect class="c" x="10" y="38" width="17" height="17" rx="3" transform="rotate(45 18.5 46.5)"/><rect class="e" x="14" y="42" width="9" height="9" rx="2" transform="rotate(45 18.5 46.5)"/>' +
+      '<ellipse class="a" cx="44" cy="44" rx="13" ry="10"/><ellipse class="e" cx="44" cy="44" rx="8" ry="5.5"/>'],
+    pizza: ["--a:#e2a850;--b:#f4d27a;--c:#d4402e;--d:#4f8f34",
+      '<circle class="a" cx="32" cy="32" r="27"/><circle class="b" cx="32" cy="32" r="21"/>' +
+      '<path class="e" d="M32 11v42M14 21.5l36 21M14 42.5l36-21"/>' +
+      '<circle class="c" cx="25" cy="21" r="4"/><circle class="c" cx="43" cy="27" r="4"/><circle class="c" cx="21" cy="38" r="4"/><circle class="c" cx="39" cy="44" r="4"/>' +
+      '<ellipse class="d" cx="36" cy="19" rx="3" ry="1.6" transform="rotate(30 36 19)"/><ellipse class="d" cx="45" cy="38" rx="3" ry="1.6" transform="rotate(-30 45 38)"/><ellipse class="d" cx="27" cy="47" rx="3" ry="1.6"/><ellipse class="d" cx="18" cy="29" rx="3" ry="1.6" transform="rotate(60 18 29)"/>'],
+    soep: ["--a:#e0613a;--b:#f2efe6;--d:#f6b08a",
+      '<path class="s" d="M22 18c-3-4 3-6 0-10M32 18c-3-4 3-6 0-10M42 18c-3-4 3-6 0-10"/>' +
+      '<ellipse class="a" cx="32" cy="32" rx="25" ry="7"/>' +
+      '<circle class="d" cx="22" cy="29" r="1.6"/><circle class="d" cx="31" cy="27" r="1.6"/><circle class="d" cx="41" cy="29" r="1.6"/>' +
+      '<path class="b" d="M6 32h52c0 13-11 23-26 23S6 45 6 32z"/>'],
+    frikandellen: ["--a:#9a5a32;--d:#c08050",
+      '<g transform="rotate(-25 32 32)"><rect class="a" x="4" y="18" width="56" height="12" rx="6"/><rect class="a" x="4" y="34" width="56" height="12" rx="6"/>' +
+      '<rect class="d" x="10" y="21" width="40" height="2" rx="1"/><rect class="d" x="10" y="37" width="40" height="2" rx="1"/></g>'],
+    ijs: ["--a:#f4a0b4;--b:#fbf0d0;--c:#e0a85a;--d:#6a3a22",
+      '<circle class="b" cx="24" cy="24" r="12"/><circle class="a" cx="40" cy="22" r="12"/>' +
+      '<rect class="d" x="36" y="15" width="3" height="1.4" rx=".7" transform="rotate(30 37 16)"/><rect class="d" x="42" y="19" width="3" height="1.4" rx=".7" transform="rotate(-20 43 20)"/><rect class="d" x="38" y="24" width="3" height="1.4" rx=".7" transform="rotate(60 39 25)"/>' +
+      '<path class="c" d="M15 32h34L32 60z"/><path class="e" d="M21 37l16 14M28 34l15 13M43 37l-16 14M36 34l-15 13"/>'],
+    kroketten: ["--a:#c8843a;--c:#f2c42a;--d:#8a5420",
+      '<rect class="a" x="6" y="14" width="34" height="17" rx="8.5" transform="rotate(-15 23 22)"/>' +
+      '<circle class="d" cx="14" cy="24" r="1.1"/><circle class="d" cx="21" cy="20" r="1.1"/><circle class="d" cx="28" cy="21" r="1.1"/><circle class="d" cx="33" cy="16" r="1.1"/>' +
+      '<rect class="a" x="16" y="34" width="40" height="18" rx="9" transform="rotate(-8 36 43)"/>' +
+      '<circle class="d" cx="23" cy="45" r="1.1"/><circle class="d" cx="31" cy="41" r="1.1"/><circle class="d" cx="39" cy="44" r="1.1"/><circle class="d" cx="47" cy="39" r="1.1"/><circle class="d" cx="44" cy="46" r="1.1"/>' +
+      '<path class="c" d="M44 20c4-4 12-2 12 4s-6 8-10 6-6-6-2-10z"/>'],
+    bitterballen: ["--a:#c47a2a;--b:#f2efe6;--c:#f2c42a;--d:#8a4a1a",
+      '<ellipse class="b" cx="30" cy="46" rx="26" ry="10"/>' +
+      '<path class="s" d="M36 30l10-20"/>' +
+      '<circle class="a" cx="24" cy="33" r="8"/><circle class="a" cx="38" cy="33" r="8"/>' +
+      '<circle class="a" cx="16" cy="44" r="8"/><circle class="a" cx="31" cy="46" r="8"/><circle class="a" cx="46" cy="43" r="8"/>' +
+      '<circle class="d" cx="21" cy="31" r="1"/><circle class="d" cx="40" cy="31" r="1"/><circle class="d" cx="14" cy="42" r="1"/><circle class="d" cx="29" cy="44" r="1"/><circle class="d" cx="48" cy="41" r="1"/>' +
+      '<ellipse class="c" cx="54" cy="52" rx="7" ry="4"/>'],
+    "loempia's": ["--a:#e8b04a",
+      '<g transform="rotate(-25 32 26)"><rect class="a" x="6" y="16" width="52" height="18" rx="9"/><path class="e" d="M18 16l7 18M30 16l7 18M42 16l7 18"/></g>' +
+      '<g transform="rotate(-25 34 44)"><rect class="a" x="10" y="36" width="48" height="16" rx="8"/><path class="e" d="M21 36l6 16M33 36l6 16M45 36l6 16"/></g>'],
+    "mini loempia's": ["--a:#e8b04a;--b:#f2efe6;--c:#d9403a",
+      '<rect class="a" x="6" y="16" width="20" height="9" rx="4.5" transform="rotate(-20 16 20)"/><rect class="a" x="26" y="10" width="20" height="9" rx="4.5" transform="rotate(10 36 14)"/>' +
+      '<rect class="a" x="38" y="22" width="20" height="9" rx="4.5" transform="rotate(-30 48 26)"/><rect class="a" x="16" y="28" width="20" height="9" rx="4.5" transform="rotate(15 26 32)"/>' +
+      '<rect class="a" x="4" y="38" width="20" height="9" rx="4.5" transform="rotate(-5 14 42)"/><rect class="a" x="22" y="42" width="20" height="9" rx="4.5" transform="rotate(-25 32 46)"/>' +
+      '<path class="e" d="M12 17l2 6M18 18l2 6M33 11l-1 7M39 12l-1 7M22 30l-2 7M28 31l-2 7M10 39l1 7M16 39l1 7"/>' +
+      '<ellipse class="b" cx="48" cy="50" rx="11" ry="6"/><ellipse class="c" cx="48" cy="49" rx="7" ry="3.2"/>'],
+    pannenkoeken: ["--a:#f2d27a;--b:#f2efe6;--c:#8a4a1a;--d:#fbe9a0",
+      '<ellipse class="b" cx="32" cy="50" rx="28" ry="8"/>' +
+      '<ellipse class="a" cx="32" cy="45" rx="22" ry="6"/><ellipse class="a" cx="32" cy="40" rx="22" ry="6"/><ellipse class="a" cx="32" cy="35" rx="22" ry="6"/><ellipse class="a" cx="32" cy="30" rx="22" ry="6"/>' +
+      '<path class="c" d="M17 29c4-4 26-4 30 0 1 3-3 4-5 3v5c0 2-3 2-3 0v-4c-5 1-11 1-15 0v6c0 2-3 2-3 0v-7c-3 0-5-1-4-3z"/>' +
+      '<rect class="d" x="28" y="24" width="8" height="5" rx="1"/>'],
+    poffertjes: ["--a:#d9963e;--b:#f2efe6;--c:#f8e08a;--d:#fffdf6",
+      '<ellipse class="b" cx="32" cy="40" rx="28" ry="15"/>' +
+      '<ellipse class="a" cx="18" cy="36" rx="7.5" ry="5.5"/><ellipse class="a" cx="32" cy="32" rx="7.5" ry="5.5"/><ellipse class="a" cx="46" cy="36" rx="7.5" ry="5.5"/>' +
+      '<ellipse class="a" cx="24" cy="44" rx="7.5" ry="5.5"/><ellipse class="a" cx="40" cy="44" rx="7.5" ry="5.5"/>' +
+      '<rect class="c" x="28" y="36" width="9" height="6" rx="1.5"/>' +
+      '<circle class="d" cx="16" cy="34" r="1"/><circle class="d" cx="20" cy="35" r="1"/><circle class="d" cx="30" cy="30" r="1"/><circle class="d" cx="35" cy="31" r="1"/><circle class="d" cx="45" cy="34" r="1"/><circle class="d" cx="49" cy="35" r="1"/><circle class="d" cx="22" cy="43" r="1"/><circle class="d" cx="42" cy="43" r="1"/>'],
+    gnocchi: ["--a:#f2dca0",
+      '<g transform="translate(18 24) rotate(-20)"><ellipse class="a" rx="9" ry="6.5"/><path class="e" d="M-4-4.5v9M0-5.5v11M4-4.5v9"/></g>' +
+      '<g transform="translate(35 19) rotate(15)"><ellipse class="a" rx="9" ry="6.5"/><path class="e" d="M-4-4.5v9M0-5.5v11M4-4.5v9"/></g>' +
+      '<g transform="translate(49 30) rotate(-10)"><ellipse class="a" rx="9" ry="6.5"/><path class="e" d="M-4-4.5v9M0-5.5v11M4-4.5v9"/></g>' +
+      '<g transform="translate(14 41) rotate(10)"><ellipse class="a" rx="9" ry="6.5"/><path class="e" d="M-4-4.5v9M0-5.5v11M4-4.5v9"/></g>' +
+      '<g transform="translate(31 36) rotate(-15)"><ellipse class="a" rx="9" ry="6.5"/><path class="e" d="M-4-4.5v9M0-5.5v11M4-4.5v9"/></g>' +
+      '<g transform="translate(46 47) rotate(20)"><ellipse class="a" rx="9" ry="6.5"/><path class="e" d="M-4-4.5v9M0-5.5v11M4-4.5v9"/></g>' +
+      '<g transform="translate(28 51) rotate(5)"><ellipse class="a" rx="9" ry="6.5"/><path class="e" d="M-4-4.5v9M0-5.5v11M4-4.5v9"/></g>'],
+    sambal: ["--a:#c8202a;--b:#f2efe6;--c:#3a7a3a;--d:#e0402a",
+      '<rect class="c" x="16" y="9" width="32" height="10" rx="2"/>' +
+      '<path class="a" d="M18 19h28c2 0 4 2 4 4v29c0 3-2 5-5 5H19c-3 0-5-2-5-5V23c0-2 2-4 4-4z"/>' +
+      '<rect class="b" x="14" y="29" width="36" height="17"/>' +
+      '<path class="d" d="M21 37c6 4 16 4 21-2 1 3-2 7-8 8-6 1-12-2-13-6z"/><path class="s" d="M42 35l3-3"/>'],
+    appelstroop: ["--a:#3e2416;--b:#f2efe6;--c:#d94b3d;--d:#c83a2a",
+      '<rect class="c" x="16" y="9" width="32" height="10" rx="2"/><path class="e" d="M24 9v10M32 9v10M40 9v10"/>' +
+      '<path class="a" d="M18 19h28c2 0 4 2 4 4v29c0 3-2 5-5 5H19c-3 0-5-2-5-5V23c0-2 2-4 4-4z"/>' +
+      '<rect class="b" x="14" y="29" width="36" height="17"/>' +
+      '<path class="d" d="M32 33c-2-1.5-6-1-6 3s3 7 4 7 1-.5 2-.5 1 .5 2 .5 4-3 4-7-4-4.5-6-3z"/><path class="s" d="M32 33l1-3"/>'],
+    "zwarte bonen": ["--a:#2e2828;--d:#6e6262",
+      '<ellipse class="a" cx="14" cy="48" rx="6" ry="4.5" transform="rotate(-20 14 48)"/><ellipse class="d" cx="12" cy="46.5" rx="2" ry="1" transform="rotate(-20 12 46.5)"/><ellipse class="a" cx="26" cy="50" rx="6" ry="4.5" transform="rotate(15 26 50)"/><ellipse class="d" cx="24" cy="48.5" rx="2" ry="1" transform="rotate(15 24 48.5)"/><ellipse class="a" cx="38" cy="49" rx="6" ry="4.5" transform="rotate(-10 38 49)"/><ellipse class="d" cx="36" cy="47.5" rx="2" ry="1" transform="rotate(-10 36 47.5)"/><ellipse class="a" cx="50" cy="47" rx="6" ry="4.5" transform="rotate(30 50 47)"/><ellipse class="d" cx="48" cy="45.5" rx="2" ry="1" transform="rotate(30 48 45.5)"/><ellipse class="a" cx="20" cy="38" rx="6" ry="4.5" transform="rotate(40 20 38)"/><ellipse class="d" cx="18" cy="36.5" rx="2" ry="1" transform="rotate(40 18 36.5)"/><ellipse class="a" cx="32" cy="39" rx="6" ry="4.5" transform="rotate(-25 32 39)"/><ellipse class="d" cx="30" cy="37.5" rx="2" ry="1" transform="rotate(-25 30 37.5)"/><ellipse class="a" cx="44" cy="38" rx="6" ry="4.5" transform="rotate(10 44 38)"/><ellipse class="d" cx="42" cy="36.5" rx="2" ry="1" transform="rotate(10 42 36.5)"/><ellipse class="a" cx="26" cy="28" rx="6" ry="4.5" transform="rotate(-5 26 28)"/><ellipse class="d" cx="24" cy="26.5" rx="2" ry="1" transform="rotate(-5 24 26.5)"/><ellipse class="a" cx="38" cy="28" rx="6" ry="4.5" transform="rotate(35 38 28)"/><ellipse class="d" cx="36" cy="26.5" rx="2" ry="1" transform="rotate(35 36 26.5)"/><ellipse class="a" cx="32" cy="18" rx="6" ry="4.5" transform="rotate(0 32 18)"/><ellipse class="d" cx="30" cy="16.5" rx="2" ry="1" transform="rotate(0 30 16.5)"/>'],
+    sesamzaad: ["--a:#f2dfb0;--b:#c98b4a",
+      '<g transform="rotate(-30 32 32)"><ellipse class="b" cx="32" cy="19" rx="13" ry="11"/><rect class="b" x="29" y="28" width="6" height="30" rx="3"/></g>' +
+      '<ellipse class="a" cx="21" cy="17" rx="2.6" ry="4" transform="rotate(-30 21 17)"/><ellipse class="a" cx="28" cy="16" rx="2.6" ry="4" transform="rotate(20 28 16)"/><ellipse class="a" cx="24" cy="24" rx="2.6" ry="4" transform="rotate(70 24 24)"/><ellipse class="a" cx="31" cy="23" rx="2.6" ry="4" transform="rotate(-10 31 23)"/><ellipse class="a" cx="18" cy="25" rx="2.6" ry="4" transform="rotate(40 18 25)"/>' +
+      '<ellipse class="a" cx="46" cy="46" rx="2.6" ry="4" transform="rotate(30 46 46)"/><ellipse class="a" cx="53" cy="44" rx="2.6" ry="4" transform="rotate(-40 53 44)"/><ellipse class="a" cx="50" cy="53" rx="2.6" ry="4" transform="rotate(80 50 53)"/><ellipse class="a" cx="41" cy="54" rx="2.6" ry="4" transform="rotate(10 41 54)"/>'],
+    oregano: ["--a:#7a8a3a;--b:#e8eef0;--c:#d94b3d;--d:#aebe62",
+      '<rect class="c" x="20" y="7" width="24" height="9" rx="2"/>' +
+      '<rect class="b" x="18" y="16" width="28" height="41" rx="4"/>' +
+      '<path class="a" d="M20 29h24v24c0 1-1 2-2 2H22c-1 0-2-1-2-2z"/>' +
+      '<circle class="d" cx="25" cy="34" r="1.2"/><circle class="d" cx="32" cy="38" r="1.2"/><circle class="d" cx="38" cy="33" r="1.2"/><circle class="d" cx="27" cy="45" r="1.2"/><circle class="d" cx="37" cy="47" r="1.2"/>' +
+      '<path class="s" d="M50 58c0-8 2-14 6-20"/><ellipse class="a" cx="50" cy="46" rx="3" ry="5" transform="rotate(-40 50 46)"/><ellipse class="a" cx="57" cy="47" rx="3" ry="5" transform="rotate(40 57 47)"/><ellipse class="a" cx="56" cy="37" rx="3" ry="4.5"/>'],
+    nootmuskaat: ["--a:#a8643a;--c:#e2b47a",
+      '<ellipse class="a" cx="24" cy="25" rx="16" ry="13" transform="rotate(-20 24 25)"/><path class="e" d="M12 22c5 3 9 2 13-1M14 30c5 1 11-1 15-5M21 14c2 4 6 6 11 6"/>' +
+      '<ellipse class="a" cx="42" cy="45" rx="15" ry="12"/><ellipse class="c" cx="42" cy="45" rx="11" ry="8.5"/>' +
+      '<path class="e" d="M34 43c3 2 5-1 8 1s5-1 8 1M35 48c3 1 6-1 9 0s4 1 6 0"/>'],
+    bladerdeeg: ["--a:#f6e6bc;--b:#fbfaf6;--c:#ecd29a",
+      '<rect class="a" x="16" y="6" width="38" height="34" rx="2" transform="rotate(6 35 23)"/>' +
+      '<rect class="a" x="10" y="12" width="38" height="34" rx="2" transform="rotate(-4 29 29)"/>' +
+      '<rect class="b" x="24" y="40" width="34" height="17" rx="3"/><rect class="a" x="27" y="40" width="28" height="17"/>' +
+      '<ellipse class="c" cx="27" cy="48.5" rx="5" ry="8.5"/><path class="e" d="M27 48.5a2 2 0 1 1 2 1.5M27 48.5a4 4 0 1 0-3-3"/>'],
+    sriracha: ["--a:#d8261e;--b:#f2efe6;--c:#3fa04a;--d:#e8302a",
+      '<path class="c" d="M29 3h6l2 9H27z"/><rect class="c" x="22" y="12" width="20" height="8" rx="2"/>' +
+      '<path class="a" d="M24 20h16c6 3 10 9 10 16v17c0 3-2 5-5 5H19c-3 0-5-2-5-5V36c0-7 4-13 10-16z"/>' +
+      '<rect class="b" x="17" y="34" width="30" height="13" rx="2"/>' +
+      '<path class="d" d="M22 40c6 4 15 4 19-2 1 3-2 7-8 7-6 1-10-2-11-5z"/><path class="s" d="M41 38l2-2"/>'],
+    knoflooksaus: ["--a:#f7f4ec;--b:#f2efe6;--c:#6aa84a",
+      '<path class="c" d="M25 3h6l2 8H23z"/>' +
+      '<path class="a" d="M21 11h14c5 3 8 8 8 14v27c0 3-2 5-5 5H18c-3 0-5-2-5-5V25c0-6 3-11 8-14z"/>' +
+      '<rect class="c" x="13" y="30" width="30" height="10"/>' +
+      '<path class="s" d="M48 34v-5"/><path class="b" d="M48 34c-6 4-10 8-10 13 0 6 5 10 10 10s10-4 10-10c0-5-4-9-10-13z"/>' +
+      '<path class="e" d="M48 39v17M43 43c0 4 1 9 3 13M53 43c0 4-1 9-3 13"/>'],
+    ijsthee: ["--a:#d9883a;--b:#eef4f6;--c:#f4fafc;--d:#f2d23a",
+      '<path class="s" d="M38 3l-3 12"/>' +
+      '<path class="b" d="M13 13h36l-4 43c0 2-2 3-4 3H21c-2 0-4-1-4-3z"/>' +
+      '<path class="a" d="M14.4 25h33.2l-2.9 30c0 1-1 2-2 2H21.3c-1 0-2-1-2-2z"/>' +
+      '<rect class="c" x="19" y="21" width="10" height="10" rx="2" transform="rotate(15 24 26)"/><rect class="c" x="31" y="28" width="10" height="10" rx="2" transform="rotate(-12 36 33)"/>' +
+      '<path class="d" d="M41 13a8 8 0 0 1 16 0z"/><path class="e" d="M41 13a8 8 0 0 1 16 0zM49 13l-5-5M49 13V6M49 13l5-5"/>'],
+    cola: ["--a:#3a1a12;--b:#d8262e;--c:#d8dce0;--d:#8a4a3a",
+      '<rect class="c" x="26" y="3" width="12" height="6" rx="1.5"/>' +
+      '<path class="a" d="M27 9h10v8c0 4 6 7 6 14 0 5-3 7-3 11s3 6 3 11v2c0 3-2 5-5 5H26c-3 0-5-2-5-5v-2c0-5 3-7 3-11s-3-6-3-11c0-7 6-10 6-14z"/>' +
+      '<rect class="b" x="23" y="35" width="18" height="9" rx="1"/>' +
+      '<ellipse class="d" cx="28" cy="25" rx="1.6" ry="4.5"/><ellipse class="d" cx="27" cy="51" rx="1.4" ry="3"/>'],
+    limonadesiroop: ["--a:#d8303a;--b:#f2efe6;--c:#f6b4bc;--d:#fbe0e4",
+      '<rect class="b" x="17" y="4" width="12" height="7" rx="1.5"/>' +
+      '<path class="a" d="M18 11h10v6c5 2 8 6 8 12v25c0 2-2 4-4 4H14c-2 0-4-2-4-4V29c0-6 3-10 8-12z"/>' +
+      '<rect class="b" x="10" y="32" width="26" height="12"/>' +
+      '<path class="c" d="M38 30h18l-2 24c0 2-1 3-3 3h-8c-2 0-3-1-3-3z"/>' +
+      '<circle class="d" cx="44" cy="40" r="1.2"/><circle class="d" cx="49" cy="46" r="1.2"/><circle class="d" cx="45" cy="50" r="1.1"/>'],
+    bier: ["--a:#e8a82a;--b:#fbf8f0;--d:#f6d478",
+      '<path class="s" d="M46 27h5c3 0 4 2 4 4v10c0 2-1 4-4 4h-5"/>' +
+      '<path class="a" d="M14 18h32v35c0 3-2 5-5 5H19c-3 0-5-2-5-5z"/>' +
+      '<circle class="d" cx="22" cy="32" r="1.4"/><circle class="d" cx="30" cy="40" r="1.4"/><circle class="d" cx="38" cy="30" r="1.4"/><circle class="d" cx="24" cy="47" r="1.4"/><circle class="d" cx="36" cy="49" r="1.4"/>' +
+      '<path class="b" d="M12 22c-3-5 1-10 6-9 2-4 8-5 11-2 3-3 9-3 11 1 5-1 8 3 7 7 0 3-2 4-4 4H16c-2 0-4-1-4-1z"/>'],
+    tonic: ["--a:#dcecf0;--b:#f4fafc;--c:#8cc84a;--d:#ffffff",
+      '<path class="a" d="M11 18h42l-4 36c0 2-2 3-4 3H19c-2 0-4-1-4-3z"/>' +
+      '<rect class="b" x="17" y="24" width="12" height="12" rx="2" transform="rotate(12 23 30)"/><rect class="b" x="30" y="30" width="12" height="12" rx="2" transform="rotate(-10 36 36)"/>' +
+      '<circle class="d" cx="22" cy="46" r="1.4"/><circle class="d" cx="30" cy="50" r="1.2"/><circle class="d" cx="40" cy="47" r="1.4"/><circle class="d" cx="45" cy="26" r="1.2"/>' +
+      '<path class="c" d="M37 18a10 10 0 0 0 20 0z"/><path class="e" d="M37 18a10 10 0 0 0 20 0M47 18l-6 5M47 18v8M47 18l6 5"/>'],
   };
 
   // Where an Ingredient has no drawing of its own, its aisle stands in.
