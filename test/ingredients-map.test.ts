@@ -426,3 +426,27 @@ test("what is no single food yet is bought as one: a mix, a spice, a sauce, a me
   assert.equal(m("dirk", "Melkan Ijskoffie macchiato", ["Dranken, sap, koffie & thee > Koffie & cacao"]), "ijskoffie/naturel");
   assert.equal(m("jumbo", "Jumbo's Salade Gerookte Zalmforel 125 g", ["Vleeswaren, kaas en tapas > Vis tapas"]), "salade/vis");
 });
+
+test("what a shelf of one thing showed the vocabulary missing (2026-10-16)", () => {
+  const m = (chainId: string, name: string, categories: string[]) => { const r = map({ chainId, name, brand: null, categories }); return r ? r.ingredient + (r.variant ? "/" + r.variant : "") : null; };
+  // Protein and lactose-free yoghurt is yoghurt; a soy alternative is not.
+  assert.equal(m("jumbo", "Campina High Protein Greek Yoghurt 1,5% Fat 1 kg", ["Zuivel, boter en eieren > Yoghurt en kwark > Yoghurt en skyr"]), "yoghurt/grieks+halfvol+naturel");
+  assert.equal(m("jumbo", "Arla Lactofree volle yoghurt lactosevrij 1L", ["Zuivel, boter en eieren > Yoghurt en kwark > Yoghurt en skyr"]), "yoghurt/gewoon+vol+naturel");
+  assert.equal(m("jumbo", "Jumbo Soja Plantaardig Alternatief voor Yoghurt 500 g", ["Zuivel, boter en eieren > Yoghurt en kwark > Yoghurt en skyr"]), null);
+  // A tablet with nuts in it is chocolade; chocolate-coated nuts and candy bars are not.
+  assert.equal(m("jumbo", "Ritter Sport Rozijn Hazelnoot 100 g", ["Koek, snoep, chocolade en chips > Chocolade > Chocoladerepen"]), "chocolade/melk");
+  assert.equal(m("dirk", "1 de Beste Choco pinda's", ["Snacks & snoep > Chocolade"]), null);
+  assert.equal(m("plus", "Snickers Melk chocolade karamel repen", ["Snoep, koek, chocolade, chips, noten > Chocolade > Chocoladerepen, chocoladetabletten"]), null);
+  // Chips named by brand or shape, as the Chains shelve them; a dip is not chips.
+  assert.equal(m("plus", "Lays Paprika", ["Snoep, koek, chocolade, chips, noten > Chips, zoutjes > Chips"]), "chips/paprika");
+  assert.equal(m("jumbo", "Pom-Bär Paprika 90 g", ["Koek, snoep, chocolade en chips > Chips en popcorn > Paprika chips"]), "chips/paprika");
+  assert.ok(!m("dirk", "Lay's Dipsaus aioli", ["Snacks & snoep > Chips"])?.startsWith("chips"));
+  // Coffee named by its brand alone, the kind from its shelf.
+  assert.equal(m("jumbo", "Douwe Egberts Excellent Gold 1000 g", ["Koffie en thee > Koffiebonen"]), "koffie/bonen");
+  assert.equal(m("jumbo", "L'OR Caps Capri 10 stuks", ["Koffie en thee > Nespresso Compatible Koffiecups"]), "koffie/cups");
+  assert.equal(m("dirk", "Nescafé Oploskoffie wiener melange 8 st.", ["Dranken, sap, koffie & thee > Koffie & cacao"]), "koffie/oplos");
+  assert.equal(m("dirk", "Nestlé Nesquik", ["Dranken, sap, koffie & thee > Koffie & cacao"]), null);
+  // Tea named by its herbs, though gember is an Ingredient too.
+  assert.equal(m("jumbo", "Jumbo Biologisch Sinaasappel Gember Thee 20 Stuks 30 g", ["Koffie en thee > Thee > Kruidenthee"]), "thee");
+  assert.equal(m("dirk", "Liga Proteine bar pinda", ["Brood, beleg & koek > Koekjes"]), "dieetvoeding/reep");
+});
