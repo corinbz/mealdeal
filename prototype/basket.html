@@ -1157,7 +1157,8 @@
         const n = (id) => Object.values(s.combo.from).filter((x) => x === id).length;
         combo = '<button class="bag bagc combo" style="--c:var(--ink);--c1x:' + a.color + ";--c2x:" + b.color + '" data-act="combo" aria-pressed="' + on + '">' +
           '<span class="nm">' + esc(a.name) + " + " + esc(b.name) + '</span><span class="tt">' + euro(s.combo.cost) + "</span>" +
-          '<span class="df zero">' + euro(base - s.combo.cost) + tr(" minder dan ", " less than ") + esc(s.best.chain.name) + "</span>" +
+          // No one Chain may sell it all; then the combination is the only full bag.
+          '<span class="df zero">' + (s.best ? euro(base - s.combo.cost) + tr(" minder dan ", " less than ") + esc(s.best.chain.name) : tr("alles te koop", "everything for sale")) + "</span>" +
           '<span class="cv">' + tr("Twee winkels: ", "Two stores: ") + n(a.id) + tr(" bij ", " at ") + esc(a.name) + ", " + n(b.id) + tr(" bij ", " at ") + esc(b.name) + "</span>" +
           '<span class="pick"><i>' + (on ? "✓" : "") + "</i>" + (on ? tr("Gekozen", "Chosen") : tr("Kies deze combinatie", "Choose this combination")) + "</span></button>";
       }
